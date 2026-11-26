@@ -2,9 +2,62 @@ import type {
   ExplanationStyle,
   ExplanationStyleMeta,
   Lesson,
+  LessonMarketCategory,
+  LessonStage,
 } from '../types/academy';
 import type { LessonResourceWithDetails } from '../types/visual-learning';
+import { EXPANDED_LESSONS } from './expandedLessons';
 import { VERIFIED_YOUTUBE_RESOURCES } from './verifiedVideos';
+
+export const LESSON_MARKET_CATEGORIES: Array<{
+  id: LessonMarketCategory;
+  label: string;
+  shortCode: string;
+}> = [
+  { id: 'general', label: 'Core & All Markets', shortCode: 'CORE' },
+  { id: 'forex', label: 'Forex (FX)', shortCode: 'FX' },
+  { id: 'indices', label: 'Indices (NAS100 / US30)', shortCode: 'IDX' },
+  { id: 'crypto', label: 'Crypto (BTC / Alts)', shortCode: 'CRYPTO' },
+  { id: 'stocks', label: 'Stocks (Equities)', shortCode: 'EQ' },
+];
+
+export const LESSON_STAGES: Array<{
+  id: LessonStage;
+  step: number;
+  label: string;
+  tagline: string;
+}> = [
+  {
+    id: 'foundations',
+    step: 1,
+    label: 'Foundations',
+    tagline: 'Candlestick anatomy, market structure, and institutional supply/demand zones.',
+  },
+  {
+    id: 'price_action_smc',
+    step: 2,
+    label: 'Price Action & Liquidity',
+    tagline: 'Liquidity pools, equal highs/lows, sweeps, FVGs, order blocks, and MTF alignment.',
+  },
+  {
+    id: 'market_playbooks',
+    step: 3,
+    label: 'Market Playbooks',
+    tagline: 'Specialized execution playbooks for Forex, Indices, Crypto, and Stocks.',
+  },
+  {
+    id: 'execution_edge',
+    step: 4,
+    label: 'Execution Edge',
+    tagline: 'A+ setup confluence checklists and mechanical trade management.',
+  },
+  {
+    id: 'steady_profitability',
+    step: 5,
+    label: 'Steady Profitability',
+    tagline: 'Risk math, journaling, positive expectancy, drawdown control, and scaling.',
+  },
+];
 
 export const EXPLANATION_STYLE_LIST: ExplanationStyleMeta[] = [
   {
@@ -52,9 +105,9 @@ export const EXPLANATION_STYLE_MAP: Record<
   EXPLANATION_STYLE_LIST.map((item) => [item.id, item]),
 ) as Record<ExplanationStyle, ExplanationStyleMeta>;
 
-export const CURRICULUM_LESSONS: Lesson[] = [
+const CORE_LESSONS: Lesson[] = [
   // =========================================================================
-  // LESSON 1: Market Structure Basics
+  // MODULE 2 (ORIGINAL CORE 1): Market Structure Basics
   // =========================================================================
   {
     id: '20000000-0000-4000-8000-000000000001',
@@ -63,7 +116,9 @@ export const CURRICULUM_LESSONS: Lesson[] = [
     subtitle:
       'Read trend direction objectively using swing points and confirmed candle-body Breaks of Structure.',
     level: 'beginner',
-    moduleOrder: 1,
+    marketCategory: 'general',
+    learningStage: 'foundations',
+    moduleOrder: 2,
     conceptKey: 'market-structure',
     estimatedMinutes: 15,
     learningObjectives: [
@@ -365,7 +420,9 @@ export const CURRICULUM_LESSONS: Lesson[] = [
     subtitle:
       'See where stop-losses and breakout orders cluster so you understand why price gravitates toward key highs and lows.',
     level: 'beginner',
-    moduleOrder: 2,
+    marketCategory: 'general',
+    learningStage: 'price_action_smc',
+    moduleOrder: 4,
     conceptKey: 'market-liquidity',
     estimatedMinutes: 16,
     learningObjectives: [
@@ -662,7 +719,9 @@ export const CURRICULUM_LESSONS: Lesson[] = [
     subtitle:
       'Recognize why "double tops" and "double bottoms" act as high-probability liquidity magnets rather than guaranteed ceilings.',
     level: 'intermediate',
-    moduleOrder: 3,
+    marketCategory: 'general',
+    learningStage: 'price_action_smc',
+    moduleOrder: 5,
     conceptKey: 'equal-highs-lows',
     estimatedMinutes: 18,
     learningObjectives: [
@@ -951,7 +1010,9 @@ export const CURRICULUM_LESSONS: Lesson[] = [
     subtitle:
       'Flagship Lesson: Master candle-close rejection, displacement, and retest acceptance so you stop getting trapped on false breakouts.',
     level: 'intermediate',
-    moduleOrder: 4,
+    marketCategory: 'general',
+    learningStage: 'price_action_smc',
+    moduleOrder: 6,
     conceptKey: 'liquidity-sweeps',
     estimatedMinutes: 22,
     learningObjectives: [
@@ -1297,7 +1358,9 @@ export const CURRICULUM_LESSONS: Lesson[] = [
     subtitle:
       'Spot 3-candle price inefficiencies left by aggressive displacement and understand high-probability mitigation zones.',
     level: 'intermediate',
-    moduleOrder: 5,
+    marketCategory: 'general',
+    learningStage: 'price_action_smc',
+    moduleOrder: 7,
     conceptKey: 'fair-value-gaps',
     estimatedMinutes: 18,
     learningObjectives: [
@@ -1590,7 +1653,9 @@ export const CURRICULUM_LESSONS: Lesson[] = [
     subtitle:
       'Protect your capital with fixed-percentage risk math, asymmetric R-multiples, and repeatable emotional discipline.',
     level: 'beginner',
-    moduleOrder: 6,
+    marketCategory: 'general',
+    learningStage: 'steady_profitability',
+    moduleOrder: 16,
     conceptKey: 'risk-psychology',
     estimatedMinutes: 20,
     learningObjectives: [
@@ -1879,6 +1944,11 @@ export const CURRICULUM_LESSONS: Lesson[] = [
     ],
   },
 ];
+
+export const CURRICULUM_LESSONS: Lesson[] = [
+  ...CORE_LESSONS,
+  ...EXPANDED_LESSONS,
+].sort((a, b) => a.moduleOrder - b.moduleOrder);
 
 /**
  * Starter curated visual resources combining live-verified YouTube educational videos

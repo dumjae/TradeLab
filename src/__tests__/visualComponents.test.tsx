@@ -6,6 +6,7 @@ import { MindsetVaultDrawer } from '../components/quotes/MindsetVaultDrawer';
 import { LazyVideoPlayer } from '../components/visual-learning/LazyVideoPlayer';
 import { VisualExplanationsSection } from '../components/visual-learning/VisualExplanationsSection';
 import { CURRICULUM_LESSONS } from '../data/curriculum';
+import { AcademyCatalogPage } from '../pages/AcademyCatalogPage';
 import type { EducationalResource, LessonResourceWithDetails } from '../types/visual-learning';
 
 const VALID_YT_RESOURCE: EducationalResource = {
@@ -31,11 +32,14 @@ const VALID_YT_RESOURCE: EducationalResource = {
   updatedAt: '2026-01-01T00:00:00.000Z',
 };
 
+const MARKET_STRUCTURE_LESSON =
+  CURRICULUM_LESSONS.find((item) => item.slug === 'market-structure') ?? CURRICULUM_LESSONS[0];
+
 const LESSON_RESOURCE_BUNDLE: LessonResourceWithDetails = {
   mapping: {
     id: 'map-1',
-    lessonId: CURRICULUM_LESSONS[0].id,
-    lessonSlug: CURRICULUM_LESSONS[0].slug,
+    lessonId: MARKET_STRUCTURE_LESSON.id,
+    lessonSlug: MARKET_STRUCTURE_LESSON.slug,
     resourceId: VALID_YT_RESOURCE.id,
     relevanceScore: 95,
     displayOrder: 1,
@@ -120,7 +124,7 @@ describe('LazyVideoPlayer — zero-eager-iframe facade, no-cookie embed & gracef
 describe('VisualExplanationsSection — 4-mode switching inside MemoryRouter', () => {
   it('switches cleanly between Text, Diagram, Video, and Historical Chart modes', async () => {
     const user = userEvent.setup();
-    const lesson = CURRICULUM_LESSONS[0];
+    const lesson = MARKET_STRUCTURE_LESSON;
 
     const { container } = render(
       <MemoryRouter>
@@ -209,5 +213,56 @@ describe('MindsetVaultDrawer — filtering & custom personal trading rule creati
       expect(screen.getByText('Custom Rule')).toBeInTheDocument();
       expect(screen.getAllByRole('article')).toHaveLength(14);
     });
+  });
+});
+
+describe('AcademyCatalogPage — 18-lesson catalog & market category filtering', () => {
+  it('renders all 18 lessons and narrows cleanly when filtering by Crypto and Forex', async () => {
+    const user = userEvent.setup();
+    const cryptoLessons = CURRICULUM_LESSONS.filter((lesson) => lesson.marketCategory === 'crypto');
+    const forexLessons = CURRICULUM_LESSONS.filter((lesson) => lesson.marketCategory === 'forex');
+
+    expect(CURRICULUM_LESSONS).toHaveLength(18);
+    expect(cryptoLessons.length).toBeGreaterThanOrEqual(1);
+    expect(forexLessons.length).toBeGreaterThanOrEqual(1);
+
+    render(
+      <MemoryRouter initialEntries={['/academy']}>
+        <AcademyCatalogPage />
+      </MemoryRouter>,
+    );
+
+    // All 18 lessons render initially
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(18);
+    for (const lesson of CURRICULUM_LESSONS) {
+      expect(screen.getByText(lesson.title)).toBeInTheDocument();
+    }
+
+    // Filter by Crypto market category
+    const cryptoFilterButton = screen.getByRole('button', { name: /Crypto/i });
+    await user.click(cryptoFilterButton);
+
+    expect(cryptoFilterButton).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(cryptoLessons.length);
+    for (const lesson of cryptoLessons) {
+      expect(screen.getByText(lesson.title)).toBeInTheDocument();
+    }
+    for (const lesson of forexLessons) {
+      expect(screen.queryByText(lesson.title)).not.toBeInTheDocument();
+    }
+
+    // Filter by Forex market category
+    const forexFilterButton = screen.getByRole('button', { name: /Forex/i });
+    await user.click(forexFilterButton);
+
+    expect(forexFilterButton).toHaveAttribute('aria-pressed', 'true');
+    expect(cryptoFilterButton).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(forexLessons.length);
+    for (const lesson of forexLessons) {
+      expect(screen.getByText(lesson.title)).toBeInTheDocument();
+    }
+    for (const lesson of cryptoLessons) {
+      expect(screen.queryByText(lesson.title)).not.toBeInTheDocument();
+    }
   });
 });

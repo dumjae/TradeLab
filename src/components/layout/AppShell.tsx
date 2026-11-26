@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import {
   BookOpen,
@@ -16,8 +16,12 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { CURRICULUM_LESSONS } from '../../data/curriculum';
+import {
+  CURRICULUM_LESSONS,
+  LESSON_MARKET_CATEGORIES,
+} from '../../data/curriculum';
 import { getStorageMode } from '../../lib/supabase';
+import type { LessonMarketCategory } from '../../types/academy';
 import { UserAccountMenu } from '../auth/UserAccountMenu';
 import { MindsetVaultDrawer } from '../quotes/MindsetVaultDrawer';
 
@@ -28,12 +32,13 @@ export interface AppShellProps {
   onCloseVault: () => void;
 }
 
+type SidebarMarketFilter = 'all' | LessonMarketCategory;
+
 const THEME_STORAGE_KEY = 'tradelab_theme_v1';
-const FIRST_LESSON_PATH = `/academy/${CURRICULUM_LESSONS[0]?.slug ?? 'market-structure'}`;
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: FIRST_LESSON_PATH, label: 'Trading Academy', icon: BookOpen, end: false },
+  { to: '/academy', label: 'Trading Academy', icon: BookOpen, end: false },
   { to: '/practice', label: 'Practice Exercises', icon: GraduationCap, end: false },
   { to: '/backtest', label: 'Market Backtester', icon: LineChart, end: false },
   { to: '/lab', label: 'Trading Lab', icon: CandlestickChart, end: false },
@@ -42,11 +47,32 @@ const NAV_ITEMS = [
 
 const MOBILE_BOTTOM_NAV = [
   { to: '/', label: 'Home', icon: Home, end: true },
-  { to: FIRST_LESSON_PATH, label: 'Academy', icon: BookOpen, end: false },
+  { to: '/academy', label: 'Academy', icon: BookOpen, end: false },
   { to: '/backtest', label: 'Backtest', icon: LineChart, end: false },
   { to: '/practice', label: 'Practice', icon: GraduationCap, end: false },
   { to: '/library', label: 'Library', icon: Bookmark, end: false },
 ];
+
+const MARKET_TAG_STYLES: Record<LessonMarketCategory, string> = {
+  general: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+  forex: 'border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400',
+  indices: 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400',
+  crypto: 'border-teal-500/30 bg-teal-500/10 text-teal-600 dark:text-teal-400',
+  stocks: 'border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400',
+};
+
+const SIDEBAR_PILL_ACTIVE: Record<SidebarMarketFilter, string> = {
+  all: 'bg-emerald-500 text-slate-950 font-semibold',
+  general: 'bg-emerald-500 text-slate-950 font-semibold',
+  forex: 'bg-sky-500 text-slate-950 font-semibold',
+  indices: 'bg-amber-500 text-slate-950 font-semibold',
+  crypto: 'bg-teal-500 text-slate-950 font-semibold',
+  stocks: 'bg-rose-500 text-slate-950 font-semibold',
+};
+
+function formatModuleOrder(order: number): string {
+  return String(order).padStart(2, '0');
+}
 
 function isTypingTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) {
@@ -69,6 +95,7 @@ export function AppShell({
 }: AppShellProps) {
   const { user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [sidebarMarketFilter, setSidebarMarketFilter] = useState<SidebarMarketFilter>('all');
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     if (typeof window === 'undefined') {
       return 'dark';
@@ -79,6 +106,21 @@ export function AppShell({
 
   const storageMode = getStorageMode();
   const isAdmin = user?.role === 'admin';
+
+  const marketShortCodeMap = useMemo(
+    () =>
+      Object.fromEntries(
+        LESSON_MARKET_CATEGORIES.map((category) => [category.id, category.shortCode]),
+      ) as Record<LessonMarketCategory, string>,
+    [],
+  );
+
+  const sidebarLessons = useMemo(() => {
+    if (sidebarMarketFilter === 'all') {
+      return CURRICULUM_LESSONS;
+    }
+    return CURRICULUM_LESSONS.filter((lesson) => lesson.marketCategory === sidebarMarketFilter);
+  }, [sidebarMarketFilter]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -223,8 +265,8 @@ export function AppShell({
           className="hidden w-64 shrink-0 border-r border-terminal-border/70 bg-terminal-surface/40 lg:block"
         >
           <div className="sticky top-16 flex h-[calc(100vh-4rem)] flex-col justify-between p-4">
-            <div className="space-y-6 overflow-y-auto pr-1">
-              <nav className="space-y-1">
+            <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-hidden">
+              <nav className="shrink-0 space-y-1">
                 {NAV_ITEMS.map((item) => {
                   const Icon = item.icon;
                   return (
@@ -247,17 +289,65 @@ export function AppShell({
                 })}
               </nav>
 
-              <div className="border-t border-terminal-border/70 pt-5">
-                <p className="px-3.5 text-[11px] font-medium uppercase tracking-wider text-terminal-muted/80">
-                  Curriculum
-                </p>
-                <ul className="mt-2.5 space-y-1">
-                  {CURRICULUM_LESSONS.map((lesson) => (
+              <div className="flex min-h-0 flex-1 flex-col border-t border-terminal-border/70 pt-4">
+                <div className="flex items-center justify-between px-2">
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-terminal-muted/80">
+                    Curriculum Modules
+                  </p>
+                  <Link
+                    to="/academy"
+                    className="font-mono text-[10px] font-semibold text-emerald-600 hover:underline dark:text-emerald-400 tabular-nums"
+                  >
+                    {sidebarLessons.length}/{CURRICULUM_LESSONS.length}
+                  </Link>
+                </div>
+
+                {/* Tiny Compact Market Filter */}
+                <div
+                  role="group"
+                  aria-label="Filter sidebar curriculum by market"
+                  className="no-scrollbar mt-2 flex flex-nowrap items-center gap-1 overflow-x-auto px-1 pb-1"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setSidebarMarketFilter('all')}
+                    aria-pressed={sidebarMarketFilter === 'all'}
+                    className={`shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] transition-colors ${
+                      sidebarMarketFilter === 'all'
+                        ? SIDEBAR_PILL_ACTIVE.all
+                        : 'bg-terminal-bg text-terminal-muted hover:text-terminal-text'
+                    }`}
+                  >
+                    ALL
+                  </button>
+                  {LESSON_MARKET_CATEGORIES.map((category) => {
+                    const isActive = sidebarMarketFilter === category.id;
+                    return (
+                      <button
+                        key={category.id}
+                        type="button"
+                        onClick={() => setSidebarMarketFilter(category.id)}
+                        aria-pressed={isActive}
+                        title={category.label}
+                        className={`shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] transition-colors ${
+                          isActive
+                            ? SIDEBAR_PILL_ACTIVE[category.id]
+                            : 'bg-terminal-bg text-terminal-muted hover:text-terminal-text'
+                        }`}
+                      >
+                        {category.shortCode}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <ul className="mt-2 flex-1 space-y-0.5 overflow-y-auto pr-1">
+                  {sidebarLessons.map((lesson) => (
                     <li key={lesson.id}>
                       <NavLink
                         to={`/academy/${lesson.slug}`}
                         className={({ isActive }) =>
-                          `flex items-center justify-between gap-2 rounded-xl px-3.5 py-2 text-xs transition-colors ${
+                          `flex items-center justify-between gap-1.5 rounded-xl px-2.5 py-1.5 text-xs transition-colors ${
                             isActive
                               ? 'bg-terminal-elevated font-semibold text-emerald-600 dark:text-emerald-400'
                               : 'text-terminal-muted hover:bg-terminal-elevated/50 hover:text-terminal-text'
@@ -265,10 +355,15 @@ export function AppShell({
                         }
                       >
                         <span className="truncate">
-                          <span className="mr-2 font-mono text-[10px] opacity-60 tabular-nums">
-                            0{lesson.moduleOrder}
+                          <span className="mr-1.5 font-mono text-[10px] opacity-65 tabular-nums">
+                            {formatModuleOrder(lesson.moduleOrder)}
                           </span>
                           {lesson.title.split('(')[0].trim()}
+                        </span>
+                        <span
+                          className={`shrink-0 rounded-md border px-1.5 py-0.5 font-mono text-[9px] font-semibold leading-none ${MARKET_TAG_STYLES[lesson.marketCategory]}`}
+                        >
+                          {marketShortCodeMap[lesson.marketCategory] ?? 'GEN'}
                         </span>
                       </NavLink>
                     </li>
@@ -277,9 +372,9 @@ export function AppShell({
               </div>
             </div>
 
-            <div className="rounded-2xl border border-terminal-border/70 bg-terminal-bg/70 p-4 text-xs text-terminal-muted">
+            <div className="mt-3 shrink-0 rounded-2xl border border-terminal-border/70 bg-terminal-bg/70 p-3.5 text-xs text-terminal-muted">
               <p className="font-semibold text-terminal-text">Process Over Impulse</p>
-              <p className="mt-1 leading-relaxed">
+              <p className="mt-0.5 leading-relaxed">
                 Verify structure, liquidity, and 1R risk before every execution.
               </p>
             </div>
@@ -346,18 +441,37 @@ export function AppShell({
               </nav>
 
               <div className="mt-6 border-t border-terminal-border/80 pt-5">
-                <p className="px-3 text-[11px] font-medium uppercase tracking-wider text-terminal-muted">
-                  Curriculum
-                </p>
+                <div className="flex items-center justify-between px-3">
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-terminal-muted">
+                    Curriculum Modules
+                  </p>
+                  <Link
+                    to="/academy"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400"
+                  >
+                    All {CURRICULUM_LESSONS.length} →
+                  </Link>
+                </div>
                 <ul className="mt-2.5 space-y-1">
                   {CURRICULUM_LESSONS.map((lesson) => (
                     <li key={lesson.id}>
                       <NavLink
                         to={`/academy/${lesson.slug}`}
                         onClick={() => setMobileMenuOpen(false)}
-                        className="block rounded-xl px-3 py-2 text-xs text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-terminal-text"
+                        className="flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-xs text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-terminal-text"
                       >
-                        0{lesson.moduleOrder}. {lesson.title}
+                        <span className="truncate">
+                          <span className="mr-1.5 font-mono text-[10px] opacity-65 tabular-nums">
+                            {formatModuleOrder(lesson.moduleOrder)}
+                          </span>
+                          {lesson.title.split('(')[0].trim()}
+                        </span>
+                        <span
+                          className={`shrink-0 rounded-md border px-1.5 py-0.5 font-mono text-[9px] font-semibold leading-none ${MARKET_TAG_STYLES[lesson.marketCategory]}`}
+                        >
+                          {marketShortCodeMap[lesson.marketCategory] ?? 'GEN'}
+                        </span>
                       </NavLink>
                     </li>
                   ))}

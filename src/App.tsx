@@ -4,6 +4,7 @@ import { AdminRoute, LearnerRoute, PublicOnlyRoute } from './components/auth/Rou
 import { AdminShell } from './components/layout/AdminShell';
 import { AppShell } from './components/layout/AppShell';
 import { AuthProvider } from './context/AuthContext';
+import { AcademyCatalogPage } from './pages/AcademyCatalogPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { AdminQuotesPage } from './pages/AdminQuotesPage';
 import { AdminVisualLibraryPage } from './pages/AdminVisualLibraryPage';
@@ -62,6 +63,7 @@ export function App() {
             }
           >
             <Route path="/" element={<DashboardPage onOpenVault={openVault} />} />
+            <Route path="/academy" element={<AcademyCatalogPage />} />
             <Route path="/academy/:slug" element={<LessonPage />} />
             <Route path="/practice" element={<PracticePage />} />
             <Route path="/practice/:slug" element={<PracticePage />} />

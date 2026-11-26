@@ -1,5 +1,14 @@
 export type CurriculumLevel = 'beginner' | 'intermediate' | 'advanced';
 
+export type LessonMarketCategory = 'general' | 'forex' | 'indices' | 'crypto' | 'stocks';
+
+export type LessonStage =
+  | 'foundations'
+  | 'price_action_smc'
+  | 'market_playbooks'
+  | 'execution_edge'
+  | 'steady_profitability';
+
 export type LearningViewMode = 'text' | 'diagram' | 'video' | 'chart';
 
 export type AppLearningContext =
@@ -184,6 +193,8 @@ export interface Lesson {
   title: string;
   subtitle: string;
   level: CurriculumLevel;
+  marketCategory: LessonMarketCategory;
+  learningStage: LessonStage;
   moduleOrder: number;
   conceptKey: string;
   estimatedMinutes: number;

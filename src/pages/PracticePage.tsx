@@ -15,13 +15,41 @@ import { AIMentorPanel } from '../components/mentor/AIMentorPanel';
 import { ContextualQuoteStrip } from '../components/quotes/ContextualQuoteStrip';
 import { ExplainDifferentlyPanel } from '../components/visual-learning/ExplainDifferentlyPanel';
 import { getChartScenarioById } from '../data/chartScenarios';
-import { CURRICULUM_LESSONS, getLessonBySlug } from '../data/curriculum';
+import {
+  CURRICULUM_LESSONS,
+  LESSON_MARKET_CATEGORIES,
+  getLessonBySlug,
+} from '../data/curriculum';
 import {
   markConceptMastered,
   recordConceptCorrectAttempt,
   recordConceptStruggle,
 } from '../services/difficultConceptsService';
+import type { LessonMarketCategory } from '../types/academy';
 import type { UserDifficultConcept } from '../types/visual-learning';
+
+type MarketFilter = 'all' | LessonMarketCategory;
+
+const MARKET_BADGE_STYLES: Record<LessonMarketCategory, string> = {
+  general: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+  forex: 'border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400',
+  indices: 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400',
+  crypto: 'border-teal-500/30 bg-teal-500/10 text-teal-600 dark:text-teal-400',
+  stocks: 'border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400',
+};
+
+const MARKET_ACTIVE_PILL_STYLES: Record<MarketFilter, string> = {
+  all: 'border-emerald-500 bg-emerald-500 text-slate-950 font-semibold',
+  general: 'border-emerald-500 bg-emerald-500 text-slate-950 font-semibold',
+  forex: 'border-sky-500 bg-sky-500 text-slate-950 font-semibold',
+  indices: 'border-amber-500 bg-amber-500 text-slate-950 font-semibold',
+  crypto: 'border-teal-500 bg-teal-500 text-slate-950 font-semibold',
+  stocks: 'border-rose-500 bg-rose-500 text-slate-950 font-semibold',
+};
+
+function formatModuleOrder(order: number): string {
+  return String(order).padStart(2, '0');
+}
 
 export function PracticePage() {
   const { slug } = useParams<{ slug?: string }>();
@@ -32,6 +60,7 @@ export function PracticePage() {
     [slug],
   );
 
+  const [marketFilter, setMarketFilter] = useState<MarketFilter>('all');
   const [questionIndex, setQuestionIndex] = useState<number>(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
@@ -39,6 +68,36 @@ export function PracticePage() {
   const [masteryPromptConcept, setMasteryPromptConcept] =
     useState<UserDifficultConcept | null>(null);
   const [masteryConfirmed, setMasteryConfirmed] = useState<boolean>(false);
+
+  const marketMetaMap = useMemo(
+    () =>
+      Object.fromEntries(
+        LESSON_MARKET_CATEGORIES.map((category) => [category.id, category]),
+      ) as Record<LessonMarketCategory, { id: LessonMarketCategory; label: string; shortCode: string }>,
+    [],
+  );
+
+  const marketCounts = useMemo(() => {
+    const counts: Record<MarketFilter, number> = {
+      all: CURRICULUM_LESSONS.length,
+      general: 0,
+      forex: 0,
+      indices: 0,
+      crypto: 0,
+      stocks: 0,
+    };
+    for (const item of CURRICULUM_LESSONS) {
+      counts[item.marketCategory] = (counts[item.marketCategory] ?? 0) + 1;
+    }
+    return counts;
+  }, []);
+
+  const filteredLessons = useMemo(() => {
+    if (marketFilter === 'all') {
+      return CURRICULUM_LESSONS;
+    }
+    return CURRICULUM_LESSONS.filter((item) => item.marketCategory === marketFilter);
+  }, [marketFilter]);
 
   useEffect(() => {
     setQuestionIndex(0);
@@ -48,6 +107,16 @@ export function PracticePage() {
     setMasteryPromptConcept(null);
     setMasteryConfirmed(false);
   }, [lesson.slug]);
+
+  const handleSelectMarketFilter = (nextMarket: MarketFilter) => {
+    setMarketFilter(nextMarket);
+    if (nextMarket !== 'all' && lesson.marketCategory !== nextMarket) {
+      const firstMatching = CURRICULUM_LESSONS.find((item) => item.marketCategory === nextMarket);
+      if (firstMatching) {
+        navigate(`/practice/${firstMatching.slug}`);
+      }
+    }
+  };
 
   const activeQuestion = lesson.practiceQuestions[questionIndex] ?? lesson.practiceQuestions[0];
   const scenario = activeQuestion?.scenarioId
@@ -100,51 +169,120 @@ export function PracticePage() {
     return null;
   }
 
+  const activeMarketMeta = marketMetaMap[lesson.marketCategory];
+
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      {/* Header & Lesson Selector */}
-      <header className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-terminal-border bg-terminal-surface p-5">
-        <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-400">
-              <GraduationCap className="h-3.5 w-3.5" aria-hidden="true" />
-              Practice Mode
-            </span>
-            {!hasSubmitted && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/35 bg-amber-500/10 px-2.5 py-0.5 font-mono text-[11px] font-medium text-amber-400">
-                <ShieldAlert className="h-3.5 w-3.5" aria-hidden="true" />
-                Answer Protection Active
+      {/* Header & Market-Filtered Lesson Selector */}
+      <header className="space-y-4 rounded-2xl border border-terminal-border bg-terminal-surface p-5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                <GraduationCap className="h-3.5 w-3.5" aria-hidden="true" />
+                Practice Mode
               </span>
-            )}
+              {activeMarketMeta && (
+                <span
+                  className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${MARKET_BADGE_STYLES[lesson.marketCategory]}`}
+                >
+                  {activeMarketMeta.label}
+                </span>
+              )}
+              {!hasSubmitted && (
+                <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/35 bg-amber-500/10 px-2.5 py-0.5 font-mono text-[11px] font-medium text-amber-600 dark:text-amber-400">
+                  <ShieldAlert className="h-3.5 w-3.5" aria-hidden="true" />
+                  Answer Protection Active
+                </span>
+              )}
+            </div>
+            <h1 className="text-xl font-bold text-terminal-text">
+              {lesson.title} — Applied Chart Drills
+            </h1>
           </div>
-          <h1 className="text-xl font-bold text-terminal-text">
-            {lesson.title} — Applied Chart Drills
-          </h1>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <label htmlFor="practice-lesson-select" className="sr-only">
-            Select practice lesson
-          </label>
-          <select
-            id="practice-lesson-select"
-            value={lesson.slug}
-            onChange={(event) => navigate(`/practice/${event.target.value}`)}
-            className="rounded-xl border border-terminal-border bg-terminal-bg px-3 py-2 text-xs font-medium text-terminal-text focus:border-emerald-500 focus:outline-none"
-          >
-            {CURRICULUM_LESSONS.map((item) => (
-              <option key={item.id} value={item.slug}>
-                0{item.moduleOrder}. {item.title}
-              </option>
-            ))}
-          </select>
 
           <Link
             to={`/academy/${lesson.slug}`}
-            className="rounded-xl border border-terminal-border bg-terminal-elevated px-3.5 py-2 text-xs font-semibold text-sky-400 hover:border-sky-500/50"
+            className="rounded-xl border border-terminal-border bg-terminal-elevated px-3.5 py-2 text-xs font-semibold text-sky-600 hover:border-sky-500/50 dark:text-sky-400"
           >
             Review Lesson
           </Link>
+        </div>
+
+        {/* Market Category Filter Pills + Lesson Selector */}
+        <div className="flex flex-col gap-3 border-t border-terminal-border/70 pt-3.5 lg:flex-row lg:items-center lg:justify-between">
+          <div
+            role="group"
+            aria-label="Filter practice drills by market category"
+            className="no-scrollbar flex flex-nowrap items-center gap-1.5 overflow-x-auto pb-0.5"
+          >
+            <button
+              type="button"
+              onClick={() => handleSelectMarketFilter('all')}
+              aria-pressed={marketFilter === 'all'}
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-all ${
+                marketFilter === 'all'
+                  ? MARKET_ACTIVE_PILL_STYLES.all
+                  : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-emerald-500/40 hover:text-terminal-text'
+              }`}
+            >
+              <span>All</span>
+              <span
+                className={`font-mono text-[10px] tabular-nums ${
+                  marketFilter === 'all' ? 'text-slate-900/80' : 'opacity-70'
+                }`}
+              >
+                {marketCounts.all}
+              </span>
+            </button>
+
+            {LESSON_MARKET_CATEGORIES.map((category) => {
+              const isActive = marketFilter === category.id;
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() => handleSelectMarketFilter(category.id)}
+                  aria-pressed={isActive}
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-all ${
+                    isActive
+                      ? MARKET_ACTIVE_PILL_STYLES[category.id]
+                      : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-emerald-500/40 hover:text-terminal-text'
+                  }`}
+                >
+                  <span>{category.label}</span>
+                  <span
+                    className={`font-mono text-[10px] tabular-nums ${
+                      isActive ? 'text-slate-900/80' : 'opacity-70'
+                    }`}
+                  >
+                    {marketCounts[category.id]}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2">
+            <label htmlFor="practice-lesson-select" className="sr-only">
+              Select practice lesson
+            </label>
+            <select
+              id="practice-lesson-select"
+              name="practiceLesson"
+              aria-label="Select practice lesson"
+              value={lesson.slug}
+              onChange={(event) => navigate(`/practice/${event.target.value}`)}
+              className="w-full rounded-xl border border-terminal-border bg-terminal-bg px-3 py-2 text-xs font-medium text-terminal-text focus:border-emerald-500 focus:outline-none sm:w-auto sm:min-w-[260px]"
+            >
+              {filteredLessons.map((item) => (
+                <option key={item.id} value={item.slug}>
+                  {formatModuleOrder(item.moduleOrder)}. [{marketMetaMap[item.marketCategory]?.shortCode ?? 'GEN'}]{' '}
+                  {item.title}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </header>
 

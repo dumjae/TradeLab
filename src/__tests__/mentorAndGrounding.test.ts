@@ -13,7 +13,8 @@ import {
 } from '../services/aiMentorService';
 import type { LessonResourceWithDetails } from '../types/visual-learning';
 
-const SAMPLE_LESSON = CURRICULUM_LESSONS[0]; // market-structure
+const SAMPLE_LESSON =
+  CURRICULUM_LESSONS.find((lesson) => lesson.slug === 'market-structure') ?? CURRICULUM_LESSONS[0];
 const SAMPLE_QUESTION = SAMPLE_LESSON.practiceQuestions[0];
 
 const VERIFIED_PUBLISHED_RESOURCE: LessonResourceWithDetails = {

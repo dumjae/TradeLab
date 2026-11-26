@@ -10,7 +10,11 @@ import {
   parseYouTubeChaptersFromDescription,
 } from '../lib/youtubeUtils';
 import { isAllowedServerFetchUrl, sanitizePlainText } from '../../api/_lib/urlSecurity';
-import { CURRICULUM_LESSONS } from '../data/curriculum';
+import {
+  CURRICULUM_LESSONS,
+  LESSON_MARKET_CATEGORIES,
+  LESSON_STAGES,
+} from '../data/curriculum';
 import { VERIFIED_YOUTUBE_RESOURCES } from '../data/verifiedVideos';
 
 describe('youtubeUtils — video ID extraction, embed URLs, timestamps & chapters', () => {
@@ -230,9 +234,35 @@ describe('api/_lib/urlSecurity — SSRF allowlist & text sanitization', () => {
 });
 
 describe('VERIFIED_YOUTUBE_RESOURCES — curriculum coverage & security integrity', () => {
-  it('contains 16 unique live-verified YouTube resources covering all 6 curriculum lessons with strict validation', () => {
-    expect(CURRICULUM_LESSONS).toHaveLength(6);
-    expect(VERIFIED_YOUTUBE_RESOURCES).toHaveLength(16);
+  it('contains 43 unique live-verified YouTube resources covering all 18 curriculum lessons, 5 market categories, and 5 stages', () => {
+    expect(CURRICULUM_LESSONS).toHaveLength(18);
+    expect(VERIFIED_YOUTUBE_RESOURCES).toHaveLength(43);
+
+    const expectedMarketCategories = ['general', 'forex', 'indices', 'crypto', 'stocks'];
+    expect(LESSON_MARKET_CATEGORIES.map((category) => category.id)).toEqual(
+      expectedMarketCategories,
+    );
+    expect(LESSON_STAGES).toHaveLength(5);
+
+    const representedCategories = new Set(
+      CURRICULUM_LESSONS.map((lesson) => lesson.marketCategory),
+    );
+    for (const category of LESSON_MARKET_CATEGORIES) {
+      expect(
+        representedCategories.has(category.id),
+        `Expected market category "${category.id}" to be represented in CURRICULUM_LESSONS`,
+      ).toBe(true);
+    }
+
+    const representedStages = new Set(
+      CURRICULUM_LESSONS.map((lesson) => lesson.learningStage),
+    );
+    for (const stage of LESSON_STAGES) {
+      expect(
+        representedStages.has(stage.id),
+        `Expected learning stage "${stage.id}" to be represented in CURRICULUM_LESSONS`,
+      ).toBe(true);
+    }
 
     const seenResourceIds = new Set<string>();
     const seenVideoIds = new Set<string>();
@@ -261,8 +291,8 @@ describe('VERIFIED_YOUTUBE_RESOURCES — curriculum coverage & security integrit
       );
     }
 
-    expect(seenResourceIds.size).toBe(16);
-    expect(seenVideoIds.size).toBe(16);
+    expect(seenResourceIds.size).toBe(43);
+    expect(seenVideoIds.size).toBe(43);
 
     for (const lesson of CURRICULUM_LESSONS) {
       const videoCount = countsByLessonSlug.get(lesson.slug) ?? 0;
