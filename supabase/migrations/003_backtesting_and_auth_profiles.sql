@@ -160,39 +160,39 @@ ALTER TABLE public.user_backtest_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_backtest_trades ENABLE ROW LEVEL SECURITY;
 
 -- user_backtest_sessions (strictly private to auth.uid() = user_id)
-DROP POLICY IF EXISTS user_backtest_sessions_select_own ON public.user_backtest_sessions;
+DROP POLICY IF EXISTS "user_backtest_sessions_select_own" ON public.user_backtest_sessions;
 CREATE POLICY user_backtest_sessions_select_own
   ON public.user_backtest_sessions
   FOR SELECT
   USING (auth.uid() = user_id);
 
-DROP POLICY IF EXISTS user_backtest_sessions_insert_own ON public.user_backtest_sessions;
+DROP POLICY IF EXISTS "user_backtest_sessions_insert_own" ON public.user_backtest_sessions;
 CREATE POLICY user_backtest_sessions_insert_own
   ON public.user_backtest_sessions
   FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
-DROP POLICY IF EXISTS user_backtest_sessions_update_own ON public.user_backtest_sessions;
+DROP POLICY IF EXISTS "user_backtest_sessions_update_own" ON public.user_backtest_sessions;
 CREATE POLICY user_backtest_sessions_update_own
   ON public.user_backtest_sessions
   FOR UPDATE
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
-DROP POLICY IF EXISTS user_backtest_sessions_delete_own ON public.user_backtest_sessions;
+DROP POLICY IF EXISTS "user_backtest_sessions_delete_own" ON public.user_backtest_sessions;
 CREATE POLICY user_backtest_sessions_delete_own
   ON public.user_backtest_sessions
   FOR DELETE
   USING (auth.uid() = user_id);
 
 -- user_backtest_trades (strictly private to auth.uid() = user_id and owned session)
-DROP POLICY IF EXISTS user_backtest_trades_select_own ON public.user_backtest_trades;
+DROP POLICY IF EXISTS "user_backtest_trades_select_own" ON public.user_backtest_trades;
 CREATE POLICY user_backtest_trades_select_own
   ON public.user_backtest_trades
   FOR SELECT
   USING (auth.uid() = user_id);
 
-DROP POLICY IF EXISTS user_backtest_trades_insert_own ON public.user_backtest_trades;
+DROP POLICY IF EXISTS "user_backtest_trades_insert_own" ON public.user_backtest_trades;
 CREATE POLICY user_backtest_trades_insert_own
   ON public.user_backtest_trades
   FOR INSERT
@@ -206,7 +206,7 @@ CREATE POLICY user_backtest_trades_insert_own
     )
   );
 
-DROP POLICY IF EXISTS user_backtest_trades_update_own ON public.user_backtest_trades;
+DROP POLICY IF EXISTS "user_backtest_trades_update_own" ON public.user_backtest_trades;
 CREATE POLICY user_backtest_trades_update_own
   ON public.user_backtest_trades
   FOR UPDATE
@@ -221,7 +221,7 @@ CREATE POLICY user_backtest_trades_update_own
     )
   );
 
-DROP POLICY IF EXISTS user_backtest_trades_delete_own ON public.user_backtest_trades;
+DROP POLICY IF EXISTS "user_backtest_trades_delete_own" ON public.user_backtest_trades;
 CREATE POLICY user_backtest_trades_delete_own
   ON public.user_backtest_trades
   FOR DELETE

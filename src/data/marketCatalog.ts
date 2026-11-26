@@ -298,10 +298,24 @@ export function getMarketSymbol(symbol: string): MarketSymbolOption | undefined 
   );
 }
 
+function parseIsoDateToUnixSeconds(dateStr: string | undefined, endOfDay: boolean): number | null {
+  if (!dateStr) return null;
+  const trimmed = dateStr.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return null;
+
+  const baseMs = Date.parse(`${trimmed}T00:00:00Z`);
+  if (!Number.isFinite(baseMs) || baseMs <= 0) return null;
+  if (new Date(baseMs).toISOString().slice(0, 10) !== trimmed) return null;
+
+  const targetMs = endOfDay ? Date.parse(`${trimmed}T23:59:59Z`) : baseMs;
+  return Math.floor(targetMs / 1000);
+}
+
 export function generateOfflineMarketCandles(
   symbol: string,
   timeframe: MarketTimeframe,
   count: number = DEFAULT_OFFLINE_CANDLE_COUNT,
+  dateRange?: { startDate?: string; endDate?: string },
 ): CandlePoint[] {
   const safeCount = Math.max(1, Math.min(2000, Math.floor(count)));
   const meta = getMarketSymbol(symbol) ?? {
@@ -315,8 +329,35 @@ export function generateOfflineMarketCandles(
   };
 
   const tfSeconds = getTimeframeSeconds(timeframe);
-  const startTime = ANCHOR_END_UNIX_SECONDS - (safeCount - 1) * tfSeconds;
-  const rand = createMulberry32(hashSeed(`${meta.symbol}:${timeframe}`));
+  const startTimeSec = parseIsoDateToUnixSeconds(dateRange?.startDate, false);
+  const endTimeSec = parseIsoDateToUnixSeconds(dateRange?.endDate, true);
+
+  let startTime: number;
+  let barCount = safeCount;
+
+  if (startTimeSec !== null && endTimeSec !== null && startTimeSec <= endTimeSec) {
+    const alignedEnd = Math.floor(endTimeSec / tfSeconds) * tfSeconds;
+    const availableBars = Math.floor((alignedEnd - startTimeSec) / tfSeconds) + 1;
+    if (availableBars <= safeCount) {
+      barCount = Math.max(1, availableBars);
+      startTime = startTimeSec;
+    } else {
+      startTime = alignedEnd - (safeCount - 1) * tfSeconds;
+    }
+  } else if (endTimeSec !== null) {
+    const alignedEnd = Math.floor(endTimeSec / tfSeconds) * tfSeconds;
+    startTime = alignedEnd - (safeCount - 1) * tfSeconds;
+  } else if (startTimeSec !== null) {
+    startTime = startTimeSec;
+  } else {
+    startTime = ANCHOR_END_UNIX_SECONDS - (safeCount - 1) * tfSeconds;
+  }
+
+  const seedSuffix =
+    startTimeSec !== null || endTimeSec !== null
+      ? `:${dateRange?.startDate?.trim() ?? ''}:${dateRange?.endDate?.trim() ?? ''}`
+      : '';
+  const rand = createMulberry32(hashSeed(`${meta.symbol}:${timeframe}${seedSuffix}`));
 
   // Scale volatility modestly across timeframes while preserving natural candle ranges
   const tfVolScale = Math.min(2.4, Math.max(0.45, Math.sqrt(tfSeconds / 3600)));
@@ -340,7 +381,7 @@ export function generateOfflineMarketCandles(
           ? 12500
           : 6400;
 
-  for (let i = 0; i < safeCount; i += 1) {
+  for (let i = 0; i < barCount; i += 1) {
     if (barsInRegime >= regimeLength) {
       regimeIndex = (regimeIndex + 1) % REGIME_CYCLE.length;
       barsInRegime = 0;
@@ -361,7 +402,7 @@ export function generateOfflineMarketCandles(
       delta -= Math.sign(deviationRatio) * barVol * 0.45;
     }
 
-    const isLiquiditySweep = sweepCooldown <= 0 && i >= 12 && i < safeCount - 2 && rand() < 0.16;
+    const isLiquiditySweep = sweepCooldown <= 0 && i >= 12 && i < barCount - 2 && rand() < 0.16;
     let upperWick = barVol * (0.2 + rand() * 0.65);
     let lowerWick = barVol * (0.2 + rand() * 0.65);
     let volumeMultiplier = 0.75 + rand() * 0.7;

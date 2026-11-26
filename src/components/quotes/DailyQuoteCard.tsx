@@ -7,8 +7,6 @@ import {
   Pin,
   Quote,
   RefreshCw,
-  ShieldCheck,
-  Sparkles,
 } from 'lucide-react';
 import {
   getDailyQuote,
@@ -101,38 +99,45 @@ export function DailyQuoteCard({ onOpenVault, conceptKey }: DailyQuoteCardProps)
     setPool((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
   };
 
+  const sourceLabel =
+    quote?.sourceType === 'verified_trader'
+      ? 'Verified Trader'
+      : quote?.sourceType === 'tradelab_principle'
+        ? 'TradeLab Principle'
+        : 'Personal Rule';
+
   return (
     <section
       aria-labelledby="daily-wisdom-heading"
-      className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-br from-terminal-surface via-terminal-surface to-amber-500/5 p-5"
+      className="rounded-3xl border border-amber-500/20 bg-terminal-surface p-6 shadow-sm sm:p-7"
     >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-500/35 bg-amber-500/15 text-amber-400">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-500 dark:text-amber-400">
             <Quote className="h-4 w-4" aria-hidden="true" />
           </span>
           <div>
             <h2
               id="daily-wisdom-heading"
-              className="text-xs font-semibold uppercase tracking-wider text-amber-400"
+              className="text-sm font-semibold text-terminal-text"
             >
               Daily Trading Wisdom
             </h2>
-            <p className="text-[11px] text-terminal-muted">
-              Disciplined mindset before you read the charts
+            <p className="text-xs text-terminal-muted">
+              Steady mindset before reading the charts
             </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           {CATEGORIES.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setCategory(tab.id)}
-              className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
+              className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
                 category === tab.id
-                  ? 'bg-amber-500 text-slate-950 font-semibold'
+                  ? 'bg-amber-500 font-semibold text-slate-950'
                   : 'border border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
               }`}
             >
@@ -143,37 +148,20 @@ export function DailyQuoteCard({ onOpenVault, conceptKey }: DailyQuoteCardProps)
       </div>
 
       {loading || !quote ? (
-        <div className="mt-4 h-24 animate-pulse rounded-xl bg-terminal-elevated/60" />
+        <div className="mt-5 h-24 animate-pulse rounded-2xl bg-terminal-elevated/60" />
       ) : (
-        <div className="mt-4 space-y-4">
+        <div className="mt-5 space-y-5">
           <blockquote className="text-base font-medium leading-relaxed text-terminal-text sm:text-lg">
             “{quote.quoteText}”
           </blockquote>
 
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold text-terminal-text">{quote.author}</span>
-              <span className="text-xs text-terminal-muted">· {quote.authorRole}</span>
-              {quote.sourceType === 'verified_trader' ? (
-                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-emerald-400">
-                  <ShieldCheck className="h-3 w-3" aria-hidden="true" />
-                  Verified Trader
-                </span>
-              ) : quote.sourceType === 'tradelab_principle' ? (
-                <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/35 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-amber-400">
-                  <Sparkles className="h-3 w-3" aria-hidden="true" />
-                  TradeLab Principle
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 rounded-full border border-sky-500/35 bg-sky-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-sky-400">
-                  My Rule
-                </span>
-              )}
-              {quote.language === 'taglish' && (
-                <span className="rounded-full border border-terminal-border bg-terminal-elevated px-2 py-0.5 font-mono text-[10px] text-terminal-muted">
-                  Taglish
-                </span>
-              )}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+              <span className="font-semibold text-terminal-text">{quote.author}</span>
+              <span className="text-terminal-muted">· {quote.authorRole}</span>
+              <span className="rounded-full bg-terminal-elevated px-2.5 py-0.5 text-[11px] font-medium text-terminal-muted">
+                {sourceLabel}
+              </span>
             </div>
 
             <div className="flex items-center gap-1.5">
@@ -181,7 +169,7 @@ export function DailyQuoteCard({ onOpenVault, conceptKey }: DailyQuoteCardProps)
                 type="button"
                 onClick={handleShuffle}
                 aria-label="Shuffle trading quote"
-                className="inline-flex items-center gap-1 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1.5 text-xs font-medium text-terminal-muted transition-colors hover:border-amber-500/50 hover:text-amber-400"
+                className="inline-flex h-9 items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-bg px-3.5 text-xs font-medium text-terminal-muted transition-colors hover:border-amber-500/45 hover:text-amber-600 dark:hover:text-amber-400"
               >
                 <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
                 Shuffle
@@ -191,10 +179,10 @@ export function DailyQuoteCard({ onOpenVault, conceptKey }: DailyQuoteCardProps)
                 onClick={handleToggleFavorite}
                 aria-label={quote.isFavorite ? 'Remove from favorites' : 'Favorite quote'}
                 aria-pressed={quote.isFavorite}
-                className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${
                   quote.isFavorite
-                    ? 'border-rose-500/40 bg-rose-500/15 text-rose-400'
-                    : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-rose-400'
+                    ? 'border-rose-500/40 bg-rose-500/15 text-rose-500 dark:text-rose-400'
+                    : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-rose-500 dark:hover:text-rose-400'
                 }`}
               >
                 <Heart
@@ -207,10 +195,10 @@ export function DailyQuoteCard({ onOpenVault, conceptKey }: DailyQuoteCardProps)
                 onClick={handleTogglePin}
                 aria-label={quote.isPinned ? 'Unpin quote' : 'Pin quote'}
                 aria-pressed={quote.isPinned}
-                className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${
                   quote.isPinned
-                    ? 'border-amber-500/40 bg-amber-500/15 text-amber-400'
-                    : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-amber-400'
+                    ? 'border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                    : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-amber-500 dark:hover:text-amber-400'
                 }`}
               >
                 <Pin className="h-3.5 w-3.5" aria-hidden="true" />
@@ -218,12 +206,12 @@ export function DailyQuoteCard({ onOpenVault, conceptKey }: DailyQuoteCardProps)
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-terminal-border pt-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-terminal-border/70 pt-4">
             <button
               type="button"
               onClick={() => setShowLessonNote((prev) => !prev)}
               aria-expanded={showLessonNote}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 transition-colors hover:text-amber-500 dark:text-amber-400 dark:hover:text-amber-300"
             >
               {showLessonNote ? (
                 <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
@@ -237,7 +225,7 @@ export function DailyQuoteCard({ onOpenVault, conceptKey }: DailyQuoteCardProps)
               <button
                 type="button"
                 onClick={onOpenVault}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-amber-500/35 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-400 transition-colors hover:bg-amber-500/20"
+                className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1.5 text-xs font-semibold text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
               >
                 <Flame className="h-3.5 w-3.5" aria-hidden="true" />
                 Open Mindset Vault
@@ -246,7 +234,7 @@ export function DailyQuoteCard({ onOpenVault, conceptKey }: DailyQuoteCardProps)
           </div>
 
           {showLessonNote && (
-            <p className="rounded-xl border border-amber-500/25 bg-amber-500/5 px-3.5 py-2.5 text-xs leading-relaxed text-terminal-text">
+            <p className="rounded-2xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-xs leading-relaxed text-terminal-text">
               {quote.tradingLessonNote}
             </p>
           )}

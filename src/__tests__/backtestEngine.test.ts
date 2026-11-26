@@ -215,8 +215,32 @@ describe('market catalog and market proxy security', () => {
 
   it('validates market query parameters', () => {
     expect(MarketOhlcvQuerySchema.safeParse({ symbol: 'BTCUSDT', timeframe: '1h' }).success).toBe(true);
+    expect(
+      MarketOhlcvQuerySchema.safeParse({
+        symbol: 'BTCUSDT',
+        timeframe: '1d',
+        startDate: '2026-01-01',
+        endDate: '2026-03-01',
+        refresh: '1',
+      }).success,
+    ).toBe(true);
+    expect(
+      MarketOhlcvQuerySchema.safeParse({ symbol: 'BTCUSDT', startDate: '01-01-2026' }).success,
+    ).toBe(false);
     expect(MarketOhlcvQuerySchema.safeParse({ symbol: '../etc', timeframe: '1h' }).success).toBe(false);
     expect(MarketOhlcvQuerySchema.safeParse({ symbol: 'AAPL', timeframe: '2m' }).success).toBe(false);
     expect(MarketOhlcvQuerySchema.safeParse({ symbol: 'AAPL', limit: 5000 }).success).toBe(false);
+  });
+
+  it('anchors offline candles to requested startDate and endDate', () => {
+    const ranged = generateOfflineMarketCandles('BTCUSDT', '1d', 60, {
+      startDate: '2026-01-01',
+      endDate: '2026-01-31',
+    });
+    expect(ranged.length).toBeGreaterThanOrEqual(2);
+    const startSec = Date.UTC(2026, 0, 1, 0, 0, 0) / 1000;
+    const endSec = Date.UTC(2026, 0, 31, 23, 59, 59) / 1000;
+    expect(ranged[0].time).toBeGreaterThanOrEqual(startSec);
+    expect(ranged[ranged.length - 1].time).toBeLessThanOrEqual(endSec);
   });
 });

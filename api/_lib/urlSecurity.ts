@@ -298,6 +298,17 @@ export const ExplainDifferentlyRequestSchema = z.object({
 
 export const MarketTimeframeSchema = z.enum(['5m', '15m', '1h', '4h', '1d']);
 
+function isValidIsoCalendarDate(value: string): boolean {
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}
+
+const IsoDateParamSchema = z
+  .string()
+  .trim()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD format')
+  .refine(isValidIsoCalendarDate, 'Invalid calendar date');
+
 export const MarketOhlcvQuerySchema = z.object({
   symbol: z
     .string()
@@ -308,6 +319,9 @@ export const MarketOhlcvQuerySchema = z.object({
     .refine((val) => !val.includes('..'), 'Invalid market symbol'),
   timeframe: MarketTimeframeSchema.default('15m'),
   limit: z.coerce.number().int().min(50).max(500).default(240),
+  startDate: IsoDateParamSchema.optional(),
+  endDate: IsoDateParamSchema.optional(),
+  refresh: z.enum(['0', '1', 'true', 'false']).optional(),
 });
 
 export type MarketTimeframe = z.infer<typeof MarketTimeframeSchema>;

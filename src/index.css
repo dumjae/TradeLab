@@ -3,35 +3,90 @@
 @tailwind utilities;
 
 :root {
-  --tl-bg: #f8fafc;
+  --tl-bg: #f6f8fb;
   --tl-surface: #ffffff;
-  --tl-elevated: #f1f5f9;
+  --tl-elevated: #eef2f7;
   --tl-border: #e2e8f0;
   --tl-text: #0f172a;
-  --tl-muted: #475569;
+  --tl-muted: #64748b;
+  color-scheme: light;
 }
 
 .dark {
-  --tl-bg: #080c11;
-  --tl-surface: #0f151e;
-  --tl-elevated: #161f2c;
-  --tl-border: #233044;
+  --tl-bg: #0b0f17;
+  --tl-surface: #111722;
+  --tl-elevated: #172030;
+  --tl-border: #1e293b;
   --tl-text: #f1f5f9;
   --tl-muted: #94a3b8;
+  color-scheme: dark;
 }
 
 @layer base {
+  html,
+  body {
+    overflow-x: hidden;
+    background-color: var(--tl-bg);
+    color: var(--tl-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
   * {
     border-color: var(--tl-border);
   }
 
   body {
-    background-color: var(--tl-bg);
-    color: var(--tl-text);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    transition: background-color 180ms ease, color 180ms ease;
+  }
+
+  /* Subtle, clean scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 116, 139, 0.35) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.32);
+    border-radius: 9999px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(100, 116, 139, 0.5);
   }
 }
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

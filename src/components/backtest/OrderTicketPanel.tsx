@@ -104,14 +104,14 @@ export function OrderTicketPanel({
   const formatPrice = (value: number) => value.toFixed(decimals);
 
   return (
-    <div className="space-y-4 rounded-xl border border-terminal-border bg-terminal-surface p-4">
+    <div className="space-y-5 rounded-3xl border border-terminal-border/90 bg-terminal-surface p-5 shadow-sm">
       <h2 className="flex items-center gap-2 text-sm font-semibold text-terminal-text">
-        <Crosshair className="h-4 w-4 text-emerald-400" aria-hidden="true" />
+        <Crosshair className="h-4 w-4 text-emerald-500 dark:text-emerald-400" aria-hidden="true" />
         Order Ticket
       </h2>
 
       <div className="grid grid-cols-2 gap-3">
-        <div>
+        <div className="min-w-0">
           <label
             htmlFor="backtest-starting-balance"
             className="block text-[11px] font-medium text-terminal-muted"
@@ -128,10 +128,10 @@ export function OrderTicketPanel({
             value={startingBalance}
             disabled={settingsLocked}
             onChange={(event) => onStartingBalanceChange(Number(event.target.value))}
-            className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text focus:border-emerald-500 focus:outline-none disabled:opacity-60"
+            className="mt-1.5 w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 font-mono text-xs text-terminal-text focus:border-emerald-500 focus:outline-none disabled:opacity-60"
           />
         </div>
-        <div>
+        <div className="min-w-0">
           <label
             htmlFor="backtest-risk-percent"
             className="block text-[11px] font-medium text-terminal-muted"
@@ -148,18 +148,18 @@ export function OrderTicketPanel({
             step={0.1}
             value={riskPercent}
             onChange={(event) => onRiskPercentChange(Number(event.target.value))}
-            className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+            className="mt-1.5 w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 font-mono text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
           />
-          <div className="mt-1.5 flex gap-1">
+          <div className="mt-2 flex flex-wrap gap-1.5">
             {RISK_PRESETS.map((preset) => (
               <button
                 key={preset}
                 type="button"
                 onClick={() => onRiskPercentChange(preset)}
-                className={`rounded border px-2 py-0.5 font-mono text-[11px] ${
+                className={`rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-medium transition-colors ${
                   riskPercent === preset
                     ? 'border-emerald-500 bg-emerald-500 text-slate-950'
-                    : 'border-terminal-border text-terminal-muted hover:text-terminal-text'
+                    : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
                 }`}
               >
                 {preset}%
@@ -169,16 +169,16 @@ export function OrderTicketPanel({
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3 border-t border-terminal-border pt-3">
+      <form onSubmit={handleSubmit} className="space-y-3.5 border-t border-terminal-border/70 pt-4">
         <div className="grid grid-cols-2 gap-2" role="group" aria-label="Order direction">
           <button
             type="button"
             aria-pressed={direction === 'long'}
             onClick={() => setDirection('long')}
-            className={`inline-flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold ${
+            className={`inline-flex items-center justify-center gap-1.5 rounded-2xl border px-3 py-2.5 text-xs font-semibold transition-colors ${
               direction === 'long'
-                ? 'border-emerald-500 bg-emerald-500 text-slate-950'
-                : 'border-terminal-border text-terminal-muted hover:text-terminal-text'
+                ? 'border-emerald-500 bg-emerald-500 text-slate-950 shadow-sm'
+                : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
             }`}
           >
             <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -188,10 +188,10 @@ export function OrderTicketPanel({
             type="button"
             aria-pressed={direction === 'short'}
             onClick={() => setDirection('short')}
-            className={`inline-flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold ${
+            className={`inline-flex items-center justify-center gap-1.5 rounded-2xl border px-3 py-2.5 text-xs font-semibold transition-colors ${
               direction === 'short'
-                ? 'border-rose-500 bg-rose-500 text-slate-950'
-                : 'border-terminal-border text-terminal-muted hover:text-terminal-text'
+                ? 'border-rose-500 bg-rose-500 text-slate-950 shadow-sm'
+                : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
             }`}
           >
             <ArrowDownRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -205,7 +205,7 @@ export function OrderTicketPanel({
         </p>
 
         <div className="grid grid-cols-2 gap-3">
-          <div>
+          <div className="min-w-0">
             <label
               htmlFor="backtest-stop-loss"
               className="block text-[11px] font-medium text-terminal-muted"
@@ -221,10 +221,10 @@ export function OrderTicketPanel({
               value={slText}
               onChange={(event) => setSlText(event.target.value)}
               placeholder={direction === 'long' ? 'Below entry' : 'Above entry'}
-              className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text focus:border-rose-500 focus:outline-none"
+              className="mt-1.5 w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 font-mono text-xs text-terminal-text focus:border-rose-500 focus:outline-none"
             />
           </div>
-          <div>
+          <div className="min-w-0">
             <label
               htmlFor="backtest-take-profit"
               className="block text-[11px] font-medium text-terminal-muted"
@@ -240,15 +240,15 @@ export function OrderTicketPanel({
               value={tpText}
               onChange={(event) => setTpText(event.target.value)}
               placeholder={direction === 'long' ? 'Above entry' : 'Below entry'}
-              className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+              className="mt-1.5 w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 font-mono text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
             />
-            <div className="mt-1.5 flex gap-1">
+            <div className="mt-2 flex gap-1.5">
               {RR_PRESETS.map((ratio) => (
                 <button
                   key={ratio}
                   type="button"
                   onClick={() => applyRiskReward(ratio)}
-                  className="rounded border border-terminal-border px-2 py-0.5 font-mono text-[11px] text-terminal-muted hover:text-terminal-text"
+                  className="rounded-full border border-terminal-border bg-terminal-bg px-2.5 py-0.5 font-mono text-[11px] text-terminal-muted transition-colors hover:text-terminal-text"
                 >
                   1:{ratio}
                 </button>
@@ -270,7 +270,7 @@ export function OrderTicketPanel({
             aria-label="Setup tag"
             value={setupTag}
             onChange={(event) => setSetupTag(event.target.value)}
-            className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+            className="mt-1.5 w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
           >
             {SETUP_TAGS.map((tag) => (
               <option key={tag} value={tag}>
@@ -280,57 +280,69 @@ export function OrderTicketPanel({
           </select>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-[11px] tabular-nums">
+        <div className="grid grid-cols-2 gap-2 rounded-2xl border border-terminal-border/80 bg-terminal-bg/80 px-3.5 py-2.5 font-mono text-[11px] tabular-nums">
           <span className="text-terminal-muted">
-            Risk: <strong className="text-amber-400">${sizing ? sizing.riskAmount.toFixed(2) : '—'}</strong>
+            Risk:{' '}
+            <strong className="text-amber-600 dark:text-amber-400">
+              ${sizing ? sizing.riskAmount.toFixed(2) : '—'}
+            </strong>
           </span>
           <span className="text-terminal-muted">
-            Units: <strong className="text-terminal-text">{sizing ? sizing.units.toFixed(4) : '—'}</strong>
+            Units:{' '}
+            <strong className="text-terminal-text">
+              {sizing ? sizing.units.toFixed(4) : '—'}
+            </strong>
           </span>
         </div>
 
         {error && (
-          <p role="alert" className="text-[11px] text-rose-400">
+          <p role="alert" className="text-xs text-rose-500 dark:text-rose-400">
             {error}
           </p>
         )}
 
         <button
           type="submit"
-          className="w-full rounded-lg bg-emerald-500 px-3 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400"
+          className="w-full rounded-2xl bg-emerald-500 px-4 py-2.5 text-xs font-semibold text-slate-950 shadow-sm transition-all hover:bg-emerald-400 active:scale-[0.99]"
         >
           Execute Market Order
         </button>
       </form>
 
-      <div className="space-y-2 border-t border-terminal-border pt-3">
+      <div className="space-y-2.5 border-t border-terminal-border/70 pt-4">
         <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-terminal-muted">
           Open Positions ({openPositions.length})
         </h3>
         {openPositions.length === 0 ? (
-          <p className="text-[11px] text-terminal-muted">No open positions.</p>
+          <p className="text-xs text-terminal-muted">No open positions.</p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="space-y-2.5">
             {openPositions.map((position) => {
               const move =
-                position.direction === 'long' ? lastPrice - position.entryPrice : position.entryPrice - lastPrice;
+                position.direction === 'long'
+                  ? lastPrice - position.entryPrice
+                  : position.entryPrice - lastPrice;
               const floating = move * position.units;
               return (
                 <li
                   key={position.id}
-                  className="space-y-1.5 rounded-lg border border-terminal-border bg-terminal-bg p-2.5 text-[11px]"
+                  className="space-y-2 rounded-2xl border border-terminal-border/80 bg-terminal-bg/80 p-3 text-[11px]"
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-2">
                     <span
                       className={`font-semibold uppercase ${
-                        position.direction === 'long' ? 'text-emerald-400' : 'text-rose-400'
+                        position.direction === 'long'
+                          ? 'text-emerald-600 dark:text-emerald-400'
+                          : 'text-rose-500 dark:text-rose-400'
                       }`}
                     >
                       {position.direction} · {position.setupTag || 'Untagged'}
                     </span>
                     <span
-                      className={`font-mono tabular-nums ${
-                        floating >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                      className={`font-mono font-semibold tabular-nums ${
+                        floating >= 0
+                          ? 'text-emerald-600 dark:text-emerald-400'
+                          : 'text-rose-500 dark:text-rose-400'
                       }`}
                     >
                       {floating >= 0 ? '+' : ''}${floating.toFixed(2)}
@@ -340,19 +352,19 @@ export function OrderTicketPanel({
                     E {formatPrice(position.entryPrice)} · SL {formatPrice(position.stopLoss)} · TP{' '}
                     {position.takeProfit !== null ? formatPrice(position.takeProfit) : '—'}
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <button
                       type="button"
                       onClick={() => onBreakeven(position.id)}
                       disabled={position.movedToBreakeven}
-                      className="rounded border border-amber-500/40 px-2 py-1 font-semibold text-amber-400 hover:bg-amber-500/10 disabled:opacity-50"
+                      className="rounded-full border border-amber-500/35 px-3 py-1 font-semibold text-amber-600 transition-colors hover:bg-amber-500/10 disabled:opacity-50 dark:text-amber-400"
                     >
                       Move SL to Breakeven
                     </button>
                     <button
                       type="button"
                       onClick={() => onClose(position.id)}
-                      className="inline-flex items-center gap-1 rounded border border-terminal-border px-2 py-1 font-semibold text-terminal-text hover:border-rose-500/50"
+                      className="inline-flex items-center gap-1 rounded-full border border-terminal-border px-3 py-1 font-semibold text-terminal-text transition-colors hover:border-rose-500/50"
                     >
                       <X className="h-3 w-3" aria-hidden="true" />
                       Close at Market

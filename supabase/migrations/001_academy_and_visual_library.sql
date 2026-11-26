@@ -40,10 +40,14 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email TEXT,
   display_name TEXT NOT NULL DEFAULT '',
+  avatar_url TEXT,
   role TEXT NOT NULL DEFAULT 'learner' CHECK (role IN ('learner', 'admin')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS avatar_url TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
 
@@ -68,12 +72,18 @@ $$;
 CREATE OR REPLACE FUNCTION public.prevent_profile_role_escalation()
 RETURNS TRIGGER
 LANGUAGE plpgsql
-SECURITY DEFINER
+SECURITY INVOKER
 SET search_path = public
 AS $$
 BEGIN
-  IF NEW.role IS DISTINCT FROM OLD.role AND NOT public.is_admin() THEN
-    RAISE EXCEPTION 'Only administrators may change profile roles';
+  IF NEW.role IS DISTINCT FROM OLD.role THEN
+    IF NOT (
+      current_user IN ('postgres', 'supabase_admin', 'service_role')
+      OR COALESCE(auth.role(), '') = 'service_role'
+      OR public.is_admin()
+    ) THEN
+      RAISE EXCEPTION 'Only administrators may change profile roles';
+    END IF;
   END IF;
   RETURN NEW;
 END;
@@ -85,15 +95,38 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+DECLARE
+  v_display_name TEXT;
+  v_avatar_url TEXT;
 BEGIN
-  INSERT INTO public.profiles (id, email, display_name, role)
+  v_display_name := COALESCE(
+    NULLIF(trim(NEW.raw_user_meta_data ->> 'full_name'), ''),
+    NULLIF(trim(NEW.raw_user_meta_data ->> 'name'), ''),
+    NULLIF(trim(NEW.raw_user_meta_data ->> 'display_name'), ''),
+    NULLIF(split_part(COALESCE(NEW.email, ''), '@', 1), ''),
+    'Trader'
+  );
+
+  v_avatar_url := COALESCE(
+    NULLIF(trim(NEW.raw_user_meta_data ->> 'avatar_url'), ''),
+    NULLIF(trim(NEW.raw_user_meta_data ->> 'picture'), '')
+  );
+
+  INSERT INTO public.profiles (id, email, display_name, avatar_url, role)
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data ->> 'display_name', split_part(COALESCE(NEW.email, ''), '@', 1)),
+    v_display_name,
+    v_avatar_url,
     'learner'
   )
-  ON CONFLICT (id) DO NOTHING;
+  ON CONFLICT (id) DO UPDATE
+  SET
+    email = COALESCE(NULLIF(trim(public.profiles.email), ''), EXCLUDED.email),
+    display_name = COALESCE(NULLIF(trim(public.profiles.display_name), ''), EXCLUDED.display_name),
+    avatar_url = COALESCE(NULLIF(trim(public.profiles.avatar_url), ''), EXCLUDED.avatar_url),
+    updated_at = now();
+
   RETURN NEW;
 END;
 $$;
@@ -349,11 +382,13 @@ ALTER TABLE public.user_learning_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_difficult_concepts ENABLE ROW LEVEL SECURITY;
 
 -- profiles
+DROP POLICY IF EXISTS "profiles_select_own_or_admin" ON public.profiles;
 CREATE POLICY profiles_select_own_or_admin
   ON public.profiles
   FOR SELECT
   USING (auth.uid() = id OR public.is_admin());
 
+DROP POLICY IF EXISTS "profiles_update_own_or_admin" ON public.profiles;
 CREATE POLICY profiles_update_own_or_admin
   ON public.profiles
   FOR UPDATE
@@ -364,50 +399,59 @@ CREATE POLICY profiles_update_own_or_admin
   );
 
 -- lessons (publicly readable; admin writes)
+DROP POLICY IF EXISTS "lessons_select_public" ON public.lessons;
 CREATE POLICY lessons_select_public
   ON public.lessons
   FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "lessons_admin_insert" ON public.lessons;
 CREATE POLICY lessons_admin_insert
   ON public.lessons
   FOR INSERT
   WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "lessons_admin_update" ON public.lessons;
 CREATE POLICY lessons_admin_update
   ON public.lessons
   FOR UPDATE
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "lessons_admin_delete" ON public.lessons;
 CREATE POLICY lessons_admin_delete
   ON public.lessons
   FOR DELETE
   USING (public.is_admin());
 
 -- educational_resources (learners see ONLY published; admins manage all)
+DROP POLICY IF EXISTS "educational_resources_select_published_or_admin" ON public.educational_resources;
 CREATE POLICY educational_resources_select_published_or_admin
   ON public.educational_resources
   FOR SELECT
   USING (verification_status = 'published' OR public.is_admin());
 
+DROP POLICY IF EXISTS "educational_resources_admin_insert" ON public.educational_resources;
 CREATE POLICY educational_resources_admin_insert
   ON public.educational_resources
   FOR INSERT
   WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "educational_resources_admin_update" ON public.educational_resources;
 CREATE POLICY educational_resources_admin_update
   ON public.educational_resources
   FOR UPDATE
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "educational_resources_admin_delete" ON public.educational_resources;
 CREATE POLICY educational_resources_admin_delete
   ON public.educational_resources
   FOR DELETE
   USING (public.is_admin());
 
 -- resource_segments (learners see segments only for published resources)
+DROP POLICY IF EXISTS "resource_segments_select_published_or_admin" ON public.resource_segments;
 CREATE POLICY resource_segments_select_published_or_admin
   ON public.resource_segments
   FOR SELECT
@@ -421,23 +465,27 @@ CREATE POLICY resource_segments_select_published_or_admin
     )
   );
 
+DROP POLICY IF EXISTS "resource_segments_admin_insert" ON public.resource_segments;
 CREATE POLICY resource_segments_admin_insert
   ON public.resource_segments
   FOR INSERT
   WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "resource_segments_admin_update" ON public.resource_segments;
 CREATE POLICY resource_segments_admin_update
   ON public.resource_segments
   FOR UPDATE
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "resource_segments_admin_delete" ON public.resource_segments;
 CREATE POLICY resource_segments_admin_delete
   ON public.resource_segments
   FOR DELETE
   USING (public.is_admin());
 
 -- lesson_resources (learners see mappings only for published resources)
+DROP POLICY IF EXISTS "lesson_resources_select_published_or_admin" ON public.lesson_resources;
 CREATE POLICY lesson_resources_select_published_or_admin
   ON public.lesson_resources
   FOR SELECT
@@ -451,23 +499,27 @@ CREATE POLICY lesson_resources_select_published_or_admin
     )
   );
 
+DROP POLICY IF EXISTS "lesson_resources_admin_insert" ON public.lesson_resources;
 CREATE POLICY lesson_resources_admin_insert
   ON public.lesson_resources
   FOR INSERT
   WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "lesson_resources_admin_update" ON public.lesson_resources;
 CREATE POLICY lesson_resources_admin_update
   ON public.lesson_resources
   FOR UPDATE
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "lesson_resources_admin_delete" ON public.lesson_resources;
 CREATE POLICY lesson_resources_admin_delete
   ON public.lesson_resources
   FOR DELETE
   USING (public.is_admin());
 
 -- resource_discovery_cache (strictly admin / service-role only)
+DROP POLICY IF EXISTS "discovery_cache_admin_all" ON public.resource_discovery_cache;
 CREATE POLICY discovery_cache_admin_all
   ON public.resource_discovery_cache
   FOR ALL
@@ -475,66 +527,78 @@ CREATE POLICY discovery_cache_admin_all
   WITH CHECK (public.is_admin());
 
 -- user_saved_resources (strictly private to auth.uid() = user_id)
+DROP POLICY IF EXISTS "user_saved_resources_select_own" ON public.user_saved_resources;
 CREATE POLICY user_saved_resources_select_own
   ON public.user_saved_resources
   FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "user_saved_resources_insert_own" ON public.user_saved_resources;
 CREATE POLICY user_saved_resources_insert_own
   ON public.user_saved_resources
   FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "user_saved_resources_update_own" ON public.user_saved_resources;
 CREATE POLICY user_saved_resources_update_own
   ON public.user_saved_resources
   FOR UPDATE
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "user_saved_resources_delete_own" ON public.user_saved_resources;
 CREATE POLICY user_saved_resources_delete_own
   ON public.user_saved_resources
   FOR DELETE
   USING (auth.uid() = user_id);
 
 -- user_learning_history (strictly private to auth.uid() = user_id)
+DROP POLICY IF EXISTS "user_learning_history_select_own" ON public.user_learning_history;
 CREATE POLICY user_learning_history_select_own
   ON public.user_learning_history
   FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "user_learning_history_insert_own" ON public.user_learning_history;
 CREATE POLICY user_learning_history_insert_own
   ON public.user_learning_history
   FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "user_learning_history_update_own" ON public.user_learning_history;
 CREATE POLICY user_learning_history_update_own
   ON public.user_learning_history
   FOR UPDATE
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "user_learning_history_delete_own" ON public.user_learning_history;
 CREATE POLICY user_learning_history_delete_own
   ON public.user_learning_history
   FOR DELETE
   USING (auth.uid() = user_id);
 
 -- user_difficult_concepts (strictly private to auth.uid() = user_id)
+DROP POLICY IF EXISTS "user_difficult_concepts_select_own" ON public.user_difficult_concepts;
 CREATE POLICY user_difficult_concepts_select_own
   ON public.user_difficult_concepts
   FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "user_difficult_concepts_insert_own" ON public.user_difficult_concepts;
 CREATE POLICY user_difficult_concepts_insert_own
   ON public.user_difficult_concepts
   FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "user_difficult_concepts_update_own" ON public.user_difficult_concepts;
 CREATE POLICY user_difficult_concepts_update_own
   ON public.user_difficult_concepts
   FOR UPDATE
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "user_difficult_concepts_delete_own" ON public.user_difficult_concepts;
 CREATE POLICY user_difficult_concepts_delete_own
   ON public.user_difficult_concepts
   FOR DELETE

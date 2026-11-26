@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { LineChart } from 'lucide-react';
-import { AssetSelectorBar, type SelectableAssetClass } from '../components/backtest/AssetSelectorBar';
+import {
+  AssetSelectorBar,
+  type DateRangePreset,
+  type SelectableAssetClass,
+} from '../components/backtest/AssetSelectorBar';
 import { BacktestChartCanvas } from '../components/backtest/BacktestChartCanvas';
 import { BacktestMetricsPanel } from '../components/backtest/BacktestMetricsPanel';
 import { OrderTicketPanel } from '../components/backtest/OrderTicketPanel';
@@ -113,10 +117,43 @@ function defaultStartIndex(length: number): number {
   return Math.max(0, Math.min(Math.max(40, Math.floor(length * 0.3)), length - 2));
 }
 
+function formatLocalIsoDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function computePresetDates(preset: DateRangePreset): { startDate: string; endDate: string } {
+  if (preset === 'latest') {
+    return { startDate: '', endDate: '' };
+  }
+  const daysByPreset: Record<Exclude<DateRangePreset, 'latest'>, number> = {
+    '7d': 7,
+    '30d': 30,
+    '90d': 90,
+    '1y': 365,
+  };
+  const end = new Date();
+  const start = new Date(end);
+  start.setDate(end.getDate() - daysByPreset[preset]);
+  return {
+    startDate: formatLocalIsoDate(start),
+    endDate: formatLocalIsoDate(end),
+  };
+}
+
 export function BacktestPage() {
   const [assetClass, setAssetClass] = useState<SelectableAssetClass>('crypto');
   const [symbol, setSymbol] = useState<string>('BTCUSDT');
   const [timeframe, setTimeframe] = useState<MarketTimeframe>('15m');
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  const [datePreset, setDatePreset] = useState<DateRangePreset | null>('latest');
+  const [refreshTrigger, setRefreshTrigger] = useState<{ count: number; force: boolean }>({
+    count: 0,
+    force: false,
+  });
   const [market, setMarket] = useState<MarketCandlesResponse | null>(null);
   const [csvMarket, setCsvMarket] = useState<MarketCandlesResponse | null>(null);
   const [csvError, setCsvError] = useState<string | null>(null);
@@ -135,13 +172,26 @@ export function BacktestPage() {
     stepped: false,
   });
 
+  const dateError =
+    startDate && endDate && startDate > endDate
+      ? 'Start date must be on or before the end date.'
+      : null;
+
   const active = csvMarket ?? market;
   const candles = useMemo(() => active?.candles ?? [], [active]);
 
   useEffect(() => {
+    if (dateError) {
+      return undefined;
+    }
+
     let cancelled = false;
     setLoading(true);
-    fetchMarketCandles(symbol, timeframe)
+    fetchMarketCandles(symbol, timeframe, 240, {
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+      forceRefresh: refreshTrigger.force,
+    })
       .then((response) => {
         if (!cancelled) setMarket(response);
       })
@@ -154,7 +204,7 @@ export function BacktestPage() {
     return () => {
       cancelled = true;
     };
-  }, [symbol, timeframe]);
+  }, [symbol, timeframe, startDate, endDate, dateError, refreshTrigger]);
 
   useEffect(() => {
     setPlaying(false);
@@ -192,10 +242,15 @@ export function BacktestPage() {
   const settingsLocked =
     state.stepped || state.openPositions.length > 0 || state.trades.length > 0;
 
+  const clearForceFlag = () => {
+    setRefreshTrigger((prev) => (prev.force ? { count: prev.count, force: false } : prev));
+  };
+
   const handleAssetClass = (next: SelectableAssetClass) => {
     const first = MARKET_SYMBOLS.find((item) => item.assetClass === next);
     setCsvMarket(null);
     setCsvError(null);
+    clearForceFlag();
     setAssetClass(next);
     if (first) setSymbol(first.symbol);
   };
@@ -203,13 +258,47 @@ export function BacktestPage() {
   const handleSymbol = (next: string) => {
     setCsvMarket(null);
     setCsvError(null);
+    clearForceFlag();
     setSymbol(next);
   };
 
   const handleTimeframe = (next: MarketTimeframe) => {
     setCsvMarket(null);
     setCsvError(null);
+    clearForceFlag();
     setTimeframe(next);
+  };
+
+  const handleDatePresetChange = (preset: DateRangePreset) => {
+    const range = computePresetDates(preset);
+    setCsvMarket(null);
+    setCsvError(null);
+    clearForceFlag();
+    setDatePreset(preset);
+    setStartDate(range.startDate);
+    setEndDate(range.endDate);
+  };
+
+  const handleStartDateChange = (value: string) => {
+    setCsvMarket(null);
+    setCsvError(null);
+    clearForceFlag();
+    setDatePreset(!value && !endDate ? 'latest' : null);
+    setStartDate(value);
+  };
+
+  const handleEndDateChange = (value: string) => {
+    setCsvMarket(null);
+    setCsvError(null);
+    clearForceFlag();
+    setDatePreset(!startDate && !value ? 'latest' : null);
+    setEndDate(value);
+  };
+
+  const handleRefreshData = () => {
+    setCsvMarket(null);
+    setCsvError(null);
+    setRefreshTrigger((prev) => ({ count: prev.count + 1, force: true }));
   };
 
   const handleCsvFile = async (file: File) => {
@@ -234,7 +323,7 @@ export function BacktestPage() {
       dataSource: 'uploaded_csv',
       candles: parsed.candles,
       fetchedAt: new Date().toISOString(),
-      note: `Loaded ${parsed.candles.length} candles from ${file.name}. Pick a symbol or timeframe to return to market data.`,
+      note: `Loaded ${parsed.candles.length} candles from ${file.name}. Pick a symbol or click Refresh Data to return to market feeds.`,
     });
   };
 
@@ -306,16 +395,18 @@ export function BacktestPage() {
   const maxStart = Math.max(1, Math.floor(candles.length * 0.8));
 
   return (
-    <div className="mx-auto max-w-[1400px] space-y-4">
-      <header className="flex items-center gap-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/40 bg-emerald-500/15 text-emerald-400">
-          <LineChart className="h-4 w-4" aria-hidden="true" />
+    <div className="mx-auto max-w-[1400px] space-y-5">
+      <header className="flex items-start gap-3.5 px-1">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-500 dark:text-emerald-400">
+          <LineChart className="h-5 w-5" aria-hidden="true" />
         </span>
-        <div>
-          <h1 className="text-lg font-bold text-terminal-text">Market Backtester</h1>
-          <p className="text-xs text-terminal-muted">
-            Replay Crypto, Forex, Indices, Stocks and Commodities bar by bar. Future candles stay
-            hidden; SL fills first if SL and TP touch in one candle.
+        <div className="min-w-0">
+          <h1 className="text-xl font-semibold tracking-tight text-terminal-text">
+            Market Backtester
+          </h1>
+          <p className="mt-0.5 text-xs leading-relaxed text-terminal-muted">
+            Pick any market, timeframe, or historical date window and replay bar by bar with hidden
+            future candles.
           </p>
         </div>
       </header>
@@ -326,24 +417,35 @@ export function BacktestPage() {
         timeframe={timeframe}
         dataSource={active?.dataSource ?? null}
         dataNote={active?.note}
+        fetchedAt={active?.fetchedAt ?? null}
         loading={loading}
         csvError={csvError}
+        startDate={startDate}
+        endDate={endDate}
+        datePreset={datePreset}
+        dateError={dateError}
         onAssetClassChange={handleAssetClass}
         onSymbolChange={handleSymbol}
         onTimeframeChange={handleTimeframe}
+        onStartDateChange={handleStartDateChange}
+        onEndDateChange={handleEndDateChange}
+        onDatePresetChange={handleDatePresetChange}
+        onRefresh={handleRefreshData}
         onCsvFile={(file) => void handleCsvFile(file)}
       />
 
       {candles.length === 0 ? (
         <div
           role="status"
-          className="rounded-xl border border-dashed border-terminal-border bg-terminal-surface p-10 text-center text-xs text-terminal-muted"
+          className="rounded-3xl border border-dashed border-terminal-border bg-terminal-surface p-10 text-center text-xs text-terminal-muted"
         >
-          {loading ? 'Loading market candles…' : 'No candles available. Try another symbol or upload a CSV.'}
+          {loading
+            ? 'Loading market candles…'
+            : 'No candles available for this window. Try another date range, symbol, or upload a CSV.'}
         </div>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="min-w-0 space-y-4">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_350px]">
+          <div className="min-w-0 space-y-5">
             <BacktestChartCanvas
               candles={candles}
               replayIndex={state.replayIndex}

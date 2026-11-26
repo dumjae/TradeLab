@@ -23,6 +23,7 @@ export const isSupabaseConfigured: boolean = Boolean(hasValidUrl && rawSupabaseA
 export const supabase: SupabaseClient | null = isSupabaseConfigured
   ? createClient(rawSupabaseUrl, rawSupabaseAnonKey, {
       auth: {
+        flowType: 'pkce',
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,

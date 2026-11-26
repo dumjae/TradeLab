@@ -50,6 +50,45 @@ const YAHOO_CONFIG: Record<MarketTimeframe, { interval: string; range: string; a
   '1d': { interval: '1d', range: '2y' },
 };
 
+const TIMEFRAME_SECONDS: Record<MarketTimeframe, number> = {
+  '5m': 300,
+  '15m': 900,
+  '1h': 3600,
+  '4h': 14400,
+  '1d': 86400,
+};
+
+interface DateWindow {
+  startDate?: string;
+  endDate?: string;
+  startTimeSec?: number;
+  endTimeSec?: number;
+}
+
+function buildDateWindow(startDate?: string, endDate?: string): DateWindow {
+  const startMs = startDate ? Date.parse(`${startDate}T00:00:00Z`) : Number.NaN;
+  const endMs = endDate ? Date.parse(`${endDate}T23:59:59Z`) : Number.NaN;
+
+  return {
+    startDate,
+    endDate,
+    startTimeSec: Number.isFinite(startMs) && startMs > 0 ? Math.floor(startMs / 1000) : undefined,
+    endTimeSec: Number.isFinite(endMs) && endMs > 0 ? Math.floor(endMs / 1000) : undefined,
+  };
+}
+
+function getOptionalQueryParam(
+  query: Record<string, string | string[] | undefined> | undefined,
+  key: string,
+): string | undefined {
+  const value = getSingleQueryParam(query, key);
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
 function getSingleQueryParam(
   query: Record<string, string | string[] | undefined> | undefined,
   key: string,
@@ -123,8 +162,14 @@ function setCachedResponse(cacheKey: string, payload: MarketCandlesResponse): vo
   });
 }
 
-function normalizeAndSortCandles(rawCandles: CandlePoint[], limit: number): CandlePoint[] {
+function normalizeAndSortCandles(
+  rawCandles: CandlePoint[],
+  limit: number,
+  dateWindow?: DateWindow,
+): CandlePoint[] {
   const byTime = new Map<number, CandlePoint>();
+  const minTime = dateWindow?.startTimeSec;
+  const maxTime = dateWindow?.endTimeSec;
 
   for (const bar of rawCandles) {
     if (
@@ -149,6 +194,13 @@ function normalizeAndSortCandles(rawCandles: CandlePoint[], limit: number): Cand
     }
 
     const time = Math.floor(bar.time);
+    if (minTime !== undefined && time < minTime) {
+      continue;
+    }
+    if (maxTime !== undefined && time > maxTime) {
+      continue;
+    }
+
     const volume = Number.isFinite(bar.volume) && bar.volume >= 0 ? bar.volume : 0;
 
     byTime.set(time, {
@@ -165,7 +217,11 @@ function normalizeAndSortCandles(rawCandles: CandlePoint[], limit: number): Cand
   return sorted.length > limit ? sorted.slice(sorted.length - limit) : sorted;
 }
 
-function aggregateCandlesTo4h(hourlyCandles: CandlePoint[], limit: number): CandlePoint[] {
+function aggregateCandlesTo4h(
+  hourlyCandles: CandlePoint[],
+  limit: number,
+  dateWindow?: DateWindow,
+): CandlePoint[] {
   const bucketSeconds = 14400;
   const buckets = new Map<number, CandlePoint>();
 
@@ -189,18 +245,26 @@ function aggregateCandlesTo4h(hourlyCandles: CandlePoint[], limit: number): Cand
     }
   }
 
-  return normalizeAndSortCandles(Array.from(buckets.values()), limit);
+  return normalizeAndSortCandles(Array.from(buckets.values()), limit, dateWindow);
 }
 
 async function fetchBinanceCandles(
   binanceSymbol: string,
   timeframe: MarketTimeframe,
   limit: number,
+  dateWindow: DateWindow,
 ): Promise<CandlePoint[]> {
   const url = new URL('https://api.binance.com/api/v3/klines');
   url.searchParams.set('symbol', binanceSymbol);
   url.searchParams.set('interval', timeframe);
   url.searchParams.set('limit', String(limit));
+
+  if (dateWindow.startTimeSec !== undefined) {
+    url.searchParams.set('startTime', String(dateWindow.startTimeSec * 1000));
+  }
+  if (dateWindow.endTimeSec !== undefined) {
+    url.searchParams.set('endTime', String(dateWindow.endTimeSec * 1000 + 999));
+  }
 
   const response = await safeServerFetch(url.toString(), {
     headers: { Accept: 'application/json' },
@@ -238,7 +302,7 @@ async function fetchBinanceCandles(
     });
   }
 
-  return normalizeAndSortCandles(candles, limit);
+  return normalizeAndSortCandles(candles, limit, dateWindow);
 }
 
 interface TwelveDataValueRow {
@@ -279,6 +343,7 @@ async function fetchTwelveDataCandles(
   timeframe: MarketTimeframe,
   limit: number,
   apiKey: string,
+  dateWindow: DateWindow,
 ): Promise<CandlePoint[]> {
   const url = new URL('https://api.twelvedata.com/time_series');
   url.searchParams.set('symbol', twelveDataSymbol);
@@ -286,6 +351,13 @@ async function fetchTwelveDataCandles(
   url.searchParams.set('outputsize', String(limit));
   url.searchParams.set('timezone', 'UTC');
   url.searchParams.set('apikey', apiKey);
+
+  if (dateWindow.startDate) {
+    url.searchParams.set('start_date', dateWindow.startDate);
+  }
+  if (dateWindow.endDate) {
+    url.searchParams.set('end_date', dateWindow.endDate);
+  }
 
   const response = await safeServerFetch(url.toString(), {
     headers: { Accept: 'application/json' },
@@ -320,7 +392,7 @@ async function fetchTwelveDataCandles(
     });
   }
 
-  return normalizeAndSortCandles(candles, limit);
+  return normalizeAndSortCandles(candles, limit, dateWindow);
 }
 
 interface YahooChartResponse {
@@ -344,12 +416,38 @@ async function fetchYahooCandles(
   yahooSymbol: string,
   timeframe: MarketTimeframe,
   limit: number,
+  dateWindow: DateWindow,
 ): Promise<CandlePoint[]> {
   const config = YAHOO_CONFIG[timeframe];
   const encodedSymbol = encodeURIComponent(yahooSymbol);
   const url = new URL(`https://query1.finance.yahoo.com/v8/finance/chart/${encodedSymbol}`);
   url.searchParams.set('interval', config.interval);
-  url.searchParams.set('range', config.range);
+
+  if (dateWindow.startTimeSec !== undefined || dateWindow.endTimeSec !== undefined) {
+    const nowSec = Math.floor(Date.now() / 1000);
+    const tfSeconds = TIMEFRAME_SECONDS[timeframe];
+    let period1: number;
+    let period2: number;
+
+    if (dateWindow.startTimeSec !== undefined && dateWindow.endTimeSec !== undefined) {
+      period1 = dateWindow.startTimeSec;
+      period2 = dateWindow.endTimeSec;
+    } else if (dateWindow.startTimeSec !== undefined) {
+      period1 = dateWindow.startTimeSec;
+      period2 = Math.max(dateWindow.startTimeSec + 86400, nowSec);
+    } else {
+      const endSec = dateWindow.endTimeSec ?? nowSec;
+      const lookbackSec = Math.max(86400 * 7, Math.ceil(limit * tfSeconds * 2.2));
+      period1 = Math.max(0, endSec - lookbackSec);
+      period2 = endSec;
+    }
+
+    url.searchParams.set('period1', String(period1));
+    url.searchParams.set('period2', String(period2));
+  } else {
+    url.searchParams.set('range', config.range);
+  }
+
   url.searchParams.set('includePrePost', 'false');
 
   const response = await safeServerFetch(url.toString(), {
@@ -409,11 +507,11 @@ async function fetchYahooCandles(
   }
 
   if (config.aggregate4h) {
-    const normalizedHourly = normalizeAndSortCandles(rawCandles, Math.max(limit * 4, 400));
-    return aggregateCandlesTo4h(normalizedHourly, limit);
+    const normalizedHourly = normalizeAndSortCandles(rawCandles, Math.max(limit * 4, 400), dateWindow);
+    return aggregateCandlesTo4h(normalizedHourly, limit, dateWindow);
   }
 
-  return normalizeAndSortCandles(rawCandles, limit);
+  return normalizeAndSortCandles(rawCandles, limit, dateWindow);
 }
 
 export default async function handler(req: ApiRequest, res: ApiResponse): Promise<void> {
@@ -436,8 +534,11 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
 
   const parsed = MarketOhlcvQuerySchema.safeParse({
     symbol: getSingleQueryParam(req.query, 'symbol'),
-    timeframe: getSingleQueryParam(req.query, 'timeframe'),
-    limit: getSingleQueryParam(req.query, 'limit'),
+    timeframe: getOptionalQueryParam(req.query, 'timeframe'),
+    limit: getOptionalQueryParam(req.query, 'limit'),
+    startDate: getOptionalQueryParam(req.query, 'startDate'),
+    endDate: getOptionalQueryParam(req.query, 'endDate'),
+    refresh: getOptionalQueryParam(req.query, 'refresh'),
   });
 
   if (!parsed.success) {
@@ -448,19 +549,34 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
     return;
   }
 
-  const { symbol: rawSymbol, timeframe, limit } = parsed.data;
+  const { symbol: rawSymbol, timeframe, limit, startDate, endDate, refresh } = parsed.data;
+  if (startDate && endDate && startDate > endDate) {
+    res.setHeader('Cache-Control', 'no-store');
+    res.status(400).json({
+      error: 'Invalid date range: startDate must be on or before endDate.',
+    });
+    return;
+  }
+
   const meta = getMarketSymbol(rawSymbol);
   const resolvedSymbol = meta?.symbol ?? rawSymbol.toUpperCase();
   const displayName = meta?.displayName ?? resolvedSymbol;
   const assetClass: AssetClass = meta?.assetClass ?? 'crypto';
 
-  const cacheKey = `${resolvedSymbol}:${timeframe}:${limit}`;
-  const cached = getCachedResponse(cacheKey);
-  if (cached) {
-    res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60');
-    res.status(200).json(cached);
-    return;
+  const forceRefresh = refresh === '1' || refresh === 'true';
+  const cacheKey = `${resolvedSymbol}:${timeframe}:${limit}:${startDate ?? ''}:${endDate ?? ''}`;
+  if (!forceRefresh) {
+    const cached = getCachedResponse(cacheKey);
+    if (cached) {
+      res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60');
+      res.status(200).json(cached);
+      return;
+    }
   }
+
+  const dateWindow = buildDateWindow(startDate, endDate);
+  const hasDateWindow = Boolean(startDate || endDate);
+  const minValidCandles = hasDateWindow ? 2 : MIN_VALID_CANDLES;
 
   let candles: CandlePoint[] = [];
   let dataSource: MarketDataSource = 'offline_sample';
@@ -468,8 +584,13 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
 
   try {
     if (meta?.binanceSymbol) {
-      const binanceCandles = await fetchBinanceCandles(meta.binanceSymbol, timeframe, limit);
-      if (binanceCandles.length >= MIN_VALID_CANDLES) {
+      const binanceCandles = await fetchBinanceCandles(
+        meta.binanceSymbol,
+        timeframe,
+        limit,
+        dateWindow,
+      );
+      if (binanceCandles.length >= minValidCandles) {
         candles = binanceCandles;
         dataSource = 'live_binance';
       }
@@ -481,17 +602,18 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
           timeframe,
           limit,
           twelveDataApiKey,
+          dateWindow,
         );
-        if (tdCandles.length >= MIN_VALID_CANDLES) {
+        if (tdCandles.length >= minValidCandles) {
           candles = tdCandles;
           dataSource = 'live_twelvedata';
         }
       }
 
-      if (candles.length < MIN_VALID_CANDLES) {
+      if (candles.length < minValidCandles) {
         const yahooTarget = meta?.yahooSymbol ?? resolvedSymbol;
-        const yahooCandles = await fetchYahooCandles(yahooTarget, timeframe, limit);
-        if (yahooCandles.length >= MIN_VALID_CANDLES) {
+        const yahooCandles = await fetchYahooCandles(yahooTarget, timeframe, limit, dateWindow);
+        if (yahooCandles.length >= minValidCandles) {
           candles = yahooCandles;
           dataSource = 'live_yahoo';
         }
@@ -501,11 +623,15 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
     candles = [];
   }
 
-  if (candles.length < MIN_VALID_CANDLES) {
-    candles = generateOfflineMarketCandles(resolvedSymbol, timeframe, limit);
+  if (candles.length < minValidCandles) {
+    candles = generateOfflineMarketCandles(resolvedSymbol, timeframe, limit, {
+      startDate,
+      endDate,
+    });
     dataSource = 'offline_sample';
-    note =
-      'Live market feed was temporarily unavailable or returned fewer than 30 bars. Serving deterministic offline historical sample candles for replay.';
+    note = hasDateWindow
+      ? `Live market feed had insufficient bars for ${startDate ?? 'start'} to ${endDate ?? 'latest'}. Serving deterministic offline sample candles anchored to your chosen dates.`
+      : 'Live market feed was temporarily unavailable or returned fewer than 30 bars. Serving deterministic offline historical sample candles for replay.';
   }
 
   const payload: MarketCandlesResponse = {
@@ -520,6 +646,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
   };
 
   setCachedResponse(cacheKey, payload);
-  res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60');
+  res.setHeader(
+    'Cache-Control',
+    forceRefresh ? 'no-store' : 'public, s-maxage=300, stale-while-revalidate=60',
+  );
   res.status(200).json(payload);
 }

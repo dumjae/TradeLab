@@ -75,6 +75,7 @@ ALTER TABLE public.trading_quotes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_favorite_quotes ENABLE ROW LEVEL SECURITY;
 
 -- trading_quotes: public read for is_public = true; private custom CRUD for owner; admin manages curated rows
+DROP POLICY IF EXISTS "trading_quotes_select_public_or_own" ON public.trading_quotes;
 CREATE POLICY trading_quotes_select_public_or_own
   ON public.trading_quotes
   FOR SELECT
@@ -84,6 +85,7 @@ CREATE POLICY trading_quotes_select_public_or_own
     OR public.is_admin()
   );
 
+DROP POLICY IF EXISTS "trading_quotes_insert_custom_or_admin" ON public.trading_quotes;
 CREATE POLICY trading_quotes_insert_custom_or_admin
   ON public.trading_quotes
   FOR INSERT
@@ -92,6 +94,7 @@ CREATE POLICY trading_quotes_insert_custom_or_admin
     OR public.is_admin()
   );
 
+DROP POLICY IF EXISTS "trading_quotes_update_custom_or_admin" ON public.trading_quotes;
 CREATE POLICY trading_quotes_update_custom_or_admin
   ON public.trading_quotes
   FOR UPDATE
@@ -104,6 +107,7 @@ CREATE POLICY trading_quotes_update_custom_or_admin
     OR public.is_admin()
   );
 
+DROP POLICY IF EXISTS "trading_quotes_delete_custom_or_admin" ON public.trading_quotes;
 CREATE POLICY trading_quotes_delete_custom_or_admin
   ON public.trading_quotes
   FOR DELETE
@@ -113,22 +117,26 @@ CREATE POLICY trading_quotes_delete_custom_or_admin
   );
 
 -- user_favorite_quotes: strictly private to auth.uid() = user_id
+DROP POLICY IF EXISTS "user_favorite_quotes_select_own" ON public.user_favorite_quotes;
 CREATE POLICY user_favorite_quotes_select_own
   ON public.user_favorite_quotes
   FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "user_favorite_quotes_insert_own" ON public.user_favorite_quotes;
 CREATE POLICY user_favorite_quotes_insert_own
   ON public.user_favorite_quotes
   FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "user_favorite_quotes_update_own" ON public.user_favorite_quotes;
 CREATE POLICY user_favorite_quotes_update_own
   ON public.user_favorite_quotes
   FOR UPDATE
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "user_favorite_quotes_delete_own" ON public.user_favorite_quotes;
 CREATE POLICY user_favorite_quotes_delete_own
   ON public.user_favorite_quotes
   FOR DELETE
