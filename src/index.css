@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --tl-bg: #f8fafc;
+  --tl-surface: #ffffff;
+  --tl-elevated: #f1f5f9;
+  --tl-border: #e2e8f0;
+  --tl-text: #0f172a;
+  --tl-muted: #475569;
+}
+
+.dark {
+  --tl-bg: #080c11;
+  --tl-surface: #0f151e;
+  --tl-elevated: #161f2c;
+  --tl-border: #233044;
+  --tl-text: #f1f5f9;
+  --tl-muted: #94a3b8;
+}
+
+@layer base {
+  * {
+    border-color: var(--tl-border);
+  }
+
+  body {
+    background-color: var(--tl-bg);
+    color: var(--tl-text);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,725 @@
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import {
+  Activity,
+  CheckCircle2,
+  ExternalLink,
+  Link2,
+  Loader2,
+  Plus,
+  Search,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react';
+import { CURRICULUM_LESSONS } from '../../data/curriculum';
+import { formatTimestamp } from '../../lib/youtubeUtils';
+import {
+  addVerifiedSegment,
+  createAdminResource,
+  deleteSegment,
+  fetchUrlMetadata,
+  listAdminResources,
+  runLessonDiscovery,
+  runResourcesHealthCheck,
+  updateResourceStatus,
+  type UrlMetadataResult,
+} from '../../services/adminResourcesService';
+import type {
+  CreateSegmentInput,
+  DiscoveryCandidate,
+  LessonResourceWithDetails,
+  ResourceContentType,
+  ResourceSourceType,
+  VerificationStatus,
+} from '../../types/visual-learning';
+import { SegmentVerificationEditor } from './SegmentVerificationEditor';
+
+const STATUS_OPTIONS: Array<{ id: VerificationStatus | 'all'; label: string }> = [
+  { id: 'all', label: 'All Statuses' },
+  { id: 'pending_review', label: 'Pending Review' },
+  { id: 'verified', label: 'Verified' },
+  { id: 'published', label: 'Published' },
+  { id: 'unavailable', label: 'Unavailable' },
+  { id: 'archived', label: 'Archived' },
+];
+
+const WORKFLOW_BUTTONS: Array<{ status: VerificationStatus; label: string; tone: string }> = [
+  {
+    status: 'pending_review',
+    label: 'Pending Review',
+    tone: 'border-amber-500/35 text-amber-400 hover:bg-amber-500/15',
+  },
+  {
+    status: 'verified',
+    label: 'Verified',
+    tone: 'border-sky-500/35 text-sky-400 hover:bg-sky-500/15',
+  },
+  {
+    status: 'published',
+    label: 'Published',
+    tone: 'border-emerald-500/35 text-emerald-400 hover:bg-emerald-500/15',
+  },
+  {
+    status: 'unavailable',
+    label: 'Unavailable',
+    tone: 'border-rose-500/35 text-rose-400 hover:bg-rose-500/15',
+  },
+  {
+    status: 'archived',
+    label: 'Archived',
+    tone: 'border-terminal-border text-terminal-muted hover:bg-terminal-elevated',
+  },
+];
+
+export function AdminResourceManager() {
+  const [statusFilter, setStatusFilter] = useState<VerificationStatus | 'all'>('all');
+  const [resources, setResources] = useState<LessonResourceWithDetails[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [bannerMessage, setBannerMessage] = useState<string | null>(null);
+
+  // Manual URL Curation state
+  const [rawUrl, setRawUrl] = useState<string>('');
+  const [lookupLoading, setLookupLoading] = useState<boolean>(false);
+  const [metadataResult, setMetadataResult] = useState<UrlMetadataResult | null>(null);
+
+  const [lessonSlug, setLessonSlug] = useState<string>(
+    CURRICULUM_LESSONS[0]?.slug ?? 'market-structure',
+  );
+  const [title, setTitle] = useState<string>('');
+  const [sourceName, setSourceName] = useState<string>('');
+  const [sourceType, setSourceType] = useState<ResourceSourceType>('youtube');
+  const [contentType, setContentType] = useState<ResourceContentType>('video');
+  const [description, setDescription] = useState<string>('');
+  const [attribution, setAttribution] = useState<string>('');
+  const [beforeWatchContext, setBeforeWatchContext] = useState<string>('');
+  const [takeawaysText, setTakeawaysText] = useState<string>('');
+  const [initialStatus, setInitialStatus] = useState<VerificationStatus>('pending_review');
+  const [savingResource, setSavingResource] = useState<boolean>(false);
+
+  // Discovery Runner state
+  const [discoveryLessonSlug, setDiscoveryLessonSlug] = useState<string>(
+    CURRICULUM_LESSONS[0]?.slug ?? 'market-structure',
+  );
+  const [discoveryQuery, setDiscoveryQuery] = useState<string>('');
+  const [discoveryLoading, setDiscoveryLoading] = useState<boolean>(false);
+  const [discoveryCandidates, setDiscoveryCandidates] = useState<DiscoveryCandidate[]>([]);
+  const [discoveryNote, setDiscoveryNote] = useState<string | null>(null);
+
+  // Health Check state
+  const [healthLoading, setHealthLoading] = useState<boolean>(false);
+  const [expandedSegmentsId, setExpandedSegmentsId] = useState<string | null>(null);
+
+  const loadResources = useCallback(async () => {
+    setLoading(true);
+    try {
+      const items = await listAdminResources(statusFilter);
+      setResources(items);
+    } finally {
+      setLoading(false);
+    }
+  }, [statusFilter]);
+
+  useEffect(() => {
+    void loadResources();
+  }, [loadResources]);
+
+  const handleLookupMetadata = async () => {
+    if (!rawUrl.trim()) {
+      return;
+    }
+    setLookupLoading(true);
+    setBannerMessage(null);
+    try {
+      const result = await fetchUrlMetadata(rawUrl.trim());
+      setMetadataResult(result);
+      if (result.valid) {
+        setTitle(result.title);
+        setSourceName(result.sourceName);
+        setSourceType(result.sourceType);
+        setContentType(result.sourceType === 'youtube' ? 'video' : 'chart_example');
+        setAttribution(result.attribution);
+        if (!description.trim()) {
+          setDescription(
+            `Curated visual tutorial from ${result.sourceName} verified for TradeLab Academy.`,
+          );
+        }
+      }
+    } finally {
+      setLookupLoading(false);
+    }
+  };
+
+  const handleCreateResource = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const targetLesson =
+      CURRICULUM_LESSONS.find((l) => l.slug === lessonSlug) ?? CURRICULUM_LESSONS[0];
+    if (!targetLesson || !rawUrl.trim() || !title.trim() || !sourceName.trim()) {
+      setBannerMessage('Please provide a valid URL, title, and creator source name.');
+      return;
+    }
+
+    setSavingResource(true);
+    try {
+      const detectedSegments =
+        metadataResult?.detectedChapters.map((chapter) => ({
+          startSeconds: chapter.startSeconds,
+          endSeconds: chapter.endSeconds,
+          segmentTitle: chapter.segmentTitle,
+          explanation: `Verified creator chapter from ${sourceName.trim()}.`,
+          verificationMethod: 'youtube_chapters' as const,
+        })) ?? [];
+
+      const afterWatchTakeaways = takeawaysText
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean);
+
+      await createAdminResource(
+        {
+          lessonId: targetLesson.id,
+          lessonSlug: targetLesson.slug,
+          title: title.trim(),
+          description: description.trim() || `Verified visual explanation for ${targetLesson.title}.`,
+          sourceType,
+          sourceName: sourceName.trim(),
+          sourceUrl: metadataResult?.normalizedUrl || rawUrl.trim(),
+          externalVideoId: metadataResult?.externalVideoId ?? null,
+          thumbnailUrl: metadataResult?.thumbnailUrl ?? null,
+          durationSeconds: metadataResult?.durationSeconds ?? null,
+          contentType,
+          attribution:
+            attribution.trim() ||
+            `Created by ${sourceName.trim()}. Embedded for educational study inside TradeLab Academy.`,
+          nonEndorsementNotice: sourceType !== 'tradelab_original',
+          verificationStatus: initialStatus,
+          embeddable: metadataResult?.embeddable ?? sourceType === 'youtube',
+          beforeWatchContext: beforeWatchContext.trim(),
+          afterWatchTakeaways,
+        },
+        detectedSegments,
+      );
+
+      setRawUrl('');
+      setTitle('');
+      setSourceName('');
+      setDescription('');
+      setAttribution('');
+      setBeforeWatchContext('');
+      setTakeawaysText('');
+      setMetadataResult(null);
+      setBannerMessage(`Saved "${title.trim()}" with status "${initialStatus}".`);
+      await loadResources();
+    } finally {
+      setSavingResource(false);
+    }
+  };
+
+  const handleRunDiscovery = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setDiscoveryLoading(true);
+    setDiscoveryNote(null);
+    try {
+      const result = await runLessonDiscovery(discoveryLessonSlug, discoveryQuery);
+      setDiscoveryCandidates(result.candidates);
+      setDiscoveryNote(
+        result.message ??
+          `Loaded ${result.candidates.length} candidate(s) (${result.cached ? 'cached' : 'fresh'}).`,
+      );
+    } finally {
+      setDiscoveryLoading(false);
+    }
+  };
+
+  const handleImportCandidate = (candidate: DiscoveryCandidate) => {
+    setRawUrl(candidate.sourceUrl);
+    setLessonSlug(discoveryLessonSlug);
+    setTitle(candidate.title);
+    setSourceName(candidate.channelTitle);
+    setSourceType('youtube');
+    setContentType('video');
+    setDescription(candidate.description.slice(0, 280));
+    setAttribution(
+      `Video by ${candidate.channelTitle} on YouTube. Embedded via official YouTube privacy-enhanced player.`,
+    );
+    setMetadataResult({
+      valid: true,
+      sourceType: 'youtube',
+      normalizedUrl: candidate.sourceUrl,
+      externalVideoId: candidate.externalVideoId,
+      title: candidate.title,
+      sourceName: candidate.channelTitle,
+      thumbnailUrl: candidate.thumbnailUrl,
+      durationSeconds: candidate.durationSeconds,
+      embeddable: candidate.embeddable,
+      detectedChapters: candidate.detectedChapters,
+      attribution: `Video by ${candidate.channelTitle} on YouTube.`,
+    });
+    setBannerMessage('Candidate loaded into Manual URL Curation form. Verify before publishing.');
+  };
+
+  const handleHealthCheck = async () => {
+    setHealthLoading(true);
+    try {
+      const report = await runResourcesHealthCheck();
+      setBannerMessage(
+        `${report.note} (Checked: ${report.checked}, Unavailable: ${report.markedUnavailable})`,
+      );
+      await loadResources();
+    } finally {
+      setHealthLoading(false);
+    }
+  };
+
+  const handleStatusChange = async (resourceId: string, nextStatus: VerificationStatus) => {
+    await updateResourceStatus({ resourceId, verificationStatus: nextStatus });
+    setBannerMessage(`Updated resource status to "${nextStatus}".`);
+    await loadResources();
+  };
+
+  const handleAddSegment = async (input: CreateSegmentInput) => {
+    await addVerifiedSegment(input);
+    await loadResources();
+  };
+
+  const handleDeleteSegment = async (segmentId: string) => {
+    await deleteSegment(segmentId);
+    await loadResources();
+  };
+
+  return (
+    <div className="space-y-6">
+      {bannerMessage && (
+        <div
+          role="status"
+          className="flex items-center gap-2 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300"
+        >
+          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" aria-hidden="true" />
+          <span>{bannerMessage}</span>
+        </div>
+      )}
+
+      {/* Manual URL Curation Form */}
+      <section className="rounded-2xl border border-terminal-border bg-terminal-surface p-5">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-terminal-text">
+              <Link2 className="h-4 w-4 text-emerald-400" aria-hidden="true" />
+              Manual URL Curation (YouTube / TradingView)
+            </h2>
+            <p className="mt-0.5 text-xs text-terminal-muted">
+              Paste a verified HTTPS link, auto-fetch safe metadata, attach to a lesson, and review
+              before publishing.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => void handleHealthCheck()}
+            disabled={healthLoading}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-sky-500/35 bg-sky-500/10 px-3 py-1.5 text-xs font-semibold text-sky-400 transition-colors hover:bg-sky-500/20 disabled:opacity-60"
+          >
+            {healthLoading ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+            ) : (
+              <Activity className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
+            Run Embed Health Check
+          </button>
+        </div>
+
+        <form onSubmit={handleCreateResource} className="mt-4 space-y-4">
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <input
+              id="admin-resource-url"
+              name="resourceUrl"
+              aria-label="Educational resource URL"
+              type="url"
+              required
+              value={rawUrl}
+              onChange={(event) => setRawUrl(event.target.value)}
+              placeholder="https://www.youtube.com/watch?v=... or https://www.tradingview.com/chart/..."
+              className="flex-1 rounded-xl border border-terminal-border bg-terminal-bg px-3.5 py-2 text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => void handleLookupMetadata()}
+              disabled={lookupLoading || !rawUrl.trim()}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-2 text-xs font-semibold text-emerald-400 transition-colors hover:bg-emerald-500 hover:text-slate-950 disabled:opacity-50"
+            >
+              {lookupLoading ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+              ) : (
+                <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+              )}
+              Fetch Metadata
+            </button>
+          </div>
+
+          {metadataResult && (
+            <div
+              className={`rounded-xl border px-3.5 py-2.5 text-xs ${
+                metadataResult.valid
+                  ? 'border-sky-500/35 bg-sky-500/5 text-sky-300'
+                  : 'border-rose-500/35 bg-rose-500/10 text-rose-300'
+              }`}
+            >
+              {metadataResult.valid
+                ? metadataResult.note ??
+                  `Verified ${metadataResult.sourceType} metadata (${metadataResult.detectedChapters.length} chapters detected).`
+                : metadataResult.error ?? 'URL failed validation.'}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div>
+              <label htmlFor="admin-target-lesson" className="block text-[11px] font-medium text-terminal-muted">
+                Target Lesson
+              </label>
+              <select
+                id="admin-target-lesson"
+                aria-label="Target Lesson"
+                value={lessonSlug}
+                onChange={(event) => setLessonSlug(event.target.value)}
+                className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+              >
+                {CURRICULUM_LESSONS.map((lesson) => (
+                  <option key={lesson.id} value={lesson.slug}>
+                    0{lesson.moduleOrder}. {lesson.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="admin-resource-title" className="block text-[11px] font-medium text-terminal-muted">
+                Resource Title
+              </label>
+              <input
+                id="admin-resource-title"
+                name="resourceTitle"
+                aria-label="Resource Title"
+                type="text"
+                required
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                placeholder="Verified educational video title"
+                className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="admin-creator-source" className="block text-[11px] font-medium text-terminal-muted">
+                Creator / Channel Attribution
+              </label>
+              <input
+                id="admin-creator-source"
+                name="sourceName"
+                aria-label="Creator or Channel Attribution"
+                type="text"
+                required
+                value={sourceName}
+                onChange={(event) => setSourceName(event.target.value)}
+                placeholder="Channel or educator name"
+                className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div>
+              <label htmlFor="admin-initial-status" className="block text-[11px] font-medium text-terminal-muted">
+                Initial Workflow Status
+              </label>
+              <select
+                id="admin-initial-status"
+                aria-label="Initial Workflow Status"
+                value={initialStatus}
+                onChange={(event) =>
+                  setInitialStatus(event.target.value as VerificationStatus)
+                }
+                className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+              >
+                <option value="pending_review">Pending Review</option>
+                <option value="verified">Verified</option>
+                <option value="published">Published</option>
+              </select>
+            </div>
+
+            <div className="sm:col-span-2">
+              <label htmlFor="admin-before-watch" className="block text-[11px] font-medium text-terminal-muted">
+                Before Watching Focus Prompt
+              </label>
+              <input
+                id="admin-before-watch"
+                name="beforeWatchContext"
+                aria-label="Before Watching Focus Prompt"
+                type="text"
+                value={beforeWatchContext}
+                onChange={(event) => setBeforeWatchContext(event.target.value)}
+                placeholder="Tell students what visual pattern to pay attention to before hitting play..."
+                className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <label htmlFor="admin-resource-description" className="block text-[11px] font-medium text-terminal-muted">
+                Description &amp; Attribution Note
+              </label>
+              <textarea
+                id="admin-resource-description"
+                name="description"
+                aria-label="Description and attribution note"
+                rows={2}
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                placeholder="Why this visual example strengthens the lesson..."
+                className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label htmlFor="admin-resource-takeaways" className="block text-[11px] font-medium text-terminal-muted">
+                After Watching Takeaways (one per line)
+              </label>
+              <textarea
+                id="admin-resource-takeaways"
+                name="afterWatchTakeaways"
+                aria-label="After watching takeaways"
+                rows={2}
+                value={takeawaysText}
+                onChange={(event) => setTakeawaysText(event.target.value)}
+                placeholder="Wait for body close beyond swing high&#10;Confirm stop-loss below protected low"
+                className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={savingResource}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-60"
+            >
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              {savingResource ? 'Saving Resource...' : 'Save Resource to Queue'}
+            </button>
+          </div>
+        </form>
+      </section>
+
+      {/* Cached Lesson Discovery Runner */}
+      <section className="rounded-2xl border border-terminal-border bg-terminal-surface p-5">
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-terminal-text">
+          <Search className="h-4 w-4 text-sky-400" aria-hidden="true" />
+          Cached Lesson Video Discovery (YouTube Data API)
+        </h2>
+        <p className="mt-0.5 text-xs text-terminal-muted">
+          Discovered candidates enter as unverified drafts and never publish automatically.
+        </p>
+
+        <form onSubmit={handleRunDiscovery} className="mt-3 flex flex-col gap-2 sm:flex-row">
+          <select
+            aria-label="Lesson for video discovery"
+            value={discoveryLessonSlug}
+            onChange={(event) => setDiscoveryLessonSlug(event.target.value)}
+            className="rounded-xl border border-terminal-border bg-terminal-bg px-3 py-2 text-xs text-terminal-text focus:border-sky-500 focus:outline-none"
+          >
+            {CURRICULUM_LESSONS.map((lesson) => (
+              <option key={lesson.id} value={lesson.slug}>
+                0{lesson.moduleOrder}. {lesson.title}
+              </option>
+            ))}
+          </select>
+
+          <input
+            id="admin-discovery-query"
+            name="discoveryQuery"
+            aria-label="Custom discovery search query"
+            type="text"
+            value={discoveryQuery}
+            onChange={(event) => setDiscoveryQuery(event.target.value)}
+            placeholder="Optional custom search query..."
+            className="flex-1 rounded-xl border border-terminal-border bg-terminal-bg px-3.5 py-2 text-xs text-terminal-text focus:border-sky-500 focus:outline-none"
+          />
+
+          <button
+            type="submit"
+            disabled={discoveryLoading}
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-sky-500 px-4 py-2 text-xs font-semibold text-slate-950 hover:bg-sky-400 disabled:opacity-60"
+          >
+            {discoveryLoading ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+            ) : (
+              <Search className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
+            Run Discovery
+          </button>
+        </form>
+
+        {discoveryNote && (
+          <p className="mt-3 rounded-xl border border-terminal-border bg-terminal-bg px-3.5 py-2.5 text-xs text-terminal-muted">
+            {discoveryNote}
+          </p>
+        )}
+
+        {discoveryCandidates.length > 0 && (
+          <div className="mt-3 grid grid-cols-1 gap-2.5 md:grid-cols-2">
+            {discoveryCandidates.map((candidate) => (
+              <div
+                key={candidate.externalVideoId}
+                className="flex items-start justify-between gap-3 rounded-xl border border-terminal-border bg-terminal-bg p-3"
+              >
+                <div className="min-w-0 space-y-1">
+                  <p className="truncate text-xs font-semibold text-terminal-text">
+                    {candidate.title}
+                  </p>
+                  <p className="text-[11px] text-terminal-muted">
+                    {candidate.channelTitle}
+                    {candidate.durationSeconds
+                      ? ` · ${formatTimestamp(candidate.durationSeconds)}`
+                      : ''}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleImportCandidate(candidate)}
+                  className="shrink-0 rounded-lg border border-emerald-500/35 bg-emerald-500/10 px-2.5 py-1.5 text-[11px] font-semibold text-emerald-400 hover:bg-emerald-500 hover:text-slate-950"
+                >
+                  Load Draft
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Moderation Queue & Workflow Controls */}
+      <section className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-terminal-text">
+            <ShieldCheck className="h-4 w-4 text-emerald-400" aria-hidden="true" />
+            Curated Visual Resources Queue ({resources.length})
+          </h2>
+
+          <div className="flex flex-wrap gap-1.5">
+            {STATUS_OPTIONS.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => setStatusFilter(option.id)}
+                className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
+                  statusFilter === option.id
+                    ? 'bg-emerald-500 text-slate-950 font-semibold'
+                    : 'border border-terminal-border bg-terminal-surface text-terminal-muted hover:text-terminal-text'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="h-32 animate-pulse rounded-2xl border border-terminal-border bg-terminal-surface" />
+        ) : resources.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-terminal-border bg-terminal-surface/50 p-8 text-center text-xs text-terminal-muted">
+            No resources found for the selected status filter.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {resources.map((item) => {
+              const isExpanded = expandedSegmentsId === item.resource.id;
+              return (
+                <article
+                  key={item.resource.id}
+                  className="space-y-3 rounded-2xl border border-terminal-border bg-terminal-surface p-4"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0 space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="rounded-full border border-terminal-border bg-terminal-bg px-2 py-0.5 font-mono text-[10px] uppercase text-emerald-400">
+                          {item.resource.verificationStatus.replace('_', ' ')}
+                        </span>
+                        <span className="rounded-full border border-terminal-border bg-terminal-bg px-2 py-0.5 font-mono text-[10px] text-terminal-muted">
+                          {item.resource.sourceType}
+                        </span>
+                        {item.mapping.lessonSlug && (
+                          <span className="rounded-full border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 font-mono text-[10px] text-sky-400">
+                            /{item.mapping.lessonSlug}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-sm font-semibold text-terminal-text">
+                        {item.resource.title}
+                      </h3>
+                      <p className="text-xs text-terminal-muted">
+                        {item.resource.sourceName} · {item.segments.length} verified timestamp(s)
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      {item.resource.sourceType !== 'tradelab_original' && (
+                        <a
+                          href={item.resource.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1 text-xs text-sky-400 hover:border-sky-500/50"
+                        >
+                          Source
+                          <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                        </a>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExpandedSegmentsId((prev) =>
+                            prev === item.resource.id ? null : item.resource.id,
+                          )
+                        }
+                        className="rounded-lg border border-terminal-border bg-terminal-elevated px-2.5 py-1 text-xs font-medium text-terminal-text hover:border-emerald-500/50"
+                      >
+                        {isExpanded ? 'Hide Timestamps' : 'Manage Timestamps'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Status workflow buttons */}
+                  <div className="flex flex-wrap items-center gap-1.5 border-t border-terminal-border pt-3">
+                    <span className="mr-1 font-mono text-[10px] uppercase text-terminal-muted">
+                      Set Status:
+                    </span>
+                    {WORKFLOW_BUTTONS.map((btn) => {
+                      const active = item.resource.verificationStatus === btn.status;
+                      return (
+                        <button
+                          key={btn.status}
+                          type="button"
+                          onClick={() => void handleStatusChange(item.resource.id, btn.status)}
+                          className={`rounded-md border px-2 py-1 text-[11px] font-medium transition-colors ${
+                            active
+                              ? 'border-emerald-500 bg-emerald-500 text-slate-950 font-semibold'
+                              : btn.tone
+                          }`}
+                        >
+                          {btn.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {isExpanded && (
+                    <SegmentVerificationEditor
+                      resourceId={item.resource.id}
+                      segments={item.segments}
+                      onAddSegment={handleAddSegment}
+                      onDeleteSegment={handleDeleteSegment}
+                    />
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
