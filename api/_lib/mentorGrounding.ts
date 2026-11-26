@@ -44,6 +44,8 @@ interface RawLlmPayload {
 }
 
 const LLM_TIMEOUT_MS = 12_000;
+const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash';
+const FALLBACK_GEMINI_MODEL = 'gemini-2.0-flash';
 
 export function isPracticeGuardActive(
   mode: AppLearningContext,
@@ -428,12 +430,13 @@ function buildPrompts(
   };
 }
 
-async function requestGeminiCompletion(
+async function requestGeminiModel(
+  model: string,
   apiKey: string,
   systemPrompt: string,
   userPrompt: string,
 ): Promise<string | null> {
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -462,6 +465,31 @@ async function requestGeminiCompletion(
   };
 
   return data.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
+}
+
+async function requestGeminiCompletion(
+  apiKey: string,
+  systemPrompt: string,
+  userPrompt: string,
+): Promise<string | null> {
+  const primaryModel = process.env.GEMINI_MODEL?.trim() || DEFAULT_GEMINI_MODEL;
+  const modelsToTry =
+    primaryModel === FALLBACK_GEMINI_MODEL
+      ? [primaryModel]
+      : [primaryModel, FALLBACK_GEMINI_MODEL];
+
+  for (const model of modelsToTry) {
+    try {
+      const output = await requestGeminiModel(model, apiKey, systemPrompt, userPrompt);
+      if (output) {
+        return output;
+      }
+    } catch {
+      // Automatically fall back to next Gemini model
+    }
+  }
+
+  return null;
 }
 
 async function requestOpenAiCompletion(

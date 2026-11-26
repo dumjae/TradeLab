@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
-  AlertCircle,
   BookOpen,
   Bookmark,
   CheckCircle2,
+  ChevronDown,
   Compass,
-  Eye,
   Flag,
   Layers,
   LineChart,
   PlayCircle,
-  Sparkles,
+  Plus,
+  Youtube,
 } from 'lucide-react';
 import { getChartScenariosByLessonSlug } from '../../data/chartScenarios';
 import { recordConceptStruggle } from '../../services/difficultConceptsService';
@@ -31,13 +32,13 @@ import { BeforeAfterChartViewer } from '../charts/BeforeAfterChartViewer';
 import { BookmarkNotesDialog } from './BookmarkNotesDialog';
 import { ConceptDiagramSvg } from './ConceptDiagramSvg';
 import { LazyVideoPlayer } from './LazyVideoPlayer';
-import { ResourceAttributionCard } from './ResourceAttributionCard';
 import { TimestampNavigator } from './TimestampNavigator';
 
 export interface VisualExplanationsSectionProps {
   lesson: Lesson;
   resources: LessonResourceWithDetails[];
   tutorialMode?: boolean;
+  isAdmin?: boolean;
   initialMode?: LearningViewMode;
   initialResourceId?: string | null;
   initialTimestampSeconds?: number | null;
@@ -61,29 +62,28 @@ const MODE_TABS: Array<{
   },
 ];
 
-const TUTORIAL_STEPS: Record<LearningViewMode, { step: number; guidance: string; nextMode?: LearningViewMode }> = {
+const TUTORIAL_STEPS: Record<
+  LearningViewMode,
+  { step: number; guidance: string; nextMode?: LearningViewMode }
+> = {
   text: {
     step: 1,
-    guidance:
-      'Read the core market mechanics and terminology first so you know exactly what to look for visually.',
+    guidance: 'Scan the core rule and takeaway first.',
     nextMode: 'diagram',
   },
   diagram: {
     step: 2,
-    guidance:
-      'Step through the clean visual blueprint to lock in the geometric pattern before seeing real market noise.',
+    guidance: 'Lock in the clean visual structure.',
     nextMode: 'video',
   },
   video: {
     step: 3,
-    guidance:
-      'Watch the verified educator clip or jump directly to a verified key timestamp, then bookmark key takeaways.',
+    guidance: 'Jump straight to key YouTube timestamps.',
     nextMode: 'chart',
   },
   chart: {
     step: 4,
-    guidance:
-      'Replay the historical candlestick scenario from Before → Trigger → After to test your eye in live-like conditions.',
+    guidance: 'Step through Before → Trigger → After.',
   },
 };
 
@@ -91,6 +91,7 @@ export function VisualExplanationsSection({
   lesson,
   resources,
   tutorialMode = false,
+  isAdmin = false,
   initialMode = 'text',
   initialResourceId = null,
   initialTimestampSeconds = null,
@@ -116,6 +117,11 @@ export function VisualExplanationsSection({
   );
   const [selectedScenarioIndex, setSelectedScenarioIndex] = useState<number>(0);
 
+  const externalVideoResources = useMemo(
+    () => resources.filter((item) => item.resource.sourceType !== 'tradelab_original'),
+    [resources],
+  );
+
   useEffect(() => {
     setActiveMode(initialMode);
   }, [initialMode, lesson.slug]);
@@ -129,15 +135,20 @@ export function VisualExplanationsSection({
   }, [lesson.slug]);
 
   useEffect(() => {
-    if (initialResourceId && resources.some((item) => item.resource.id === initialResourceId)) {
+    if (
+      initialResourceId &&
+      externalVideoResources.some((item) => item.resource.id === initialResourceId)
+    ) {
       setSelectedResourceId(initialResourceId);
-    } else if (resources.length > 0) {
-      const preferredVideo = resources.find((item) => item.resource.contentType === 'video');
-      setSelectedResourceId((preferredVideo ?? resources[0]).resource.id);
+    } else if (externalVideoResources.length > 0) {
+      const preferredVideo = externalVideoResources.find(
+        (item) => item.resource.sourceType === 'youtube' || item.resource.contentType === 'video',
+      );
+      setSelectedResourceId((preferredVideo ?? externalVideoResources[0]).resource.id);
     } else {
       setSelectedResourceId(null);
     }
-  }, [resources, initialResourceId]);
+  }, [externalVideoResources, initialResourceId]);
 
   useEffect(() => {
     if (initialTimestampSeconds !== null && initialTimestampSeconds > 0) {
@@ -148,16 +159,20 @@ export function VisualExplanationsSection({
   }, [initialTimestampSeconds, lesson.slug]);
 
   const activeResourceBundle = useMemo(() => {
-    if (resources.length === 0) {
+    if (externalVideoResources.length === 0) {
       return null;
     }
     return (
-      resources.find((item) => item.resource.id === selectedResourceId) ?? resources[0]
+      externalVideoResources.find((item) => item.resource.id === selectedResourceId) ??
+      externalVideoResources[0]
     );
-  }, [resources, selectedResourceId]);
+  }, [externalVideoResources, selectedResourceId]);
 
   const primaryScenario = scenarios[selectedScenarioIndex] ?? scenarios[0];
-  const comparisonScenario = scenarios.length > 1 ? scenarios[(selectedScenarioIndex + 1) % scenarios.length] : undefined;
+  const comparisonScenario =
+    scenarios.length > 1
+      ? scenarios[(selectedScenarioIndex + 1) % scenarios.length]
+      : undefined;
 
   const notify = (message: string) => {
     setStatusFeedback(message);
@@ -213,7 +228,7 @@ export function VisualExplanationsSection({
       completionStatus: 'watched',
     });
     setWatchedIds((prev) => ({ ...prev, [activeResourceBundle.resource.id]: true }));
-    notify('Marked as watched in your Learning History.');
+    notify('Marked watched.');
   };
 
   const handleFlagDifficult = async () => {
@@ -224,7 +239,7 @@ export function VisualExplanationsSection({
       conceptLabel: lesson.title,
       trigger: 'manual_bookmark',
     });
-    notify('Added to My Difficult Concepts for focused review.');
+    notify('Added to Difficult Concepts.');
   };
 
   const handleSaveBookmark = async (payload: {
@@ -245,63 +260,78 @@ export function VisualExplanationsSection({
       curriculumLevel: payload.curriculumLevel,
       personalNotes: payload.personalNotes,
     });
-    notify('Saved to your Personal Visual Library.');
+    notify('Saved to My Library.');
   };
 
   const tutorialStep = TUTORIAL_STEPS[activeMode];
 
+  const hasStudyNotes = Boolean(
+    activeResourceBundle &&
+      (activeResourceBundle.mapping.beforeWatchContext ||
+        activeResourceBundle.mapping.afterWatchTakeaways.length > 0),
+  );
+
   return (
     <section
-      aria-labelledby="visual-explanations-heading"
-      className="space-y-4 rounded-2xl border border-terminal-border bg-terminal-surface/60 p-4 sm:p-5"
+      aria-label={`Visual explanations for ${lesson.title}`}
+      className="space-y-3.5 rounded-2xl border border-terminal-border bg-terminal-surface/70 p-3.5 sm:p-4"
     >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="space-y-0.5">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
-              <Eye className="h-3 w-3" aria-hidden="true" />
-              Visual Explanations
-            </span>
-            <span className="font-mono text-[11px] text-terminal-muted tabular-nums">
-              4 Learning Modes
-            </span>
-          </div>
-          <h2
-            id="visual-explanations-heading"
-            className="text-base font-semibold text-terminal-text"
-          >
-            See {lesson.title} Across Text, Diagrams, Verified Video &amp; Real Charts
-          </h2>
+      {/* Compact App-Like Top Bar: 4-Mode Pill Switcher + Flag Difficult */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div
+          role="tablist"
+          aria-label="Visual explanation modes"
+          className="inline-flex flex-1 flex-wrap items-center gap-1 rounded-xl border border-terminal-border bg-terminal-bg p-1 sm:flex-none"
+        >
+          {MODE_TABS.map((tab) => {
+            const Icon = tab.icon;
+            const active = activeMode === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                aria-label={tab.label}
+                onClick={() => setActiveMode(tab.id)}
+                className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all sm:flex-none ${
+                  active
+                    ? 'bg-emerald-500 text-slate-950 shadow-sm'
+                    : 'text-terminal-muted hover:text-terminal-text'
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                <span className="truncate">{tab.shortLabel}</span>
+              </button>
+            );
+          })}
         </div>
 
         <button
           type="button"
           onClick={handleFlagDifficult}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-amber-500/35 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-400 transition-colors hover:bg-amber-500/20"
+          title="Mark this concept as difficult for later review"
+          className="inline-flex items-center gap-1.5 rounded-xl border border-terminal-border bg-terminal-bg px-2.5 py-1.5 text-xs font-medium text-terminal-muted transition-colors hover:border-amber-500/40 hover:text-amber-500 dark:hover:text-amber-400"
         >
-          <Flag className="h-3.5 w-3.5" aria-hidden="true" />
-          Mark Concept Difficult
+          <Flag className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" aria-hidden="true" />
+          <span className="hidden sm:inline">Flag Difficult</span>
         </button>
       </div>
 
       {tutorialMode && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sky-500/35 bg-sky-500/10 px-4 py-3">
-          <div className="flex items-start gap-2.5">
-            <Compass className="mt-0.5 h-4 w-4 shrink-0 text-sky-400" aria-hidden="true" />
-            <div>
-              <p className="font-mono text-xs font-semibold uppercase tracking-wider text-sky-400 tabular-nums">
-                Tutorial Mode · Step {tutorialStep.step} of 4
-              </p>
-              <p className="mt-0.5 text-xs leading-relaxed text-terminal-text">
-                {tutorialStep.guidance}
-              </p>
-            </div>
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-sky-500/35 bg-sky-500/10 px-3 py-2 text-xs">
+          <div className="flex items-center gap-2 text-terminal-text">
+            <Compass className="h-3.5 w-3.5 shrink-0 text-sky-400" aria-hidden="true" />
+            <span className="font-mono font-semibold text-sky-500 dark:text-sky-400 tabular-nums">
+              {tutorialStep.step}/4
+            </span>
+            <span>{tutorialStep.guidance}</span>
           </div>
           {tutorialStep.nextMode && (
             <button
               type="button"
               onClick={() => setActiveMode(tutorialStep.nextMode!)}
-              className="rounded-lg bg-sky-500 px-3 py-1.5 text-xs font-semibold text-slate-950 transition-colors hover:bg-sky-400"
+              className="rounded-lg bg-sky-500 px-2.5 py-1 text-[11px] font-semibold text-slate-950 transition-colors hover:bg-sky-400"
             >
               Next: {MODE_TABS.find((t) => t.id === tutorialStep.nextMode)?.shortLabel}
             </button>
@@ -312,56 +342,27 @@ export function VisualExplanationsSection({
       {statusFeedback && (
         <div
           role="status"
-          className="flex items-center gap-2 rounded-lg border border-emerald-500/35 bg-emerald-500/10 px-3.5 py-2 text-xs font-medium text-emerald-400"
+          className="flex items-center gap-2 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400"
         >
-          <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <CheckCircle2 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           <span>{statusFeedback}</span>
         </div>
       )}
 
-      {/* 4-Mode Switcher */}
-      <div
-        role="tablist"
-        aria-label="Visual explanation modes"
-        className="grid grid-cols-2 gap-2 sm:grid-cols-4"
-      >
-        {MODE_TABS.map((tab) => {
-          const Icon = tab.icon;
-          const active = activeMode === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => setActiveMode(tab.id)}
-              className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-semibold transition-all ${
-                active
-                  ? 'border-emerald-500 bg-emerald-500 text-slate-950 shadow-sm'
-                  : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-emerald-500/40 hover:text-terminal-text'
-              }`}
-            >
-              <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-              <span className="truncate">{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
       {/* MODE 1: TEXT EXPLANATION */}
       {activeMode === 'text' && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {lesson.sections.map((section) => (
             <article
               key={section.id}
-              className="rounded-xl border border-terminal-border bg-terminal-surface p-4 sm:p-5"
+              className="rounded-xl border border-terminal-border bg-terminal-surface p-4"
             >
               <h3 className="text-sm font-semibold text-terminal-text">{section.heading}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-terminal-muted">
+              <p className="mt-1.5 text-xs leading-relaxed text-terminal-muted sm:text-sm">
                 {section.body}
               </p>
               {section.bulletPoints.length > 0 && (
-                <ul className="mt-3 space-y-1.5">
+                <ul className="mt-2.5 space-y-1">
                   {section.bulletPoints.map((bullet) => (
                     <li
                       key={bullet}
@@ -376,8 +377,10 @@ export function VisualExplanationsSection({
                   ))}
                 </ul>
               )}
-              <div className="mt-3 rounded-lg border border-emerald-500/25 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-300">
-                <strong className="font-semibold text-emerald-400">Key Takeaway: </strong>
+              <div className="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-300">
+                <strong className="font-semibold text-emerald-600 dark:text-emerald-400">
+                  Takeaway:{' '}
+                </strong>
                 {section.keyTakeaway}
               </div>
             </article>
@@ -390,23 +393,53 @@ export function VisualExplanationsSection({
 
       {/* MODE 3: VIDEO EXPLANATION */}
       {activeMode === 'video' && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {!activeResourceBundle ? (
-            <div className="rounded-xl border border-terminal-border bg-terminal-surface p-6 text-center">
-              <AlertCircle className="mx-auto h-6 w-6 text-amber-400" aria-hidden="true" />
-              <p className="mt-2 text-sm font-semibold text-terminal-text">
-                No Verified Video Published for This Lesson Yet
-              </p>
-              <p className="mt-1 text-xs text-terminal-muted">
-                Use the Diagram Explanation and Historical Chart Example tabs, or curate a
-                verified YouTube video inside the Admin Console.
-              </p>
+            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-terminal-border bg-terminal-bg/60 px-5 py-8 text-center">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-500 dark:text-rose-400">
+                <Youtube className="h-5 w-5" aria-hidden="true" />
+              </div>
+              <div className="max-w-sm space-y-1">
+                <p className="text-sm font-semibold text-terminal-text">
+                  No YouTube link added yet
+                </p>
+                <p className="text-xs text-terminal-muted">
+                  {isAdmin
+                    ? 'Paste a YouTube URL with a lesson timestamp — zero downloads, instant redirect.'
+                    : 'Curated YouTube links with lesson timestamps will appear here once published.'}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                {isAdmin && (
+                  <Link
+                    to={`/admin/visual-library?lesson=${lesson.slug}`}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400"
+                  >
+                    <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                    Paste YouTube Link
+                  </Link>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setActiveMode('diagram')}
+                  className="rounded-full border border-terminal-border bg-terminal-surface px-3.5 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-emerald-500/40"
+                >
+                  Open Diagram
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveMode('chart')}
+                  className="rounded-full border border-terminal-border bg-terminal-surface px-3.5 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-emerald-500/40"
+                >
+                  Open Chart
+                </button>
+              </div>
             </div>
           ) : (
             <>
-              {resources.length > 1 && (
-                <div className="flex flex-wrap items-center gap-2">
-                  {resources.map((item) => {
+              {externalVideoResources.length > 1 && (
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {externalVideoResources.map((item) => {
                     const selected = item.resource.id === activeResourceBundle.resource.id;
                     return (
                       <button
@@ -419,9 +452,9 @@ export function VisualExplanationsSection({
                           setSeekEndSeconds(null);
                           setSeekTriggerKey(0);
                         }}
-                        className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
+                        className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
                           selected
-                            ? 'border-emerald-500 bg-emerald-500/15 text-emerald-400'
+                            ? 'border-emerald-500 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
                             : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
                         }`}
                       >
@@ -429,19 +462,6 @@ export function VisualExplanationsSection({
                       </button>
                     );
                   })}
-                </div>
-              )}
-
-              {/* Before Watching Focus */}
-              {activeResourceBundle.mapping.beforeWatchContext && (
-                <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 px-4 py-3">
-                  <p className="flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-sky-400">
-                    <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-                    Before Watching — What to Look For
-                  </p>
-                  <p className="mt-1 text-xs leading-relaxed text-terminal-text">
-                    {activeResourceBundle.mapping.beforeWatchContext}
-                  </p>
                 </div>
               )}
 
@@ -453,36 +473,43 @@ export function VisualExplanationsSection({
                 onPlaybackActivated={handlePlaybackActivated}
               />
 
-              {/* Video Action Controls */}
-              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-terminal-border bg-terminal-surface px-4 py-3">
-                <div className="text-xs text-terminal-muted">
-                  <strong className="text-terminal-text">
-                    {activeResourceBundle.resource.title}
-                  </strong>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
+              {/* Compact Video Action Strip */}
+              <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+                <p className="min-w-0 truncate text-xs font-semibold text-terminal-text">
+                  {activeResourceBundle.resource.title}
+                </p>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  {isAdmin && (
+                    <Link
+                      to={`/admin/visual-library?lesson=${lesson.slug}`}
+                      className="inline-flex items-center gap-1 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1 text-[11px] font-medium text-terminal-muted transition-colors hover:border-emerald-500/40 hover:text-emerald-500 dark:hover:text-emerald-400"
+                    >
+                      <Plus className="h-3 w-3" aria-hidden="true" />
+                      Add Link
+                    </Link>
+                  )}
                   <button
                     type="button"
                     onClick={() => {
                       setBookmarkTargetSegment(null);
                       setBookmarkDialogOpen(true);
                     }}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-elevated px-3 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-amber-500/50 hover:text-amber-400"
+                    className="inline-flex items-center gap-1 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1 text-[11px] font-medium text-terminal-text transition-colors hover:border-amber-500/50 hover:text-amber-500 dark:hover:text-amber-400"
                   >
-                    <Bookmark className="h-3.5 w-3.5" aria-hidden="true" />
-                    Save to Library
+                    <Bookmark className="h-3 w-3" aria-hidden="true" />
+                    Save
                   </button>
                   <button
                     type="button"
                     onClick={handleMarkWatched}
-                    className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition-colors ${
                       watchedIds[activeResourceBundle.resource.id]
-                        ? 'border-emerald-500 bg-emerald-500/15 text-emerald-400'
+                        ? 'border-emerald-500 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
                         : 'border-emerald-500/40 bg-emerald-500 text-slate-950 hover:bg-emerald-400'
                     }`}
                   >
-                    <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                    {watchedIds[activeResourceBundle.resource.id] ? 'Watched' : 'Mark as Watched'}
+                    <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
+                    {watchedIds[activeResourceBundle.resource.id] ? 'Watched' : 'Mark Watched'}
                   </button>
                 </div>
               </div>
@@ -490,6 +517,8 @@ export function VisualExplanationsSection({
               <TimestampNavigator
                 segments={activeResourceBundle.segments}
                 activeSegmentId={activeSegmentId}
+                externalVideoId={activeResourceBundle.resource.externalVideoId}
+                sourceUrl={activeResourceBundle.resource.sourceUrl}
                 onSelectSegment={handleSelectSegment}
                 onBookmarkSegment={(segment) => {
                   setBookmarkTargetSegment(segment);
@@ -497,30 +526,51 @@ export function VisualExplanationsSection({
                 }}
               />
 
-              {/* After Watching Takeaways */}
-              {activeResourceBundle.mapping.afterWatchTakeaways.length > 0 && (
-                <div className="rounded-xl border border-terminal-border bg-terminal-surface p-4">
-                  <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-emerald-400">
-                    After Watching — Key Takeaways
-                  </h4>
-                  <ul className="mt-2.5 space-y-1.5">
-                    {activeResourceBundle.mapping.afterWatchTakeaways.map((takeaway) => (
-                      <li
-                        key={takeaway}
-                        className="flex items-start gap-2 text-xs leading-relaxed text-terminal-text"
-                      >
-                        <CheckCircle2
-                          className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400"
-                          aria-hidden="true"
-                        />
-                        <span>{takeaway}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              {/* Collapsible Before/After Study Notes */}
+              {hasStudyNotes && (
+                <details className="group rounded-xl border border-terminal-border bg-terminal-bg/60">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3.5 py-2.5 text-xs font-medium text-terminal-text">
+                    <span>Study Notes (Before &amp; After Watching)</span>
+                    <ChevronDown
+                      className="h-3.5 w-3.5 text-terminal-muted transition-transform group-open:rotate-180"
+                      aria-hidden="true"
+                    />
+                  </summary>
+                  <div className="space-y-3 border-t border-terminal-border px-3.5 py-3 text-xs">
+                    {activeResourceBundle.mapping.beforeWatchContext && (
+                      <div>
+                        <p className="font-mono text-[11px] font-semibold uppercase tracking-wider text-sky-500 dark:text-sky-400">
+                          Before Watching — What to Look For
+                        </p>
+                        <p className="mt-1 leading-relaxed text-terminal-muted">
+                          {activeResourceBundle.mapping.beforeWatchContext}
+                        </p>
+                      </div>
+                    )}
+                    {activeResourceBundle.mapping.afterWatchTakeaways.length > 0 && (
+                      <div>
+                        <p className="font-mono text-[11px] font-semibold uppercase tracking-wider text-emerald-500 dark:text-emerald-400">
+                          After Watching — Key Takeaways
+                        </p>
+                        <ul className="mt-1.5 space-y-1">
+                          {activeResourceBundle.mapping.afterWatchTakeaways.map((takeaway) => (
+                            <li
+                              key={takeaway}
+                              className="flex items-start gap-2 leading-relaxed text-terminal-text"
+                            >
+                              <CheckCircle2
+                                className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400"
+                                aria-hidden="true"
+                              />
+                              <span>{takeaway}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </details>
               )}
-
-              <ResourceAttributionCard resource={activeResourceBundle.resource} />
 
               <BookmarkNotesDialog
                 isOpen={bookmarkDialogOpen}
@@ -537,17 +587,17 @@ export function VisualExplanationsSection({
 
       {/* MODE 4: HISTORICAL CHART EXAMPLE */}
       {activeMode === 'chart' && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {scenarios.length > 1 && (
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1.5">
               {scenarios.map((scenario, index) => (
                 <button
                   key={scenario.id}
                   type="button"
                   onClick={() => setSelectedScenarioIndex(index)}
-                  className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
+                  className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
                     index === selectedScenarioIndex
-                      ? 'border-emerald-500 bg-emerald-500/15 text-emerald-400'
+                      ? 'border-emerald-500 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
                       : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
                   }`}
                 >
@@ -563,40 +613,44 @@ export function VisualExplanationsSection({
               comparisonScenario={comparisonScenario}
             />
           ) : (
-            <div className="rounded-xl border border-terminal-border bg-terminal-surface p-6 text-center text-xs text-terminal-muted">
+            <div className="rounded-xl border border-terminal-border bg-terminal-surface p-5 text-center text-xs text-terminal-muted">
               No historical candlestick scenarios linked to this lesson yet.
             </div>
           )}
         </div>
       )}
 
-      {/* Related Terminology Strip */}
+      {/* Collapsible Key Terminology */}
       {lesson.terminology.length > 0 && (
-        <div className="border-t border-terminal-border pt-4">
-          <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-terminal-muted">
-            Related Terminology
-          </h3>
-          <div className="mt-2.5 grid grid-cols-1 gap-2.5 md:grid-cols-3">
+        <details className="group rounded-xl border border-terminal-border bg-terminal-bg/60">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3.5 py-2.5 text-xs font-medium text-terminal-text">
+            <span>Key Terminology ({lesson.terminology.length})</span>
+            <ChevronDown
+              className="h-3.5 w-3.5 text-terminal-muted transition-transform group-open:rotate-180"
+              aria-hidden="true"
+            />
+          </summary>
+          <div className="grid grid-cols-1 gap-2 border-t border-terminal-border p-3 md:grid-cols-3">
             {lesson.terminology.map((entry) => (
               <div
                 key={entry.term}
-                className="rounded-xl border border-terminal-border bg-terminal-bg/80 p-3"
+                className="rounded-lg border border-terminal-border bg-terminal-surface p-2.5"
               >
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-1.5">
                   <span className="text-xs font-semibold text-terminal-text">{entry.term}</span>
                   {entry.shortCode && (
-                    <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-emerald-400">
+                    <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
                       {entry.shortCode}
                     </span>
                   )}
                 </div>
-                <p className="mt-1 text-xs leading-relaxed text-terminal-muted">
+                <p className="mt-1 text-[11px] leading-snug text-terminal-muted">
                   {entry.definition}
                 </p>
               </div>
             ))}
           </div>
-        </div>
+        </details>
       )}
     </section>
   );

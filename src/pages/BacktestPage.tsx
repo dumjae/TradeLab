@@ -396,17 +396,16 @@ export function BacktestPage() {
 
   return (
     <div className="mx-auto max-w-[1400px] space-y-5">
-      <header className="flex items-start gap-3.5 px-1">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-500 dark:text-emerald-400">
-          <LineChart className="h-5 w-5" aria-hidden="true" />
+      <header className="flex items-center gap-3 px-1">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-500 dark:text-emerald-400">
+          <LineChart className="h-4.5 w-4.5" aria-hidden="true" />
         </span>
         <div className="min-w-0">
-          <h1 className="text-xl font-semibold tracking-tight text-terminal-text">
+          <h1 className="text-lg font-semibold tracking-tight text-terminal-text">
             Market Backtester
           </h1>
-          <p className="mt-0.5 text-xs leading-relaxed text-terminal-muted">
-            Pick any market, timeframe, or historical date window and replay bar by bar with hidden
-            future candles.
+          <p className="truncate text-xs text-terminal-muted">
+            Bar-by-bar historical replay with hidden future candles.
           </p>
         </div>
       </header>

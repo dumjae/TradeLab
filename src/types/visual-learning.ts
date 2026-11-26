@@ -194,6 +194,7 @@ export interface ExplainDifferentlyRequest {
   userQuestion?: string;
   activeQuestionId?: string;
   hasSubmittedAnswer?: boolean;
+  preferOnlineAi?: boolean;
 }
 
 export interface ExplainDifferentlyResponse {

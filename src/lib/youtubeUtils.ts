@@ -62,6 +62,8 @@ const IPV4_PATTERN = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
 const TRADINGVIEW_SUBDOMAIN_PATTERN = /^[a-z0-9-]+\.tradingview\.com$/;
 const TIMESTAMP_HHMMSS_PATTERN = /^(\d{1,2}):([0-5]\d):([0-5]\d)$/;
 const TIMESTAMP_MMSS_PATTERN = /^([0-5]?\d):([0-5]\d)$/;
+const YOUTUBE_TIME_SECONDS_PATTERN = /^(\d{1,7})s?$/i;
+const YOUTUBE_TIME_HMS_PATTERN = /^(?:(\d{1,4})h)?(?:(\d{1,5})m)?(?:(\d{1,6})s)?$/i;
 const CHAPTER_LINE_PATTERN =
   /^\s*(?:[-*•]\s+)?(?:\[((?:\d{1,2}:)?[0-5]?\d:[0-5]\d)\]|\(((?:\d{1,2}:)?[0-5]?\d:[0-5]\d)\)|((?:\d{1,2}:)?[0-5]?\d:[0-5]\d))(?:\s*[-–—|]\s*|\s*:\s+|\s+)(.+?)\s*$/;
 
@@ -208,6 +210,50 @@ export function extractYouTubeVideoId(url: string): string | null {
   }
 
   return candidate;
+}
+
+function parseYouTubeTimeParam(rawValue: string): number | null {
+  const trimmed = rawValue.trim();
+  if (!trimmed || trimmed.length > 32) {
+    return null;
+  }
+
+  const secondsMatch = trimmed.match(YOUTUBE_TIME_SECONDS_PATTERN);
+  if (secondsMatch) {
+    const seconds = Number.parseInt(secondsMatch[1], 10);
+    return Number.isSafeInteger(seconds) && seconds >= 0 ? seconds : null;
+  }
+
+  const hmsMatch = trimmed.match(YOUTUBE_TIME_HMS_PATTERN);
+  if (hmsMatch && (hmsMatch[1] || hmsMatch[2] || hmsMatch[3])) {
+    const hours = hmsMatch[1] ? Number.parseInt(hmsMatch[1], 10) : 0;
+    const minutes = hmsMatch[2] ? Number.parseInt(hmsMatch[2], 10) : 0;
+    const seconds = hmsMatch[3] ? Number.parseInt(hmsMatch[3], 10) : 0;
+    const total = hours * 3600 + minutes * 60 + seconds;
+    return Number.isSafeInteger(total) && total >= 0 ? total : null;
+  }
+
+  return parseTimestampToSeconds(trimmed);
+}
+
+export function extractYouTubeTimestampFromUrl(rawUrl: string): number | null {
+  const { url: parsed } = parseStrictHttpsUrl(rawUrl);
+  if (!parsed || !extractYouTubeVideoId(rawUrl)) {
+    return null;
+  }
+
+  const candidates = [parsed.searchParams.get('t'), parsed.searchParams.get('start')];
+  for (const candidate of candidates) {
+    if (typeof candidate !== 'string') {
+      continue;
+    }
+    const parsedSeconds = parseYouTubeTimeParam(candidate);
+    if (parsedSeconds !== null) {
+      return parsedSeconds;
+    }
+  }
+
+  return null;
 }
 
 export function buildNoCookieEmbedUrl(

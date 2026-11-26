@@ -6,7 +6,11 @@ import {
   parseAndGuardLlmResponse,
 } from '../../api/_lib/mentorGrounding';
 import { CURRICULUM_LESSONS, EXPLANATION_STYLE_LIST } from '../data/curriculum';
-import { askAIMentor, requestAlternativeExplanation } from '../services/aiMentorService';
+import {
+  askAIMentor,
+  findOfflineTerminologyMatch,
+  requestAlternativeExplanation,
+} from '../services/aiMentorService';
 import type { LessonResourceWithDetails } from '../types/visual-learning';
 
 const SAMPLE_LESSON = CURRICULUM_LESSONS[0]; // market-structure
@@ -283,5 +287,117 @@ describe('aiMentorService — 6 explanation styles & Practice Mode guard', () =>
 
     expect(postSubmitMsg.style).toBe('comparison');
     expect(postSubmitMsg.isPracticeGuardActive).toBe(false);
+  });
+});
+
+describe('aiMentorService — offline terminology lookup & hybrid AI routing', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('matches direct lesson terminology definitions offline and ignores complex analytical questions', () => {
+    expect(findOfflineTerminologyMatch(SAMPLE_LESSON, 'Break of Structure')?.shortCode).toBe('BOS');
+    expect(findOfflineTerminologyMatch(SAMPLE_LESSON, 'BOS')?.term).toBe('Break of Structure');
+    expect(findOfflineTerminologyMatch(SAMPLE_LESSON, 'What is BOS?')?.term).toBe(
+      'Break of Structure',
+    );
+    expect(
+      findOfflineTerminologyMatch(SAMPLE_LESSON, 'What does Protected Swing mean in this lesson?')
+        ?.term,
+    ).toBe('Protected Swing');
+    expect(findOfflineTerminologyMatch(SAMPLE_LESSON, 'Define HH')?.shortCode).toBe('HH / HL');
+    expect(findOfflineTerminologyMatch(SAMPLE_LESSON, 'Higher High')?.shortCode).toBe('HH / HL');
+
+    // Complex/open-ended analytical questions must NOT match offline glossary
+    expect(findOfflineTerminologyMatch(SAMPLE_LESSON, 'BOS vs liquidity sweep')).toBeNull();
+    expect(
+      findOfflineTerminologyMatch(SAMPLE_LESSON, 'How do I plan an entry on Break of Structure?'),
+    ).toBeNull();
+    expect(findOfflineTerminologyMatch(SAMPLE_LESSON, 'What mistake causes BOS traps?')).toBeNull();
+    expect(findOfflineTerminologyMatch(SAMPLE_LESSON, 'What is an unknown term?')).toBeNull();
+    expect(findOfflineTerminologyMatch(SAMPLE_LESSON, '')).toBeNull();
+  });
+
+  it('resolves preset explanation styles offline without calling fetch when preferOnlineAi is unset', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
+
+    const result = await requestAlternativeExplanation({
+      lessonSlug: SAMPLE_LESSON.slug,
+      conceptKey: SAMPLE_LESSON.conceptKey,
+      style: 'analogy_based',
+      mode: 'lesson',
+    });
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(result.sourceType).toBe('deterministic_fallback');
+    expect(result.style).toBe('analogy_based');
+    expect(result.headline).toBe(SAMPLE_LESSON.fallbackExplanations.analogy_based.headline);
+    expect(result.citations.length).toBeGreaterThan(0);
+  });
+
+  it('resolves simple glossary lookups in askAIMentor offline without calling fetch', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
+
+    const reply = await askAIMentor({
+      lessonSlug: SAMPLE_LESSON.slug,
+      mode: 'lesson',
+      userMessage: 'What is BOS?',
+    });
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(reply.sourceType).toBe('deterministic_fallback');
+    expect(reply.content).toContain('Break of Structure (BOS) — Quick Lesson Glossary');
+    expect(reply.citations.length).toBeGreaterThan(0);
+  });
+
+  it('calls /api/mentor/explain-differently for custom open-ended questions and falls back cleanly offline when unreachable', async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockRejectedValue(new Error('Network unreachable'));
+
+    const reply = await askAIMentor({
+      lessonSlug: SAMPLE_LESSON.slug,
+      mode: 'lesson',
+      userMessage: 'Why did price sweep the prior high before forming a valid BOS?',
+    });
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(fetchSpy.mock.calls[0]?.[0]).toBe('/api/mentor/explain-differently');
+    expect(reply.sourceType).toBe('deterministic_fallback');
+    expect(reply.isPracticeGuardActive).toBe(false);
+    expect(reply.content).toContain('Key Takeaway:');
+    expect(reply.citations.length).toBeGreaterThan(0);
+  });
+
+  it('uses the online Gemini mentor response when preferOnlineAi is true and /api/mentor/explain-differently succeeds', async () => {
+    const onlinePayload = {
+      style: 'step_by_step_visual' as const,
+      headline: 'Live Gemini BOS Walkthrough',
+      explanation: 'Wait for a full candle body close above the structural swing high.',
+      steps: ['Mark the last swing high.', 'Confirm the candle closes cleanly above it.'],
+      keyTakeaway: 'Candle closes confirm structure; wicks sweep liquidity.',
+      sourceType: 'llm_grounded' as const,
+      isPracticeGuardActive: false,
+      citations: [],
+    };
+
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify(onlinePayload), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+
+    const result = await requestAlternativeExplanation({
+      lessonSlug: SAMPLE_LESSON.slug,
+      conceptKey: SAMPLE_LESSON.conceptKey,
+      style: 'step_by_step_visual',
+      mode: 'lesson',
+      preferOnlineAi: true,
+    });
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(fetchSpy.mock.calls[0]?.[0]).toBe('/api/mentor/explain-differently');
+    expect(result).toEqual(onlinePayload);
   });
 });

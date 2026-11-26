@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildNoCookieEmbedUrl,
+  extractYouTubeTimestampFromUrl,
   extractYouTubeVideoId,
   formatTimestamp,
   isAllowedEducationalUrl,
@@ -97,6 +98,45 @@ describe('youtubeUtils — video ID extraction, embed URLs, timestamps & chapter
     expect(parseTimestampToSeconds('invalid')).toBeNull();
     expect(parseTimestampToSeconds('02:75')).toBeNull();
     expect(parseTimestampToSeconds('')).toBeNull();
+  });
+
+  it('extracts YouTube timestamps from ?t=, &t=, and ?start= URLs and rejects invalid/spoofed URLs', () => {
+    expect(extractYouTubeTimestampFromUrl('https://youtu.be/abcDEF_1234?t=135')).toBe(135);
+    expect(extractYouTubeTimestampFromUrl('https://www.youtube.com/watch?v=abcDEF_1234&t=135s')).toBe(
+      135,
+    );
+    expect(extractYouTubeTimestampFromUrl('https://www.youtube.com/watch?v=abcDEF_1234&t=2m15s')).toBe(
+      135,
+    );
+    expect(
+      extractYouTubeTimestampFromUrl('https://www.youtube.com/watch?v=abcDEF_1234&t=1h2m10s'),
+    ).toBe(3730);
+    expect(
+      extractYouTubeTimestampFromUrl('https://www.youtube-nocookie.com/embed/abcDEF_1234?start=90'),
+    ).toBe(90);
+    expect(extractYouTubeTimestampFromUrl('https://youtu.be/abcDEF_1234?start=90')).toBe(90);
+
+    // No timestamp or invalid timestamp param
+    expect(extractYouTubeTimestampFromUrl('https://www.youtube.com/watch?v=abcDEF_1234')).toBeNull();
+    expect(
+      extractYouTubeTimestampFromUrl('https://www.youtube.com/watch?v=abcDEF_1234&t=invalid'),
+    ).toBeNull();
+    expect(
+      extractYouTubeTimestampFromUrl('https://www.youtube.com/watch?v=abcDEF_1234&t=-15'),
+    ).toBeNull();
+
+    // Non-HTTPS, spoofed, non-YouTube, or malformed video ID URLs -> null
+    expect(
+      extractYouTubeTimestampFromUrl('http://www.youtube.com/watch?v=abcDEF_1234&t=135'),
+    ).toBeNull();
+    expect(
+      extractYouTubeTimestampFromUrl('https://youtube.com.evil.com/watch?v=abcDEF_1234&t=135'),
+    ).toBeNull();
+    expect(extractYouTubeTimestampFromUrl('javascript:alert(1)')).toBeNull();
+    expect(extractYouTubeTimestampFromUrl('https://www.youtube.com/watch?v=short&t=135')).toBeNull();
+    expect(
+      extractYouTubeTimestampFromUrl('https://www.tradingview.com/chart/EURUSD/?t=135'),
+    ).toBeNull();
   });
 
   it('parses verified chronological YouTube chapters from descriptions and rejects invalid lists', () => {
