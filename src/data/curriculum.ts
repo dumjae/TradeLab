@@ -4,6 +4,7 @@ import type {
   Lesson,
 } from '../types/academy';
 import type { LessonResourceWithDetails } from '../types/visual-learning';
+import { VERIFIED_YOUTUBE_RESOURCES } from './verifiedVideos';
 
 export const EXPLANATION_STYLE_LIST: ExplanationStyleMeta[] = [
   {
@@ -1880,10 +1881,12 @@ export const CURRICULUM_LESSONS: Lesson[] = [
 ];
 
 /**
- * Original TradeLab Academy visual materials (strictly tradelab_original — ZERO fabricated YouTube URLs!).
- * Third-party YouTube/TradingView videos are curated legitimately via Admin Console + YouTube Data API.
+ * Starter curated visual resources combining live-verified YouTube educational videos
+ * (displayOrder 1–3) with original TradeLab Academy visual guides (displayOrder 10).
+ * Additional third-party resources can be curated via Admin Console + YouTube Data API.
  */
 export const STARTER_ORIGINAL_RESOURCES: LessonResourceWithDetails[] = [
+  ...VERIFIED_YOUTUBE_RESOURCES,
   {
     mapping: {
       id: '30000000-0000-4000-8000-000000000001',
@@ -1891,7 +1894,7 @@ export const STARTER_ORIGINAL_RESOURCES: LessonResourceWithDetails[] = [
       lessonSlug: 'market-structure',
       resourceId: '40000000-0000-4000-8000-000000000001',
       relevanceScore: 98,
-      displayOrder: 1,
+      displayOrder: 10,
       beforeWatchContext:
         'Study how each Higher Low launches a body-close Break of Structure on EUR/USD 15m before exploring external video walkthroughs.',
       afterWatchTakeaways: [
@@ -1932,7 +1935,7 @@ export const STARTER_ORIGINAL_RESOURCES: LessonResourceWithDetails[] = [
       lessonSlug: 'market-liquidity',
       resourceId: '40000000-0000-4000-8000-000000000002',
       relevanceScore: 97,
-      displayOrder: 1,
+      displayOrder: 10,
       beforeWatchContext:
         'Trace how Gold builds Buy-Side Liquidity above 2348.5 and Sell-Side Liquidity below 2324.0 before rotating pool-to-pool.',
       afterWatchTakeaways: [
@@ -1973,7 +1976,7 @@ export const STARTER_ORIGINAL_RESOURCES: LessonResourceWithDetails[] = [
       lessonSlug: 'equal-highs-lows',
       resourceId: '40000000-0000-4000-8000-000000000003',
       relevanceScore: 97,
-      displayOrder: 1,
+      displayOrder: 10,
       beforeWatchContext:
         'Observe how three aligned NAS100 highs around 18,520 concentrate stop orders prior to the sweep reversal.',
       afterWatchTakeaways: [
@@ -2014,7 +2017,7 @@ export const STARTER_ORIGINAL_RESOURCES: LessonResourceWithDetails[] = [
       lessonSlug: 'liquidity-sweeps',
       resourceId: '40000000-0000-4000-8000-000000000004',
       relevanceScore: 100,
-      displayOrder: 1,
+      displayOrder: 10,
       beforeWatchContext:
         'Flagship comparison: inspect candle close location and follow-through across EUR/USD Sweep vs. BTC/USD True Breakout.',
       afterWatchTakeaways: [
@@ -2055,7 +2058,7 @@ export const STARTER_ORIGINAL_RESOURCES: LessonResourceWithDetails[] = [
       lessonSlug: 'fair-value-gaps',
       resourceId: '40000000-0000-4000-8000-000000000005',
       relevanceScore: 97,
-      displayOrder: 1,
+      displayOrder: 10,
       beforeWatchContext:
         'Follow the exact Candle 1 High to Candle 3 Low gap coordinates and watch the 50% equilibrium reaction on EUR/USD 15m.',
       afterWatchTakeaways: [
@@ -2096,7 +2099,7 @@ export const STARTER_ORIGINAL_RESOURCES: LessonResourceWithDetails[] = [
       lessonSlug: 'risk-psychology',
       resourceId: '40000000-0000-4000-8000-000000000006',
       relevanceScore: 98,
-      displayOrder: 1,
+      displayOrder: 10,
       beforeWatchContext:
         'Examine how pre-defined 1R invalidation and fixed position sizing make holding to +3R psychologically manageable.',
       afterWatchTakeaways: [

@@ -6,14 +6,22 @@ import {
   CheckCircle2,
   ChevronDown,
   Compass,
+  ExternalLink,
   Flag,
   Layers,
   LineChart,
+  Play,
   PlayCircle,
   Plus,
   Youtube,
 } from 'lucide-react';
 import { getChartScenariosByLessonSlug } from '../../data/chartScenarios';
+import {
+  buildYouTubeThumbnailUrl,
+  buildYouTubeWatchUrl,
+  formatTimestamp,
+  isValidYouTubeVideoId,
+} from '../../lib/youtubeUtils';
 import { recordConceptStruggle } from '../../services/difficultConceptsService';
 import {
   recordLearningProgress,
@@ -87,6 +95,38 @@ const TUTORIAL_STEPS: Record<
   },
 };
 
+function getVideoSourcePriority(item: LessonResourceWithDetails): number {
+  if (item.resource.sourceType === 'youtube') {
+    return 0;
+  }
+  if (item.resource.contentType === 'video') {
+    return 1;
+  }
+  return 2;
+}
+
+function resolveVideoThumbnailUrl(item: LessonResourceWithDetails): string | null {
+  if (item.resource.thumbnailUrl) {
+    return item.resource.thumbnailUrl;
+  }
+  const videoId = item.resource.externalVideoId;
+  if (videoId && isValidYouTubeVideoId(videoId)) {
+    return buildYouTubeThumbnailUrl(videoId, 'mq');
+  }
+  return null;
+}
+
+function resolveVideoExternalUrl(item: LessonResourceWithDetails): string | null {
+  const videoId = item.resource.externalVideoId;
+  if (videoId && isValidYouTubeVideoId(videoId)) {
+    return buildYouTubeWatchUrl(videoId);
+  }
+  if (item.resource.sourceUrl.startsWith('https://')) {
+    return item.resource.sourceUrl;
+  }
+  return null;
+}
+
 export function VisualExplanationsSection({
   lesson,
   resources,
@@ -109,6 +149,7 @@ export function VisualExplanationsSection({
   const [bookmarkTargetSegment, setBookmarkTargetSegment] =
     useState<ResourceSegment | null>(null);
   const [watchedIds, setWatchedIds] = useState<Record<string, boolean>>({});
+  const [failedThumbIds, setFailedThumbIds] = useState<Record<string, boolean>>({});
   const [statusFeedback, setStatusFeedback] = useState<string | null>(null);
 
   const scenarios = useMemo(
@@ -118,7 +159,17 @@ export function VisualExplanationsSection({
   const [selectedScenarioIndex, setSelectedScenarioIndex] = useState<number>(0);
 
   const externalVideoResources = useMemo(
-    () => resources.filter((item) => item.resource.sourceType !== 'tradelab_original'),
+    () =>
+      resources
+        .filter((item) => item.resource.sourceType !== 'tradelab_original')
+        .slice()
+        .sort((a, b) => {
+          const priorityDiff = getVideoSourcePriority(a) - getVideoSourcePriority(b);
+          if (priorityDiff !== 0) {
+            return priorityDiff;
+          }
+          return a.mapping.displayOrder - b.mapping.displayOrder;
+        }),
     [resources],
   );
 
@@ -141,10 +192,7 @@ export function VisualExplanationsSection({
     ) {
       setSelectedResourceId(initialResourceId);
     } else if (externalVideoResources.length > 0) {
-      const preferredVideo = externalVideoResources.find(
-        (item) => item.resource.sourceType === 'youtube' || item.resource.contentType === 'video',
-      );
-      setSelectedResourceId((preferredVideo ?? externalVideoResources[0]).resource.id);
+      setSelectedResourceId(externalVideoResources[0].resource.id);
     } else {
       setSelectedResourceId(null);
     }
@@ -167,6 +215,14 @@ export function VisualExplanationsSection({
       externalVideoResources[0]
     );
   }, [externalVideoResources, selectedResourceId]);
+
+  const handleSelectVideoResource = useCallback((resourceId: string) => {
+    setSelectedResourceId(resourceId);
+    setActiveSegmentId(null);
+    setSeekSeconds(0);
+    setSeekEndSeconds(null);
+    setSeekTriggerKey(0);
+  }, []);
 
   const primaryScenario = scenarios[selectedScenarioIndex] ?? scenarios[0];
   const comparisonScenario =
@@ -437,34 +493,6 @@ export function VisualExplanationsSection({
             </div>
           ) : (
             <>
-              {externalVideoResources.length > 1 && (
-                <div className="flex flex-wrap items-center gap-1.5">
-                  {externalVideoResources.map((item) => {
-                    const selected = item.resource.id === activeResourceBundle.resource.id;
-                    return (
-                      <button
-                        key={item.resource.id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedResourceId(item.resource.id);
-                          setActiveSegmentId(null);
-                          setSeekSeconds(0);
-                          setSeekEndSeconds(null);
-                          setSeekTriggerKey(0);
-                        }}
-                        className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                          selected
-                            ? 'border-emerald-500 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                            : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
-                        }`}
-                      >
-                        {item.resource.title}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
               <LazyVideoPlayer
                 resource={activeResourceBundle.resource}
                 startSeconds={seekSeconds}
@@ -475,9 +503,14 @@ export function VisualExplanationsSection({
 
               {/* Compact Video Action Strip */}
               <div className="flex flex-wrap items-center justify-between gap-2 px-1">
-                <p className="min-w-0 truncate text-xs font-semibold text-terminal-text">
-                  {activeResourceBundle.resource.title}
-                </p>
+                <div className="flex min-w-0 flex-1 items-center gap-2">
+                  <p className="min-w-0 truncate text-xs font-semibold text-terminal-text">
+                    {activeResourceBundle.resource.title}
+                  </p>
+                  <span className="hidden shrink-0 items-center rounded-full border border-terminal-border bg-terminal-bg px-2 py-0.5 text-[10px] font-medium text-terminal-muted sm:inline-flex">
+                    {activeResourceBundle.resource.sourceName}
+                  </span>
+                </div>
                 <div className="flex shrink-0 items-center gap-1.5">
                   {isAdmin && (
                     <Link
@@ -513,6 +546,146 @@ export function VisualExplanationsSection({
                   </button>
                 </div>
               </div>
+
+              {/* Compact Multi-Video Switcher */}
+              {externalVideoResources.length > 1 && (
+                <div className="overflow-hidden rounded-2xl border border-terminal-border bg-terminal-surface">
+                  <div className="flex items-center justify-between border-b border-terminal-border bg-terminal-elevated/40 px-3.5 py-2">
+                    <div className="flex items-center gap-1.5">
+                      <PlayCircle
+                        className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400"
+                        aria-hidden="true"
+                      />
+                      <h4 className="text-[11px] font-semibold uppercase tracking-wider text-terminal-text">
+                        More Videos for This Lesson
+                      </h4>
+                    </div>
+                    <span className="font-mono text-[11px] text-terminal-muted tabular-nums">
+                      {externalVideoResources.length} videos
+                    </span>
+                  </div>
+
+                  <ul className="divide-y divide-terminal-border">
+                    {externalVideoResources.map((item) => {
+                      const isSelected = item.resource.id === activeResourceBundle.resource.id;
+                      const thumbSrc = resolveVideoThumbnailUrl(item);
+                      const showThumb = Boolean(thumbSrc && !failedThumbIds[item.resource.id]);
+                      const externalUrl = resolveVideoExternalUrl(item);
+
+                      return (
+                        <li
+                          key={item.resource.id}
+                          className={`flex items-center justify-between gap-2.5 px-3 py-2 transition-colors ${
+                            isSelected
+                              ? 'bg-emerald-500/10'
+                              : 'hover:bg-terminal-elevated/40'
+                          }`}
+                        >
+                          <button
+                            type="button"
+                            aria-pressed={isSelected}
+                            onClick={() => handleSelectVideoResource(item.resource.id)}
+                            className="group flex min-w-0 flex-1 items-center gap-3 rounded-lg text-left transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                          >
+                            <div
+                              className={`relative aspect-video w-20 shrink-0 overflow-hidden rounded-lg border bg-slate-950 sm:w-24 ${
+                                isSelected
+                                  ? 'border-emerald-500/70'
+                                  : 'border-terminal-border group-hover:border-emerald-500/40'
+                              }`}
+                            >
+                              {showThumb && thumbSrc ? (
+                                <img
+                                  src={thumbSrc}
+                                  alt={`Thumbnail for ${item.resource.title}`}
+                                  loading="lazy"
+                                  onError={() =>
+                                    setFailedThumbIds((prev) => ({
+                                      ...prev,
+                                      [item.resource.id]: true,
+                                    }))
+                                  }
+                                  className="h-full w-full object-cover opacity-85 transition-transform duration-200 group-hover:scale-105 group-hover:opacity-100"
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center bg-slate-900 text-slate-400">
+                                  <Youtube className="h-4 w-4" aria-hidden="true" />
+                                </div>
+                              )}
+
+                              <span
+                                className={`absolute inset-0 flex items-center justify-center transition-colors ${
+                                  isSelected
+                                    ? 'bg-slate-950/15'
+                                    : 'bg-slate-950/25 group-hover:bg-slate-950/10'
+                                }`}
+                                aria-hidden="true"
+                              >
+                                <span
+                                  className={`flex h-6 w-6 items-center justify-center rounded-full shadow-sm transition-transform duration-200 group-hover:scale-105 ${
+                                    isSelected
+                                      ? 'bg-emerald-500 text-slate-950'
+                                      : 'bg-slate-950/80 text-white'
+                                  }`}
+                                >
+                                  <Play className="ml-0.5 h-3 w-3 fill-current" />
+                                </span>
+                              </span>
+
+                              {item.resource.durationSeconds !== null && (
+                                <span className="absolute bottom-1 right-1 rounded bg-slate-950/85 px-1 py-0.5 font-mono text-[9px] font-medium leading-none text-slate-100 tabular-nums">
+                                  {formatTimestamp(item.resource.durationSeconds)}
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="min-w-0 flex-1 space-y-1">
+                              <p
+                                className={`truncate text-xs font-semibold transition-colors ${
+                                  isSelected
+                                    ? 'text-emerald-600 dark:text-emerald-400'
+                                    : 'text-terminal-text group-hover:text-emerald-600 dark:group-hover:text-emerald-400'
+                                }`}
+                              >
+                                {item.resource.title}
+                              </p>
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span className="inline-flex max-w-[160px] items-center truncate rounded-full border border-terminal-border bg-terminal-bg px-2 py-0.5 text-[10px] font-medium text-terminal-muted">
+                                  {item.resource.sourceName}
+                                </span>
+                                {isSelected && (
+                                  <span className="inline-flex items-center rounded-full bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                    Selected
+                                  </span>
+                                )}
+                                {watchedIds[item.resource.id] && (
+                                  <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
+                                    <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
+                                    Watched
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+
+                          {externalUrl && (
+                            <a
+                              href={externalUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`Open ${item.resource.title} on YouTube in a new tab`}
+                              className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-sky-500/35 bg-sky-500/10 px-2.5 py-1.5 text-[11px] font-semibold text-sky-600 transition-colors hover:bg-sky-500 hover:text-slate-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 dark:text-sky-400 dark:hover:text-slate-950"
+                            >
+                              <span>YouTube</span>
+                              <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                            </a>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
 
               <TimestampNavigator
                 segments={activeResourceBundle.segments}

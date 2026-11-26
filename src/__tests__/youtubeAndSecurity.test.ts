@@ -5,10 +5,13 @@ import {
   extractYouTubeVideoId,
   formatTimestamp,
   isAllowedEducationalUrl,
+  isValidYouTubeVideoId,
   parseTimestampToSeconds,
   parseYouTubeChaptersFromDescription,
 } from '../lib/youtubeUtils';
 import { isAllowedServerFetchUrl, sanitizePlainText } from '../../api/_lib/urlSecurity';
+import { CURRICULUM_LESSONS } from '../data/curriculum';
+import { VERIFIED_YOUTUBE_RESOURCES } from '../data/verifiedVideos';
 
 describe('youtubeUtils — video ID extraction, embed URLs, timestamps & chapters', () => {
   it('extracts 11-character YouTube video IDs from supported HTTPS URL formats', () => {
@@ -223,5 +226,50 @@ describe('api/_lib/urlSecurity — SSRF allowlist & text sanitization', () => {
     const dirty = '  \uFEFFHello\u0000 \u202EWorld\u0007\r\nLine 2\tOK  ';
     expect(sanitizePlainText(dirty, 100)).toBe('Hello World\nLine 2\tOK');
     expect(sanitizePlainText('A'.repeat(50), 12)).toBe('A'.repeat(12));
+  });
+});
+
+describe('VERIFIED_YOUTUBE_RESOURCES — curriculum coverage & security integrity', () => {
+  it('contains 16 unique live-verified YouTube resources covering all 6 curriculum lessons with strict validation', () => {
+    expect(CURRICULUM_LESSONS).toHaveLength(6);
+    expect(VERIFIED_YOUTUBE_RESOURCES).toHaveLength(16);
+
+    const seenResourceIds = new Set<string>();
+    const seenVideoIds = new Set<string>();
+    const countsByLessonSlug = new Map<string, number>();
+
+    for (const entry of VERIFIED_YOUTUBE_RESOURCES) {
+      const { mapping, resource, segments } = entry;
+
+      expect(seenResourceIds.has(resource.id), `Duplicate resource.id: ${resource.id}`).toBe(false);
+      seenResourceIds.add(resource.id);
+
+      expect(resource.externalVideoId).toBeTruthy();
+      const videoId = resource.externalVideoId ?? '';
+      expect(seenVideoIds.has(videoId), `Duplicate externalVideoId: ${videoId}`).toBe(false);
+      seenVideoIds.add(videoId);
+
+      expect(isValidYouTubeVideoId(videoId), `Invalid YouTube ID: ${videoId}`).toBe(true);
+      expect(isAllowedEducationalUrl(resource.sourceUrl).valid).toBe(true);
+      expect(resource.nonEndorsementNotice).toBe(true);
+      expect(resource.verificationStatus).toBe('published');
+      expect(segments).toHaveLength(0);
+
+      countsByLessonSlug.set(
+        mapping.lessonSlug,
+        (countsByLessonSlug.get(mapping.lessonSlug) ?? 0) + 1,
+      );
+    }
+
+    expect(seenResourceIds.size).toBe(16);
+    expect(seenVideoIds.size).toBe(16);
+
+    for (const lesson of CURRICULUM_LESSONS) {
+      const videoCount = countsByLessonSlug.get(lesson.slug) ?? 0;
+      expect(
+        videoCount,
+        `Expected lesson "${lesson.slug}" to have at least 2 verified YouTube videos, found ${videoCount}`,
+      ).toBeGreaterThanOrEqual(2);
+    }
   });
 });
