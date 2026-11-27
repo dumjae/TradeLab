@@ -1,14 +1,40 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <rect width="64" height="64" rx="16" fill="#0f131a" />
-  <rect x="2" y="2" width="60" height="60" rx="14" stroke="#262e3d" stroke-width="2" />
-  <!-- TradingView-style reference level -->
-  <line x1="11" y1="22" x2="53" y2="22" stroke="#2962ff" stroke-opacity="0.85" stroke-width="1.8" stroke-dasharray="3 3" stroke-linecap="round" />
-  <!-- Left bearish candle -->
-  <line x1="22" y1="15" x2="22" y2="49" stroke="#f23645" stroke-width="2.6" stroke-linecap="round" />
-  <rect x="16" y="25" width="12" height="15" rx="2.5" fill="#f23645" />
-  <!-- Right bullish breakout candle -->
-  <line x1="42" y1="12" x2="42" y2="51" stroke="#089981" stroke-width="2.8" stroke-linecap="round" />
-  <rect x="36" y="18" width="12" height="24" rx="2.5" fill="#089981" />
-  <!-- Signature blue accent dot -->
-  <circle cx="51" cy="14" r="3" fill="#2962ff" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="tl-favicon-title">
+  <title id="tl-favicon-title">TradeLab Academy</title>
+  <defs>
+    <linearGradient id="tl-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#171d27" />
+      <stop offset="100%" stop-color="#0f131a" />
+    </linearGradient>
+    <linearGradient id="tl-rim" x1="0" y1="0" x2="0" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#384459" />
+      <stop offset="100%" stop-color="#202736" />
+    </linearGradient>
+    <linearGradient id="tl-ink" x1="0" y1="17" x2="0" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f1f4f9" />
+      <stop offset="100%" stop-color="#dfe4ec" />
+    </linearGradient>
+    <linearGradient id="tl-bull" x1="0" y1="13" x2="0" y2="39" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#10b096" />
+      <stop offset="100%" stop-color="#089981" />
+    </linearGradient>
+    <linearGradient id="tl-blue" x1="36.5" y1="42.5" x2="51.5" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4b7dff" />
+      <stop offset="100%" stop-color="#2962ff" />
+    </linearGradient>
+  </defs>
+
+  <!-- Obsidian squircle container & machined bezel hairline -->
+  <rect width="64" height="64" rx="14" fill="url(#tl-bg)" />
+  <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" stroke="url(#tl-rim)" stroke-width="1.5" />
+
+  <!-- Platinum "T" structural monogram -->
+  <rect x="12.5" y="17" width="20.5" height="5.5" rx="1.2" fill="url(#tl-ink)" />
+  <rect x="20" y="17" width="5.5" height="31" rx="1.2" fill="url(#tl-ink)" />
+
+  <!-- Ascending Bull Emerald Candle ("L" vertical column) -->
+  <rect x="38.75" y="13" width="2.5" height="8.5" rx="1" fill="url(#tl-bull)" />
+  <rect x="36.5" y="19.5" width="7" height="20.5" rx="1.2" fill="url(#tl-bull)" />
+
+  <!-- Signal Blue "L" baseline / order-block shelf -->
+  <rect x="36.5" y="42.5" width="15" height="5.5" rx="1.2" fill="url(#tl-blue)" />
 </svg>
