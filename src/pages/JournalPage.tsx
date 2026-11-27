@@ -258,6 +258,9 @@ export function JournalPage() {
             <p className="mt-0.5 font-mono text-[10px] text-terminal-muted tabular-nums">
               Avg {formatR(analytics.avgRMultiple)}
             </p>
+            <p className="mt-0.5 text-[10px] leading-snug text-terminal-muted">
+              Reward ÷ Risk, e.g. +2R = won 2× your risk
+            </p>
           </div>
 
           <div className="rounded-2xl border border-terminal-border/80 bg-terminal-bg/80 p-3.5">
@@ -303,7 +306,9 @@ export function JournalPage() {
                 {formatCurrency(analytics.emotionalLeakPnl)}
               </span>
             </div>
-            <p className="mt-0.5 text-[10px] text-terminal-muted">Disciplined vs. Emotional</p>
+            <p className="mt-0.5 text-[10px] leading-snug text-terminal-muted">
+              Money lost from FOMO / Revenge instead of your plan
+            </p>
           </div>
         </div>
       </header>
@@ -462,6 +467,9 @@ export function JournalPage() {
                   placeholder="2.5 or -1"
                   className="w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 font-mono text-xs text-terminal-text placeholder:text-terminal-muted focus:border-emerald-500 focus:outline-none"
                 />
+                <p className="mt-1 text-[10px] text-terminal-muted">
+                  Reward ÷ Risk, e.g. +2R = won 2× your risk
+                </p>
               </div>
 
               <div>
@@ -829,6 +837,9 @@ export function JournalPage() {
               </p>
               <p className="mt-1 font-mono text-2xl font-bold text-rose-600 dark:text-rose-400 tabular-nums">
                 {formatCurrency(analytics.emotionalLeakPnl)}
+              </p>
+              <p className="mt-1 text-[11px] text-rose-700/80 dark:text-rose-300/80">
+                Money lost from FOMO / Revenge instead of your plan
               </p>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
+  ArrowRight,
   BookOpen,
   Bookmark,
   CheckCircle2,
@@ -8,14 +9,16 @@ import {
   Compass,
   ExternalLink,
   Flag,
+  HelpCircle,
   Layers,
+  Lightbulb,
   LineChart,
   Play,
   PlayCircle,
   Plus,
   Youtube,
 } from 'lucide-react';
-import { getChartScenariosByLessonSlug } from '../../data/chartScenarios';
+import { getChartScenariosForLesson } from '../../data/chartScenarios';
 import {
   buildYouTubeThumbnailUrl,
   buildYouTubeWatchUrl,
@@ -153,8 +156,8 @@ export function VisualExplanationsSection({
   const [statusFeedback, setStatusFeedback] = useState<string | null>(null);
 
   const scenarios = useMemo(
-    () => getChartScenariosByLessonSlug(lesson.slug),
-    [lesson.slug],
+    () => getChartScenariosForLesson(lesson),
+    [lesson],
   );
   const [selectedScenarioIndex, setSelectedScenarioIndex] = useState<number>(0);
 
@@ -330,7 +333,7 @@ export function VisualExplanationsSection({
   return (
     <section
       aria-label={`Visual explanations for ${lesson.title}`}
-      className="space-y-3.5 rounded-2xl border border-terminal-border bg-terminal-surface/70 p-3.5 sm:p-4"
+      className="space-y-4 rounded-3xl border border-terminal-border bg-terminal-surface/70 p-3.5 sm:p-5"
     >
       {/* Compact App-Like Top Bar: 4-Mode Pill Switcher + Flag Difficult */}
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -405,42 +408,133 @@ export function VisualExplanationsSection({
         </div>
       )}
 
-      {/* MODE 1: TEXT EXPLANATION */}
+      {/* MODE 1: TEXT EXPLANATION (VISUAL-FIRST TOTAL-BEGINNER LEARN VIEW) */}
       {activeMode === 'text' && (
-        <div className="space-y-3">
-          {lesson.sections.map((section) => (
-            <article
-              key={section.id}
-              className="rounded-xl border border-terminal-border bg-terminal-surface p-4"
-            >
-              <h3 className="text-sm font-semibold text-terminal-text">{section.heading}</h3>
-              <p className="mt-1.5 text-xs leading-relaxed text-terminal-muted sm:text-sm">
-                {section.body}
+        <div className="space-y-4">
+          {/* 1. Calm "In Plain English" Summary Card */}
+          {lesson.plainEnglishSummary && (
+            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 sm:p-5">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                  <Lightbulb className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <p className="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                  In Plain English
+                </p>
+              </div>
+              <p className="mt-2.5 text-xs leading-relaxed text-terminal-text sm:text-sm">
+                {lesson.plainEnglishSummary}
               </p>
-              {section.bulletPoints.length > 0 && (
-                <ul className="mt-2.5 space-y-1">
-                  {section.bulletPoints.map((bullet) => (
-                    <li
-                      key={bullet}
-                      className="flex items-start gap-2 text-xs leading-relaxed text-terminal-text"
-                    >
-                      <span
-                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400"
+            </div>
+          )}
+
+          {/* 2. Visual Concept Diagram immediately inside Learn View */}
+          <ConceptDiagramSvg config={lesson.diagramConfig} />
+
+          {/* 3. Clear Numbered Plain-English Lesson Sections */}
+          <div className="space-y-3">
+            {lesson.sections.map((section, index) => (
+              <article
+                key={section.id}
+                className="rounded-2xl border border-terminal-border bg-terminal-surface p-4 sm:p-5"
+              >
+                <div className="flex items-start gap-2.5">
+                  <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 font-mono text-[11px] font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <h3 className="text-sm font-semibold leading-snug text-terminal-text sm:text-base">
+                    {section.heading}
+                  </h3>
+                </div>
+                <p className="mt-2 text-xs leading-relaxed text-terminal-muted sm:text-sm">
+                  {section.body}
+                </p>
+                {section.bulletPoints.length > 0 && (
+                  <ul className="mt-3 space-y-1.5">
+                    {section.bulletPoints.map((bullet) => (
+                      <li
+                        key={bullet}
+                        className="flex items-start gap-2 text-xs leading-relaxed text-terminal-text"
+                      >
+                        <span
+                          className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400"
+                          aria-hidden="true"
+                        />
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="mt-3.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3.5 py-2.5 text-xs text-emerald-700 dark:text-emerald-300">
+                  <strong className="font-semibold text-emerald-600 dark:text-emerald-400">
+                    Takeaway:{' '}
+                  </strong>
+                  {section.keyTakeaway}
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {/* 4. Collapsible Common Beginner Questions (FAQ) */}
+          {lesson.beginnerFaq && lesson.beginnerFaq.length > 0 && (
+            <div className="space-y-2.5 rounded-2xl border border-terminal-border bg-terminal-bg/60 p-4">
+              <div className="flex items-center gap-2">
+                <HelpCircle
+                  className="h-4 w-4 shrink-0 text-sky-500 dark:text-sky-400"
+                  aria-hidden="true"
+                />
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-terminal-text">
+                  Common Beginner Questions (FAQ)
+                </h3>
+              </div>
+              <div className="space-y-2">
+                {lesson.beginnerFaq.map((item) => (
+                  <details
+                    key={item.question}
+                    className="group rounded-xl border border-terminal-border/80 bg-terminal-surface"
+                  >
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3.5 py-2.5 text-xs font-medium text-terminal-text">
+                      <span>{item.question}</span>
+                      <ChevronDown
+                        className="h-3.5 w-3.5 shrink-0 text-terminal-muted transition-transform group-open:rotate-180"
                         aria-hidden="true"
                       />
-                      <span>{bullet}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <div className="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-300">
-                <strong className="font-semibold text-emerald-600 dark:text-emerald-400">
-                  Takeaway:{' '}
-                </strong>
-                {section.keyTakeaway}
+                    </summary>
+                    <p className="border-t border-terminal-border/70 px-3.5 py-2.5 text-xs leading-relaxed text-terminal-muted">
+                      {item.answer}
+                    </p>
+                  </details>
+                ))}
               </div>
-            </article>
-          ))}
+            </div>
+          )}
+
+          {/* 5. Guided Next-Step Row */}
+          <div className="flex flex-col gap-2.5 rounded-2xl border border-terminal-border bg-terminal-bg/75 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs font-medium text-terminal-muted">
+              Ready to see this on real price action?
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setActiveMode('chart')}
+                className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 shadow-sm transition-all hover:bg-emerald-400 active:scale-[0.98]"
+              >
+                <LineChart className="h-3.5 w-3.5" aria-hidden="true" />
+                <span>Step 2: Try the Real Historical Chart</span>
+                <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveMode('video')}
+                className="inline-flex items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-surface px-4 py-2 text-xs font-semibold text-terminal-text transition-colors hover:border-sky-500/45 hover:text-sky-600 dark:hover:text-sky-400"
+              >
+                <PlayCircle className="h-3.5 w-3.5 text-sky-500 dark:text-sky-400" aria-hidden="true" />
+                <span>Step 3: Watch Video Walkthrough</span>
+                <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

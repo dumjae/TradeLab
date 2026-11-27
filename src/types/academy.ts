@@ -58,12 +58,25 @@ export interface LessonSection {
 }
 
 export type DiagramKind =
+  | 'candlestick_anatomy'
   | 'market_structure'
+  | 'support_demand'
   | 'liquidity_pools'
   | 'equal_highs_lows'
   | 'liquidity_sweep_vs_breakout'
   | 'fair_value_gap'
-  | 'risk_reward_model';
+  | 'order_block_choch'
+  | 'multi_timeframe'
+  | 'market_sessions'
+  | 'crypto_funding_dominance'
+  | 'stocks_orb_gap'
+  | 'risk_reward_model'
+  | 'trade_management_journal';
+
+export interface BeginnerFaqItem {
+  question: string;
+  answer: string;
+}
 
 export interface DiagramAnnotation {
   id: string;
@@ -192,6 +205,8 @@ export interface Lesson {
   slug: string;
   title: string;
   subtitle: string;
+  plainEnglishSummary?: string;
+  beginnerFaq?: BeginnerFaqItem[];
   level: CurriculumLevel;
   marketCategory: LessonMarketCategory;
   learningStage: LessonStage;

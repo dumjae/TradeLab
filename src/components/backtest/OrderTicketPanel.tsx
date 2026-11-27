@@ -150,6 +150,7 @@ export function OrderTicketPanel({
             onChange={(event) => onRiskPercentChange(Number(event.target.value))}
             className="mt-1.5 w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 font-mono text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
           />
+          <p className="mt-1 text-[10px] text-terminal-muted">Beginners: stick to 0.5%–1%</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {RISK_PRESETS.map((preset) => (
               <button
@@ -223,6 +224,9 @@ export function OrderTicketPanel({
               placeholder={direction === 'long' ? 'Below entry' : 'Above entry'}
               className="mt-1.5 w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 font-mono text-xs text-terminal-text focus:border-rose-500 focus:outline-none"
             />
+            <p className="mt-1 text-[10px] text-terminal-muted">
+              Safety net — auto-exits to cap loss
+            </p>
           </div>
           <div className="min-w-0">
             <label
@@ -242,6 +246,7 @@ export function OrderTicketPanel({
               placeholder={direction === 'long' ? 'Above entry' : 'Below entry'}
               className="mt-1.5 w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 font-mono text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
             />
+            <p className="mt-1 text-[10px] text-terminal-muted">Target — auto-locks profit</p>
             <div className="mt-2 flex gap-1.5">
               {RR_PRESETS.map((ratio) => (
                 <button

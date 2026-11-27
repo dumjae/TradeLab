@@ -5,7 +5,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { MindsetVaultDrawer } from '../components/quotes/MindsetVaultDrawer';
 import { LazyVideoPlayer } from '../components/visual-learning/LazyVideoPlayer';
 import { VisualExplanationsSection } from '../components/visual-learning/VisualExplanationsSection';
-import { CURRICULUM_LESSONS } from '../data/curriculum';
+import { getChartScenariosForLesson } from '../data/chartScenarios';
+import { CURRICULUM_LESSONS, getLessonBySlug } from '../data/curriculum';
 import { AcademyCatalogPage } from '../pages/AcademyCatalogPage';
 import type { EducationalResource, LessonResourceWithDetails } from '../types/visual-learning';
 
@@ -264,5 +265,63 @@ describe('AcademyCatalogPage — 18-lesson catalog & market category filtering',
     for (const lesson of cryptoLessons) {
       expect(screen.queryByText(lesson.title)).not.toBeInTheDocument();
     }
+  });
+});
+
+describe('Wave 3 — Total-Beginner Curriculum & 18/18 Historical Chart Verification', () => {
+  it('All 18 lessons have plain-English beginner summaries, FAQs, and linked historical charts', () => {
+    expect(CURRICULUM_LESSONS).toHaveLength(18);
+
+    for (const lesson of CURRICULUM_LESSONS) {
+      expect(lesson.plainEnglishSummary?.trim().length ?? 0).toBeGreaterThan(0);
+      expect(lesson.beginnerFaq?.length ?? 0).toBeGreaterThanOrEqual(3);
+      for (const faq of lesson.beginnerFaq ?? []) {
+        expect(faq.question.trim().length).toBeGreaterThan(0);
+        expect(faq.answer.trim().length).toBeGreaterThan(0);
+      }
+
+      const scenarios = getChartScenariosForLesson(lesson);
+      expect(scenarios.length).toBeGreaterThanOrEqual(1);
+
+      for (const scenario of scenarios) {
+        expect(scenario.candles.length).toBeGreaterThan(0);
+        for (const candle of scenario.candles) {
+          expect(candle.high).toBeGreaterThanOrEqual(Math.max(candle.open, candle.close));
+          expect(candle.low).toBeLessThanOrEqual(Math.min(candle.open, candle.close));
+        }
+      }
+    }
+  });
+
+  it('Lesson 1 (Candlestick Anatomy) immediately renders plain-English guide, labeled Green/Red candlestick diagram, FAQs, and its linked historical chart', async () => {
+    const user = userEvent.setup();
+    const lesson = getLessonBySlug('candlestick-anatomy');
+    expect(lesson).toBeDefined();
+
+    render(
+      <MemoryRouter>
+        <VisualExplanationsSection lesson={lesson!} resources={[]} />
+      </MemoryRouter>,
+    );
+
+    // Default Learn view immediately displays In Plain English, labeled Green/Red SVG diagram, and FAQs
+    expect(screen.getByText(/In Plain English/i)).toBeInTheDocument();
+    expect(screen.getByText(/GREEN CANDLE — Price Went UP/i)).toBeInTheDocument();
+    expect(screen.getByText(/RED CANDLE — Price Went DOWN/i)).toBeInTheDocument();
+    expect(screen.getAllByText('BODY').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('UPPER WICK').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('LOWER WICK').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('OPEN').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('CLOSE').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText(/Common Beginner Questions/i)).toBeInTheDocument();
+
+    // Switching to Historical Chart displays the linked BTC/USD candlestick anatomy scenario
+    await user.click(screen.getByRole('tab', { name: /Historical Chart/i }));
+    expect(screen.getByRole('tab', { name: /Historical Chart/i })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    expect(screen.getAllByText(/BTC\/USD/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/Structured OHLC Data Preview/i)).toBeInTheDocument();
   });
 });

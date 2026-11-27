@@ -271,6 +271,42 @@ export function DashboardPage({ onOpenVault }: DashboardPageProps) {
         </div>
       </section>
 
+      {/* Friendly Total-Beginner Callout (shown when no lessons completed yet) */}
+      {progressSummary.completedCount === 0 && (
+        <section
+          aria-labelledby="beginner-start-heading"
+          className="rounded-3xl border border-emerald-500/35 bg-emerald-500/5 p-5 shadow-sm sm:p-6"
+        >
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3.5">
+              <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                <CandlestickChart className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <div className="space-y-1">
+                <h2
+                  id="beginner-start-heading"
+                  className="text-sm font-semibold tracking-tight text-terminal-text sm:text-base"
+                >
+                  Brand New to Trading? Start Lesson 01
+                </h2>
+                <p className="max-w-xl text-xs leading-relaxed text-terminal-muted sm:text-sm">
+                  No experience needed — learn what green &amp; red candles mean, where they open
+                  &amp; close, and how to read wicks in 10 minutes.
+                </p>
+              </div>
+            </div>
+
+            <Link
+              to="/academy/candlestick-anatomy"
+              className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2.5 text-xs font-semibold text-slate-950 shadow-sm transition-all hover:bg-emerald-400 active:scale-[0.98]"
+            >
+              <span>Start Lesson 01</span>
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </Link>
+          </div>
+        </section>
+      )}
+
       {/* Compact 4-Tile Quick Launchers */}
       <section aria-label="Quick workspace launchers" className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
         <Link
@@ -282,7 +318,7 @@ export function DashboardPage({ onOpenVault }: DashboardPageProps) {
           </span>
           <div className="min-w-0">
             <p className="truncate text-xs font-semibold text-terminal-text">Academy</p>
-            <p className="truncate text-[11px] text-terminal-muted">5-stage roadmap</p>
+            <p className="truncate text-[11px] text-terminal-muted">Step-by-step from zero</p>
           </div>
         </Link>
 
@@ -295,7 +331,7 @@ export function DashboardPage({ onOpenVault }: DashboardPageProps) {
           </span>
           <div className="min-w-0">
             <p className="truncate text-xs font-semibold text-terminal-text">Backtester</p>
-            <p className="truncate text-[11px] text-terminal-muted">Bar-by-bar replay</p>
+            <p className="truncate text-[11px] text-terminal-muted">Practice on past charts</p>
           </div>
         </Link>
 
@@ -308,7 +344,7 @@ export function DashboardPage({ onOpenVault }: DashboardPageProps) {
           </span>
           <div className="min-w-0">
             <p className="truncate text-xs font-semibold text-terminal-text">Trade Journal</p>
-            <p className="truncate text-[11px] text-terminal-muted">Log &amp; emotion edge</p>
+            <p className="truncate text-[11px] text-terminal-muted">Track wins &amp; emotions</p>
           </div>
         </Link>
 
@@ -321,7 +357,7 @@ export function DashboardPage({ onOpenVault }: DashboardPageProps) {
           </span>
           <div className="min-w-0">
             <p className="truncate text-xs font-semibold text-terminal-text">Practice</p>
-            <p className="truncate text-[11px] text-terminal-muted">Active recall drills</p>
+            <p className="truncate text-[11px] text-terminal-muted">Quick chart quizzes</p>
           </div>
         </Link>
       </section>

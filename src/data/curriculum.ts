@@ -114,7 +114,31 @@ const CORE_LESSONS: Lesson[] = [
     slug: 'market-structure',
     title: 'Market Structure Basics (HH/HL, LH/LL & BOS)',
     subtitle:
-      'Read trend direction objectively using swing points and confirmed candle-body Breaks of Structure.',
+      'Learn how to tell if a market is climbing up, falling down, or moving sideways—just by looking at the peaks and valleys on a chart.',
+    plainEnglishSummary:
+      'Think of a price chart like a staircase. When each new peak climbs higher than the last peak and each dip stays higher than the last dip, buyers are in charge (an uptrend). Checking this staircase first stops you from guessing tops and bottoms and keeps you trading with the main flow.',
+    beginnerFaq: [
+      {
+        question: 'What does "market structure" actually mean in plain English?',
+        answer:
+          'It is simply the pattern of zig-zag highs (peaks) and lows (valleys) that price draws on a chart. By connecting the main peaks and valleys, you can immediately see whether buyers are pushing price higher, sellers are pushing price lower, or neither side is winning.',
+      },
+      {
+        question: 'Why does a full candle close matter more than a thin wick?',
+        answer:
+          'A thin wick only shows that price briefly poked past a level during the candle and then got rejected. A full candle body closing beyond the old peak proves buyers actually had enough strength to stay above it when the timer ended.',
+      },
+      {
+        question: 'How do I know which tiny bumps to ignore on my chart?',
+        answer:
+          'Zoom out so you can see 30 to 50 candles at once. Only mark the obvious big peaks and valleys that started strong moves—skip tiny 1-candle wiggles so you do not confuse yourself.',
+      },
+      {
+        question: 'What happens when an uptrend finally breaks its last Higher Low?',
+        answer:
+          'That last Higher Low (valley) is your safety floor. If a full red candle closes cleanly underneath it, the upward staircase is broken—that is your warning sign that sellers may be taking over.',
+      },
+    ],
     level: 'beginner',
     marketCategory: 'general',
     learningStage: 'foundations',
@@ -167,38 +191,38 @@ const CORE_LESSONS: Lesson[] = [
     sections: [
       {
         id: 'ms-sec-1',
-        heading: 'Why Market Structure Comes Before Every Indicator',
-        body: 'Market structure is the raw footprint of institutional order flow. Before drawing channels or adding oscillators, professional traders read the sequence of swing highs and swing lows to answer one foundational question: are buyers or sellers making progress?',
+        heading: 'Why Reading the Staircase Comes Before Fancy Indicators',
+        body: 'Price never moves in a straight vertical line—it zig-zags up and down like someone walking up or down stairs. Market structure simply means reading those zig-zag turning points (called Swing Highs for peaks and Swing Lows for valleys) to answer one simple question: are buyers or sellers winning right now?',
         bulletPoints: [
-          'Bullish structure prints Higher Highs (HH) and Higher Lows (HL).',
-          'Bearish structure prints Lower Highs (LH) and Lower Lows (LL).',
-          'Sideways consolidation alternates within equal boundaries with no confirmed BOS.',
+          'Uptrend (Bullish Structure): Price makes a Higher High (a peak higher than the last peak) and a Higher Low (a dip that stops higher than the last dip).',
+          'Downtrend (Bearish Structure): Price makes a Lower High (a bounce that fails below the last peak) and a Lower Low (a valley deeper than the last valley).',
+          'Sideways Range (Consolidation): Price bounces back and forth between a flat ceiling and a flat floor with neither side breaking free.',
         ],
         keyTakeaway:
-          'Structure gives you objective directional bias so you stop guessing tops and bottoms.',
+          'Read the peaks and valleys first so you trade with the main staircase instead of guessing.',
       },
       {
         id: 'ms-sec-2',
-        heading: 'Body Close vs. Wick: Confirming a Real BOS',
-        body: 'Not every spike past an old high represents a true Break of Structure. A wick that pokes above resistance and closes back underneath often signals a liquidity sweep rather than trend continuation.',
+        heading: 'Full Candle Close vs. Thin Wick: Confirming a Real Break of Structure',
+        body: 'When price climbs above an old peak in an uptrend, traders call it a Break of Structure (BOS)—meaning the trend just stepped onto the next stair. However, not every tiny poke past an old peak counts! A thin wick that pokes above and snaps right back underneath is often a fakeout trap rather than real strength.',
         bulletPoints: [
-          'Require a full candle body close beyond the previous structural swing to mark a valid BOS.',
-          'Strong BOS candles typically show expanded body range and clear follow-through.',
-          'Once a BOS prints, immediately update your protected swing low (uptrend) or high (downtrend).',
+          'Wait for a full candle body (the thick colored block) to close cleanly past the old peak or valley before calling it a real Break of Structure (BOS).',
+          'Strong breaks usually show big, confident candle bodies moving smoothly in the trend direction.',
+          'The moment a real Break of Structure closes, mark the valley that started that move as your new safety floor.',
         ],
         keyTakeaway:
-          'Candle closes confirm commitment; thin wicks alone only confirm price tested an area.',
+          'A full candle body close proves real commitment; a thin wick alone only shows price briefly visited that spot.',
       },
       {
         id: 'ms-sec-3',
-        heading: 'Mapping Protected Swings for Trade Invalidation',
-        body: 'Every Higher Low that launches a confirmed BOS becomes a structural floor. As long as price respects that protected Higher Low, pullbacks represent potential continuation opportunities rather than reversals.',
+        heading: 'Using Your Protected Swing as a Clear "I Was Wrong" Floor',
+        body: 'In an uptrend, the most recent Higher Low (the valley that launched the newest Break of Structure) is called your Protected Swing. Think of it as the landing underneath your feet: as long as price stays above that landing, short dips are just normal breathers—not a crash.',
         bulletPoints: [
-          'Never mark every tiny 2-candle ripple as major structure—focus on swings that caused an impulsive move.',
-          'If price closes decisively below the protected Higher Low, bullish structure shifts bearish (Change of Character / MSS).',
+          'Skip tiny 1-or-2-candle bumps—only focus on the clear peaks and valleys that kicked off strong moves.',
+          'If a full red candle finally closes underneath your Protected Higher Low, the uptrend is officially broken—traders call that U-turn a Change of Character (CHoCH) or Market Structure Shift (MSS).',
         ],
         keyTakeaway:
-          'Your protected swing tells you exactly where your directional bias is objectively wrong.',
+          'Your Protected Swing gives you an exact, objective line on the chart that tells you if your trend idea is still alive or finished.',
       },
     ],
     diagramConfig: {
@@ -418,7 +442,31 @@ const CORE_LESSONS: Lesson[] = [
     slug: 'market-liquidity',
     title: 'Understanding Market Liquidity (Buy-Side & Sell-Side)',
     subtitle:
-      'See where stop-losses and breakout orders cluster so you understand why price gravitates toward key highs and lows.',
+      'Discover why price always seems to tag everyone’s stop-loss before reversing—and how to spot where resting orders pile up.',
+    plainEnglishSummary:
+      'In trading, "liquidity" simply means a crowd of waiting buy or sell orders sitting at an obvious price level—especially everyday traders’ Stop-Loss (automatic safety net) orders. Because huge banks and funds need thousands of people on the opposite side to fill their massive trades, price naturally travels toward those crowded order pools above highs and below lows.',
+    beginnerFaq: [
+      {
+        question: 'Why does price keep hitting my Stop-Loss and then immediately going in my direction?',
+        answer:
+          'Because most beginners place their Stop-Loss (automatic safety net order) in the exact same predictable spot—1 or 2 ticks beyond an obvious high or low. Big institutions know thousands of orders are parked there, so price visits that pool to fill large trades before reversing.',
+      },
+      {
+        question: 'Wait—why is it called "Buy-Side" Liquidity if it sits above a ceiling?',
+        answer:
+          'Great question! Imagine someone sold short (betting price will go down) and placed a Stop-Loss above the ceiling. To close a losing sell trade, their broker has to BUY it back. Combine those forced buy orders with breakout traders clicking BUY above the ceiling, and you have a huge pile of waiting BUY orders—hence Buy-Side Liquidity!',
+      },
+      {
+        question: 'Does that mean banks are personally hunting my tiny account?',
+        answer:
+          'No! Nobody can see your individual trade. Markets simply move toward large clusters of resting orders the same way a wholesale fruit seller drives to the busiest farmers’ market—because that is the only place with enough buyers or sellers to fill massive volume quickly.',
+      },
+      {
+        question: 'Where should a beginner look for liquidity pools first?',
+        answer:
+          'Start with the most obvious horizontal edges on your chart: yesterday’s highest and lowest prices, clear sideways range ceilings and floors, and major swing peaks or valleys.',
+      },
+    ],
     level: 'beginner',
     marketCategory: 'general',
     learningStage: 'price_action_smc',
@@ -470,37 +518,37 @@ const CORE_LESSONS: Lesson[] = [
     sections: [
       {
         id: 'liq-sec-1',
-        heading: 'What Liquidity Actually Means on a Price Chart',
-        body: 'In retail trading, people often think price bounces off lines like a rubber ball. In reality, financial markets are matching engines: for a large institution to sell massive volume at a favorable price, they need a large pool of eager buyers—and those buyers are sitting right above obvious highs as buy-stop orders.',
+        heading: 'What "Liquidity" Really Means (Without Wall Street Jargon)',
+        body: 'Every trade needs two sides: if you want to sell 100 million dollars of Gold, someone has to buy 100 million dollars of Gold from you at that price. Financial markets are giant matching engines, and big institutions look for places where thousands of eager buy or sell orders are already lined up—we call those crowded pockets Liquidity.',
         bulletPoints: [
-          'Every short trader’s stop-loss above resistance is technically a Buy-Stop order.',
-          'Every breakout trader’s entry above resistance is also a Buy-Stop order.',
-          'Together, they form a dense pocket of Buy-Side Liquidity (BSL).',
+          'Every seller’s Stop-Loss (automatic safety net order) parked above a ceiling is actually a waiting Buy order.',
+          'Every breakout trader waiting to buy if price breaks above that ceiling also places a waiting Buy order there.',
+          'Stacked together above an obvious peak, those waiting orders form a dense pool called Buy-Side Liquidity (BSL).',
         ],
         keyTakeaway:
-          'Obvious highs and lows are not magical walls—they are pools of resting orders.',
+          'Obvious ceilings and floors are not solid brick walls—they are crowded parking lots full of waiting orders.',
       },
       {
         id: 'liq-sec-2',
-        heading: 'Buy-Side vs. Sell-Side Liquidity',
-        body: 'Mapping liquidity is straightforward once you ask: "If I were a typical retail trader, where would I hide my stop-loss?" Those exact zones highlight where liquidity concentrates.',
+        heading: 'Buy-Side Liquidity (Above Highs) vs. Sell-Side Liquidity (Below Lows)',
+        body: 'Spotting liquidity takes 10 seconds once you ask one simple question: "If I were an everyday trader buying or selling here, where would I hide my Stop-Loss?" Those exact spots show you where the pools sit.',
         bulletPoints: [
-          'Buy-Side Liquidity (BSL) rests above previous day highs, session highs, swing highs, and clean range tops.',
-          'Sell-Side Liquidity (SSL) rests below previous day lows, session lows, swing lows, and clean range floors.',
+          'Buy-Side Liquidity (BSL) sits ABOVE obvious peaks—such as yesterday’s high, recent swing highs, and flat range ceilings (filled with waiting buy orders).',
+          'Sell-Side Liquidity (SSL) sits BELOW obvious valleys—such as yesterday’s low, recent swing lows, and flat range floors (filled with buyers’ Stop-Loss sell orders).',
         ],
         keyTakeaway:
-          'BSL lives above highs (buy stops); SSL lives below lows (sell stops).',
+          'Simple memory trick: Buy-Side Liquidity (BSL) lives ABOVE highs; Sell-Side Liquidity (SSL) lives BELOW lows.',
       },
       {
         id: 'liq-sec-3',
-        heading: 'Range Rotation: From Liquidity Pool to Liquidity Pool',
-        body: 'Once price taps one side of a range and absorbs the resting stops, the path of least resistance frequently flips toward the opposite untouched pool.',
+        heading: 'How Price Travels From One Liquidity Pool to the Opposite Pool',
+        body: 'Think of a sideways range like a ping-pong table. Once price spikes above the ceiling to scoop up all the waiting orders on one side and snaps back inside, it often travels smoothly all the way across the table to collect the untouched orders waiting below the floor (a concept traders call Draw on Liquidity).',
         bulletPoints: [
-          'Watch our XAU/USD 1H chart: repeated bounces between 2348.5 and 2324.0 load both sides with stops.',
-          'Price spikes above 2348.5 to harvest BSL, rejects back inside, and delivers directly through SSL at 2324.0.',
+          'Look at our Gold (XAU/USD) 1-Hour chart below: bouncing repeatedly between $2,348.5 and $2,324.0 piles Stop-Losses above the ceiling and below the floor.',
+          'Price spikes briefly above $2,348.5 to grab Buy-Side Liquidity, closes back inside, and slides straight down through Sell-Side Liquidity below $2,324.0.',
         ],
         keyTakeaway:
-          'Before entering a trade, identify BOTH the liquidity already taken and the opposing liquidity you are targeting.',
+          'Before taking any trade, identify BOTH the pool price just visited and the untouched opposite pool it is likely heading toward.',
       },
     ],
     diagramConfig: {
@@ -717,7 +765,31 @@ const CORE_LESSONS: Lesson[] = [
     slug: 'equal-highs-lows',
     title: 'Equal Highs & Equal Lows (Liquidity Pools)',
     subtitle:
-      'Recognize why "double tops" and "double bottoms" act as high-probability liquidity magnets rather than guaranteed ceilings.',
+      'See why textbook "double tops" and "double bottoms" act like magnets for price instead of unbreakable ceilings and floors.',
+    plainEnglishSummary:
+      'When price bounces off nearly the exact same ceiling two or three times, everyday traders assume that ceiling is invincible and park their automatic Stop-Loss (safety net) orders right above it. That turns clean flat tops and flat bottoms into giant magnets that price often pops past briefly before making its real move.',
+    beginnerFaq: [
+      {
+        question: 'I learned in trading videos that a Double Top means "sell immediately"—why does it often fail?',
+        answer:
+          'When two peaks line up flat, thousands of traders sell short at the exact same time and place their Stop-Loss right above those two peaks. Price frequently makes one quick pop above the Double Top to trigger all those Stop-Losses before actually falling—so early sellers get kicked out even though their direction was right!',
+      },
+      {
+        question: 'Do Equal Highs or Equal Lows have to match down to the exact cent or pip?',
+        answer:
+          'Not at all! As long as two or three peaks look visually flat to the human eye (for example 18,520.0, 18,519.5, and 18,518.5), traders still treat them as one horizontal ceiling and stack their stops above the whole area.',
+      },
+      {
+        question: 'How can a beginner actually use Equal Highs or Equal Lows safely?',
+        answer:
+          'Two simple ways: (1) If you are already in a winning buy trade, aim to take profit right as price reaches untouched Equal Highs above you. (2) If you want to trade a reversal, be patient—wait for price to pop past the Equal Highs and snap back inside first!',
+      },
+      {
+        question: 'What is the difference between Equal Highs and an uptrend?',
+        answer:
+          'In a healthy uptrend, each new peak climbs noticeably higher than the previous one like stairs. With Equal Highs, peaks stall flat at roughly the same ceiling—signaling a pile-up of waiting orders just overhead.',
+      },
+    ],
     level: 'intermediate',
     marketCategory: 'general',
     learningStage: 'price_action_smc',
@@ -762,37 +834,37 @@ const CORE_LESSONS: Lesson[] = [
     sections: [
       {
         id: 'eqh-sec-1',
-        heading: 'Why Textbook Double Tops Become Liquidity Magnets',
-        body: 'Traditional charting textbooks teach that two or three rejections at the same level prove "strong resistance." While that looks neat visually, every extra touch invites more retail traders to sell short—and tuck their stop-losses right above that exact line.',
+        heading: 'Why Textbook "Double Tops" Turn Into Giant Order Magnets',
+        body: 'Traditional beginner books teach that when price hits the same ceiling twice ("Double Top") or three times ("Triple Top"), it proves an unbreakable wall. In real markets, every extra touch attracts more everyday sellers who all tuck their Stop-Loss (automatic safety net order) directly above that exact line—creating Equal Highs (EQH).',
         bulletPoints: [
-          'Touch 1 creates a normal swing high.',
-          'Touch 2 attracts early double-top sellers and tight stop-losses directly overhead.',
-          'Touch 3 creates a crowded pool of resting buy-stops—making a brief stop run above the highs highly attractive for institutional sellers.',
+          'Touch #1 creates an ordinary price peak.',
+          'Touch #2 convinces early traders to sell short and hide their Stop-Losses right above the ceiling.',
+          'Touch #3 packs an even bigger crowd of waiting buy orders just overhead—making a quick spike above the highs (a stop run) super attractive for large sellers.',
         ],
         keyTakeaway:
-          'The cleaner and more "textbook" the Equal Highs look, the stronger the liquidity magnet sitting above them.',
+          'The neater and more "textbook" a Double Top or Double Bottom looks, the bigger the pool of waiting orders sitting right outside it.',
       },
       {
         id: 'eqh-sec-2',
-        heading: 'Relative Equal Highs & Lows (No Need for Exact-Pip Perfection)',
-        body: 'Equal Highs do not have to match to the exact tenth of a pip. Institutional traders look for "relative" equal highs or lows within a tight tolerance band where retail participants visually perceive a flat ceiling or floor.',
+        heading: 'Close Enough Counts: "Relative" Equal Highs & Equal Lows',
+        body: 'Beginners often pull out a magnifying glass and ask if two peaks have to match to the exact last decimal. They do not! Markets are traded by humans who see flat zones, so peaks within a tight band act as Relative Equal Highs (EQH), and flat valleys act as Relative Equal Lows (EQL).',
         bulletPoints: [
-          'In NAS100, peaks at 18520.0, 18519.5, and 18518.5 function as a single unified EQH pool.',
-          'Avoid forcing EQH across completely unrelated price levels far apart in time or structure.',
+          'In our Nasdaq 100 (NAS100) chart below, peaks at 18,520.0, 18,519.5, and 18,518.5 look flat to the eye and behave like one unified Equal Highs magnet.',
+          'Keep it simple: only connect clear, nearby swing peaks or valleys—do not stretch a line across random distant prices.',
         ],
         keyTakeaway:
-          'Judge EQH/EQL visually as a tight cluster where human traders naturally align stops.',
+          'If two or three peaks look flat at a quick glance, assume everyday traders parked their Stop-Losses just beyond them.',
       },
       {
         id: 'eqh-sec-3',
-        heading: 'Two Professional Ways to Trade Around EQH & EQL',
-        body: 'Once you mark Equal Highs or Equal Lows, you gain two clear tactical advantages instead of getting stopped out prematurely.',
+        heading: 'Two Smart Ways Beginners Can Use Equal Highs & Equal Lows',
+        body: 'Once you spot Equal Highs (EQH) or Equal Lows (EQL) on your chart, stop placing tight stops right behind them—instead, put them to work for you in two simple ways:',
         bulletPoints: [
-          'As a Profit Target: If you are already long in bullish structure, untouched EQH above is an ideal target zone.',
-          'As a Reversal Watchlist: Never short blindly right under untouched EQH; wait for price to sweep above the EQH, close back inside, and displace downward.',
+          'As a Profit Target: If you are already riding an uptrend, untouched Equal Highs above price make a great place to take profit as price gets pulled toward them.',
+          'As a Patient Watchlist Level: Never sell blindly right underneath untouched Equal Highs—wait for price to spike above them, close back below, and push downward with strong red candles first.',
         ],
         keyTakeaway:
-          'Let the market raid the Equal Highs first—patience turns a crowded trap into a structured edge.',
+          'Let price raid the Equal Highs or Equal Lows first—a few minutes of patience keeps you out of the most common retail trap.',
       },
     ],
     diagramConfig: {
@@ -1008,7 +1080,31 @@ const CORE_LESSONS: Lesson[] = [
     slug: 'liquidity-sweeps',
     title: 'Liquidity Sweeps vs. True Breakouts',
     subtitle:
-      'Flagship Lesson: Master candle-close rejection, displacement, and retest acceptance so you stop getting trapped on false breakouts.',
+      'Flagship Lesson: Learn how to tell a fakeout "stop-hunt" spike apart from a real breakout—just by waiting for the candle to close.',
+    plainEnglishSummary:
+      'Have you ever bought a breakout only to watch price immediately crash back down? That fakeout is called a Liquidity Sweep—price quickly pokes past an obvious ceiling or floor to grab waiting orders and then snaps right back inside. A True Breakout is the exact opposite: a solid full candle closes cleanly outside the level and stays outside when it retests.',
+    beginnerFaq: [
+      {
+        question: 'How do I tell the difference between a Fakeout (Liquidity Sweep) and a Real Breakout?',
+        answer:
+          'Wait for the candle timer to finish! If price pokes past a ceiling and closes BACK INSIDE the old range leaving a long thin wick, that is a strong Liquidity Sweep clue. If a big solid candle body closes firmly OUTSIDE the ceiling and the next candle keeps going, that is a True Breakout.',
+      },
+      {
+        question: 'Why shouldn’t I click buy or sell while the candle is still moving?',
+        answer:
+          'Because a candle can look like a giant green breakout with 2 minutes left on the clock and suddenly slam back down into a red rejection wick in the final 10 seconds. Waiting for the candle close saves beginners from buying the exact top of fakeouts.',
+      },
+      {
+        question: 'What does "Displacement" mean in plain English?',
+        answer:
+          'Displacement simply means fast, energetic, full-bodied candles shooting strongly in one direction—like a sprinter exploding off the starting blocks. It shows big buyers or sellers actually committed real money after the sweep.',
+      },
+      {
+        question: 'Once I learn about sweeps, should I bet against EVERY breakout?',
+        answer:
+          'No! Never blindly bet against a strong move. Sometimes markets truly break out and run for hours (like our Bitcoin chart below). Always check where the candle closes and what the next candle does before deciding.',
+      },
+    ],
     level: 'intermediate',
     marketCategory: 'general',
     learningStage: 'price_action_smc',
@@ -1063,51 +1159,51 @@ const CORE_LESSONS: Lesson[] = [
     sections: [
       {
         id: 'ls-sec-1',
-        heading: 'The 3-Part Anatomy of a Valid Liquidity Sweep',
-        body: 'A genuine Liquidity Sweep is not just any random wick on a chart. It follows a repeatable 3-stage institutional sequence that leaves clear visual footprints.',
+        heading: 'The 3-Step Story of a Real Liquidity Sweep (Fakeout)',
+        body: 'A genuine Liquidity Sweep (when price quickly raids waiting Stop-Loss orders and reverses) is not just any random wick on a chart. It follows a clear 3-step story you can spot with your bare eyes:',
         bulletPoints: [
-          'Stage 1 — Resting Pool (Before): Clear Equal Highs/Lows or prominent swing points concentrate visible stop-losses.',
-          'Stage 2 — Spike & Reclaim (Trigger): Price pierces beyond the level on elevated activity, grabs the resting stops, and snaps closed BACK INSIDE the range (leaving a prominent rejection wick).',
-          'Stage 3 — Displacement & Shift (After): Strong opposite-direction candles follow immediately and break internal market structure (MSS/BOS).',
+          'Step 1 — Waiting Orders Pile Up (Before): Clear Equal Highs (flat ceiling) or Equal Lows (flat floor) stack everyday traders’ Stop-Loss orders right outside the line.',
+          'Step 2 — Quick Poke & Snap-Back (Trigger): Price shoots past the line, triggers those resting orders, and snaps closed BACK INSIDE the old range—leaving a long thin rejection wick sticking out.',
+          'Step 3 — Fast Opposite Push (After): Big, energetic candles (called Displacement) immediately move the opposite way and break the nearest inner swing point (a Market Structure Shift, or MSS).',
         ],
         keyTakeaway:
-          'Wick beyond + Close back inside + Opposite Displacement = High-probability Liquidity Sweep.',
+          'Long wick past the line + candle closes back inside + fast move the opposite way = textbook Liquidity Sweep.',
       },
       {
         id: 'ls-sec-2',
-        heading: 'Anatomy of a True Breakout (Do Not Fade Strength!)',
-        body: 'Once traders learn about liquidity sweeps, they often swing to the opposite extreme and try to short EVERY move above resistance. Knowing what a True Breakout looks like protects you from stepping in front of a freight train.',
+        heading: 'What a True Breakout Looks Like (Never Stand in Front of a Train!)',
+        body: 'After learning about fakeouts, many beginners make the opposite mistake: they try to sell against EVERY breakout. Knowing the three clear clues of a True Breakout keeps you safely on the right side of strong trends:',
         bulletPoints: [
-          'Full-Body Close Beyond Level: The breakout candle closes decisively outside resistance/support near its extreme, not as a long rejection wick.',
-          'Follow-Through Acceptance: The next candle continues expanding in the breakout direction rather than snapping back inside.',
-          'Support/Resistance Flip on Retest: When price pulls back to test the broken level, it holds on the outside and launches higher (or lower on a breakdown).',
+          'Solid Full-Body Close Outside: The breakout candle finishes with a thick colored body cleanly beyond the ceiling or floor—not a skinny wick.',
+          'Immediate Follow-Through: The very next candle keeps pushing outside instead of snapping back into the old box.',
+          'Held Retest (Ceiling Becomes Floor): When price dips back to touch the broken line from the outside, it bounces off cleanly and keeps trending.',
         ],
         keyTakeaway:
-          'Acceptance outside the level + held retest = True Breakout; never blindly fade acceptance.',
+          'Solid body close outside + follow-through + clean bounce on the retest = True Breakout. Never bet against it!',
       },
       {
         id: 'ls-sec-3',
-        heading: 'Side-by-Side Decision Filter at Key Levels',
-        body: 'When price arrives at Equal Highs or Equal Lows, pause your finger and run a strict 3-question visual test once the candle closes.',
+        heading: 'The 3-Question Pause Test Before Clicking Buy or Sell',
+        body: 'Whenever price reaches an obvious ceiling or floor, take your hand off the mouse, let the candle finish closing, and ask three simple yes-or-no questions:',
         bulletPoints: [
-          'Question 1 (Close Location): Did the candle close back INSIDE the old range (Sweep clue) or firmly OUTSIDE (Breakout clue)?',
-          'Question 2 (Next Candle Response): Did strong opposite displacement appear (Sweep confirmation) or did momentum continue outside (Breakout confirmation)?',
-          'Question 3 (Structure): Did internal structure shift opposite the spike (MSS), or did the retest hold the broken boundary?',
+          'Question 1 (Where Did It Close?): Did the candle close back INSIDE the old range (Fakeout Sweep clue) or firmly OUTSIDE (Real Breakout clue)?',
+          'Question 2 (What Did the Next Candle Do?): Did fast opposite candles appear (Sweep confirmed), or did price keep expanding outside (Breakout confirmed)?',
+          'Question 3 (Did Structure Shift or Hold?): Did price break an inner swing in the reverse direction (Market Structure Shift), or did it bounce cleanly off the broken line?',
         ],
         keyTakeaway:
-          'You never have to guess mid-candle—waiting 1–2 candles for close + response reveals who won the battle.',
+          'You never have to guess mid-candle—waiting just 1 or 2 closed candles reveals whether buyers or sellers won.',
       },
       {
         id: 'ls-sec-4',
-        heading: 'Symmetry: Buy-Side Sweeps vs. Sell-Side Sweeps',
-        body: 'The exact same order-flow logic applies upside down beneath Equal Lows. A Sell-Side Liquidity (SSL) Sweep dips quickly under support to trigger long stops, closes back above support, and displaces upward through the prior internal Lower High.',
+        heading: 'Works Both Ways: Ceiling Sweeps & Floor Sweeps',
+        body: 'This exact same behavior works upside down beneath a floor! A Sell-Side Liquidity (SSL) Sweep dips quickly underneath flat lows to trigger buyers’ Stop-Loss orders, closes back above the floor, and rockets upward through the last small peak.',
         bulletPoints: [
-          'BSL Sweep: Wick above highs → close below → bearish displacement.',
-          'SSL Sweep: Wick below lows → close above → bullish displacement.',
-          'Practice both directions in our EUR/USD, BTC/USD, GBP/USD, and XAU/USD scenarios below.',
+          'Buy-Side Liquidity (BSL) Sweep (at a ceiling): Wick pokes above highs → closes back below → fast drop downward.',
+          'Sell-Side Liquidity (SSL) Sweep (at a floor): Wick dips below lows → closes back above → fast rally upward.',
+          'Compare all four real chart studies below (EUR/USD Sweep, BTC/USD True Breakout, GBP/USD Floor Sweep, and Gold True Breakdown) to train your eye.',
         ],
         keyTakeaway:
-          'Master both BSL and SSL sweeps alongside True Breakouts and True Breakdowns for complete visual fluency.',
+          'Practice spotting both fakeout sweeps AND true breakouts in both directions so you stop getting fooled by fast spikes.',
       },
     ],
     diagramConfig: {
@@ -1356,7 +1452,31 @@ const CORE_LESSONS: Lesson[] = [
     slug: 'fair-value-gaps',
     title: 'Fair Value Gaps (FVG) & Institutional Imbalances',
     subtitle:
-      'Spot 3-candle price inefficiencies left by aggressive displacement and understand high-probability mitigation zones.',
+      'Spot the empty price pockets left behind when price shoots up or down too fast—and use them for calm, patient entries instead of chasing.',
+    plainEnglishSummary:
+      'When price rockets upward in one huge candle, it moves so fast that it leaves a small empty space between the candle before it and the candle after it—like painting a wall too quickly and leaving a thin bare spot. Price often dips back to fill that Fair Value Gap (empty price pocket) before continuing its move, giving patient beginners a much safer entry price than chasing the top.',
+    beginnerFaq: [
+      {
+        question: 'What is a Fair Value Gap in everyday terms?',
+        answer:
+          'Look at three candles in a row where the middle candle (Candle 2) shoots sharply up or down. If there is an untouched vertical gap between Candle 1’s wick and Candle 3’s wick, that empty space is a Fair Value Gap—meaning price moved so fast that buyers and sellers did not trade evenly there.',
+      },
+      {
+        question: 'Does price ALWAYS come back to fill every Fair Value Gap?',
+        answer:
+          'No! Sometimes a market is so strong that it leaves a gap behind and keeps flying without coming back right away. That is totally fine—missing a trade costs $0, whereas chasing the very top with a huge stop-loss is how beginners lose money.',
+      },
+      {
+        question: 'What is the "50% midpoint" (Consequent Encroachment) people mention?',
+        answer:
+          'It is simply the exact halfway line inside the gap box. For example, if a gap runs from 1.0830 to 1.0846, halfway is 1.0838. Price very often dips right to that halfway mark and bounces cleanly!',
+      },
+      {
+        question: 'Why did a Fair Value Gap I drew fail right away?',
+        answer:
+          'Usually because it formed inside sideways, directionless noise with no bigger story behind it. The strongest Fair Value Gaps appear right after a Liquidity Sweep (stop raid) and a Break of Structure, lined up with the main trend.',
+      },
+    ],
     level: 'intermediate',
     marketCategory: 'general',
     learningStage: 'price_action_smc',
@@ -1401,39 +1521,39 @@ const CORE_LESSONS: Lesson[] = [
     sections: [
       {
         id: 'fvg-sec-1',
-        heading: 'How to Identify a Fair Value Gap Precisely',
-        body: 'When aggressive institutional buying or selling overwhelms the order book, price moves so fast in one candle that opposing orders do not get filled evenly. That footprint appears on any candlestick chart as a 3-candle Fair Value Gap.',
+        heading: 'How to Spot a Fair Value Gap (3-Candle Rule Made Simple)',
+        body: 'Imagine swiping a paintbrush across a wall at top speed—you accidentally leave a thin bare streak behind. When big buyers or sellers rush into a market all at once, they leave an empty price space on the chart called a Fair Value Gap (FVG). You only need three neighboring candles to spot it:',
         bulletPoints: [
-          'Bullish FVG: Candle 2 expands strongly upward, and Candle 3’s LOW stays strictly above Candle 1’s HIGH.',
-          'Bearish FVG: Candle 2 drops sharply downward, and Candle 3’s HIGH stays strictly below Candle 1’s LOW.',
-          'If Candle 1 and Candle 3 wicks touch or overlap, there is NO Fair Value Gap.',
+          'Bullish (Upward) Fair Value Gap: Candle 2 shoots sharply UP, and Candle 3’s lowest wick stays cleanly ABOVE Candle 1’s highest wick—the open space between those two wicks is your gap!',
+          'Bearish (Downward) Fair Value Gap: Candle 2 drops sharply DOWN, and Candle 3’s highest wick stays cleanly BELOW Candle 1’s lowest wick.',
+          'Quick check: If Candle 1’s wick and Candle 3’s wick touch or overlap at all, there is NO Fair Value Gap.',
         ],
         keyTakeaway:
-          'Measure strictly from Candle 1’s wick to Candle 3’s wick—never include overlapping wicks.',
+          'Always measure strictly between Candle 1’s wick and Candle 3’s wick—no empty space means no Fair Value Gap.',
       },
       {
         id: 'fvg-sec-2',
-        heading: 'Why Context Separates A+ FVGs From Noise',
-        body: 'Hundreds of tiny Fair Value Gaps appear on lower timeframes every day, and most fail if traded randomly. High-probability FVGs share three critical contextual filters:',
+        heading: 'How to Tell an A+ Fair Value Gap Apart From Random Chart Noise',
+        body: 'Once your eyes learn to see Fair Value Gaps, you will notice dozens of tiny ones every day—and most of them will fail if you click buy on every single one. Great traders only care about Fair Value Gaps backed by three strong clues:',
         bulletPoints: [
-          'Formed right after a Liquidity Sweep (SSL sweep for bullish FVG, BSL sweep for bearish FVG).',
-          'Accompanied by a Break of Structure (BOS / MSS) confirming institutional displacement.',
-          'Aligned with higher-timeframe order flow rather than sitting inside choppy mid-range consolidation.',
+          'Clue #1: It formed right after a Liquidity Sweep (a quick fakeout spike that cleared waiting Stop-Losses).',
+          'Clue #2: The fast middle candle also caused a Break of Structure (BOS)—proving real power stepped in.',
+          'Clue #3: It points in the same direction as the bigger trend, rather than sitting inside messy sideways chop.',
         ],
         keyTakeaway:
-          'Sweep + Displacement + FVG is a complete narrative; an isolated FVG in chop is just noise.',
+          'Liquidity Sweep + Strong Push + Fair Value Gap = a complete, trustworthy story. A random gap in sideways chop is just noise.',
       },
       {
         id: 'fvg-sec-3',
-        heading: 'Trading the Retracement & 50% Equilibrium',
-        body: 'Chasing the top of a big displacement candle forces a terrible stop-loss distance. Waiting patiently for price to retrace into the Fair Value Gap (especially near its 50% midpoint) improves both entry precision and risk-to-reward.',
+        heading: 'Waiting for Price to Come Back (And the 50% Halfway Line)',
+        body: 'Beginners often panic and chase the very top of a big green candle—which forces a huge, stressful Stop-Loss (automatic safety net order). Waiting calmly for price to dip back into the Fair Value Gap—called Mitigation (rebalancing the gap)—gives you a much calmer entry.',
         bulletPoints: [
-          'Mark the top edge, 50% equilibrium, and bottom edge of the FVG.',
-          'Wait for price to tap the FVG and show rejection or lower-timeframe confirmation.',
-          'If a full candle body closes completely through the far edge of the FVG, treat the gap as invalidated (or inverted).',
+          'Draw a simple rectangle across the gap and mark its 50% halfway line (traders call this midpoint Consequent Encroachment).',
+          'Wait patiently for price to dip into the gap box and show buyers (or sellers) stepping back in.',
+          'Clear exit rule: If a full candle body closes completely past the far side of your Fair Value Gap, the zone failed—step aside cleanly.',
         ],
         keyTakeaway:
-          'Patience lets price return to your imbalance zone instead of chasing extended candles.',
+          'Stop chasing fast candles! Let price come back to your Fair Value Gap box on your terms.',
       },
     ],
     diagramConfig: {
@@ -1651,7 +1771,31 @@ const CORE_LESSONS: Lesson[] = [
     slug: 'risk-psychology',
     title: 'Risk Management, Position Sizing & Trading Psychology',
     subtitle:
-      'Protect your capital with fixed-percentage risk math, asymmetric R-multiples, and repeatable emotional discipline.',
+      'Learn the simple 1% safety rule, how to calculate your exact trade size, and how to stay calm when trades win or lose.',
+    plainEnglishSummary:
+      'Think of risk management as wearing a seatbelt every single time you drive—no matter how good a driver you are, you never skip it. By risking only a tiny fixed slice of your account (0.5% to 1%) on each trade and aiming to make 2 to 3 times what you risk, you can lose more than half your trades and still grow your account steadily without ever blowing up.',
+    beginnerFaq: [
+      {
+        question: 'If I only risk 1% per trade, won’t it take forever to grow my account?',
+        answer:
+          'Not at all—and risking big is actually the slowest path because one bad week wipes you out back to zero! Risking 1% to aim for 3% means just 5 net winning setups grow your account by +15%, while a normal 4-loss streak only costs -4% and leaves 96% of your money safe.',
+      },
+      {
+        question: 'What does "1R" or "1:3 Risk-to-Reward" mean in plain dollars?',
+        answer:
+          '1R is just shorthand for "one unit of risk"—the exact dollar amount you agree to lose if your Stop-Loss (automatic safety net order) gets hit. If 1R = $50, then a 1:3 setup means you risk losing $50 (-1R) in order to target $150 profit (+3R).',
+      },
+      {
+        question: 'How do I stop myself from panic-closing winners early or moving my Stop-Loss?',
+        answer:
+          'Two things fix this fast: (1) Risk an amount so small that losing it feels like buying a coffee, not paying rent. (2) Set your Stop-Loss and Take-Profit orders right when you enter, then step back and let your plan work.',
+      },
+      {
+        question: 'What should I do right after taking two losses in one day?',
+        answer:
+          'Close your trading app and walk away for the rest of the day! Almost every blown beginner account happens during an emotional "revenge trading" afternoon trying to win money back immediately after two normal losses.',
+      },
+    ],
     level: 'beginner',
     marketCategory: 'general',
     learningStage: 'steady_profitability',
@@ -1703,39 +1847,39 @@ const CORE_LESSONS: Lesson[] = [
     sections: [
       {
         id: 'rp-sec-1',
-        heading: 'The Golden Rule of Survival: Fixed Fractional Risk',
-        body: 'No chart pattern—not even the cleanest Liquidity Sweep into a Fair Value Gap—wins 100% of the time. Professional traders survive normal losing streaks by risking a small, fixed fraction of account equity (typically 0.5% to 1.0%) on every single setup.',
+        heading: 'The #1 Survival Rule: Risk Only 0.5% to 1% Per Trade',
+        body: 'Here is a truth nobody tells beginners: even the very best chart setup in the world still loses sometimes. Professional traders survive normal losing streaks by using Fixed Fractional Risk (risking the same tiny percentage—usually 0.5% to 1% of their account—on every single trade).',
         bulletPoints: [
-          'At 1% risk per trade, a 5-trade losing streak leaves 95% of your capital intact.',
-          'At 10% risk per trade, the exact same 5-trade streak destroys nearly half your account and wrecks your psychology.',
-          'Always compute position size FROM your structural stop distance—never pick a random lot size first.',
+          'If you risk 1% per trade, losing 5 trades in a row still leaves 95% of your account safe and calm.',
+          'If you risk 10% per trade, that exact same 5-loss streak wipes out nearly half your account and triggers panic.',
+          'Always set your Stop-Loss (automatic safety net order) on the chart first, then adjust your trade size (lots or shares) so hitting that stop costs strictly 1%—never pick a random size first!',
         ],
         keyTakeaway:
-          'Wide stop = smaller position size; tight stop = larger position size; dollar risk stays strictly identical.',
+          'Wider stop-loss = smaller trade size; tighter stop-loss = larger trade size; your maximum dollar risk stays identical every single time.',
       },
       {
         id: 'rp-sec-2',
-        heading: 'Asymmetric Payoff & Thinking in Probabilities',
-        body: 'Beginners obsess over being right on the very next trade. Professionals think across batches of 20 to 50 trades using R-multiples.',
+        heading: 'Why You Don’t Need an 80% Win Rate (Simple R-Multiple Math)',
+        body: 'Beginners think profitable trading means winning almost every trade. Professionals measure results in R-Multiples (where 1R equals the exact dollar amount you risked on that trade) and judge performance across 20 to 50 trades instead of stressing over one single candle.',
         bulletPoints: [
-          'At 1:3 Risk-to-Reward, you only need a 26% win rate to beat breakeven—and a 40% win rate produces +0.60R expectancy per trade.',
-          'Cutting losing trades cleanly at -1R while letting structured winners reach +2R to +3R creates compounding power.',
-          'Never widen a stop-loss once price moves against you; structural invalidation means the trade idea is finished.',
+          'With a 1:3 Risk-to-Reward plan (risking $100 to aim for $300), one single winner pays for THREE full losses—meaning even a 40% win rate grows your account steadily (+0.60R average per trade)!',
+          'Accepting small losses cleanly at -1R while letting your good trades reach +2R or +3R is how real compounding happens.',
+          'Never drag your Stop-Loss further away when price moves against you—if price reaches your safety floor, the idea is finished.',
         ],
         keyTakeaway:
-          'A single trade’s outcome is random; disciplined execution over 30 trades is consistent.',
+          'Any single trade is a coin flip; following disciplined 1:2 to 1:3 math across 30 trades is what builds an edge.',
       },
       {
         id: 'rp-sec-3',
-        heading: 'Emotional Circuit Breakers for Live Sessions',
-        body: 'Technical knowledge collapses when fear or greed takes the steering wheel. Install objective rules before the session starts so you do not negotiate with yourself mid-candle.',
+        heading: 'Simple Emotional Guardrails So You Stay Calm Under Pressure',
+        body: 'Even great chart skills fall apart when fear, greed, or FOMO (Fear Of Missing Out) grabs the steering wheel. Install three simple circuit breakers BEFORE the trading day begins so you never have to negotiate with your emotions mid-candle:',
         bulletPoints: [
-          'Daily Loss Limit: Stop trading for the day if you hit -2R.',
-          'Post-Loss Cooldown: Step away from the charts for 15 minutes after any stop-loss.',
-          'Mindset Anchor: Open your TradeLab Mindset Vault (Shift + Q) before clicking enter to verify you are trading your checklist, not your mood.',
+          'Daily Loss Limit: Shut down your charts for the day if you hit -2R (two normal losses)—protect tomorrow’s clear mind.',
+          '15-Minute Post-Loss Cooldown: Always stand up and walk away for 15 minutes after any stop-out so you never fall into Revenge Trading (impulsively trying to win losses back fast).',
+          'Pre-Trade Breath Check: Open your TradeLab Mindset Vault (Shift + Q) before clicking enter to confirm you are following your checklist, not your mood.',
         ],
         keyTakeaway:
-          'Great trading feels calm and structured—never urgent or frantic.',
+          'Real professional trading feels calm, patient, and almost boring—never rushed or desperate.',
       },
     ],
     diagramConfig: {

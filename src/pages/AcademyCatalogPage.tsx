@@ -48,9 +48,15 @@ const LEVEL_BADGE_STYLES: Record<CurriculumLevel, string> = {
   advanced: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
 };
 
+const LEVEL_LABELS: Record<CurriculumLevel, string> = {
+  beginner: 'Total Beginner',
+  intermediate: 'Intermediate',
+  advanced: 'Advanced',
+};
+
 const LEVEL_FILTERS: Array<{ id: LevelFilter; label: string }> = [
   { id: 'all', label: 'All Levels' },
-  { id: 'beginner', label: 'Beginner' },
+  { id: 'beginner', label: 'Total Beginner' },
   { id: 'intermediate', label: 'Intermediate' },
   { id: 'advanced', label: 'Advanced' },
 ];
@@ -136,7 +142,7 @@ export function AcademyCatalogPage() {
       if (normalizedQuery.length > 0) {
         const marketLabel = (marketLabelMap[lesson.marketCategory] ?? '').toLowerCase();
         const haystack =
-          `${lesson.title} ${lesson.conceptKey} ${lesson.level} ${marketLabel} ${formatModuleOrder(lesson.moduleOrder)}`.toLowerCase();
+          `${lesson.title} ${lesson.conceptKey} ${lesson.level} ${LEVEL_LABELS[lesson.level]} ${marketLabel} ${formatModuleOrder(lesson.moduleOrder)}`.toLowerCase();
         if (!haystack.includes(normalizedQuery)) {
           return false;
         }
@@ -368,23 +374,23 @@ export function AcademyCatalogPage() {
                 className="space-y-3"
               >
                 {/* Compact Stage Header */}
-                <div className="flex flex-wrap items-center justify-between gap-2 px-1">
-                  <div className="flex min-w-0 items-center gap-2.5">
-                    <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                <div className="flex flex-col gap-2 px-1 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="flex min-w-0 items-start gap-2.5">
+                    <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
                       {stage.step}
                     </span>
-                    <div className="min-w-0">
+                    <div className="min-w-0 space-y-0.5">
                       <h2
                         id={`stage-heading-${stage.id}`}
-                        className="truncate text-sm font-bold tracking-tight text-terminal-text sm:text-base"
+                        className="text-sm font-bold tracking-tight text-terminal-text sm:text-base"
                       >
-                        {stage.label}
+                        Stage {stage.step}: {stage.label}
                       </h2>
-                      <p className="truncate text-[11px] text-terminal-muted">{stage.tagline}</p>
+                      <p className="text-xs leading-relaxed text-terminal-muted">{stage.tagline}</p>
                     </div>
                   </div>
 
-                  <div className="flex shrink-0 items-center gap-1.5">
+                  <div className="flex shrink-0 items-center gap-1.5 sm:pt-0.5">
                     <span
                       className={`rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums ${
                         stageDoneCount === lessons.length && lessons.length > 0
@@ -438,9 +444,9 @@ export function AcademyCatalogPage() {
                                 </span>
                               )}
                               <span
-                                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${LEVEL_BADGE_STYLES[lesson.level]}`}
+                                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${LEVEL_BADGE_STYLES[lesson.level]}`}
                               >
-                                {lesson.level}
+                                {LEVEL_LABELS[lesson.level]}
                               </span>
                             </div>
                           </div>

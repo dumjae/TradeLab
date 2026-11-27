@@ -392,6 +392,494 @@ const riskSetupCandles = buildCandles(riskSetupStart, riskSetupInterval, [
   [1.2719, 1.2723, 1.2715, 1.2720, 1580],
 ]);
 
+// 10. Candlestick Anatomy (BTC/USD 15m — Green vs Red, Lower Rejection Wick, Full-Body Close)
+const caCandlesStart = 1717398000; // 2024-06-03 07:00:00 UTC
+const caCandlesInterval = 900; // 15m
+const caGreenRedCandles = buildCandles(caCandlesStart, caCandlesInterval, [
+  [67280, 67390, 67240, 67360, 420],
+  [67360, 67480, 67330, 67450, 460],
+  [67450, 67590, 67420, 67560, 510],
+  [67560, 67710, 67530, 67680, 560], // 3: Clear Green Bullish Candles (Close > Open)
+  [67680, 67790, 67650, 67760, 590],
+  [67760, 67810, 67710, 67740, 620], // 5: Resistance ceiling near 67,800
+  [67740, 67760, 67620, 67640, 540],
+  [67640, 67670, 67530, 67560, 510],
+  [67560, 67590, 67440, 67470, 490],
+  [67470, 67500, 67360, 67390, 520], // 9: Clear Red Bearish Pullback (Close < Open)
+  [67390, 67420, 67290, 67320, 480],
+  [67320, 67350, 67230, 67270, 460],
+  [67270, 67300, 67210, 67250, 450],
+  [67250, 67420, 66940, 67390, 1180], // 13: Long Lower Rejection Wick — dipped to 66,940, buyers pushed back to 67,390!
+  [67390, 67510, 67360, 67490, 720],
+  [67490, 67600, 67460, 67580, 680],
+  [67580, 67690, 67550, 67660, 710],
+  [67660, 67760, 67630, 67730, 760],
+  [67730, 67795, 67690, 67770, 810],
+  [67770, 68140, 67750, 68110, 1490], // 19: Strong Full-Body Green Breakout Close above 67,800!
+  [68110, 68240, 68070, 68210, 1120],
+  [68210, 68280, 68110, 68150, 780],
+  [68150, 68190, 68020, 68060, 690],
+  [68060, 68120, 67940, 67990, 650],
+  [67990, 68110, 67950, 68080, 740],
+  [68080, 68210, 68050, 68190, 860],
+  [68190, 68310, 68160, 68280, 910],
+  [68280, 68380, 68240, 68350, 890],
+  [68350, 68410, 68290, 68320, 670],
+  [68320, 68390, 68270, 68360, 640],
+  [68360, 68450, 68330, 68420, 760],
+  [68420, 68490, 68380, 68460, 810],
+  [68460, 68510, 68410, 68440, 690],
+  [68440, 68530, 68420, 68500, 750],
+]);
+
+// 11. Support/Resistance & Supply/Demand (EUR/USD 1H — Demand Floor Bounce & Supply Ceiling Rejection)
+const sdDemandStart = 1717488000; // 2024-06-04 08:00:00 UTC
+const sdDemandInterval = 3600; // 1H
+const sdDemandBounceCandles = buildCandles(sdDemandStart, sdDemandInterval, [
+  [1.0788, 1.0794, 1.0782, 1.0791, 1450],
+  [1.0791, 1.0808, 1.0787, 1.0805, 1980], // 1: Demand Floor Origin (1.0780 - 1.0792)
+  [1.0805, 1.0824, 1.0802, 1.0821, 2240],
+  [1.0821, 1.0840, 1.0818, 1.0837, 2360],
+  [1.0837, 1.0854, 1.0834, 1.0851, 2190],
+  [1.0851, 1.0865, 1.0849, 1.0862, 2410],
+  [1.0862, 1.0869, 1.0848, 1.0851, 2780], // 6: Supply Ceiling Rejection at 1.0865
+  [1.0851, 1.0855, 1.0841, 1.0844, 2120],
+  [1.0844, 1.0848, 1.0833, 1.0836, 1890],
+  [1.0836, 1.0841, 1.0826, 1.0829, 1760],
+  [1.0829, 1.0834, 1.0820, 1.0823, 1680],
+  [1.0823, 1.0828, 1.0814, 1.0817, 1610],
+  [1.0817, 1.0821, 1.0807, 1.0810, 1590],
+  [1.0810, 1.0814, 1.0801, 1.0804, 1640],
+  [1.0804, 1.0808, 1.0794, 1.0797, 1710],
+  [1.0797, 1.0801, 1.0788, 1.0791, 1840],
+  [1.0791, 1.0810, 1.0782, 1.0807, 2940], // 16: Demand Floor Bounce — buyers step in hard at 1.0782!
+  [1.0807, 1.0822, 1.0805, 1.0819, 2580],
+  [1.0819, 1.0833, 1.0816, 1.0830, 2420],
+  [1.0830, 1.0841, 1.0827, 1.0838, 2190],
+  [1.0838, 1.0844, 1.0831, 1.0834, 1780],
+  [1.0834, 1.0846, 1.0832, 1.0843, 2060],
+  [1.0843, 1.0854, 1.0840, 1.0851, 2210],
+  [1.0851, 1.0860, 1.0848, 1.0857, 2340],
+  [1.0857, 1.0864, 1.0853, 1.0861, 2490],
+  [1.0861, 1.0866, 1.0855, 1.0858, 2520],
+  [1.0858, 1.0867, 1.0843, 1.0846, 2890], // 26: Second Supply Ceiling Rejection at 1.0865!
+  [1.0846, 1.0850, 1.0834, 1.0837, 2310],
+  [1.0837, 1.0841, 1.0827, 1.0830, 2040],
+  [1.0830, 1.0835, 1.0822, 1.0825, 1890],
+  [1.0825, 1.0831, 1.0818, 1.0821, 1780],
+  [1.0821, 1.0826, 1.0814, 1.0817, 1720],
+  [1.0817, 1.0824, 1.0813, 1.0820, 1660],
+  [1.0820, 1.0828, 1.0816, 1.0825, 1690],
+]);
+
+// 12. Order Blocks, BOS & CHoCH (GBP/USD 15m — Downtrend -> CHoCH U-Turn -> Order Block Retest -> Rally)
+const obChochStart = 1717574400; // 2024-06-05 08:00:00 UTC
+const obChochInterval = 900; // 15m
+const obChochReversalCandles = buildCandles(obChochStart, obChochInterval, [
+  [1.2768, 1.2771, 1.2758, 1.2760, 1180],
+  [1.2760, 1.2763, 1.2749, 1.2752, 1240],
+  [1.2752, 1.2755, 1.2741, 1.2744, 1310],
+  [1.2744, 1.2748, 1.2734, 1.2737, 1390],
+  [1.2737, 1.2745, 1.2735, 1.2742, 1160],
+  [1.2742, 1.2749, 1.2740, 1.2746, 1210],
+  [1.2746, 1.2748, 1.2731, 1.2733, 1480],
+  [1.2733, 1.2736, 1.2720, 1.2723, 1620],
+  [1.2723, 1.2736, 1.2721, 1.2733, 1340], // 8: Last Lower High at 1.2736 (CHoCH U-Turn Line)
+  [1.2733, 1.2735, 1.2721, 1.2724, 1490],
+  [1.2724, 1.2726, 1.2715, 1.2718, 1580],
+  [1.2718, 1.2720, 1.2706, 1.2709, 1890], // 11: Last Red Down Candle = Bullish Order Block (1.2706 - 1.2718)
+  [1.2709, 1.2724, 1.2708, 1.2722, 2340],
+  [1.2722, 1.2735, 1.2720, 1.2733, 2560],
+  [1.2733, 1.2747, 1.2731, 1.2744, 3120], // 14: CHoCH U-Turn Break — closes cleanly above 1.2736!
+  [1.2744, 1.2752, 1.2741, 1.2749, 2410],
+  [1.2749, 1.2751, 1.2738, 1.2740, 1640],
+  [1.2740, 1.2743, 1.2730, 1.2732, 1490],
+  [1.2732, 1.2735, 1.2723, 1.2726, 1380],
+  [1.2726, 1.2729, 1.2718, 1.2720, 1420],
+  [1.2720, 1.2728, 1.2712, 1.2726, 2480], // 20: Calm Pullback Taps Bullish Order Block & Bounces!
+  [1.2726, 1.2739, 1.2724, 1.2737, 2620],
+  [1.2737, 1.2749, 1.2735, 1.2747, 2790],
+  [1.2747, 1.2756, 1.2745, 1.2754, 2880],
+  [1.2754, 1.2764, 1.2751, 1.2762, 3040], // 24: Bullish BOS breaks prior swing 1.2752!
+  [1.2762, 1.2771, 1.2759, 1.2768, 2710],
+  [1.2768, 1.2775, 1.2763, 1.2766, 1980],
+  [1.2766, 1.2772, 1.2761, 1.2770, 1840],
+  [1.2770, 1.2779, 1.2768, 1.2776, 2140],
+  [1.2776, 1.2784, 1.2773, 1.2781, 2290],
+  [1.2781, 1.2788, 1.2777, 1.2785, 2180],
+  [1.2785, 1.2790, 1.2780, 1.2783, 1790],
+  [1.2783, 1.2791, 1.2781, 1.2788, 1860],
+  [1.2788, 1.2794, 1.2785, 1.2792, 1920],
+]);
+
+// 13. Multi-Timeframe Alignment (EUR/USD 15m — Higher-Timeframe Demand Floor Guiding Lower-Timeframe Entry)
+const mtfStart = 1717660800; // 2024-06-06 08:00:00 UTC
+const mtfInterval = 900; // 15m
+const mtfHtfLtfCandles = buildCandles(mtfStart, mtfInterval, [
+  [1.0868, 1.0871, 1.0860, 1.0862, 1080],
+  [1.0862, 1.0865, 1.0854, 1.0856, 1140],
+  [1.0856, 1.0859, 1.0848, 1.0850, 1190],
+  [1.0850, 1.0854, 1.0843, 1.0846, 1210],
+  [1.0846, 1.0852, 1.0844, 1.0850, 1120],
+  [1.0850, 1.0853, 1.0840, 1.0842, 1280],
+  [1.0842, 1.0845, 1.0834, 1.0836, 1340],
+  [1.0836, 1.0842, 1.0834, 1.0840, 1180], // 7: 15m Lower High at 1.0842
+  [1.0840, 1.0842, 1.0831, 1.0833, 1320],
+  [1.0833, 1.0836, 1.0826, 1.0828, 1410],
+  [1.0828, 1.0831, 1.0821, 1.0823, 1560],
+  [1.0823, 1.0833, 1.0818, 1.0831, 2420], // 11: Taps 4H Higher-Timeframe Demand Floor (1.0820) & bounces!
+  [1.0831, 1.0839, 1.0829, 1.0837, 2110],
+  [1.0837, 1.0841, 1.0833, 1.0838, 1890],
+  [1.0838, 1.0844, 1.0836, 1.0841, 2040],
+  [1.0841, 1.0851, 1.0840, 1.0849, 2860], // 15: 15m Trend Flips Up — closes cleanly above 1.0842!
+  [1.0849, 1.0854, 1.0846, 1.0851, 2190],
+  [1.0851, 1.0852, 1.0842, 1.0844, 1620],
+  [1.0844, 1.0847, 1.0837, 1.0839, 1510],
+  [1.0839, 1.0846, 1.0835, 1.0844, 1980], // 19: Clean 15m Retest Entry aligned with 4H Demand!
+  [1.0844, 1.0855, 1.0842, 1.0853, 2340],
+  [1.0853, 1.0863, 1.0851, 1.0861, 2580],
+  [1.0861, 1.0870, 1.0858, 1.0868, 2690],
+  [1.0868, 1.0876, 1.0865, 1.0874, 2410],
+  [1.0874, 1.0879, 1.0869, 1.0872, 1860],
+  [1.0872, 1.0881, 1.0870, 1.0879, 2120],
+  [1.0879, 1.0887, 1.0876, 1.0885, 2290],
+  [1.0885, 1.0892, 1.0882, 1.0890, 2380],
+  [1.0890, 1.0896, 1.0886, 1.0894, 2210],
+  [1.0894, 1.0899, 1.0889, 1.0896, 2040],
+  [1.0896, 1.0902, 1.0893, 1.0899, 2190], // 30: Higher-Timeframe Target (1.0895) Reached!
+  [1.0899, 1.0904, 1.0894, 1.0897, 1780],
+  [1.0897, 1.0903, 1.0892, 1.0900, 1690],
+  [1.0900, 1.0906, 1.0897, 1.0903, 1740],
+]);
+
+// 14. Forex Sessions & Killzones (EUR/USD 15m — Quiet Asian Range -> London Open Sweep -> NY Continuation)
+const fxLondonStart = 1718006400; // 2024-06-10 00:00:00 UTC
+const fxLondonInterval = 900; // 15m
+const fxLondonSweepCandles = buildCandles(fxLondonStart, fxLondonInterval, [
+  [1.0849, 1.0854, 1.0846, 1.0852, 620],
+  [1.0852, 1.0857, 1.0849, 1.0855, 680],
+  [1.0855, 1.0858, 1.0850, 1.0852, 710], // 2: Asian High 1.0858
+  [1.0852, 1.0854, 1.0846, 1.0848, 640],
+  [1.0848, 1.0851, 1.0843, 1.0845, 690],
+  [1.0845, 1.0849, 1.0842, 1.0847, 740], // 5: Asian Low 1.0842
+  [1.0847, 1.0853, 1.0845, 1.0851, 610],
+  [1.0851, 1.0856, 1.0848, 1.0854, 650], // 7: Quiet Asian Range Box (1.0842 - 1.0858)
+  [1.0854, 1.0858, 1.0850, 1.0852, 720],
+  [1.0852, 1.0855, 1.0847, 1.0849, 660],
+  [1.0849, 1.0852, 1.0844, 1.0846, 680],
+  [1.0846, 1.0851, 1.0842, 1.0849, 730],
+  [1.0849, 1.0854, 1.0846, 1.0851, 690],
+  [1.0851, 1.0853, 1.0845, 1.0847, 750],
+  [1.0847, 1.0850, 1.0843, 1.0845, 840],
+  [1.0845, 1.0848, 1.0839, 1.0843, 1420],
+  [1.0843, 1.0850, 1.0828, 1.0847, 3240], // 16: London Open Sweep below Asian Low (1.0828) & close back inside!
+  [1.0847, 1.0856, 1.0845, 1.0855, 2680],
+  [1.0855, 1.0861, 1.0852, 1.0859, 2590],
+  [1.0859, 1.0870, 1.0857, 1.0868, 3120], // 19: Breaks above Asian High (1.0858)!
+  [1.0868, 1.0876, 1.0865, 1.0874, 2840],
+  [1.0874, 1.0879, 1.0869, 1.0872, 2110],
+  [1.0872, 1.0874, 1.0863, 1.0866, 1780],
+  [1.0866, 1.0869, 1.0859, 1.0862, 1690],
+  [1.0862, 1.0868, 1.0860, 1.0866, 1840],
+  [1.0866, 1.0875, 1.0864, 1.0873, 2190],
+  [1.0873, 1.0884, 1.0871, 1.0882, 2740], // 26: New York Open Volume Surge
+  [1.0882, 1.0893, 1.0880, 1.0891, 3180],
+  [1.0891, 1.0901, 1.0888, 1.0898, 3040], // 28: NY Continuation Rally
+  [1.0898, 1.0906, 1.0894, 1.0904, 2690],
+  [1.0904, 1.0910, 1.0900, 1.0908, 2410],
+  [1.0908, 1.0913, 1.0903, 1.0906, 1980],
+  [1.0906, 1.0912, 1.0902, 1.0910, 1890],
+  [1.0910, 1.0916, 1.0907, 1.0913, 1940],
+]);
+
+// 15. Indices NY Open Playbook (NAS100 5m — 9:30 AM NY Open Sweep & Fast Reversal)
+const idxNasStart = 1718109000; // 2024-06-11 12:30:00 UTC (8:30 AM EDT)
+const idxNasInterval = 300; // 5m
+const idxNasNyOpenCandles = buildCandles(idxNasStart, idxNasInterval, [
+  [19068, 19082, 19062, 19078, 1180],
+  [19078, 19096, 19074, 19092, 1290],
+  [19092, 19110, 19088, 19106, 1410],
+  [19106, 19118, 19100, 19114, 1560],
+  [19114, 19121, 19106, 19110, 1690], // 4: Pre-Market High #1 at 19,121
+  [19110, 19112, 19092, 19096, 1420],
+  [19096, 19100, 19075, 19080, 1510], // 6: Pre-Market Internal Low at 19,075
+  [19080, 19098, 19078, 19094, 1380],
+  [19094, 19112, 19090, 19108, 1520],
+  [19108, 19120, 19104, 19114, 1790], // 9: Pre-Market Equal High #2 at 19,120
+  [19114, 19118, 19102, 19106, 1640],
+  [19106, 19116, 19101, 19113, 1890],
+  [19113, 19168, 19104, 19109, 5480], // 12: 9:30 AM NY Open — spikes to 19,168 then slams closed below 19,120!
+  [19109, 19114, 19078, 19082, 4620],
+  [19082, 19086, 19052, 19058, 4390], // 14: Fast Bearish Shift below 19,075!
+  [19058, 19066, 19044, 19049, 3410],
+  [19049, 19064, 19046, 19061, 2480],
+  [19061, 19078, 19058, 19074, 2290],
+  [19074, 19084, 19066, 19069, 2540], // 18: Clean Retest Bounce fails near 19,075–19,084
+  [19069, 19072, 19046, 19050, 3190],
+  [19050, 19055, 19032, 19036, 3380],
+  [19036, 19041, 19018, 19022, 3260],
+  [19022, 19029, 19010, 19014, 2940],
+  [19014, 19024, 19008, 19020, 2380],
+  [19020, 19026, 19002, 19006, 2810],
+  [19006, 19012, 18992, 18996, 2960],
+  [18996, 19004, 18986, 18990, 2740],
+  [18990, 18998, 18981, 18985, 2590],
+  [18985, 18994, 18978, 18982, 2420],
+  [18982, 18992, 18979, 18989, 2110],
+  [18989, 18996, 18984, 18987, 1980],
+  [18987, 18991, 18976, 18980, 2240],
+  [18980, 18988, 18974, 18984, 2060],
+  [18984, 18990, 18977, 18981, 1990],
+]);
+
+// 16. Crypto 24/7 Liquidity Playbook (BTC/USDT 15m — Crowded Longs Flushed -> V-Shaped Recovery)
+const cryFlushStart = 1718193600; // 2024-06-12 12:00:00 UTC
+const cryFlushInterval = 900; // 15m
+const cryBtcFundingFlushCandles = buildCandles(cryFlushStart, cryFlushInterval, [
+  [68680, 68760, 68540, 68580, 980],
+  [68580, 68640, 68420, 68460, 1040],
+  [68460, 68510, 68310, 68350, 1120],
+  [68350, 68410, 68220, 68270, 1280],
+  [68270, 68350, 68205, 68320, 1460],
+  [68320, 68490, 68200, 68460, 1590], // 5: Equal Low #1 at 68,200
+  [68460, 68680, 68420, 68640, 1410],
+  [68640, 68890, 68600, 68820, 1520], // 7: Local ceiling at 68,900
+  [68820, 68860, 68640, 68680, 1340],
+  [68680, 68720, 68490, 68530, 1290],
+  [68530, 68580, 68340, 68380, 1380],
+  [68380, 68460, 68205, 68410, 1740], // 11: Equal Low #2 at 68,205 (Crowded Leveraged Longs!)
+  [68410, 68560, 68360, 68510, 1460],
+  [68510, 68540, 68320, 68360, 1520],
+  [68360, 68410, 68230, 68270, 1680],
+  [68270, 68390, 67180, 68330, 4920], // 15: Liquidation Flush to 67,180 wipes leverage, closes back above 68,200!
+  [68330, 68710, 68290, 68670, 3640],
+  [68670, 68940, 68620, 68880, 3290],
+  [68880, 69160, 68840, 69110, 3580], // 18: V-Shaped Recovery breaks 68,900 ceiling!
+  [69110, 69320, 69040, 69260, 2940],
+  [69260, 69360, 69090, 69140, 2120],
+  [69140, 69220, 68960, 69040, 1980],
+  [69040, 69280, 69000, 69240, 2360],
+  [69240, 69480, 69200, 69440, 2610],
+  [69440, 69690, 69400, 69640, 2790],
+  [69640, 69820, 69580, 69780, 2540],
+  [69780, 69940, 69710, 69890, 2410],
+  [69890, 70040, 69820, 69990, 2490],
+  [69990, 70120, 69910, 70060, 2260],
+  [70060, 70140, 69960, 70010, 1890],
+  [70010, 70180, 69980, 70140, 2080],
+  [70140, 70260, 70090, 70220, 2190],
+  [70220, 70310, 70150, 70260, 1980],
+  [70260, 70350, 70190, 70310, 2040],
+]);
+
+// 17. Stocks Gaps & RVOL Playbook (AAPL 5m — Pre-Market Gap Up -> 5m Opening Range Box -> High-RVOL Breakout)
+const stkAaplStart = 1718285400; // 2024-06-13 13:30:00 UTC
+const stkAaplInterval = 300; // 5m
+const stkAaplOrbGapCandles = buildCandles(stkAaplStart, stkAaplInterval, [
+  [201.35, 201.60, 201.20, 201.50, 1420],
+  [201.50, 201.72, 201.40, 201.64, 1380],
+  [201.64, 201.82, 201.52, 201.70, 1490],
+  [201.70, 201.88, 201.58, 201.76, 1510],
+  [201.76, 201.90, 201.65, 201.78, 1620],
+  [201.78, 201.92, 201.68, 201.80, 1740], // 5: Prior Close at $201.80 before overnight news
+  [204.60, 205.60, 204.20, 205.25, 7850], // 6: Gap Up + 5-Minute Opening Range Box ($204.20 - $205.60)
+  [205.25, 205.52, 204.68, 204.88, 4210],
+  [204.88, 205.18, 204.38, 204.62, 3690],
+  [204.62, 205.12, 204.45, 205.04, 3420],
+  [205.04, 205.48, 204.88, 205.36, 3890],
+  [205.36, 205.58, 205.12, 205.46, 4120],
+  [205.46, 206.78, 205.38, 206.64, 9460], // 12: High-RVOL Breakout closes cleanly above $205.60!
+  [206.64, 207.12, 206.48, 206.95, 6840],
+  [206.95, 207.06, 206.32, 206.45, 4120],
+  [206.45, 206.58, 205.92, 206.04, 3480],
+  [206.04, 206.42, 205.72, 206.34, 4690], // 16: Clean Retest Holds Above $205.60 Opening Box!
+  [206.34, 206.94, 206.26, 206.86, 5120],
+  [206.86, 207.42, 206.78, 207.34, 5480],
+  [207.34, 207.86, 207.22, 207.78, 5690],
+  [207.78, 208.15, 207.62, 208.04, 4920],
+  [208.04, 208.24, 207.76, 207.88, 3640],
+  [207.88, 208.32, 207.80, 208.24, 4180],
+  [208.24, 208.62, 208.16, 208.54, 4520],
+  [208.54, 208.88, 208.42, 208.78, 4390],
+  [208.78, 209.04, 208.64, 208.92, 4110],
+  [208.92, 209.18, 208.78, 209.08, 3960],
+  [209.08, 209.26, 208.90, 209.02, 3420],
+  [209.02, 209.32, 208.94, 209.24, 3680],
+  [209.24, 209.46, 209.12, 209.38, 3810],
+  [209.38, 209.54, 209.22, 209.44, 3590],
+  [209.44, 209.62, 209.30, 209.52, 3460],
+  [209.52, 209.68, 209.38, 209.48, 3190],
+  [209.48, 209.74, 209.42, 209.66, 3340],
+]);
+
+// 18. A+ Confluence Setups (XAU/USD 15m — Sweep + Structure Shift + Fair Value Gap Retest)
+const execConfluenceStart = 1718352000; // 2024-06-14 08:00:00 UTC
+const execConfluenceInterval = 900; // 15m
+const execAplusConfluenceCandles = buildCandles(
+  execConfluenceStart,
+  execConfluenceInterval,
+  [
+    [2331.4, 2333.0, 2328.2, 2329.0, 1840],
+    [2329.0, 2330.2, 2325.8, 2326.5, 1920],
+    [2326.5, 2327.8, 2323.6, 2324.4, 2060],
+    [2324.4, 2326.0, 2322.1, 2324.8, 2290], // 3: Equal Low #1 at 2322.1
+    [2324.8, 2328.6, 2324.2, 2327.9, 1940],
+    [2327.9, 2331.0, 2327.1, 2330.2, 2120], // 5: Internal Swing High at 2331.0
+    [2330.2, 2330.8, 2327.4, 2328.0, 1860],
+    [2328.0, 2328.9, 2324.8, 2325.4, 1980],
+    [2325.4, 2326.4, 2322.0, 2324.2, 2410], // 8: Equal Low #2 at 2322.0 (Resting Stops Below!)
+    [2324.2, 2326.8, 2323.6, 2325.8, 1960],
+    [2325.8, 2326.2, 2322.6, 2323.4, 2140],
+    [2323.4, 2324.6, 2315.4, 2323.2, 4680], // 11: Confluence #1 — SSL Sweep Wick to 2315.4, closes back above 2322!
+    [2323.2, 2325.0, 2322.4, 2324.8, 2890], // 12: FVG Candle 1 (High = 2325.0)
+    [2324.8, 2334.6, 2324.5, 2333.8, 4920], // 13: Confluence #2 — Displacement & Structure Shift above 2331.0!
+    [2333.8, 2336.8, 2330.0, 2335.4, 3410], // 14: FVG Candle 3 (Low = 2330.0 => Bullish FVG: 2325.0 - 2330.0)
+    [2335.4, 2336.2, 2332.6, 2333.2, 2340],
+    [2333.2, 2334.0, 2330.8, 2331.4, 2120],
+    [2331.4, 2332.2, 2329.2, 2329.8, 2060],
+    [2329.8, 2330.6, 2328.0, 2328.6, 2190],
+    [2328.6, 2330.8, 2327.2, 2330.2, 3180], // 19: Confluence #3 — Patient A+ Entry inside 50% FVG (2327.5)!
+    [2330.2, 2334.8, 2329.8, 2334.2, 3620],
+    [2334.2, 2338.4, 2333.6, 2337.9, 3890],
+    [2337.9, 2341.2, 2337.2, 2340.6, 3740],
+    [2340.6, 2343.5, 2339.8, 2342.8, 3460],
+    [2342.8, 2344.2, 2340.8, 2341.6, 2580],
+    [2341.6, 2344.9, 2341.2, 2344.4, 2940],
+    [2344.4, 2346.8, 2343.8, 2346.2, 3120],
+    [2346.2, 2348.1, 2345.4, 2347.6, 2980],
+    [2347.6, 2349.4, 2346.8, 2348.9, 3160],
+    [2348.9, 2350.6, 2348.0, 2349.8, 2890], // 29: Target Hit above 2349.0!
+    [2349.8, 2351.2, 2348.4, 2349.1, 2410],
+    [2349.1, 2350.4, 2347.9, 2348.8, 2180],
+    [2348.8, 2350.8, 2348.2, 2350.2, 2290],
+    [2350.2, 2351.6, 2349.4, 2351.0, 2140],
+  ],
+);
+
+// 19. Trade Management: Partials & Breakeven (EUR/USD 15m — Entry -> +1R Partial + BE -> +3R Target)
+const mgmtPartialsStart = 1718611200; // 2024-06-17 08:00:00 UTC
+const mgmtPartialsInterval = 900; // 15m
+const mgmtPartialsBeCandles = buildCandles(mgmtPartialsStart, mgmtPartialsInterval, [
+  [1.0824, 1.0831, 1.0821, 1.0829, 1120],
+  [1.0829, 1.0838, 1.0827, 1.0836, 1240],
+  [1.0836, 1.0846, 1.0834, 1.0844, 1380],
+  [1.0844, 1.0854, 1.0842, 1.0852, 1520],
+  [1.0852, 1.0858, 1.0849, 1.0855, 1610],
+  [1.0855, 1.0857, 1.0846, 1.0848, 1320],
+  [1.0848, 1.0851, 1.0840, 1.0843, 1290],
+  [1.0843, 1.0846, 1.0836, 1.0838, 1240],
+  [1.0838, 1.0841, 1.0830, 1.0834, 1360],
+  [1.0834, 1.0843, 1.0832, 1.0841, 1540],
+  [1.0841, 1.0848, 1.0837, 1.0846, 1890], // 10: Planned Entry fills at 1.0840 (Initial Stop 1.0820 = -1R)
+  [1.0846, 1.0852, 1.0843, 1.0850, 1960],
+  [1.0850, 1.0856, 1.0848, 1.0854, 2040],
+  [1.0854, 1.0859, 1.0851, 1.0857, 2120],
+  [1.0857, 1.0861, 1.0853, 1.0858, 1980],
+  [1.0858, 1.0865, 1.0856, 1.0863, 2480], // 15: +1R Reached (1.0860) — Bank 50% Partial & Move Stop to Breakeven (1.0840)!
+  [1.0863, 1.0866, 1.0856, 1.0858, 1740],
+  [1.0858, 1.0860, 1.0850, 1.0852, 1620],
+  [1.0852, 1.0855, 1.0847, 1.0849, 1580],
+  [1.0849, 1.0854, 1.0845, 1.0852, 1690], // 19: Stress-Free Pullback holds safely above 1.0840 Breakeven!
+  [1.0852, 1.0862, 1.0850, 1.0860, 2080],
+  [1.0860, 1.0869, 1.0858, 1.0867, 2240],
+  [1.0867, 1.0877, 1.0865, 1.0875, 2410],
+  [1.0875, 1.0884, 1.0872, 1.0882, 2560],
+  [1.0882, 1.0890, 1.0879, 1.0888, 2480],
+  [1.0888, 1.0895, 1.0884, 1.0893, 2390],
+  [1.0893, 1.0899, 1.0890, 1.0897, 2510],
+  [1.0897, 1.0904, 1.0895, 1.0902, 2860], // 27: Final +3R Target Hit at 1.0900!
+  [1.0902, 1.0906, 1.0896, 1.0899, 2120],
+  [1.0899, 1.0903, 1.0893, 1.0896, 1840],
+  [1.0896, 1.0902, 1.0894, 1.0900, 1720],
+  [1.0900, 1.0905, 1.0897, 1.0903, 1690],
+  [1.0903, 1.0908, 1.0899, 1.0905, 1760],
+  [1.0905, 1.0909, 1.0901, 1.0906, 1680],
+]);
+
+// 20. Trading Journal & Expectancy (GBP/USD 15m — Disciplined 1:3 Winner Showing Why 40% Win Rate Grows Accounts)
+const jrnExpectancyStart = 1718697600; // 2024-06-18 08:00:00 UTC
+const jrnExpectancyInterval = 900; // 15m
+const jrnExpectancyReviewCandles = buildCandles(
+  jrnExpectancyStart,
+  jrnExpectancyInterval,
+  [
+    [1.2682, 1.2689, 1.2679, 1.2687, 1140],
+    [1.2687, 1.2696, 1.2685, 1.2694, 1260],
+    [1.2694, 1.2704, 1.2691, 1.2702, 1380],
+    [1.2702, 1.2712, 1.2700, 1.2710, 1510],
+    [1.2710, 1.2716, 1.2706, 1.2712, 1460],
+    [1.2712, 1.2714, 1.2701, 1.2703, 1320],
+    [1.2703, 1.2706, 1.2692, 1.2695, 1290],
+    [1.2695, 1.2699, 1.2684, 1.2688, 1480], // 7: Protected Higher Low at 1.2684 (Stop at 1.2680)
+    [1.2688, 1.2702, 1.2686, 1.2700, 1790],
+    [1.2700, 1.2718, 1.2698, 1.2715, 2240], // 9: Bullish BOS above 1.2716 confirms trend
+    [1.2715, 1.2717, 1.2704, 1.2706, 1580],
+    [1.2706, 1.2709, 1.2697, 1.2705, 1840], // 11: Journaled Entry at 1.2700 (Strict -1R Stop = 20 pips)
+    [1.2705, 1.2715, 1.2703, 1.2713, 1980],
+    [1.2713, 1.2724, 1.2711, 1.2722, 2190], // 13: +1R passed (1.2720)
+    [1.2722, 1.2732, 1.2719, 1.2730, 2310],
+    [1.2730, 1.2741, 1.2728, 1.2739, 2420], // 15: +2R approached (1.2740)
+    [1.2739, 1.2743, 1.2732, 1.2735, 1780],
+    [1.2735, 1.2739, 1.2729, 1.2732, 1640],
+    [1.2732, 1.2738, 1.2727, 1.2734, 1590],
+    [1.2734, 1.2742, 1.2731, 1.2740, 1920], // 19: Resisted Fearful Early Exit — Journal Rule Says Hold to +3R!
+    [1.2740, 1.2748, 1.2738, 1.2746, 2180],
+    [1.2746, 1.2752, 1.2743, 1.2750, 2340],
+    [1.2750, 1.2756, 1.2747, 1.2754, 2410],
+    [1.2754, 1.2758, 1.2749, 1.2752, 1960],
+    [1.2752, 1.2758, 1.2750, 1.2756, 2120],
+    [1.2756, 1.2761, 1.2753, 1.2759, 2480],
+    [1.2759, 1.2765, 1.2756, 1.2762, 2790], // 26: +3R Target Hit (1.2760) — One Win Covers Three -1R Losses!
+    [1.2762, 1.2766, 1.2757, 1.2760, 2110],
+    [1.2760, 1.2764, 1.2754, 1.2757, 1840],
+    [1.2757, 1.2762, 1.2753, 1.2760, 1760],
+    [1.2760, 1.2767, 1.2758, 1.2765, 1890],
+    [1.2765, 1.2770, 1.2761, 1.2768, 1820],
+    [1.2768, 1.2771, 1.2762, 1.2764, 1690],
+    [1.2764, 1.2769, 1.2760, 1.2766, 1640],
+  ],
+);
+
+// 21. Drawdown Control & Recovery Curve (US500 15m — Clean -1R Stop Accepted -> Calm +3R Recovery Winner)
+const ddRecoveryStart = 1718784000; // 2024-06-19 08:00:00 UTC
+const ddRecoveryInterval = 900; // 15m
+const ddRecoveryCurveCandles = buildCandles(ddRecoveryStart, ddRecoveryInterval, [
+  [5441, 5447, 5439, 5445, 1640],
+  [5445, 5450, 5442, 5448, 1780],
+  [5448, 5452, 5444, 5446, 1690],
+  [5446, 5449, 5441, 5443, 1580],
+  [5443, 5447, 5440, 5445, 1720],
+  [5445, 5449, 5443, 5447, 1840], // 5: Trade #1 Entry at 5445 (Strict Stop at 5435 = -1R)
+  [5447, 5448, 5439, 5441, 1960],
+  [5441, 5443, 5436, 5438, 2140],
+  [5438, 5440, 5424, 5426, 3290], // 8: Clean -1R Stop-Loss Hit at 5435 — Accepted Calmly, No Revenge Trade!
+  [5426, 5429, 5418, 5420, 2980],
+  [5420, 5424, 5415, 5418, 2640], // 10: Dropping to 5415 proves the stop-loss saved capital!
+  [5418, 5422, 5412, 5419, 3120], // 11: Liquidity Sweep at 5412 + Reclaim
+  [5419, 5427, 5417, 5425, 2590],
+  [5425, 5433, 5423, 5431, 2840], // 13: Bullish Structure Shift above 5430!
+  [5431, 5436, 5428, 5434, 2410],
+  [5434, 5435, 5427, 5429, 1890],
+  [5429, 5431, 5424, 5426, 1760],
+  [5426, 5429, 5423, 5425, 1820],
+  [5425, 5432, 5422, 5430, 2490], // 18: Calm A+ Recovery Entry at 5425 (Stop 5415 = -1R, Target 5455 = +3R)
+  [5430, 5437, 5428, 5435, 2680],
+  [5435, 5441, 5433, 5439, 2740],
+  [5439, 5445, 5437, 5443, 2890],
+  [5443, 5448, 5440, 5446, 2610],
+  [5446, 5450, 5442, 5444, 2120],
+  [5444, 5449, 5442, 5448, 2340],
+  [5448, 5453, 5446, 5451, 2580],
+  [5451, 5455, 5449, 5453, 2720],
+  [5453, 5458, 5451, 5456, 3140], // 27: +3R Target Hit (5455) — Recovers -1R Loss & Nets +2R Profit!
+  [5456, 5460, 5453, 5458, 2460],
+  [5458, 5462, 5455, 5460, 2290],
+  [5460, 5463, 5456, 5459, 1980],
+  [5459, 5464, 5457, 5462, 2060],
+  [5462, 5465, 5458, 5461, 1920],
+  [5461, 5466, 5459, 5464, 1990],
+]);
+
 export const CHART_SCENARIOS: ChartScenario[] = [
   {
     id: 'ms-bullish-bos',
@@ -1135,6 +1623,1081 @@ export const CHART_SCENARIOS: ChartScenario[] = [
       'At 1:3 Risk-to-Reward, even a 40% win rate generates strong positive expectancy (+0.6R per trade average).',
     ],
   },
+  {
+    id: 'ca-green-red-candles',
+    lessonSlug: 'candlestick-anatomy',
+    title: 'Reading Green vs. Red Candles, Rejection Wicks & Strong Closes',
+    symbol: 'BTC/USD',
+    timeframe: '15m',
+    category: 'market_structure',
+    description:
+      'Beginner walkthrough of candlesticks: see Green candles (price finished higher than it opened), Red candles (price finished lower), a long lower rejection wick where buyers pushed price back up, and a strong full-body breakout close.',
+    isPracticeEligible: false,
+    correctClassification: 'bullish_bos',
+    candles: caGreenRedCandles,
+    priceLines: [
+      {
+        id: 'ca-ceil',
+        price: 67800,
+        title: 'Price Ceiling (Broken by Full Green Body)',
+        color: '#10b981',
+        lineStyle: 'dashed',
+        role: 'bos',
+      },
+      {
+        id: 'ca-floor',
+        price: 67200,
+        title: 'Support Floor (Buyers Defended Here)',
+        color: '#38bdf8',
+        lineStyle: 'dotted',
+        role: 'support_resistance',
+      },
+    ],
+    markers: [
+      {
+        id: 'ca-m1',
+        time: caGreenRedCandles[3].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Green = Buyers Won',
+        stage: 'before',
+      },
+      {
+        id: 'ca-m2',
+        time: caGreenRedCandles[9].time,
+        position: 'aboveBar',
+        color: '#ef4444',
+        shape: 'arrowDown',
+        text: 'Red = Sellers Pushed Down',
+        stage: 'before',
+      },
+      {
+        id: 'ca-m3',
+        time: caGreenRedCandles[13].time,
+        position: 'belowBar',
+        color: '#f59e0b',
+        shape: 'arrowUp',
+        text: 'Long Lower Wick (Buyers Pushed Back Up)',
+        stage: 'trigger',
+      },
+      {
+        id: 'ca-m4',
+        time: caGreenRedCandles[19].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Strong Full-Body Close',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 12,
+      triggerEndIndex: 19,
+      afterEndIndex: caGreenRedCandles.length - 1,
+      beforeSummary:
+        'Before: Green bullish candles (where the closing price is higher than the opening price) climb to $67,800, then Red bearish candles (where the close is lower than the open) pull price back down toward $67,200.',
+      triggerSummary:
+        'Trigger: Watch Candle 14 dip down to $66,940 and leave a long bottom tail (wick) before closing green at $67,390—proof that buyers stepped in aggressively! Six candles later, a big full-body green candle closes firmly above $67,800.',
+      afterSummary:
+        'After: That full-body green close (tiny wicks, big solid body) signals strong buyer confidence, carrying Bitcoin steadily higher toward $68,500.',
+    },
+    teachingTakeaways: [
+      'Green candles mean price ended the 15-minute round higher than it started; Red candles mean it ended lower.',
+      'A long tail (wick) at the bottom of a candle means sellers tried to push price down, but buyers pushed it right back up before the timer ended.',
+      'A big solid candle body with small wicks shows clear, decisive momentum.',
+    ],
+  },
+  {
+    id: 'sd-demand-bounce',
+    lessonSlug: 'support-resistance-supply-demand',
+    title: 'Demand Zone Floor Bounce & Supply Zone Ceiling Rejection',
+    symbol: 'EUR/USD',
+    timeframe: '1H',
+    category: 'market_structure',
+    description:
+      'Think of Support/Demand as a floor where eager buyers wait for discounts, and Resistance/Supply as a ceiling where sellers step in to take profit.',
+    isPracticeEligible: false,
+    correctClassification: 'bullish_bos',
+    candles: sdDemandBounceCandles,
+    priceLines: [
+      {
+        id: 'sd-supply',
+        price: 1.0865,
+        title: 'Supply Zone Ceiling (Sellers Step In)',
+        color: '#ef4444',
+        lineStyle: 'dashed',
+        role: 'support_resistance',
+      },
+      {
+        id: 'sd-demand',
+        price: 1.0785,
+        title: 'Demand Zone Floor (Buyers Step In)',
+        color: '#10b981',
+        lineStyle: 'dashed',
+        role: 'support_resistance',
+      },
+    ],
+    markers: [
+      {
+        id: 'sd-m1',
+        time: sdDemandBounceCandles[1].time,
+        position: 'belowBar',
+        color: '#10b981',
+        shape: 'circle',
+        text: 'Demand Floor Created',
+        stage: 'before',
+      },
+      {
+        id: 'sd-m2',
+        time: sdDemandBounceCandles[6].time,
+        position: 'aboveBar',
+        color: '#ef4444',
+        shape: 'arrowDown',
+        text: 'Supply Ceiling Rejection',
+        stage: 'before',
+      },
+      {
+        id: 'sd-m3',
+        time: sdDemandBounceCandles[16].time,
+        position: 'belowBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Clean Floor Bounce',
+        stage: 'trigger',
+      },
+      {
+        id: 'sd-m4',
+        time: sdDemandBounceCandles[26].time,
+        position: 'aboveBar',
+        color: '#ef4444',
+        shape: 'arrowDown',
+        text: 'Ceiling Rejects Again',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 14,
+      triggerEndIndex: 18,
+      afterEndIndex: sdDemandBounceCandles.length - 1,
+      beforeSummary:
+        'Before: Price rockets up from the 1.0785 floor (showing strong buyer demand), hits the 1.0865 ceiling where sellers push it back down, and drifts calmly back toward the floor.',
+      triggerSummary:
+        'Trigger: As soon as EUR/USD returns to the fresh Demand Zone floor near 1.0785, buyers rush back in—printing a strong green bounce candle off 1.0782.',
+      afterSummary:
+        'After: Price climbs all the way back to the 1.0865 Supply Zone ceiling, where sellers reject it a second time—showing why buying near floors and taking profit near ceilings beats chasing the middle.',
+    },
+    teachingTakeaways: [
+      'Treat Support/Demand and Resistance/Supply as price zones (thick carpets), not paper-thin exact lines.',
+      'The best trades wait patiently for price to visit a clear floor or ceiling instead of guessing in the noisy middle.',
+    ],
+  },
+  {
+    id: 'ob-choch-reversal',
+    lessonSlug: 'order-blocks-bos-choch',
+    title: 'Downtrend U-Turn (CHoCH) + Order Block Retest Rally',
+    symbol: 'GBP/USD',
+    timeframe: '15m',
+    category: 'market_structure',
+    description:
+      'Watch a textbook trend U-turn: price stops making lower lows, breaks above its last lower peak (Change of Character), pulls back to the last red candle (Order Block), and launches upward.',
+    isPracticeEligible: true,
+    correctClassification: 'bullish_bos',
+    candles: obChochReversalCandles,
+    priceLines: [
+      {
+        id: 'ob-choch-line',
+        price: 1.2736,
+        title: 'First U-Turn Break (CHoCH Line)',
+        color: '#10b981',
+        lineStyle: 'dashed',
+        role: 'bos',
+      },
+      {
+        id: 'ob-zone',
+        price: 1.2715,
+        title: 'Order Block Retest Zone (Last Red Candle)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'entry',
+      },
+      {
+        id: 'ob-sl',
+        price: 1.2704,
+        title: 'Safety Net Stop-Loss Below Floor',
+        color: '#ef4444',
+        lineStyle: 'dotted',
+        role: 'stop_loss',
+      },
+    ],
+    markers: [
+      {
+        id: 'ob-m1',
+        time: obChochReversalCandles[8].time,
+        position: 'aboveBar',
+        color: '#f59e0b',
+        shape: 'circle',
+        text: 'Last Lower Peak',
+        stage: 'before',
+      },
+      {
+        id: 'ob-m2',
+        time: obChochReversalCandles[11].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'square',
+        text: 'Last Red Candle (Order Block)',
+        stage: 'before',
+      },
+      {
+        id: 'ob-m3',
+        time: obChochReversalCandles[14].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'CHoCH (First U-Turn)',
+        stage: 'trigger',
+      },
+      {
+        id: 'ob-m4',
+        time: obChochReversalCandles[20].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'Order Block Retest',
+        stage: 'after',
+      },
+      {
+        id: 'ob-m5',
+        time: obChochReversalCandles[24].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Bullish BOS',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 12,
+      triggerEndIndex: 16,
+      afterEndIndex: obChochReversalCandles.length - 1,
+      beforeSummary:
+        'Before: GBP/USD walks steadily downstairs in a downtrend, leaving a clear last lower peak at 1.2736 and one final red candle at 1.2706–1.2718 before big buyers step in.',
+      triggerSummary:
+        'Trigger: Three energetic green candles surge up and close cleanly above 1.2736—this first U-turn break is called a Change of Character (CHoCH), warning that buyers just took the wheel.',
+      afterSummary:
+        'After: Instead of chasing the top, patient traders wait for price to dip back to that last red candle (the Bullish Order Block near 1.2715), where remaining buy orders launch a clean rally to 1.2792.',
+    },
+    teachingTakeaways: [
+      'A Change of Character (CHoCH) is the first U-turn sign that a downtrend has flipped into an uptrend (or vice versa).',
+      'An Order Block is simply the footprint of the last opposite candle right before a powerful institutional move—often revisited for a calm entry.',
+    ],
+  },
+  {
+    id: 'mtf-htf-ltf',
+    lessonSlug: 'multi-timeframe-alignment',
+    title: 'Big-Picture Demand Guiding a Zoomed-In 15-Minute Entry',
+    symbol: 'EUR/USD',
+    timeframe: '15m',
+    category: 'market_structure',
+    description:
+      'Think of higher timeframes (like the 4-Hour chart) as your GPS map and lower timeframes (15-Minute) as your street-level turn signal. Here, a 4H Demand Floor guides a low-risk 15m entry.',
+    isPracticeEligible: false,
+    correctClassification: 'bullish_bos',
+    candles: mtfHtfLtfCandles,
+    priceLines: [
+      {
+        id: 'mtf-target',
+        price: 1.0895,
+        title: 'Big-Picture (4H) Target High',
+        color: '#10b981',
+        lineStyle: 'solid',
+        role: 'take_profit',
+      },
+      {
+        id: 'mtf-confirm',
+        price: 1.0842,
+        title: '15m Turn-Signal Confirmation Line',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'bos',
+      },
+      {
+        id: 'mtf-floor',
+        price: 1.082,
+        title: 'Big-Picture (4H) Demand Floor',
+        color: '#f59e0b',
+        lineStyle: 'dashed',
+        role: 'support_resistance',
+      },
+    ],
+    markers: [
+      {
+        id: 'mtf-m1',
+        time: mtfHtfLtfCandles[11].time,
+        position: 'belowBar',
+        color: '#f59e0b',
+        shape: 'circle',
+        text: 'Taps 4H Demand Floor',
+        stage: 'before',
+      },
+      {
+        id: 'mtf-m2',
+        time: mtfHtfLtfCandles[15].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: '15m Flips Bullish',
+        stage: 'trigger',
+      },
+      {
+        id: 'mtf-m3',
+        time: mtfHtfLtfCandles[19].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'Aligned Retest Entry',
+        stage: 'after',
+      },
+      {
+        id: 'mtf-m4',
+        time: mtfHtfLtfCandles[30].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: '4H Target Reached',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 12,
+      triggerEndIndex: 16,
+      afterEndIndex: mtfHtfLtfCandles.length - 1,
+      beforeSummary:
+        'Before: On the zoomed-in 15-minute chart, price looks like it is drifting down—but zooming out to the 4-Hour chart reveals it is simply pulling back into a major Demand Floor at 1.0820.',
+      triggerSummary:
+        'Trigger: Once price touches the 4H Demand Floor at 1.0818, 15-minute buyers step in and close decisively above 1.0842—now BOTH the 4H map and 15m street view agree on UP!',
+      afterSummary:
+        'After: A gentle retest at 1.0836 provides a calm entry aligned with the bigger trend, smoothly carrying EUR/USD to the 4H target at 1.0895.',
+    },
+    teachingTakeaways: [
+      'Always check the higher timeframe first to know the main direction before zooming in to find an entry.',
+      'When your lower timeframe agrees with your higher timeframe floor or ceiling, setups become much smoother and cleaner.',
+    ],
+  },
+  {
+    id: 'fx-london-sweep',
+    lessonSlug: 'forex-sessions-killzones',
+    title: 'Quiet Asian Range → London Open Sweep → New York Rally',
+    symbol: 'EUR/USD',
+    timeframe: '15m',
+    category: 'liquidity_sweep',
+    description:
+      'Currencies wake up at specific global clock times. Watch EUR/USD sleep inside a tight Asian range, sweep overnight stops at the London Open, and trend smoothly through the New York session.',
+    isPracticeEligible: true,
+    isSweep: true,
+    correctClassification: 'liquidity_sweep',
+    candles: fxLondonSweepCandles,
+    priceLines: [
+      {
+        id: 'fx-asian-hi',
+        price: 1.0858,
+        title: 'Asian Session High (Overnight Ceiling)',
+        color: '#f59e0b',
+        lineStyle: 'dashed',
+        role: 'buy_side_liquidity',
+      },
+      {
+        id: 'fx-asian-lo',
+        price: 1.0842,
+        title: 'Asian Session Low (Overnight Floor)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'sell_side_liquidity',
+      },
+    ],
+    markers: [
+      {
+        id: 'fx-m1',
+        time: fxLondonSweepCandles[7].time,
+        position: 'aboveBar',
+        color: '#94a3b8',
+        shape: 'circle',
+        text: 'Quiet Asian Box',
+        stage: 'before',
+      },
+      {
+        id: 'fx-m2',
+        time: fxLondonSweepCandles[16].time,
+        position: 'belowBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'London Open Sweep',
+        stage: 'trigger',
+      },
+      {
+        id: 'fx-m3',
+        time: fxLondonSweepCandles[19].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Breaks Asian High',
+        stage: 'after',
+      },
+      {
+        id: 'fx-m4',
+        time: fxLondonSweepCandles[28].time,
+        position: 'aboveBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'New York Continuation',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 14,
+      triggerEndIndex: 18,
+      afterEndIndex: fxLondonSweepCandles.length - 1,
+      beforeSummary:
+        'Before: During the quiet Asian session, European and US banks are closed, so EUR/USD drifts sideways inside a tiny 16-pip box between 1.0842 and 1.0858.',
+      triggerSummary:
+        'Trigger: When London banks open, volume explodes! Price quickly dips below the Asian Low (1.0842) down to 1.0828 to grab overnight stop-losses, then snaps closed back inside the box at 1.0847.',
+      afterSummary:
+        'After: Buyers take control, break cleanly above the Asian High (1.0858), and ride a fresh wave of New York morning volume all the way to 1.0913.',
+    },
+    teachingTakeaways: [
+      'Avoid forcing trades during dead, low-volume hours—wait for active London and New York trading windows ("Killzones").',
+      'Marking the Asian Session High and Low before London opens gives you instant visibility into where overnight stop-losses are parked.',
+    ],
+  },
+  {
+    id: 'idx-nas100-ny-open',
+    lessonSlug: 'indices-ny-open-playbook',
+    title: '9:30 AM New York Open Sweep & Fast Nasdaq Reversal',
+    symbol: 'NAS100',
+    timeframe: '5m',
+    category: 'liquidity_sweep',
+    description:
+      'US stock indices like the Nasdaq 100 (NAS100) explode with speed at the 9:30 AM New York opening bell. Often the very first spike traps impatient traders before the real direction starts.',
+    isPracticeEligible: true,
+    isSweep: true,
+    correctClassification: 'liquidity_sweep',
+    candles: idxNasNyOpenCandles,
+    priceLines: [
+      {
+        id: 'idx-pm-hi',
+        price: 19120,
+        title: 'Pre-Market Equal Highs (19,120)',
+        color: '#f59e0b',
+        lineStyle: 'dashed',
+        role: 'buy_side_liquidity',
+      },
+      {
+        id: 'idx-pm-lo',
+        price: 19075,
+        title: 'Pre-Market Structure Floor (19,075)',
+        color: '#ef4444',
+        lineStyle: 'dotted',
+        role: 'bos',
+      },
+    ],
+    markers: [
+      {
+        id: 'idx-m1',
+        time: idxNasNyOpenCandles[9].time,
+        position: 'aboveBar',
+        color: '#f59e0b',
+        shape: 'circle',
+        text: 'Pre-Market Equal Highs',
+        stage: 'before',
+      },
+      {
+        id: 'idx-m2',
+        time: idxNasNyOpenCandles[12].time,
+        position: 'aboveBar',
+        color: '#ef4444',
+        shape: 'arrowDown',
+        text: '9:30 AM Open Sweep',
+        stage: 'trigger',
+      },
+      {
+        id: 'idx-m3',
+        time: idxNasNyOpenCandles[14].time,
+        position: 'belowBar',
+        color: '#ef4444',
+        shape: 'arrowDown',
+        text: 'Fast Bearish Shift',
+        stage: 'after',
+      },
+      {
+        id: 'idx-m4',
+        time: idxNasNyOpenCandles[18].time,
+        position: 'aboveBar',
+        color: '#38bdf8',
+        shape: 'arrowDown',
+        text: 'Calm Retest Entry',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 11,
+      triggerEndIndex: 14,
+      afterEndIndex: idxNasNyOpenCandles.length - 1,
+      beforeSummary:
+        'Before: Ahead of the US stock market bell, NAS100 builds two flat Pre-Market Highs right at 19,120—stacking stop-losses and anxious breakout buy orders directly above.',
+      triggerSummary:
+        'Trigger: At 9:30 AM NY Open, price rockets 48 points above 19,120 to 19,168 in seconds, trapping emotional opening-bell buyers—then slams closed back underneath 19,120 at 19,109!',
+      afterSummary:
+        'After: Sellers break the 19,075 pre-market floor, offer a clean bounce retest near 19,075–19,084, and drive Nasdaq nearly 100 points lower to 18,980.',
+    },
+    teachingTakeaways: [
+      'Sit on your hands during the chaotic first 5 minutes of the 9:30 AM NY Open—let the opening spike reveal its hand first.',
+      'Wait for the candle close back inside pre-market highs plus a structure shift before joining the move.',
+    ],
+  },
+  {
+    id: 'cry-btc-funding-flush',
+    lessonSlug: 'crypto-247-liquidity-playbook',
+    title: 'Crowded Leverage Flush Below Equal Lows → V-Shaped Recovery',
+    symbol: 'BTC/USDT',
+    timeframe: '15m',
+    category: 'liquidity_sweep',
+    description:
+      'Crypto trades 24/7 with heavy borrowed money (leverage). When too many traders pile in above flat Equal Lows, one sharp downward flush wipes out their forced sell orders before Bitcoin snaps right back up.',
+    isPracticeEligible: true,
+    isSweep: true,
+    correctClassification: 'liquidity_sweep',
+    candles: cryBtcFundingFlushCandles,
+    priceLines: [
+      {
+        id: 'cry-bos',
+        price: 68900,
+        title: 'Recovery Breakout Ceiling ($68,900)',
+        color: '#10b981',
+        lineStyle: 'dashed',
+        role: 'bos',
+      },
+      {
+        id: 'cry-eql',
+        price: 68200,
+        title: 'Equal Lows Liquidation Floor ($68,200)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'sell_side_liquidity',
+      },
+    ],
+    markers: [
+      {
+        id: 'cry-m1',
+        time: cryBtcFundingFlushCandles[11].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'circle',
+        text: 'Crowded Equal Lows',
+        stage: 'before',
+      },
+      {
+        id: 'cry-m2',
+        time: cryBtcFundingFlushCandles[15].time,
+        position: 'belowBar',
+        color: '#f59e0b',
+        shape: 'arrowUp',
+        text: 'Leverage Flush Wick',
+        stage: 'trigger',
+      },
+      {
+        id: 'cry-m3',
+        time: cryBtcFundingFlushCandles[18].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'V-Shaped Recovery Break',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 14,
+      triggerEndIndex: 17,
+      afterEndIndex: cryBtcFundingFlushCandles.length - 1,
+      beforeSummary:
+        'Before: Bitcoin bounces twice right at $68,200, giving leveraged traders false confidence to pack stops and liquidation levels immediately underneath that floor.',
+      triggerSummary:
+        'Trigger: A sudden $1,000 downward spike plunges to $67,180 on huge volume—forcing over-leveraged buyers to sell—before real spot buyers scoop up the discount and close the candle back above $68,200 at $68,330!',
+      afterSummary:
+        'After: With crowded leverage flushed out, Bitcoin rebounds in a clean V-shape, closes decisively above $68,900, and climbs smoothly past $70,300.',
+    },
+    teachingTakeaways: [
+      'In crypto, high leverage turns obvious flat lows into magnets for quick liquidation wicks.',
+      'Never use oversized leverage with a tight stop tucked directly beneath clean Equal Lows—wait for the flush and reclaim first.',
+    ],
+  },
+  {
+    id: 'stk-aapl-orb-gap',
+    lessonSlug: 'stocks-gaps-rvol-playbook',
+    title: 'Pre-Market Gap Up → 5-Minute Opening Box → High-Volume Breakout',
+    symbol: 'AAPL',
+    timeframe: '5m',
+    category: 'true_breakout',
+    description:
+      'Stocks often jump overnight ("gap up") on big news or earnings. Marking the high and low of the first 5 minutes (Opening Range) lets you wait for a clean, high-volume breakout instead of guessing.',
+    isPracticeEligible: true,
+    isSweep: false,
+    correctClassification: 'true_breakout',
+    candles: stkAaplOrbGapCandles,
+    priceLines: [
+      {
+        id: 'stk-orb-hi',
+        price: 205.6,
+        title: 'Opening 5m Range High ($205.60)',
+        color: '#10b981',
+        lineStyle: 'dashed',
+        role: 'bos',
+      },
+      {
+        id: 'stk-orb-lo',
+        price: 204.2,
+        title: 'Opening 5m Range Low ($204.20)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'support_resistance',
+      },
+      {
+        id: 'stk-prev-close',
+        price: 201.8,
+        title: 'Yesterday Close Before Gap ($201.80)',
+        color: '#94a3b8',
+        lineStyle: 'dotted',
+        role: 'support_resistance',
+      },
+    ],
+    markers: [
+      {
+        id: 'stk-m1',
+        time: stkAaplOrbGapCandles[6].time,
+        position: 'belowBar',
+        color: '#f59e0b',
+        shape: 'square',
+        text: 'Gap Up + 5m Box',
+        stage: 'before',
+      },
+      {
+        id: 'stk-m2',
+        time: stkAaplOrbGapCandles[12].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'High-Volume Breakout',
+        stage: 'trigger',
+      },
+      {
+        id: 'stk-m3',
+        time: stkAaplOrbGapCandles[16].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'Retest Holds Above Box',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 11,
+      triggerEndIndex: 14,
+      afterEndIndex: stkAaplOrbGapCandles.length - 1,
+      beforeSummary:
+        'Before: After closing yesterday at $201.80, Apple opens with an overnight Gap Up at $204.60 and spends its first 5-minute candle carving an Opening Range box between $204.20 and $205.60.',
+      triggerSummary:
+        'Trigger: Following a calm pause inside the box, a massive green candle bursts above $205.60 on surging Relative Volume (RVOL)—closing strong at $206.64 with real institutional demand.',
+      afterSummary:
+        'After: Price dips gently to retest the top of the box at $205.72, holds firm as new support, and trends cleanly all morning toward $209.66.',
+    },
+    teachingTakeaways: [
+      'A stock moving with unusually high Relative Volume (RVOL) after news has real fuel behind its trend.',
+      'Let the first 5-minute Opening Range box form, then look for a full-body breakout and held retest instead of buying blindly at the opening second.',
+    ],
+  },
+  {
+    id: 'exec-aplus-confluence',
+    lessonSlug: 'confluence-a-plus-setups',
+    title: 'The Complete A+ Confluence Checklist: Sweep + Shift + Gap Retest',
+    symbol: 'XAU/USD',
+    timeframe: '15m',
+    category: 'fair_value_gap',
+    description:
+      'Instead of relying on one weak clue, an A+ setup stacks three strong clues together: (1) Liquidity Sweep, (2) Market Structure Shift, and (3) Patient Entry at a Fair Value Gap retest.',
+    isPracticeEligible: true,
+    correctClassification: 'bullish_fvg',
+    candles: execAplusConfluenceCandles,
+    priceLines: [
+      {
+        id: 'exec-bos',
+        price: 2331.0,
+        title: 'Clue #2: Structure Shift Line (2331.0)',
+        color: '#10b981',
+        lineStyle: 'dashed',
+        role: 'bos',
+      },
+      {
+        id: 'exec-fvg-hi',
+        price: 2330.0,
+        title: 'Clue #3: Fair Value Gap Top (2330.0)',
+        color: '#38bdf8',
+        lineStyle: 'dotted',
+        role: 'fvg_high',
+      },
+      {
+        id: 'exec-fvg-lo',
+        price: 2325.0,
+        title: 'Clue #3: Fair Value Gap Bottom (2325.0)',
+        color: '#38bdf8',
+        lineStyle: 'dotted',
+        role: 'fvg_low',
+      },
+      {
+        id: 'exec-ssl',
+        price: 2322.0,
+        title: 'Clue #1: Equal Lows Swept (2322.0)',
+        color: '#f59e0b',
+        lineStyle: 'dashed',
+        role: 'sell_side_liquidity',
+      },
+    ],
+    markers: [
+      {
+        id: 'exec-m1',
+        time: execAplusConfluenceCandles[11].time,
+        position: 'belowBar',
+        color: '#f59e0b',
+        shape: 'arrowUp',
+        text: '1. Sweep Below Lows',
+        stage: 'before',
+      },
+      {
+        id: 'exec-m2',
+        time: execAplusConfluenceCandles[13].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: '2. Shift + FVG Impulse',
+        stage: 'trigger',
+      },
+      {
+        id: 'exec-m3',
+        time: execAplusConfluenceCandles[19].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: '3. A+ FVG Retest Entry',
+        stage: 'after',
+      },
+      {
+        id: 'exec-m4',
+        time: execAplusConfluenceCandles[29].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Target Hit (+3R)',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 11,
+      triggerEndIndex: 15,
+      afterEndIndex: execAplusConfluenceCandles.length - 1,
+      beforeSummary:
+        'Before: Clue #1 checks off! Gold dips briefly below Equal Lows at 2322.0 down to 2315.4 to grab resting stops, then closes cleanly back above 2322.0.',
+      triggerSummary:
+        'Trigger: Clue #2 checks off! Big green buying candles explode upward through 2331.0 (Market Structure Shift) while leaving a clean empty Fair Value Gap between 2325.0 and 2330.0.',
+      afterSummary:
+        'After: Clue #3 checks off! Rather than chasing the top, waiting patiently lets price dip gently into the Fair Value Gap (2327.2) for a calm A+ entry that rallies straight to 2351.0.',
+    },
+    teachingTakeaways: [
+      'Confluence means stacking 3+ independent clues pointing the same way—just like waiting for a green light AND checking both ways before crossing.',
+      'Skipping mediocre setups so your energy and capital are ready for clean A+ setups is how consistent traders win.',
+    ],
+  },
+  {
+    id: 'mgmt-partials-be',
+    lessonSlug: 'trade-management-partials-be',
+    title: 'Stress-Free Trade Management: +1R Partial, Breakeven & +3R Target',
+    symbol: 'EUR/USD',
+    timeframe: '15m',
+    category: 'risk_setup',
+    description:
+      'What you do AFTER clicking buy or sell matters just as much as your entry. Follow a simple mechanical plan: bank part of your profit at +1R, slide your safety stop to Breakeven, and let the rest run to +3R.',
+    isPracticeEligible: false,
+    correctClassification: 'valid_rr_setup',
+    candles: mgmtPartialsBeCandles,
+    priceLines: [
+      {
+        id: 'mgmt-tp3',
+        price: 1.09,
+        title: 'Final Take Profit (+3R | +60 pips)',
+        color: '#10b981',
+        lineStyle: 'solid',
+        role: 'take_profit',
+      },
+      {
+        id: 'mgmt-tp1',
+        price: 1.086,
+        title: 'Partial Profit (+1R) → Move Stop to BE',
+        color: '#f59e0b',
+        lineStyle: 'dashed',
+        role: 'bos',
+      },
+      {
+        id: 'mgmt-entry',
+        price: 1.084,
+        title: 'Entry & Breakeven Stop (1.0840)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'entry',
+      },
+      {
+        id: 'mgmt-sl',
+        price: 1.082,
+        title: 'Initial Safety Stop-Loss (-1R | -20 pips)',
+        color: '#ef4444',
+        lineStyle: 'solid',
+        role: 'stop_loss',
+      },
+    ],
+    markers: [
+      {
+        id: 'mgmt-m1',
+        time: mgmtPartialsBeCandles[10].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'Entry (1.0840)',
+        stage: 'before',
+      },
+      {
+        id: 'mgmt-m2',
+        time: mgmtPartialsBeCandles[15].time,
+        position: 'aboveBar',
+        color: '#f59e0b',
+        shape: 'circle',
+        text: '+1R Partial + Move to BE',
+        stage: 'trigger',
+      },
+      {
+        id: 'mgmt-m3',
+        time: mgmtPartialsBeCandles[19].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'circle',
+        text: 'Stress-Free Hold Above BE',
+        stage: 'after',
+      },
+      {
+        id: 'mgmt-m4',
+        time: mgmtPartialsBeCandles[27].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Final +3R Target Hit!',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 11,
+      triggerEndIndex: 16,
+      afterEndIndex: mgmtPartialsBeCandles.length - 1,
+      beforeSummary:
+        'Before: You enter cleanly at 1.0840 with a pre-planned safety stop-loss 20 pips below at 1.0820 (-1R) and a final goal 60 pips above at 1.0900 (+3R).',
+      triggerSummary:
+        'Trigger: When price reaches +1R (1.0860), you lock in 50% partial profit and slide your stop-loss up to your entry price (1.0840 Breakeven)—turning the trade completely risk-free!',
+      afterSummary:
+        'After: Even when EUR/USD pulls back gently to 1.0845, you stay calm because you cannot lose money anymore—allowing your remaining half to ride smoothly to the full +3R target at 1.0900.',
+    },
+    teachingTakeaways: [
+      'Taking a partial profit and moving to Breakeven after a clear +1R structure push removes emotional panic during normal pullbacks.',
+      'Never move your stop to Breakeven too early (before price has room to breathe), or routine candle wicks will knock you out right before the rally.',
+    ],
+  },
+  {
+    id: 'jrn-expectancy-review',
+    lessonSlug: 'trading-journal-expectancy',
+    title: 'How One Disciplined +3R Winner Pays for Three -1R Losses',
+    symbol: 'GBP/USD',
+    timeframe: '15m',
+    category: 'risk_setup',
+    description:
+      'You do NOT need to win 80% of your trades to grow an account. When your trading journal enforces strict -1R losses and patient +3R winners, even a 40% win rate builds steady profit over time.',
+    isPracticeEligible: false,
+    correctClassification: 'valid_rr_setup',
+    candles: jrnExpectancyReviewCandles,
+    priceLines: [
+      {
+        id: 'jrn-tp',
+        price: 1.276,
+        title: '+3R Target — Pays for Three -1R Losses (+60 pips)',
+        color: '#10b981',
+        lineStyle: 'solid',
+        role: 'take_profit',
+      },
+      {
+        id: 'jrn-entry',
+        price: 1.27,
+        title: 'Journaled Entry (1.2700)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'entry',
+      },
+      {
+        id: 'jrn-sl',
+        price: 1.268,
+        title: 'Strict -1R Stop-Loss (-20 pips)',
+        color: '#ef4444',
+        lineStyle: 'solid',
+        role: 'stop_loss',
+      },
+    ],
+    markers: [
+      {
+        id: 'jrn-m1',
+        time: jrnExpectancyReviewCandles[11].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'Journaled Entry (1R)',
+        stage: 'before',
+      },
+      {
+        id: 'jrn-m2',
+        time: jrnExpectancyReviewCandles[19].time,
+        position: 'belowBar',
+        color: '#f59e0b',
+        shape: 'circle',
+        text: 'Resisted Early Exit',
+        stage: 'trigger',
+      },
+      {
+        id: 'jrn-m3',
+        time: jrnExpectancyReviewCandles[26].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: '+3R Logged!',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 12,
+      triggerEndIndex: 20,
+      afterEndIndex: jrnExpectancyReviewCandles.length - 1,
+      beforeSummary:
+        'Before: After a clear bullish Break of Structure, you log your entry at 1.2700 with a fixed 20-pip risk (-1R at 1.2680) and a 60-pip reward target (+3R at 1.2760).',
+      triggerSummary:
+        'Trigger: Around +2R (1.2740), price pauses for four candles. An undisciplined trader panics and grabs +1.3R early—but your trading journal proves that letting A+ winners hit +3R is where your mathematical edge lives.',
+      afterSummary:
+        'After: Holding patiently delivers the full +3R target at 1.2760. Across 10 trades at 40% win rate (4 wins × +3R = +12R, minus 6 losses × -1R = -6R), you finish +6R ahead!',
+    },
+    teachingTakeaways: [
+      'Expectancy math beats win-rate ego: 40% wins at +3R beats 70% wins if your losers are bigger than your winners.',
+      'Tagging "early exit" vs. "followed plan" in your trading journal reveals in 20 trades which single habit costs you the most money.',
+    ],
+  },
+  {
+    id: 'dd-recovery-curve',
+    lessonSlug: 'drawdown-scaling-consistency',
+    title: 'Disciplined Small Stop-Out (-1R) → Calm A+ Recovery (+3R = Net +2R)',
+    symbol: 'US500',
+    timeframe: '15m',
+    category: 'risk_setup',
+    description:
+      'Every profitable trader takes losses. The secret to surviving drawdowns is keeping losses small (-1R), refusing to revenge trade, and calmly waiting for the next A+ setup to recover and finish green.',
+    isPracticeEligible: false,
+    correctClassification: 'valid_rr_setup',
+    candles: ddRecoveryCurveCandles,
+    priceLines: [
+      {
+        id: 'dd-tp',
+        price: 5455,
+        title: 'Trade #2 Recovery Target (+3R → Net +2R)',
+        color: '#10b981',
+        lineStyle: 'solid',
+        role: 'take_profit',
+      },
+      {
+        id: 'dd-sl1',
+        price: 5435,
+        title: 'Trade #1 Clean Stop-Out (-1R Saved Capital)',
+        color: '#f59e0b',
+        lineStyle: 'dashed',
+        role: 'stop_loss',
+      },
+      {
+        id: 'dd-entry2',
+        price: 5425,
+        title: 'Trade #2 Calm A+ Recovery Entry (5425)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'entry',
+      },
+      {
+        id: 'dd-sl2',
+        price: 5415,
+        title: 'Trade #2 Stop-Loss (-1R at 5415)',
+        color: '#ef4444',
+        lineStyle: 'solid',
+        role: 'stop_loss',
+      },
+    ],
+    markers: [
+      {
+        id: 'dd-m1',
+        time: ddRecoveryCurveCandles[5].time,
+        position: 'belowBar',
+        color: '#94a3b8',
+        shape: 'circle',
+        text: 'Trade #1 Entry',
+        stage: 'before',
+      },
+      {
+        id: 'dd-m2',
+        time: ddRecoveryCurveCandles[8].time,
+        position: 'belowBar',
+        color: '#ef4444',
+        shape: 'arrowDown',
+        text: 'Clean -1R Stop Accepted',
+        stage: 'before',
+      },
+      {
+        id: 'dd-m3',
+        time: ddRecoveryCurveCandles[18].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'Calm A+ Recovery Entry',
+        stage: 'trigger',
+      },
+      {
+        id: 'dd-m4',
+        time: ddRecoveryCurveCandles[27].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: '+3R Hit (Net +2R!)',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 10,
+      triggerEndIndex: 19,
+      afterEndIndex: ddRecoveryCurveCandles.length - 1,
+      beforeSummary:
+        'Before: Trade #1 enters at 5445 and gets cleanly stopped out at 5435 (-1R). Notice price keeps falling to 5412—honoring the safety stop saved the account from a massive loss!',
+      triggerSummary:
+        'Trigger: Instead of doubling size in anger (revenge trading), you step back, stay calm, and wait for a fresh sweep at 5412 + bullish shift above 5430 before taking an A+ entry at 5425.',
+      afterSummary:
+        'After: Trade #2 rallies cleanly to 5455 (+3R). After erasing the -1R stop-out, you finish the day +2R in profit with zero emotional damage.',
+    },
+    teachingTakeaways: [
+      'A small, planned -1R stop-loss is NOT a failure—it is the insurance policy that keeps you in the game for the next A+ winner.',
+      'During a drawdown, cut your risk size in half and focus on textbook execution rather than trying to win everything back in one trade.',
+    ],
+  },
 ];
 
 export const CHART_SCENARIOS_BY_ID: Record<string, ChartScenario> =
@@ -1148,4 +2711,29 @@ export function getChartScenariosByLessonSlug(
   lessonSlug: string,
 ): ChartScenario[] {
   return CHART_SCENARIOS.filter((scenario) => scenario.lessonSlug === lessonSlug);
+}
+
+export function getChartScenariosForLesson(lesson: {
+  slug: string;
+  chartScenarioIds: string[];
+}): ChartScenario[] {
+  const seen = new Set<string>();
+  const matched: ChartScenario[] = [];
+
+  for (const scenario of CHART_SCENARIOS) {
+    if (scenario.lessonSlug === lesson.slug && !seen.has(scenario.id)) {
+      seen.add(scenario.id);
+      matched.push(scenario);
+    }
+  }
+
+  for (const id of lesson.chartScenarioIds) {
+    const scenario = CHART_SCENARIOS_BY_ID[id];
+    if (scenario && !seen.has(scenario.id)) {
+      seen.add(scenario.id);
+      matched.push(scenario);
+    }
+  }
+
+  return matched;
 }
