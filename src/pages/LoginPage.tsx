@@ -2,10 +2,8 @@ import { useEffect, useState, type CSSProperties, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AlertCircle,
-  Check,
   CheckCircle2,
   ChevronDown,
-  Copy,
   Loader2,
   Mail,
   Moon,
@@ -16,8 +14,6 @@ import {
 import { useAuth } from '../context/AuthContext';
 
 const THEME_STORAGE_KEY = 'tradelab_theme_v1';
-const ADMIN_SQL_SNIPPET =
-  "UPDATE public.profiles SET role = 'admin' WHERE email = 'your-gmail@gmail.com';";
 
 interface SpecimenCandle {
   x: number;
@@ -332,8 +328,6 @@ export function LoginPage() {
   const [googleLoading, setGoogleLoading] = useState<boolean>(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [confirmationNotice, setConfirmationNotice] = useState<string | null>(null);
-  const [guideOpen, setGuideOpen] = useState<boolean>(false);
-  const [copiedSql, setCopiedSql] = useState<boolean>(false);
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     if (typeof window === 'undefined') {
       return 'dark';
@@ -417,16 +411,6 @@ export function LoginPage() {
       navigate(role === 'admin' ? '/admin' : '/', { replace: true });
     } catch (err) {
       setLocalError(err instanceof Error ? err.message : 'Local preview login is unavailable.');
-    }
-  };
-
-  const handleCopySql = async () => {
-    try {
-      await navigator.clipboard.writeText(ADMIN_SQL_SNIPPET);
-      setCopiedSql(true);
-      window.setTimeout(() => setCopiedSql(false), 2000);
-    } catch {
-      // Fallback if clipboard is unavailable
     }
   };
 
@@ -531,7 +515,7 @@ export function LoginPage() {
                 title={
                   isConfigured
                     ? 'Sign in with Google OAuth'
-                    : 'Configure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to enable live Google login'
+                    : 'Live Google sign-in is disabled in Local Preview mode'
                 }
                 className="flex w-full items-center justify-center gap-2.5 rounded-md border border-terminal-border bg-terminal-bg px-4 py-3 text-sm font-semibold text-terminal-text hover:border-brand/50 hover:bg-terminal-elevated disabled:cursor-not-allowed disabled:opacity-55 tl-press"
               >
@@ -540,12 +524,12 @@ export function LoginPage() {
                 ) : (
                   <GoogleLogoSvg />
                 )}
-                <span>Continue with Google (Gmail)</span>
+                <span>Continue with Google</span>
               </button>
 
               {!isConfigured && (
                 <p className="mt-2.5 text-xs leading-relaxed text-terminal-muted">
-                  Supabase keys aren&apos;t set yet — use Local Preview below to explore immediately.
+                  Cloud authentication is disabled in preview mode — use Local Preview below to explore immediately.
                 </p>
               )}
             </div>
@@ -708,7 +692,7 @@ export function LoginPage() {
                   <span className="font-mono text-[11px] text-brand-text">Instant Demo</span>
                 </div>
                 <p className="text-xs leading-relaxed text-terminal-muted">
-                  Preview separated Learner and Admin workspaces locally before connecting Supabase.
+                  Preview separated Learner and Admin workspaces locally in demo mode.
                 </p>
 
                 <div className="space-y-2.5 pt-0.5">
@@ -731,82 +715,6 @@ export function LoginPage() {
                 </div>
               </section>
             )}
-
-            {/* Quiet Collapsible Supabase Setup Guide */}
-            <div className="border-t border-terminal-border pt-4">
-              <button
-                type="button"
-                aria-expanded={guideOpen}
-                onClick={() => setGuideOpen((prev) => !prev)}
-                className="flex w-full items-center justify-between gap-2 py-1 text-left text-xs text-terminal-muted transition-colors hover:text-terminal-text"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <Shield className="h-3.5 w-3.5" aria-hidden="true" />
-                  Supabase Gmail &amp; Admin setup guide
-                </span>
-                <ChevronDown
-                  className={`h-3.5 w-3.5 transition-transform ${guideOpen ? 'rotate-180' : ''}`}
-                  aria-hidden="true"
-                />
-              </button>
-
-              {guideOpen && (
-                <div className="mt-3 space-y-3 rounded-md border border-terminal-border bg-terminal-bg p-3.5 text-xs text-terminal-muted">
-                  <ol className="list-decimal space-y-1.5 pl-4 leading-relaxed">
-                    <li>
-                      Enable Google in{' '}
-                      <strong className="font-medium text-terminal-text">
-                        Supabase → Auth → Providers → Google
-                      </strong>
-                      .
-                    </li>
-                    <li>
-                      Add{' '}
-                      <code className="break-all rounded-sm bg-terminal-surface px-1.5 py-0.5 font-mono text-[11px] text-brand-text">
-                        {window.location.origin}/auth/callback
-                      </code>{' '}
-                      to Redirect URLs.
-                    </li>
-                    <li>
-                      Set{' '}
-                      <code className="rounded-sm bg-terminal-surface px-1.5 py-0.5 font-mono text-[11px] text-terminal-text">
-                        VITE_SUPABASE_URL
-                      </code>{' '}
-                      and{' '}
-                      <code className="rounded-sm bg-terminal-surface px-1.5 py-0.5 font-mono text-[11px] text-terminal-text">
-                        VITE_SUPABASE_ANON_KEY
-                      </code>{' '}
-                      and run migrations 001–003.
-                    </li>
-                    <li>Sign in with Gmail, then promote your account in SQL Editor:</li>
-                  </ol>
-
-                  <div className="flex items-center justify-between gap-2 rounded-md border border-terminal-border bg-terminal-surface p-2.5">
-                    <code className="overflow-x-auto font-mono text-[11px] text-terminal-text">
-                      {ADMIN_SQL_SNIPPET}
-                    </code>
-                    <button
-                      type="button"
-                      aria-label="Copy Supabase admin promotion SQL"
-                      onClick={handleCopySql}
-                      className="inline-flex shrink-0 items-center gap-1 rounded-md border border-terminal-border bg-terminal-bg px-2.5 py-1.5 font-mono text-[10px] font-medium text-terminal-text hover:border-brand/50 tl-press"
-                    >
-                      {copiedSql ? (
-                        <>
-                          <Check className="h-3 w-3 text-bull" aria-hidden="true" />
-                          Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-3 w-3" aria-hidden="true" />
-                          Copy
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
         </main>
       </div>

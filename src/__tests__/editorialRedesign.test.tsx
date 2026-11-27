@@ -32,7 +32,9 @@ describe('Editorial Fintech UI/UX Redesign', () => {
       screen.getByRole('heading', { name: /read market structure with discipline/i }),
     ).toBeInTheDocument();
     expect(screen.getByText('358')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /continue with google \(gmail\)/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^continue with google$/i })).toBeInTheDocument();
+    expect(screen.queryByText(/supabase gmail & admin setup guide/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/public\.profiles/i)).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /continue with email & password/i }));
     expect(screen.getByLabelText(/email address/i)).toBeInTheDocument();

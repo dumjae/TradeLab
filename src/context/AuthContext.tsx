@@ -226,8 +226,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     if (!isSupabaseConfigured || !supabase) {
-      const message =
-        'Google OAuth requires VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to be configured.';
+      const message = 'Google sign-in is unavailable in preview mode.';
       setError(message);
       throw new Error(message);
     }
@@ -250,7 +249,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     if (!isSupabaseConfigured || !supabase) {
-      const message = 'Email sign-in requires Supabase authentication to be configured.';
+      const message = 'Email sign-in is unavailable in preview mode.';
       setError(message);
       throw new Error(message);
     }
@@ -280,7 +279,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setError(null);
 
       if (!isSupabaseConfigured || !supabase) {
-        const message = 'Account registration requires Supabase authentication to be configured.';
+        const message = 'Account registration is unavailable in preview mode.';
         setError(message);
         throw new Error(message);
       }

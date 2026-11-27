@@ -61,7 +61,7 @@ function renderRoutes(initialPath: string) {
 describe('role-separated routing', () => {
   it('sends unauthenticated visitors to the login panel', () => {
     renderRoutes('/admin');
-    expect(screen.getByText('Continue with Google (Gmail)')).toBeInTheDocument();
+    expect(screen.getByText('Continue with Google')).toBeInTheDocument();
     expect(screen.queryByText('ADMIN PORTAL SCREEN')).not.toBeInTheDocument();
   });
 
@@ -94,9 +94,17 @@ describe('role-separated routing', () => {
 describe('login panel in Local Preview Mode', () => {
   it('shows the Google button and both preview role entries', () => {
     renderRoutes('/login');
-    expect(screen.getByText('Continue with Google (Gmail)')).toBeInTheDocument();
+    expect(screen.getByText('Continue with Google')).toBeInTheDocument();
     expect(screen.getByText('Enter as Learner (Normal View)')).toBeInTheDocument();
     expect(screen.getByText('Enter as Admin (Admin Portal)')).toBeInTheDocument();
+  });
+
+  it('omits the removed setup guide, SQL promotion snippet, and env hints', () => {
+    renderRoutes('/login');
+    expect(screen.queryByText(/supabase gmail & admin setup guide/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/public\.profiles/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/VITE_SUPABASE_/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/\(Gmail\)/i)).not.toBeInTheDocument();
   });
 
   it('enters the admin portal when choosing the admin preview role', async () => {
