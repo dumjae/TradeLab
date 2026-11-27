@@ -58,6 +58,7 @@ export interface LessonSection {
 }
 
 export type DiagramKind =
+  | 'chart_fundamentals'
   | 'candlestick_anatomy'
   | 'market_structure'
   | 'support_demand'

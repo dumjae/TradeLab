@@ -42,7 +42,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
     level: 'beginner',
     marketCategory: 'general',
     learningStage: 'foundations',
-    moduleOrder: 1,
+    moduleOrder: 2,
     conceptKey: 'candlestick-anatomy',
     estimatedMinutes: 15,
     learningObjectives: [
@@ -51,7 +51,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
       'Walk through a real dollar example ($100 Open to $104 Close) and picture the exact candle shape in your head.',
       'Explain why waiting for the candle countdown timer to hit 00:00 protects you from fake mid-candle moves.',
     ],
-    prerequisites: ['Zero prior trading experience required — start right here.'],
+    prerequisites: ['Lesson 01: Chart Reading Fundamentals'],
     terminology: [
       {
         term: 'Open & Close (Start and Finish)',
@@ -345,7 +345,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
     level: 'beginner',
     marketCategory: 'general',
     learningStage: 'foundations',
-    moduleOrder: 3,
+    moduleOrder: 4,
     conceptKey: 'support-resistance-supply-demand',
     estimatedMinutes: 16,
     learningObjectives: [
@@ -650,7 +650,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
     level: 'intermediate',
     marketCategory: 'general',
     learningStage: 'price_action_smc',
-    moduleOrder: 8,
+    moduleOrder: 9,
     conceptKey: 'order-blocks-bos-choch',
     estimatedMinutes: 20,
     learningObjectives: [
@@ -955,7 +955,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
     level: 'intermediate',
     marketCategory: 'general',
     learningStage: 'price_action_smc',
-    moduleOrder: 9,
+    moduleOrder: 10,
     conceptKey: 'multi-timeframe-alignment',
     estimatedMinutes: 18,
     learningObjectives: [
@@ -1258,7 +1258,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
     level: 'intermediate',
     marketCategory: 'forex',
     learningStage: 'market_playbooks',
-    moduleOrder: 10,
+    moduleOrder: 20,
     conceptKey: 'forex-sessions-killzones',
     estimatedMinutes: 18,
     learningObjectives: [
@@ -1562,7 +1562,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
     level: 'intermediate',
     marketCategory: 'indices',
     learningStage: 'market_playbooks',
-    moduleOrder: 11,
+    moduleOrder: 26,
     conceptKey: 'indices-ny-open-playbook',
     estimatedMinutes: 19,
     learningObjectives: [
@@ -1866,7 +1866,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
     level: 'intermediate',
     marketCategory: 'crypto',
     learningStage: 'market_playbooks',
-    moduleOrder: 12,
+    moduleOrder: 17,
     conceptKey: 'crypto-247-liquidity-playbook',
     estimatedMinutes: 20,
     learningObjectives: [
@@ -2170,7 +2170,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
     level: 'intermediate',
     marketCategory: 'stocks',
     learningStage: 'market_playbooks',
-    moduleOrder: 13,
+    moduleOrder: 23,
     conceptKey: 'stocks-gaps-rvol-playbook',
     estimatedMinutes: 18,
     learningObjectives: [
@@ -2475,7 +2475,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
     level: 'advanced',
     marketCategory: 'general',
     learningStage: 'execution_edge',
-    moduleOrder: 14,
+    moduleOrder: 11,
     conceptKey: 'confluence-a-plus-setups',
     estimatedMinutes: 20,
     learningObjectives: [
@@ -2782,7 +2782,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
     level: 'advanced',
     marketCategory: 'general',
     learningStage: 'execution_edge',
-    moduleOrder: 15,
+    moduleOrder: 12,
     conceptKey: 'trade-management-partials-be',
     estimatedMinutes: 18,
     learningObjectives: [
@@ -3085,7 +3085,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
     level: 'intermediate',
     marketCategory: 'general',
     learningStage: 'steady_profitability',
-    moduleOrder: 17,
+    moduleOrder: 14,
     conceptKey: 'trading-journal-expectancy',
     estimatedMinutes: 18,
     learningObjectives: [
@@ -3150,7 +3150,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
         heading: 'The Simple 6-Field Journal (Takes 2 Minutes, Never Feels Like Homework)',
         body: 'Monster 40-column spreadsheets get abandoned after four days. Log ONLY the 6 simple details that immediately reveal where money is earned and where it leaks:',
         bulletPoints: [
-          '1. Market, Session & Setup Grade (A+ / B / C — e.g., EUR/USD, NY Killzone, A+).',
+          '1. Market, Session & Setup Grade (A+ / B / C — e.g., BTC/USDT, AAPL, EUR/USD, or SPX500 — A+).',
           '2. Planned Result vs. Actual Result (e.g., Planned +$300 / +3R; Actual +$120 / +1.2R — catches early panic exits immediately!).',
           '3. Before & After Chart Screenshots (visual proof you can review on Sunday).',
           '4. Emotion & Mistake Tag (Calm, Chased Late, Fearful Early Exit, Bored C-Trade, Revenge).',
@@ -3392,7 +3392,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
     level: 'advanced',
     marketCategory: 'general',
     learningStage: 'steady_profitability',
-    moduleOrder: 18,
+    moduleOrder: 15,
     conceptKey: 'drawdown-scaling-consistency',
     estimatedMinutes: 20,
     learningObjectives: [

@@ -880,6 +880,348 @@ const ddRecoveryCurveCandles = buildCandles(ddRecoveryStart, ddRecoveryInterval,
   [5461, 5466, 5459, 5464, 1990],
 ]);
 
+// 22. Chart Reading Fundamentals (BTC/USDT 15m — Clean Rising Staircase, Axes & Volume Spike)
+const chartFundStart = 1718870400; // 2024-06-20 08:00:00 UTC
+const chartFundInterval = 900; // 15m
+const chartFundamentalsCandles = buildCandles(chartFundStart, chartFundInterval, [
+  [63220, 63310, 63180, 63280, 980],
+  [63280, 63390, 63240, 63360, 1120],
+  [63360, 63480, 63330, 63450, 1260],
+  [63450, 63590, 63420, 63560, 1410],
+  [63560, 63710, 63530, 63680, 1590],
+  [63680, 63850, 63650, 63810, 1840], // 5: First Swing High (63850) on Y-Axis
+  [63810, 63830, 63700, 63730, 1180],
+  [63730, 63760, 63620, 63650, 1090],
+  [63650, 63690, 63540, 63570, 1020],
+  [63570, 63610, 63480, 63520, 1150], // 9: Clean Higher Low (63480) on light pullback volume
+  [63520, 63620, 63500, 63590, 1340],
+  [63590, 63710, 63570, 63690, 1490],
+  [63690, 63810, 63660, 63790, 1680],
+  [63790, 64040, 63770, 64010, 3420], // 13: Volume Spike + Full-Body Breakout above 63850!
+  [64010, 64190, 63980, 64150, 2980],
+  [64150, 64290, 64110, 64240, 2610],
+  [64240, 64340, 64190, 64280, 2240], // 16: Higher High (64340)
+  [64280, 64300, 64160, 64190, 1520],
+  [64190, 64220, 64060, 64090, 1380],
+  [64090, 64130, 63980, 64020, 1290],
+  [64020, 64080, 63930, 64050, 1440], // 20: Higher Low #2 (63930) holding above prior resistance
+  [64050, 64180, 64030, 64150, 1790],
+  [64150, 64280, 64120, 64250, 2060],
+  [64250, 64440, 64230, 64410, 3190], // 23: Second Volume-Backed Push above 64340
+  [64410, 64540, 64380, 64510, 2850],
+  [64510, 64620, 64470, 64580, 2590], // 25: Target Reached (64550+)
+  [64580, 64610, 64490, 64520, 1810],
+  [64520, 64570, 64450, 64500, 1620],
+  [64500, 64590, 64470, 64560, 1740],
+  [64560, 64650, 64530, 64620, 1960],
+  [64620, 64690, 64580, 64660, 1880],
+  [64660, 64720, 64610, 64690, 1790],
+]);
+
+// 23. Crypto Spot vs. Perpetual Futures & Order Books (ETH/USDT 1H — Bid/Ask Wall Absorption vs. Perp Wick)
+const cryptoSpotPerpsStart = 1718956800; // 2024-06-21 08:00:00 UTC
+const cryptoSpotPerpsInterval = 3600; // 1H
+const cryptoSpotPerpsCandles = buildCandles(cryptoSpotPerpsStart, cryptoSpotPerpsInterval, [
+  [3368, 3384, 3360, 3379, 2410],
+  [3379, 3398, 3372, 3392, 2640],
+  [3392, 3412, 3386, 3408, 2980],
+  [3408, 3421, 3396, 3402, 3520], // 3: Ask Order-Book Wall Caps Price at 3420
+  [3402, 3408, 3384, 3388, 2590],
+  [3388, 3394, 3366, 3371, 2430],
+  [3371, 3378, 3348, 3354, 2760],
+  [3354, 3362, 3341, 3358, 3190], // 7: Spot Bid Wall Absorbs Selling at 3340
+  [3358, 3376, 3352, 3372, 2610],
+  [3372, 3394, 3368, 3390, 2820],
+  [3390, 3414, 3385, 3409, 3150],
+  [3409, 3419, 3395, 3398, 3410], // 11: Second Rejection at 3420 Ask Wall
+  [3398, 3403, 3376, 3380, 2690],
+  [3380, 3386, 3358, 3362, 2580],
+  [3362, 3369, 3344, 3349, 2940],
+  [3349, 3356, 3306, 3346, 6120], // 15: Leveraged Perp Stop-Out Wick to 3306 — Spot Buyers Unfazed!
+  [3346, 3374, 3342, 3370, 4280],
+  [3370, 3396, 3366, 3392, 3940],
+  [3392, 3416, 3388, 3413, 4410],
+  [3413, 3448, 3410, 3442, 5890], // 19: Ask Wall Absorbed — Clean Breakout Above 3420!
+  [3442, 3464, 3436, 3458, 4620],
+  [3458, 3462, 3426, 3432, 3310],
+  [3432, 3438, 3421, 3435, 3180], // 22: Clean Retest of 3420 Flipped to Bid Support
+  [3435, 3458, 3432, 3454, 3690],
+  [3454, 3478, 3450, 3474, 4120],
+  [3474, 3496, 3469, 3491, 4380],
+  [3491, 3514, 3486, 3508, 4610], // 26: Target 3510 Reached
+  [3508, 3522, 3500, 3516, 3890],
+  [3516, 3524, 3504, 3509, 3210],
+  [3509, 3518, 3498, 3512, 2980],
+  [3512, 3526, 3506, 3521, 3140],
+  [3521, 3532, 3514, 3528, 3050],
+]);
+
+// 24. Crypto Volatility, Risk Sizing & Altcoin Cycles (SOL/USDT 4H — Liquidation Sweep & Rotation Expansion)
+const cryptoAltcoinStart = 1719129600; // 2024-06-23 08:00:00 UTC
+const cryptoAltcoinInterval = 14400; // 4H
+const cryptoAltcoinCandles = buildCandles(cryptoAltcoinStart, cryptoAltcoinInterval, [
+  [148.2, 151.4, 147.0, 150.6, 3120],
+  [150.6, 153.8, 149.4, 153.1, 3490],
+  [153.1, 156.2, 151.8, 154.4, 3860], // 2: Range Resistance near 156.0
+  [154.4, 155.1, 150.8, 151.6, 3180],
+  [151.6, 152.4, 147.9, 148.6, 2940],
+  [148.6, 149.8, 144.2, 145.8, 3510], // 5: Crowded Long Support near 144.0
+  [145.8, 149.2, 145.1, 148.4, 3020],
+  [148.4, 152.6, 147.8, 151.9, 3290],
+  [151.9, 155.8, 151.0, 153.5, 3680], // 8: Second Test of 156.0
+  [153.5, 154.2, 149.2, 149.9, 3140],
+  [149.9, 150.8, 145.4, 146.2, 3390],
+  [146.2, 147.6, 144.1, 145.4, 3620], // 11: Equal Lows Build Heavy Liquidation Cluster Below 144.0
+  [145.4, 148.0, 144.6, 147.2, 3210],
+  [147.2, 148.4, 144.8, 145.5, 3450],
+  [145.5, 146.2, 138.4, 144.9, 7420], // 14: Liquidation Heatmap Flush to 138.4 + Strong Reclaim Above 144.0!
+  [144.9, 149.8, 144.2, 149.1, 5180],
+  [149.1, 153.6, 148.4, 152.8, 4920],
+  [152.8, 158.4, 152.1, 157.6, 6640], // 17: Altcoin Rotation Breakout Above 156.0!
+  [157.6, 160.8, 156.4, 159.9, 5490],
+  [159.9, 160.5, 155.8, 156.7, 3980],
+  [156.7, 158.9, 155.6, 158.4, 4120], // 20: Volatility-Adjusted Retest Holds 156.0
+  [158.4, 162.6, 157.9, 162.0, 5240],
+  [162.0, 166.4, 161.2, 165.6, 5890],
+  [165.6, 169.8, 164.8, 168.9, 6120],
+  [168.9, 172.8, 167.9, 172.2, 6480], // 24: Altcoin Rotation Target 172.0 Hit!
+  [172.2, 174.9, 170.8, 173.8, 5620],
+  [173.8, 175.4, 171.6, 172.5, 4510],
+  [172.5, 173.9, 170.2, 171.8, 3980],
+  [171.8, 174.4, 171.0, 173.6, 4190],
+  [173.6, 176.2, 172.8, 175.4, 4640],
+  [175.4, 177.1, 174.2, 176.0, 4280],
+  [176.0, 177.8, 174.9, 176.8, 4090],
+]);
+
+// 25. Forex Pairs, Pips, Lot Sizes & Spreads (EUR/USD 15m — Clean 15-Pip SL vs. 30-Pip TP = 1:2 RR)
+const forexPipsStart = 1719302400; // 2024-06-25 08:00:00 UTC (London Session)
+const forexPipsInterval = 900; // 15m
+const forexPipsSpreadCandles = buildCandles(forexPipsStart, forexPipsInterval, [
+  [1.0818, 1.0825, 1.0815, 1.0823, 1210],
+  [1.0823, 1.0830, 1.0820, 1.0828, 1340],
+  [1.0828, 1.0836, 1.0825, 1.0834, 1480],
+  [1.0834, 1.0840, 1.0831, 1.0838, 1620], // 3: Pre-London Swing High (1.0840)
+  [1.0838, 1.0839, 1.0830, 1.0832, 1290],
+  [1.0832, 1.0834, 1.0824, 1.0826, 1240],
+  [1.0826, 1.0829, 1.0821, 1.0825, 1380], // 6: Higher Low Holds Above 1.0820 Stop Zone
+  [1.0825, 1.0834, 1.0824, 1.0832, 1690],
+  [1.0832, 1.0845, 1.0831, 1.0843, 2540], // 8: London BOS Above 1.0840 (Tight 0.4-pip spread!)
+  [1.0843, 1.0849, 1.0840, 1.0846, 2210],
+  [1.0846, 1.0847, 1.0839, 1.0841, 1640],
+  [1.0841, 1.0843, 1.0835, 1.0837, 1580],
+  [1.0837, 1.0841, 1.0833, 1.0839, 1920], // 12: Clean Limit Entry at 1.0835 (SL 1.0820 = -15 pips, TP 1.0865 = +30 pips)
+  [1.0839, 1.0845, 1.0836, 1.0843, 2080],
+  [1.0843, 1.0848, 1.0838, 1.0841, 1790],
+  [1.0841, 1.0844, 1.0832, 1.0836, 1710], // 15: Mild Pullback Never Threatens 1.0820 SL
+  [1.0836, 1.0844, 1.0834, 1.0842, 1980],
+  [1.0842, 1.0850, 1.0840, 1.0848, 2290],
+  [1.0848, 1.0854, 1.0846, 1.0852, 2410], // 18: +15 Pips (+1R) Passed Cleanly
+  [1.0852, 1.0856, 1.0848, 1.0850, 1940],
+  [1.0850, 1.0855, 1.0847, 1.0853, 1890],
+  [1.0853, 1.0859, 1.0851, 1.0857, 2180],
+  [1.0857, 1.0863, 1.0855, 1.0861, 2460],
+  [1.0861, 1.0868, 1.0859, 1.0866, 2890], // 23: +30-Pip Take Profit Hit at 1.0865 (Clean 1:2 RR!)
+  [1.0866, 1.0871, 1.0862, 1.0869, 2340],
+  [1.0869, 1.0873, 1.0864, 1.0867, 1920],
+  [1.0867, 1.0870, 1.0861, 1.0864, 1760],
+  [1.0864, 1.0869, 1.0860, 1.0867, 1690],
+  [1.0867, 1.0872, 1.0864, 1.0870, 1810],
+  [1.0870, 1.0874, 1.0866, 1.0871, 1740],
+  [1.0871, 1.0875, 1.0868, 1.0873, 1680],
+  [1.0873, 1.0876, 1.0869, 1.0872, 1610],
+]);
+
+// 26. Forex Macro News, CPI/NFP & Interest Rates (USD/JPY 1H — Pre-News Range, CPI Whip & Trend Continuation)
+const forexMacroStart = 1719388800; // 2024-06-26 08:00:00 UTC
+const forexMacroInterval = 3600; // 1H
+const forexMacroCpiCandles = buildCandles(forexMacroStart, forexMacroInterval, [
+  [154.78, 154.96, 154.68, 154.90, 1920],
+  [154.90, 155.08, 154.82, 155.02, 2040],
+  [155.02, 155.10, 154.88, 154.92, 2180], // 2: Pre-CPI Range Ceiling (155.10)
+  [154.92, 154.98, 154.72, 154.76, 1840],
+  [154.76, 154.84, 154.61, 154.68, 1960], // 4: Pre-CPI Range Floor (154.60)
+  [154.68, 154.92, 154.64, 154.86, 1790],
+  [154.86, 155.06, 154.80, 155.00, 1880],
+  [155.00, 155.09, 154.84, 154.88, 1810],
+  [154.88, 154.95, 154.64, 154.72, 1720],
+  [154.72, 154.88, 154.66, 154.84, 1650],
+  [154.84, 154.96, 154.76, 154.88, 1540], // 10: Quiet Compression Right Before US CPI Release
+  [154.88, 155.86, 154.18, 155.72, 7890], // 11: CPI Release Candle — Whips Down to 154.18 Then Rockets to 155.72!
+  [155.72, 155.98, 155.56, 155.88, 5620],
+  [155.88, 155.94, 155.48, 155.56, 3840],
+  [155.56, 155.64, 155.22, 155.30, 3410],
+  [155.30, 155.44, 155.12, 155.38, 3690], // 15: Post-CPI Pullback Respects 155.10 cleanly — Calm Trend Entry!
+  [155.38, 155.74, 155.34, 155.68, 4180],
+  [155.68, 156.04, 155.62, 155.96, 4520],
+  [155.96, 156.28, 155.88, 156.20, 4690],
+  [156.20, 156.34, 156.04, 156.12, 3480],
+  [156.12, 156.38, 156.06, 156.32, 3820],
+  [156.32, 156.58, 156.26, 156.52, 4210],
+  [156.52, 156.82, 156.46, 156.76, 4640], // 22: Post-News Macro Target 156.75 Reached!
+  [156.76, 156.94, 156.68, 156.86, 3920],
+  [156.86, 156.98, 156.74, 156.80, 3290],
+  [156.80, 156.90, 156.66, 156.74, 2940],
+  [156.74, 156.88, 156.68, 156.82, 2810],
+  [156.82, 156.96, 156.76, 156.90, 2980],
+  [156.90, 157.04, 156.82, 156.96, 3120],
+  [156.96, 157.08, 156.86, 156.92, 2760],
+  [156.92, 157.02, 156.84, 156.95, 2610],
+  [156.95, 157.10, 156.88, 157.02, 2690],
+]);
+
+// 27. Stocks Market Hours, Pre-Market, Volume & Order Types (AAPL 5m — Pre-Market High, 9:30 Surge & Limit Retest)
+const stocksHoursStart = 1719406800; // 2024-06-26 13:00:00 UTC (9:00 AM EST Pre-Market)
+const stocksHoursInterval = 300; // 5m
+const stocksHoursVolumeCandles = buildCandles(stocksHoursStart, stocksHoursInterval, [
+  [191.90, 192.12, 191.82, 192.04, 420], // Pre-market light volume
+  [192.04, 192.28, 191.96, 192.20, 490],
+  [192.20, 192.40, 192.12, 192.30, 560], // 2: Pre-Market High Established at 192.40
+  [192.30, 192.34, 192.06, 192.12, 410],
+  [192.12, 192.22, 191.98, 192.08, 380],
+  [192.08, 192.26, 192.02, 192.22, 460], // 5: Final 9:25 AM Pre-Market Candle
+  [192.22, 193.18, 191.92, 193.04, 4820], // 6: 9:30 AM EST Market Open — 10x Volume Surge Breaks 192.40!
+  [193.04, 193.46, 192.88, 193.32, 3960],
+  [193.32, 193.42, 192.94, 193.02, 2640],
+  [193.02, 193.10, 192.66, 192.74, 2290],
+  [192.74, 192.82, 192.44, 192.58, 2510], // 10: Limit Buy Order Fills Cleanly on Retest near 192.45 (No Chasing!)
+  [192.58, 192.96, 192.50, 192.90, 2940],
+  [192.90, 193.26, 192.84, 193.18, 3180],
+  [193.18, 193.54, 193.10, 193.48, 3520], // 13: New High Above Opening Push
+  [193.48, 193.78, 193.40, 193.70, 3290],
+  [193.70, 193.86, 193.54, 193.62, 2410],
+  [193.62, 193.74, 193.48, 193.58, 2120],
+  [193.58, 193.92, 193.52, 193.86, 2760],
+  [193.86, 194.18, 193.80, 194.12, 3040],
+  [194.12, 194.42, 194.04, 194.34, 3210],
+  [194.34, 194.68, 194.28, 194.62, 3580], // 20: Session Target 194.60 Hit!
+  [194.62, 194.84, 194.52, 194.76, 2980],
+  [194.76, 194.88, 194.60, 194.68, 2420],
+  [194.68, 194.78, 194.54, 194.62, 2140],
+  [194.62, 194.80, 194.56, 194.74, 2260],
+  [194.74, 194.96, 194.68, 194.90, 2590],
+  [194.90, 195.08, 194.82, 194.98, 2480],
+  [194.98, 195.04, 194.80, 194.86, 2090],
+  [194.86, 194.98, 194.76, 194.92, 1980],
+  [194.92, 195.12, 194.86, 195.06, 2310],
+  [195.06, 195.18, 194.94, 195.10, 2190],
+  [195.10, 195.22, 194.98, 195.14, 2080],
+]);
+
+// 28. Stocks Earnings Catalysts & Relative Strength (NVDA 15m — Post-Earnings Gap Hold & Institutional Breakout)
+const stocksEarningsStart = 1719495000; // 2024-06-27 13:30:00 UTC
+const stocksEarningsInterval = 900; // 15m
+const stocksEarningsRsCandles = buildCandles(stocksEarningsStart, stocksEarningsInterval, [
+  [119.10, 120.40, 118.55, 120.15, 5420], // 0: Post-Earnings Gap Open Holds Cleanly Above 118.50 Support
+  [120.15, 121.18, 119.80, 120.85, 4680], // 1: Opening High Defines 121.20 Breakout Level
+  [120.85, 121.05, 119.65, 119.90, 3290],
+  [119.90, 120.15, 118.92, 119.25, 2940], // 3: Shallow Dip — Refuses to Fill Gap (Relative Strength!)
+  [119.25, 120.20, 119.08, 120.05, 2780],
+  [120.05, 120.88, 119.85, 120.65, 3120],
+  [120.65, 121.12, 120.15, 120.38, 2860],
+  [120.38, 120.62, 119.55, 119.82, 2410],
+  [119.82, 120.30, 119.45, 120.18, 2360], // 8: Higher Low #2 — Tight Coiling Under 121.20 While Index Stalls
+  [120.18, 120.92, 120.04, 120.78, 2890],
+  [120.78, 121.15, 120.45, 120.96, 3190],
+  [120.96, 121.10, 120.52, 120.88, 2740],
+  [120.88, 122.35, 120.80, 122.18, 5980], // 12: Institutional Breakout Above 121.20 on Heavy Volume!
+  [122.18, 123.05, 121.95, 122.84, 5120],
+  [122.84, 123.12, 122.10, 122.32, 3480],
+  [122.32, 122.58, 121.45, 121.85, 3190], // 15: Clean Retest Above 121.20 Breakout Shelf
+  [121.85, 122.80, 121.72, 122.64, 3740],
+  [122.64, 123.58, 122.50, 123.42, 4290],
+  [123.42, 124.28, 123.28, 124.10, 4560],
+  [124.10, 124.92, 123.92, 124.76, 4720],
+  [124.76, 125.18, 124.30, 124.54, 3380],
+  [124.54, 125.35, 124.42, 125.22, 3890],
+  [125.22, 126.18, 125.08, 126.04, 4940], // 22: Institutional Target 126.00 Reached!
+  [126.04, 126.55, 125.78, 126.36, 4410],
+  [126.36, 126.68, 125.92, 126.18, 3520],
+  [126.18, 126.44, 125.76, 126.02, 3120],
+  [126.02, 126.52, 125.88, 126.38, 3290],
+  [126.38, 126.86, 126.22, 126.70, 3640],
+  [126.70, 127.04, 126.48, 126.88, 3410],
+  [126.88, 127.12, 126.60, 126.74, 2980],
+  [126.74, 127.02, 126.54, 126.86, 2840],
+  [126.86, 127.20, 126.72, 127.06, 2960],
+]);
+
+// 29. Indices Basics & Point Values (SPX500 15m — NY Session Range, 10-Pt Risk & 25-Pt Continuation)
+const indicesBasicsStart = 1719581400; // 2024-06-28 13:30:00 UTC
+const indicesBasicsInterval = 900; // 15m
+const indicesBasicsSpxCandles = buildCandles(indicesBasicsStart, indicesBasicsInterval, [
+  [5324, 5331, 5320, 5328, 1840], // 0: NY Session Range Floor at 5320
+  [5328, 5335, 5325, 5333, 1980],
+  [5333, 5340, 5330, 5337, 2210], // 2: NY Range High at 5340 (20-point box)
+  [5337, 5339, 5328, 5331, 1790],
+  [5331, 5334, 5322, 5325, 1860],
+  [5325, 5332, 5321, 5330, 1920], // 5: Higher Low Holds 5320 Support
+  [5330, 5337, 5328, 5335, 2080],
+  [5335, 5340, 5332, 5338, 2240],
+  [5338, 5348, 5336, 5346, 3380], // 8: Clean Breakout Above 5340 (+8 pts expansion)
+  [5346, 5354, 5344, 5351, 3120],
+  [5351, 5353, 5344, 5346, 2190],
+  [5346, 5348, 5339, 5342, 2340], // 11: Textbook Pullback Entry at 5340 (SL 5330 = -10 pts, TP 5365 = +25 pts)
+  [5342, 5349, 5338, 5347, 2680],
+  [5347, 5353, 5345, 5351, 2890],
+  [5351, 5356, 5348, 5354, 3040],
+  [5354, 5357, 5349, 5351, 2210],
+  [5351, 5355, 5347, 5353, 2140],
+  [5353, 5359, 5351, 5357, 2690],
+  [5357, 5363, 5355, 5361, 2980],
+  [5361, 5367, 5359, 5365, 3420], // 19: +25-Point Target Hit at 5365 (2.5R Clean Point Math!)
+  [5365, 5370, 5362, 5368, 2840],
+  [5368, 5371, 5363, 5365, 2310],
+  [5365, 5368, 5360, 5363, 2090],
+  [5363, 5369, 5361, 5367, 2240],
+  [5367, 5373, 5365, 5371, 2580],
+  [5371, 5376, 5368, 5373, 2490],
+  [5373, 5377, 5369, 5371, 2120],
+  [5371, 5375, 5367, 5372, 1980],
+  [5372, 5378, 5370, 5376, 2210],
+  [5376, 5380, 5372, 5378, 2160],
+  [5378, 5381, 5373, 5375, 1940],
+  [5375, 5379, 5372, 5377, 1890],
+]);
+
+// 30. Indices Yields, DXY, VIX & Risk-On/Risk-Off Flows (NAS100 1H — Risk-Off Washout -> Risk-On Reversal)
+const indicesCorrStart = 1719820800; // 2024-07-01 08:00:00 UTC
+const indicesCorrInterval = 3600; // 1H
+const indicesCorrelationsCandles = buildCandles(indicesCorrStart, indicesCorrInterval, [
+  [18810, 18842, 18792, 18824, 2410],
+  [18824, 18836, 18764, 18778, 2890], // Yields & DXY spike higher -> Risk-off pressure starts
+  [18778, 18792, 18720, 18734, 3340],
+  [18734, 18752, 18688, 18702, 3620],
+  [18702, 18744, 18690, 18736, 2980], // 4: Lower High Pivot at 18740 (Risk-On BOS Trigger)
+  [18736, 18742, 18668, 18678, 3540],
+  [18678, 18694, 18642, 18656, 3890], // 6: Support Tested at 18640 as VIX Climbs
+  [18656, 18698, 18648, 18684, 3120],
+  [18684, 18704, 18646, 18660, 3290],
+  [18660, 18672, 18622, 18634, 4180],
+  [18634, 18648, 18574, 18646, 6420], // 10: Peak VIX Panic Flush to 18574 -> Fast Reclaim Above 18640!
+  [18646, 18704, 18638, 18696, 4890], // VIX & 10Y Yields Cool Off -> Risk-On Rotation Begins
+  [18696, 18758, 18688, 18748, 5340], // 12: Bullish Risk-On BOS Above 18740!
+  [18748, 18792, 18736, 18782, 4620],
+  [18782, 18790, 18726, 18738, 3210],
+  [18738, 18762, 18718, 18754, 3380], // 15: Clean Higher Low Retest Around 18740
+  [18754, 18808, 18746, 18798, 4120],
+  [18798, 18846, 18788, 18838, 4490],
+  [18838, 18886, 18824, 18874, 4780],
+  [18874, 18916, 18862, 18906, 4920],
+  [18906, 18924, 18878, 18890, 3410],
+  [18890, 18936, 18882, 18928, 3980],
+  [18928, 18964, 18916, 18952, 4680], // 22: Risk-On Recovery Target 18940 Reached!
+  [18952, 18986, 18940, 18974, 4120],
+  [18974, 18994, 18948, 18960, 3390],
+  [18960, 18978, 18934, 18948, 2980],
+  [18948, 18984, 18942, 18976, 3190],
+  [18976, 19010, 18966, 18998, 3540],
+  [18998, 19024, 18982, 19012, 3290],
+  [19012, 19032, 18992, 19004, 2890],
+  [19004, 19026, 18988, 19018, 2760],
+  [19018, 19044, 19006, 19034, 2920],
+]);
+
 export const CHART_SCENARIOS: ChartScenario[] = [
   {
     id: 'ms-bullish-bos',
@@ -2696,6 +3038,871 @@ export const CHART_SCENARIOS: ChartScenario[] = [
     teachingTakeaways: [
       'A small, planned -1R stop-loss is NOT a failure—it is the insurance policy that keeps you in the game for the next A+ winner.',
       'During a drawdown, cut your risk size in half and focus on textbook execution rather than trying to win everything back in one trade.',
+    ],
+  },
+  {
+    id: 'chart-fundamentals-btcusdt-15m',
+    lessonSlug: 'chart-reading-fundamentals',
+    title: 'Reading a Live Chart: Price Axis, 15m Timeframes, Staircase & Volume Spike',
+    symbol: 'BTC/USDT',
+    timeframe: '15m',
+    category: 'market_structure',
+    description:
+      'Every candle on this 15-minute BTC/USDT chart represents 15 minutes on the horizontal time axis (X-axis) and exact price ticks on the vertical price axis (Y-axis). Watch how rising volume confirms the staircase breakout above 63,850.',
+    isPracticeEligible: false,
+    correctClassification: 'bullish_bos',
+    candles: chartFundamentalsCandles,
+    priceLines: [
+      {
+        id: 'cf-target',
+        price: 64550,
+        title: 'Upper Price Axis Target (64,550)',
+        color: '#10b981',
+        lineStyle: 'solid',
+        role: 'take_profit',
+      },
+      {
+        id: 'cf-bos',
+        price: 63850,
+        title: 'Swing High Breakout Level (63,850)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'bos',
+      },
+      {
+        id: 'cf-hl',
+        price: 63480,
+        title: 'Higher Low Support Floor (63,480)',
+        color: '#f59e0b',
+        lineStyle: 'dotted',
+        role: 'support_resistance',
+      },
+    ],
+    markers: [
+      {
+        id: 'cf-m1',
+        time: chartFundamentalsCandles[5].time,
+        position: 'aboveBar',
+        color: '#38bdf8',
+        shape: 'circle',
+        text: 'Swing High (63,850)',
+        stage: 'before',
+      },
+      {
+        id: 'cf-m2',
+        time: chartFundamentalsCandles[9].time,
+        position: 'belowBar',
+        color: '#f59e0b',
+        shape: 'arrowUp',
+        text: 'Higher Low (Light Vol)',
+        stage: 'before',
+      },
+      {
+        id: 'cf-m3',
+        time: chartFundamentalsCandles[13].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Volume Spike BOS',
+        stage: 'trigger',
+      },
+      {
+        id: 'cf-m4',
+        time: chartFundamentalsCandles[20].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'circle',
+        text: 'HL #2 Above Prior High',
+        stage: 'after',
+      },
+      {
+        id: 'cf-m5',
+        time: chartFundamentalsCandles[25].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Target 64,550 Hit',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 11,
+      triggerEndIndex: 15,
+      afterEndIndex: chartFundamentalsCandles.length - 1,
+      beforeSummary:
+        'Before: Reading left to right on the 15-minute X-axis, BTC/USDT climbs to 63,850 and pulls back gently to 63,480 on quiet volume—showing healthy profit-taking rather than panic selling.',
+      triggerSummary:
+        'Trigger: A tall green candle closes cleanly above 63,850 at 64,010 accompanied by a surge in bottom-pane volume—proving real buyer commitment on the breakout.',
+      afterSummary:
+        'After: The staircase repeats—price forms a second Higher Low at 63,930 above the broken ceiling and expands smoothly to 64,620.',
+    },
+    teachingTakeaways: [
+      'Always read three chart elements together: the X-axis timeframe (how long each bar takes), the Y-axis key price levels, and bottom volume bars confirming conviction.',
+      'Healthy uptrends expand on high volume and pull back on lighter volume while printing Higher Highs and Higher Lows.',
+    ],
+  },
+  {
+    id: 'crypto-spot-perps-ethusdt-1h',
+    lessonSlug: 'crypto-spot-perps-orderbook',
+    title: 'Spot Bid Wall vs. Leveraged Perp Stop-Out & Ask Wall Breakout',
+    symbol: 'ETH/USDT',
+    timeframe: '1H',
+    category: 'liquidity_sweep',
+    description:
+      'ETH/USDT trades between a resting Spot Bid Wall (3,340) and Ask Wall (3,420). A rapid wick to 3,306 liquidates over-leveraged perpetual futures longs while calm spot holders survive and ride the ask-wall breakout to 3,510.',
+    isPracticeEligible: true,
+    isSweep: true,
+    correctClassification: 'liquidity_sweep',
+    candles: cryptoSpotPerpsCandles,
+    priceLines: [
+      {
+        id: 'csp-target',
+        price: 3510,
+        title: 'Post-Breakout Target (3,510)',
+        color: '#10b981',
+        lineStyle: 'solid',
+        role: 'take_profit',
+      },
+      {
+        id: 'csp-ask',
+        price: 3420,
+        title: 'Order Book Ask Wall / Breakout (3,420)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'support_resistance',
+      },
+      {
+        id: 'csp-bid',
+        price: 3340,
+        title: 'Spot Bid Wall / Perp Liquidation Zone (3,340)',
+        color: '#f59e0b',
+        lineStyle: 'dashed',
+        role: 'sell_side_liquidity',
+      },
+    ],
+    markers: [
+      {
+        id: 'csp-m1',
+        time: cryptoSpotPerpsCandles[3].time,
+        position: 'aboveBar',
+        color: '#38bdf8',
+        shape: 'circle',
+        text: 'Ask Wall (3,420)',
+        stage: 'before',
+      },
+      {
+        id: 'csp-m2',
+        time: cryptoSpotPerpsCandles[7].time,
+        position: 'belowBar',
+        color: '#f59e0b',
+        shape: 'circle',
+        text: 'Spot Bid Wall',
+        stage: 'before',
+      },
+      {
+        id: 'csp-m3',
+        time: cryptoSpotPerpsCandles[15].time,
+        position: 'belowBar',
+        color: '#ef4444',
+        shape: 'arrowUp',
+        text: 'Perp Wick Sweep (3,306)',
+        stage: 'trigger',
+      },
+      {
+        id: 'csp-m4',
+        time: cryptoSpotPerpsCandles[19].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Ask Wall Absorbed!',
+        stage: 'after',
+      },
+      {
+        id: 'csp-m5',
+        time: cryptoSpotPerpsCandles[26].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Target 3,510 Hit',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 13,
+      triggerEndIndex: 17,
+      afterEndIndex: cryptoSpotPerpsCandles.length - 1,
+      beforeSummary:
+        'Before: Heavy limit sell orders stack at the 3,420 Ask Wall while Spot buyers defend 3,340, luring impatient 20x perpetual futures traders to park tight stops just underneath.',
+      triggerSummary:
+        'Trigger: A violent 1-hour wick plunges to 3,306—liquidating leveraged perp longs—then snaps closed back above 3,340 as Spot limit bids absorb the forced selling.',
+      afterSummary:
+        'After: With excess leverage flushed out, strong Spot demand chews cleanly through the 3,420 Ask Wall, retests 3,420 as support, and rallies to 3,516.',
+    },
+    teachingTakeaways: [
+      'Spot ownership cannot be liquidated by a single stop-hunt wick; high-leverage Perpetual Futures turn normal volatility into instant account blowups.',
+      'When price sweeps resting bids and closes back inside the order book wall on heavy volume, watch for the opposite ask wall to get absorbed next.',
+    ],
+  },
+  {
+    id: 'crypto-altcoin-solusdt-4h',
+    lessonSlug: 'crypto-volatility-altcoin-cycles',
+    title: 'Altcoin Liquidation Sweep Followed by Rotation Expansion',
+    symbol: 'SOL/USDT',
+    timeframe: '4H',
+    category: 'liquidity_sweep',
+    description:
+      'High-beta altcoins swing 2–3× wider than Bitcoin. Watch SOL/USDT sweep a crowded liquidation heatmap cluster below 144.0 before capital rotates out of BTC into an explosive 4H altcoin expansion.',
+    isPracticeEligible: true,
+    isSweep: true,
+    correctClassification: 'liquidity_sweep',
+    candles: cryptoAltcoinCandles,
+    priceLines: [
+      {
+        id: 'ca-target',
+        price: 172.0,
+        title: 'Altcoin Rotation Target (172.0)',
+        color: '#10b981',
+        lineStyle: 'solid',
+        role: 'take_profit',
+      },
+      {
+        id: 'ca-bos',
+        price: 156.0,
+        title: 'Altcoin Rotation Breakout (156.0)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'bos',
+      },
+      {
+        id: 'ca-liq',
+        price: 144.0,
+        title: 'Liquidation Heatmap Cluster (144.0)',
+        color: '#f59e0b',
+        lineStyle: 'dashed',
+        role: 'sell_side_liquidity',
+      },
+    ],
+    markers: [
+      {
+        id: 'ca-m1',
+        time: cryptoAltcoinCandles[11].time,
+        position: 'belowBar',
+        color: '#f59e0b',
+        shape: 'circle',
+        text: 'Equal Lows / Liq Pool',
+        stage: 'before',
+      },
+      {
+        id: 'ca-m2',
+        time: cryptoAltcoinCandles[14].time,
+        position: 'belowBar',
+        color: '#ef4444',
+        shape: 'arrowUp',
+        text: 'Liq Sweep (138.4)',
+        stage: 'trigger',
+      },
+      {
+        id: 'ca-m3',
+        time: cryptoAltcoinCandles[17].time,
+        position: 'aboveBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'Rotation BOS (156.0)',
+        stage: 'after',
+      },
+      {
+        id: 'ca-m4',
+        time: cryptoAltcoinCandles[24].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Expansion Hit (172.0)',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 13,
+      triggerEndIndex: 16,
+      afterEndIndex: cryptoAltcoinCandles.length - 1,
+      beforeSummary:
+        'Before: SOL/USDT builds clean Equal Lows at 144.0, creating a bright liquidation cluster underneath as leveraged traders pile in early.',
+      triggerSummary:
+        'Trigger: A fast 4H flush sweeps down to 138.4 (nearly -5% below support) to clear leveraged longs, then reclaims 144.9 before candle close on massive volume.',
+      afterSummary:
+        'After: Once Bitcoin stabilizes, capital rotates aggressively into SOL—breaking 156.0, retesting cleanly, and expanding over +10% to 172.0+.',
+    },
+    teachingTakeaways: [
+      'Because altcoins have wider percentage swings, you MUST reduce position size so a wider volatility stop still equals only 1% account risk.',
+      'Wait for liquidation flushes to reclaim key levels before chasing altcoin rotation breakouts.',
+    ],
+  },
+  {
+    id: 'forex-pips-spread-eurusd-15m',
+    lessonSlug: 'forex-pairs-pips-lots-spreads',
+    title: 'Precision Pip Math & Tight London Spread (15-Pip SL vs. 30-Pip TP)',
+    symbol: 'EUR/USD',
+    timeframe: '15m',
+    category: 'risk_setup',
+    description:
+      'On major Forex pairs like EUR/USD, tight London session spreads (~0.4 pips) let you execute a clean 15-pip Stop Loss (-1R) against a 30-pip Take Profit (+2R = 1:2 RR) without spread spikes clipping your stop.',
+    isPracticeEligible: false,
+    correctClassification: 'valid_rr_setup',
+    candles: forexPipsSpreadCandles,
+    priceLines: [
+      {
+        id: 'fp-tp',
+        price: 1.0865,
+        title: 'Take Profit (+30 Pips | +2R)',
+        color: '#10b981',
+        lineStyle: 'solid',
+        role: 'take_profit',
+      },
+      {
+        id: 'fp-entry',
+        price: 1.0835,
+        title: 'London Pullback Entry (1.0835)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'entry',
+      },
+      {
+        id: 'fp-sl',
+        price: 1.082,
+        title: 'Stop Loss (-15 Pips | -1R)',
+        color: '#ef4444',
+        lineStyle: 'solid',
+        role: 'stop_loss',
+      },
+    ],
+    markers: [
+      {
+        id: 'fp-m1',
+        time: forexPipsSpreadCandles[8].time,
+        position: 'aboveBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'London BOS (1.0840)',
+        stage: 'before',
+      },
+      {
+        id: 'fp-m2',
+        time: forexPipsSpreadCandles[12].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'Entry 1.0835 (15p SL)',
+        stage: 'trigger',
+      },
+      {
+        id: 'fp-m3',
+        time: forexPipsSpreadCandles[18].time,
+        position: 'aboveBar',
+        color: '#f59e0b',
+        shape: 'circle',
+        text: '+15 Pips (+1R)',
+        stage: 'after',
+      },
+      {
+        id: 'fp-m4',
+        time: forexPipsSpreadCandles[23].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: '+30 Pips TP (1:2 RR!)',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 10,
+      triggerEndIndex: 14,
+      afterEndIndex: forexPipsSpreadCandles.length - 1,
+      beforeSummary:
+        'Before: As London liquidity opens, EUR/USD spreads tighten below 0.5 pips and price breaks bullishly above 1.0840 with clean institutional order flow.',
+      triggerSummary:
+        'Trigger: A limit entry fills at 1.0835 with a pre-calculated 15-pip Stop Loss at 1.0820 (e.g., 0.66 micro/mini lot sizing for exact 1% risk) and a 30-pip target at 1.0865.',
+      afterSummary:
+        'After: Price dips briefly to 1.0832—nowhere near the 1.0820 stop—then trends smoothly through +15 pips (+1R) to hit the full +30-pip Take Profit at 1.0865.',
+    },
+    teachingTakeaways: [
+      'Always calculate your Lot Size from your Pip Stop distance: Lot Size = Dollar Risk ÷ (Stop Pips × Pip Value).',
+      'Trade high-liquidity major pairs during London/NY hours so broker spread stays a tiny fraction of your Stop Loss.',
+    ],
+  },
+  {
+    id: 'forex-macro-cpi-usdjpy-1h',
+    lessonSlug: 'forex-macro-news-rates',
+    title: 'US CPI Release: Pre-News Range, Whip Spike & Rate-Driven Continuation',
+    symbol: 'USD/JPY',
+    timeframe: '1H',
+    category: 'true_breakout',
+    description:
+      'High-impact macro releases like CPI (Consumer Price Index) and NFP (Non-Farm Payrolls) reprice central bank interest-rate expectations in seconds. Watch how waiting for the CPI whip to settle gives a calm trend entry.',
+    isPracticeEligible: false,
+    correctClassification: 'true_breakout',
+    candles: forexMacroCpiCandles,
+    priceLines: [
+      {
+        id: 'fm-target',
+        price: 156.75,
+        title: 'Post-CPI Macro Continuation Target (156.75)',
+        color: '#10b981',
+        lineStyle: 'solid',
+        role: 'take_profit',
+      },
+      {
+        id: 'fm-high',
+        price: 155.1,
+        title: 'Pre-CPI Range High / Post-News Support (155.10)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'bos',
+      },
+      {
+        id: 'fm-low',
+        price: 154.6,
+        title: 'Pre-CPI Range Floor (154.60)',
+        color: '#f59e0b',
+        lineStyle: 'dotted',
+        role: 'support_resistance',
+      },
+    ],
+    markers: [
+      {
+        id: 'fm-m1',
+        time: forexMacroCpiCandles[10].time,
+        position: 'aboveBar',
+        color: '#f59e0b',
+        shape: 'circle',
+        text: 'Pre-CPI Quiet Range',
+        stage: 'before',
+      },
+      {
+        id: 'fm-m2',
+        time: forexMacroCpiCandles[11].time,
+        position: 'aboveBar',
+        color: '#ef4444',
+        shape: 'arrowUp',
+        text: 'CPI Whip & Surge!',
+        stage: 'trigger',
+      },
+      {
+        id: 'fm-m3',
+        time: forexMacroCpiCandles[15].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'Calm Retest Entry (155.12)',
+        stage: 'after',
+      },
+      {
+        id: 'fm-m4',
+        time: forexMacroCpiCandles[22].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Macro Target 156.75',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 10,
+      triggerEndIndex: 13,
+      afterEndIndex: forexMacroCpiCandles.length - 1,
+      beforeSummary:
+        'Before: USD/JPY coils tightly between 154.60 and 155.10 ahead of US CPI as big banks pull liquidity and wait for the inflation print.',
+      triggerSummary:
+        'Trigger: At CPI release, spreads widen and a massive candle whips down to 154.18 (stopping out gamblers) before closing strongly at 155.72 as hotter CPI boosts Fed rate expectations.',
+      afterSummary:
+        'After: Once spreads normalize, price pulls back calmly to 155.12 (retesting the pre-news ceiling as support) and trends +160 pips higher to 156.75+.',
+    },
+    teachingTakeaways: [
+      'Never gamble with tight stops during the exact minute of CPI, NFP, or FOMC releases—spreads widen dramatically and two-sided whips are common.',
+      'Let the news candle close, identify the new interest-rate direction, and enter on the calm post-news retest.',
+    ],
+  },
+  {
+    id: 'stocks-hours-volume-aapl-5m',
+    lessonSlug: 'stocks-market-hours-volume-order-types',
+    title: 'Pre-Market High, 9:30 AM Volume Surge & Disciplined Limit Retest',
+    symbol: 'AAPL',
+    timeframe: '5m',
+    category: 'true_breakout',
+    description:
+      'Extended-hours stock volume is thin and erratic until the 9:30 AM EST Opening Bell. Watch AAPL break its Pre-Market High on a 10× volume surge, then reward patient traders using a Limit Order on the pullback instead of chasing with a Market Order.',
+    isPracticeEligible: false,
+    correctClassification: 'true_breakout',
+    candles: stocksHoursVolumeCandles,
+    priceLines: [
+      {
+        id: 'sh-target',
+        price: 194.6,
+        title: 'Regular Session Target (194.60)',
+        color: '#10b981',
+        lineStyle: 'solid',
+        role: 'take_profit',
+      },
+      {
+        id: 'sh-pmh',
+        price: 192.4,
+        title: 'Pre-Market High / Limit Entry Level (192.40)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'entry',
+      },
+      {
+        id: 'sh-sl',
+        price: 191.85,
+        title: 'Stop Loss Below Opening Bell Low (191.85)',
+        color: '#ef4444',
+        lineStyle: 'solid',
+        role: 'stop_loss',
+      },
+    ],
+    markers: [
+      {
+        id: 'sh-m1',
+        time: stocksHoursVolumeCandles[2].time,
+        position: 'aboveBar',
+        color: '#f59e0b',
+        shape: 'circle',
+        text: 'Pre-Market High',
+        stage: 'before',
+      },
+      {
+        id: 'sh-m2',
+        time: stocksHoursVolumeCandles[6].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: '9:30 AM Vol Surge',
+        stage: 'trigger',
+      },
+      {
+        id: 'sh-m3',
+        time: stocksHoursVolumeCandles[10].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'Limit Fill (192.45)',
+        stage: 'after',
+      },
+      {
+        id: 'sh-m4',
+        time: stocksHoursVolumeCandles[20].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Target 194.60 Hit',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 5,
+      triggerEndIndex: 8,
+      afterEndIndex: stocksHoursVolumeCandles.length - 1,
+      beforeSummary:
+        'Before: Between 9:00–9:25 AM EST pre-market, AAPL prints light-volume candles capped neatly at the 192.40 Pre-Market High.',
+      triggerSummary:
+        'Trigger: At the 9:30 AM EST Opening Bell, institutional volume jumps 10× and drives a full-body breakout above 192.40 to 193.46.',
+      afterSummary:
+        'After: Chasers who hit Market Buy at 193.40 suffer immediate drawdown, while a patient Limit Buy near 192.45 fills cleanly at the retest and rides smoothly to 194.60+.',
+    },
+    teachingTakeaways: [
+      'Use Limit Orders during extended hours and fast market opens to control your exact fill price and avoid painful slippage.',
+      'Mark Pre-Market Highs and Lows before 9:30 AM EST—they frequently act as institutional breakout-and-retest shelves.',
+    ],
+  },
+  {
+    id: 'stocks-earnings-rs-nvda-15m',
+    lessonSlug: 'stocks-earnings-relative-strength',
+    title: 'Post-Earnings Gap Hold, Relative Strength Coil & Institutional Breakout',
+    symbol: 'NVDA',
+    timeframe: '15m',
+    category: 'true_breakout',
+    description:
+      'After an earnings beat, true market leaders refuse to fill their gap even when the broader index stalls. Watch NVDA hold 118.50 gap support, coil tightly under 121.20 (Relative Strength), and break out on heavy institutional volume.',
+    isPracticeEligible: false,
+    correctClassification: 'true_breakout',
+    candles: stocksEarningsRsCandles,
+    priceLines: [
+      {
+        id: 'se-target',
+        price: 126.0,
+        title: 'Institutional Trend Target (126.00)',
+        color: '#10b981',
+        lineStyle: 'solid',
+        role: 'take_profit',
+      },
+      {
+        id: 'se-bos',
+        price: 121.2,
+        title: 'Relative Strength Breakout Shelf (121.20)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'bos',
+      },
+      {
+        id: 'se-gap',
+        price: 118.5,
+        title: 'Post-Earnings Gap Support (118.50)',
+        color: '#f59e0b',
+        lineStyle: 'dashed',
+        role: 'support_resistance',
+      },
+    ],
+    markers: [
+      {
+        id: 'se-m1',
+        time: stocksEarningsRsCandles[0].time,
+        position: 'belowBar',
+        color: '#f59e0b',
+        shape: 'circle',
+        text: 'Earnings Gap Holds',
+        stage: 'before',
+      },
+      {
+        id: 'se-m2',
+        time: stocksEarningsRsCandles[8].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'RS Tight Higher Low',
+        stage: 'before',
+      },
+      {
+        id: 'se-m3',
+        time: stocksEarningsRsCandles[12].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Institutional Breakout',
+        stage: 'trigger',
+      },
+      {
+        id: 'se-m4',
+        time: stocksEarningsRsCandles[15].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'circle',
+        text: 'Clean Shelf Retest',
+        stage: 'after',
+      },
+      {
+        id: 'se-m5',
+        time: stocksEarningsRsCandles[22].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Target 126.00 Hit',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 11,
+      triggerEndIndex: 14,
+      afterEndIndex: stocksEarningsRsCandles.length - 1,
+      beforeSummary:
+        'Before: Following strong earnings guidance, NVDA gaps up and holds above 118.50—printing tight Higher Lows underneath 121.20 even while the S&P 500 trades flat.',
+      triggerSummary:
+        'Trigger: A high-volume institutional expansion candle slices cleanly through 121.20 and closes at 122.18, confirming multi-day earnings drift.',
+      afterSummary:
+        'After: A brief retest holds above 121.20 (121.45 low), launching steady institutional accumulation straight to 126.00+.',
+    },
+    teachingTakeaways: [
+      'Avoid gambling overnight through an earnings report (binary gap risk)—trade the post-earnings reaction once institutional buyers prove the gap is holding.',
+      'Relative Strength (holding higher lows while the broad index pulls back) pinpoints which stock institutions are actively accumulating.',
+    ],
+  },
+  {
+    id: 'indices-basics-spx500-15m',
+    lessonSlug: 'indices-nas100-spx500-basics',
+    title: 'SPX500 Point-Value Math: NY Range Breakout & Pullback Continuation',
+    symbol: 'SPX500',
+    timeframe: '15m',
+    category: 'market_structure',
+    description:
+      'Indices move in clean points rather than Forex pips. Watch SPX500 break out of its 20-point New York range (5320–5340), offer a 10-point Stop Loss pullback entry at 5340, and pay +25 points (+2.5R) to 5365.',
+    isPracticeEligible: false,
+    correctClassification: 'bullish_bos',
+    candles: indicesBasicsSpxCandles,
+    priceLines: [
+      {
+        id: 'ib-tp',
+        price: 5365,
+        title: 'Target (+25 Points | +2.5R)',
+        color: '#10b981',
+        lineStyle: 'solid',
+        role: 'take_profit',
+      },
+      {
+        id: 'ib-entry',
+        price: 5340,
+        title: 'NY Range Breakout / Pullback Entry (5340)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'entry',
+      },
+      {
+        id: 'ib-sl',
+        price: 5330,
+        title: 'Stop Loss (-10 Points | -1R)',
+        color: '#ef4444',
+        lineStyle: 'solid',
+        role: 'stop_loss',
+      },
+      {
+        id: 'ib-low',
+        price: 5320,
+        title: 'NY Session Range Floor (5320)',
+        color: '#f59e0b',
+        lineStyle: 'dotted',
+        role: 'support_resistance',
+      },
+    ],
+    markers: [
+      {
+        id: 'ib-m1',
+        time: indicesBasicsSpxCandles[2].time,
+        position: 'aboveBar',
+        color: '#f59e0b',
+        shape: 'circle',
+        text: 'NY Range High (5340)',
+        stage: 'before',
+      },
+      {
+        id: 'ib-m2',
+        time: indicesBasicsSpxCandles[8].time,
+        position: 'aboveBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'Range Breakout',
+        stage: 'before',
+      },
+      {
+        id: 'ib-m3',
+        time: indicesBasicsSpxCandles[11].time,
+        position: 'belowBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'Pullback Entry (10pt SL)',
+        stage: 'trigger',
+      },
+      {
+        id: 'ib-m4',
+        time: indicesBasicsSpxCandles[19].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: '+25 Points Hit (2.5R!)',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 9,
+      triggerEndIndex: 13,
+      afterEndIndex: indicesBasicsSpxCandles.length - 1,
+      beforeSummary:
+        'Before: SPX500 establishes a clean 20-point New York opening box between 5320 and 5340 before breaking upward with solid volume to 5354.',
+      triggerSummary:
+        'Trigger: Price pulls back cleanly to the broken 5340 ceiling, setting up simple index risk math: a 10-point stop to 5330 (e.g., $10/pt = $100 risk) targeting +25 points ($250 reward).',
+      afterSummary:
+        'After: Buyers defend 5340 on every dip and walk steadily up 25 index points to hit 5365 (+2.5R).',
+    },
+    teachingTakeaways: [
+      'Always verify your broker’s dollar-per-point contract specification before trading SPX500, NAS100, or US30.',
+      'SPX500 generally moves more steadily than high-volatility NAS100—making it a calmer index for beginners practicing point-based risk sizing.',
+    ],
+  },
+  {
+    id: 'indices-correlations-nas100-1h',
+    lessonSlug: 'indices-risk-on-correlations',
+    title: 'Risk-Off Drop During VIX/DXY Surge → Risk-On Reversal as Yields Cool',
+    symbol: 'NAS100',
+    timeframe: '1H',
+    category: 'liquidity_sweep',
+    description:
+      'Tech-heavy NAS100 is highly sensitive to Treasury Yields, DXY (US Dollar Index), and the VIX (Volatility Index). Watch a risk-off flush reverse sharply into a risk-on rally the moment yields and VIX peak and cool off.',
+    isPracticeEligible: false,
+    correctClassification: 'liquidity_sweep',
+    candles: indicesCorrelationsCandles,
+    priceLines: [
+      {
+        id: 'ic-target',
+        price: 18940,
+        title: 'Risk-On Recovery Target (18,940)',
+        color: '#10b981',
+        lineStyle: 'solid',
+        role: 'take_profit',
+      },
+      {
+        id: 'ic-bos',
+        price: 18740,
+        title: 'Risk-On Bullish BOS (18,740)',
+        color: '#38bdf8',
+        lineStyle: 'dashed',
+        role: 'bos',
+      },
+      {
+        id: 'ic-ssl',
+        price: 18640,
+        title: 'Risk-Off Panic Sweep Level (18,640)',
+        color: '#f59e0b',
+        lineStyle: 'dashed',
+        role: 'sell_side_liquidity',
+      },
+    ],
+    markers: [
+      {
+        id: 'ic-m1',
+        time: indicesCorrelationsCandles[6].time,
+        position: 'belowBar',
+        color: '#f59e0b',
+        shape: 'circle',
+        text: 'VIX/DXY Pressure (18,640)',
+        stage: 'before',
+      },
+      {
+        id: 'ic-m2',
+        time: indicesCorrelationsCandles[10].time,
+        position: 'belowBar',
+        color: '#ef4444',
+        shape: 'arrowUp',
+        text: 'Peak VIX Sweep (18,574)',
+        stage: 'trigger',
+      },
+      {
+        id: 'ic-m3',
+        time: indicesCorrelationsCandles[12].time,
+        position: 'aboveBar',
+        color: '#38bdf8',
+        shape: 'arrowUp',
+        text: 'Risk-On BOS (18,740)',
+        stage: 'after',
+      },
+      {
+        id: 'ic-m4',
+        time: indicesCorrelationsCandles[22].time,
+        position: 'aboveBar',
+        color: '#10b981',
+        shape: 'arrowUp',
+        text: 'Risk-On Target 18,940',
+        stage: 'after',
+      },
+    ],
+    replay: {
+      beforeEndIndex: 9,
+      triggerEndIndex: 13,
+      afterEndIndex: indicesCorrelationsCandles.length - 1,
+      beforeSummary:
+        'Before: Rising 10-year Treasury yields, a firmer DXY (US Dollar Index), and a climbing VIX trigger risk-off selling that drags NAS100 down to 18,640.',
+      triggerSummary:
+        'Trigger: A peak-VIX panic candle sweeps under 18,640 to 18,574, then snaps closed back above 18,640 as yields roll over and VIX cools—immediately followed by a bullish BOS above 18,740.',
+      afterSummary:
+        'After: With DXY and VIX trending lower (classic Risk-On tailwind), NAS100 holds its 18,740 retest and rallies +200 points to 18,940+.',
+    },
+    teachingTakeaways: [
+      'Check 10Y Yields, DXY (US Dollar Index), and VIX (Volatility Index) before trading indices—fighting a sharp risk-off macro wave lowers win rate dramatically.',
+      'Best index reversals happen when a price liquidity sweep aligns with VIX and Treasury yields stalling at resistance.',
     ],
   },
 ];

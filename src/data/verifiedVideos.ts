@@ -996,6 +996,422 @@ const VERIFIED_YOUTUBE_SPECS: VerifiedYouTubeSeedSpec[] = [
       'Scale risk gradually in modest increments only after new equity highs backed by 30–50 disciplined trades.',
     ],
   },
+
+  // =========================================================================
+  // MODULE 01: Chart Reading Fundamentals (chart-reading-fundamentals)
+  // =========================================================================
+  {
+    mappingId: '30000000-0000-4000-8000-000000000901',
+    resourceId: '40000000-0000-4000-8000-000000000901',
+    lessonId: '20000000-0000-4000-8000-000000000019',
+    lessonSlug: 'chart-reading-fundamentals',
+    displayOrder: 1,
+    relevanceScore: 99,
+    qualityScore: 93,
+    videoId: 'POJFoQYVXnM',
+    title: 'Which is the best timeframe to trade (for beginners)?',
+    author: 'Rayner Teo',
+    description:
+      'Clear beginner breakdown of how 5m, 15m, 1H, 4H, and 1D timeframes work, how noise increases on lower timeframes, and how to pick a calm starting chart.',
+    beforeWatchContext:
+      'Focus on how each timeframe represents one candle’s duration and why starting on 15m, 1H, or 1D reduces beginner noise dramatically.',
+    afterWatchTakeaways: [
+      'Higher timeframes (1H, 4H, 1D) filter out random noise and reveal cleaner structural direction.',
+      'Match your timeframe choice to your daily schedule rather than forcing fast 1-minute scalping.',
+    ],
+  },
+  {
+    mappingId: '30000000-0000-4000-8000-000000000902',
+    resourceId: '40000000-0000-4000-8000-000000000902',
+    lessonId: '20000000-0000-4000-8000-000000000019',
+    lessonSlug: 'chart-reading-fundamentals',
+    displayOrder: 2,
+    relevanceScore: 97,
+    qualityScore: 92,
+    videoId: 'rJj4ZbnzEGs',
+    title: 'How To Use TradingView For BEGINNERS [Full 2025 Tutorial]',
+    author: 'Craig Percoco',
+    description:
+      'Hands-on walkthrough of essential charting platform controls: Timeframe Switcher, X/Y Axes, Watchlist setup, Crosshair, Volume, and core drawing tools.',
+    beforeWatchContext:
+      'Watch how to keep your chart workspace clean using only a Watchlist, Timeframe buttons, Horizontal Lines, Ruler, and Long/Short Position Tool.',
+    afterWatchTakeaways: [
+      'Organize a compact Watchlist across Crypto, Stocks, Forex, and Indices before marking any levels.',
+      'Use the Long/Short Position Tool to visualize Entry, SL (Stop Loss), and TP (Take Profit) before entering.',
+    ],
+  },
+
+  // =========================================================================
+  // MODULE 16: Crypto Spot vs. Perpetual Futures (crypto-spot-perps-orderbook)
+  // =========================================================================
+  {
+    mappingId: '30000000-0000-4000-8000-000000000903',
+    resourceId: '40000000-0000-4000-8000-000000000903',
+    lessonId: '20000000-0000-4000-8000-000000000020',
+    lessonSlug: 'crypto-spot-perps-orderbook',
+    displayOrder: 1,
+    relevanceScore: 98,
+    qualityScore: 91,
+    videoId: 'gm7RO7-wwuA',
+    title: 'Spot vs Futures',
+    author: 'The Present',
+    description:
+      'Direct comparison between owning real coins on the Spot market versus trading leveraged Crypto Futures contracts, including liquidation safety.',
+    beforeWatchContext:
+      'Compare Spot asset ownership (zero forced liquidation) against leveraged Futures margin rules so you always pick the right vehicle.',
+    afterWatchTakeaways: [
+      'Spot ownership carries zero forced liquidation risk and zero funding-rate drag.',
+      'Futures allow shorting and leverage but require Isolated Margin and a hard SL (Stop Loss).',
+    ],
+  },
+  {
+    mappingId: '30000000-0000-4000-8000-000000000904',
+    resourceId: '40000000-0000-4000-8000-000000000904',
+    lessonId: '20000000-0000-4000-8000-000000000020',
+    lessonSlug: 'crypto-spot-perps-orderbook',
+    displayOrder: 2,
+    relevanceScore: 96,
+    qualityScore: 92,
+    videoId: '5vW7hX6k5ho',
+    title: 'What Are Crypto Derivatives? (Perpetual, Futures Contract Explained)',
+    author: 'Coingecko',
+    description:
+      'Clear explainer on how Perpetual Futures contracts work without an expiry date, how funding rates anchor contract prices to Spot, and margin mechanics.',
+    beforeWatchContext:
+      'Notice how Perpetual Futures differ from expiring contracts and why Funding Rates keep Perps aligned with the Spot order book.',
+    afterWatchTakeaways: [
+      'Perpetual contracts never expire and stay pegged to Spot via periodic Funding payments.',
+      'Always size Crypto positions from your SL (Stop Loss) distance rather than random leverage sliders.',
+    ],
+  },
+
+  // =========================================================================
+  // MODULE 18: Crypto Volatility & Altcoin Cycles (crypto-volatility-altcoin-cycles)
+  // =========================================================================
+  {
+    mappingId: '30000000-0000-4000-8000-000000000905',
+    resourceId: '40000000-0000-4000-8000-000000000905',
+    lessonId: '20000000-0000-4000-8000-000000000021',
+    lessonSlug: 'crypto-volatility-altcoin-cycles',
+    displayOrder: 1,
+    relevanceScore: 98,
+    qualityScore: 91,
+    videoId: '5RyW6jqTplI',
+    title: 'Bitcoin Dominance Explained For Beginners! How To Spot Alt Season',
+    author: 'SolanaFloor',
+    description:
+      'Beginner-friendly guide to reading BTC.D (Bitcoin Dominance) alongside Bitcoin price action to time capital rotation into high-liquidity Altcoins.',
+    beforeWatchContext:
+      'Track the relationship between BTC price stability and falling BTC.D to understand when Altcoin rotation setups have genuine tailwind.',
+    afterWatchTakeaways: [
+      'Check both BTC/USDT and BTC.D (Bitcoin Dominance) before entering any Altcoin Long.',
+      'Cap total combined risk across correlated Altcoins so one Bitcoin flush cannot multiply losses.',
+    ],
+  },
+  {
+    mappingId: '30000000-0000-4000-8000-000000000906',
+    resourceId: '40000000-0000-4000-8000-000000000906',
+    lessonId: '20000000-0000-4000-8000-000000000021',
+    lessonSlug: 'crypto-volatility-altcoin-cycles',
+    displayOrder: 2,
+    relevanceScore: 96,
+    qualityScore: 90,
+    videoId: 'qFwvTRATC-c',
+    title: 'Liquidation Heatmaps Explained in 5 minutes (Bitcoin Heatmaps for Trading)',
+    author: 'The Blockchain Today',
+    description:
+      'Concise 5-minute walkthrough showing how Liquidation Heatmaps highlight dense pockets of leveraged Long and Short stops acting as Crypto liquidity magnets.',
+    beforeWatchContext:
+      'Connect bright Liquidation Heatmap zones directly to Equal Highs/Lows and Liquidity Sweeps from the Universal Core lessons.',
+    afterWatchTakeaways: [
+      'Bright Liquidation Heatmap clusters show where forced leveraged orders are stacked as stop-hunt fuel.',
+      'Wait for price to sweep the heatmap zone and confirm BOS (Break of Structure) rather than guessing tops or bottoms.',
+    ],
+  },
+
+  // =========================================================================
+  // MODULE 19: Forex Pairs, Pips, Lots & Spreads (forex-pairs-pips-lots-spreads)
+  // =========================================================================
+  {
+    mappingId: '30000000-0000-4000-8000-000000000907',
+    resourceId: '40000000-0000-4000-8000-000000000907',
+    lessonId: '20000000-0000-4000-8000-000000000022',
+    lessonSlug: 'forex-pairs-pips-lots-spreads',
+    displayOrder: 1,
+    relevanceScore: 98,
+    qualityScore: 93,
+    videoId: 'fHGGZ2KBEMg',
+    title: 'What Is Forex Trading? (Video 1 of 13)',
+    author: 'Rayner Teo',
+    description:
+      'Foundational introduction to Foreign Exchange (FX) currency pairs, Base vs. Quote pricing, Major vs. Minor pairs, and how Bid/Ask spreads work.',
+    beforeWatchContext:
+      'Focus on how Base and Quote currencies interact in pairs like EUR/USD and why Major pairs offer the tightest beginner-friendly spreads.',
+    afterWatchTakeaways: [
+      'Buying a Forex pair means buying the Base (first) currency while simultaneously selling the Quote (second) currency.',
+      'Start with high-liquidity Major pairs (EUR/USD, GBP/USD, USD/JPY) to keep Bid/Ask spread costs minimal.',
+    ],
+  },
+  {
+    mappingId: '30000000-0000-4000-8000-000000000908',
+    resourceId: '40000000-0000-4000-8000-000000000908',
+    lessonId: '20000000-0000-4000-8000-000000000022',
+    lessonSlug: 'forex-pairs-pips-lots-spreads',
+    displayOrder: 2,
+    relevanceScore: 97,
+    qualityScore: 92,
+    videoId: 'bE0ZlUMmGXo',
+    title: 'What is a Pip or Point | Trading Terms',
+    author: 'Trading 212',
+    description:
+      'Crystal-clear explanation of Pips (4th decimal on standard pairs, 2nd decimal on JPY pairs), Pipettes, and how Pip values scale across Micro, Mini, and Standard Lots.',
+    beforeWatchContext:
+      'Pay attention to how Pip distance multiplies with Lot size so you can calculate exact 1% risk before every trade.',
+    afterWatchTakeaways: [
+      'Measure 1 pip at the 4th decimal (0.0001) on EUR/USD and at the 2nd decimal (0.01) on USD/JPY.',
+      'Size every Forex trade via Lot Size = Risk $ ÷ (SL Pips × $10) on USD-quoted pairs.',
+    ],
+  },
+
+  // =========================================================================
+  // MODULE 21: Forex Macro News & Interest Rates (forex-macro-news-rates)
+  // =========================================================================
+  {
+    mappingId: '30000000-0000-4000-8000-000000000909',
+    resourceId: '40000000-0000-4000-8000-000000000909',
+    lessonId: '20000000-0000-4000-8000-000000000023',
+    lessonSlug: 'forex-macro-news-rates',
+    displayOrder: 1,
+    relevanceScore: 98,
+    qualityScore: 92,
+    videoId: 'HBmOBOqVT74',
+    title: 'How Central Banks Influence Forex Prices',
+    author: 'Trading 212',
+    description:
+      'Plain-English breakdown of how Federal Reserve, ECB, BOE, and BOJ interest rate decisions and Hawkish vs. Dovish policy guidance drive multi-week Forex trends.',
+    beforeWatchContext:
+      'Observe why global yield flows follow rising interest rates and how macro rate divergence aligns with HTF (Higher Timeframe) trends.',
+    afterWatchTakeaways: [
+      'Hawkish rate-hike expectations attract capital into a currency; Dovish rate-cut expectations weaken it.',
+      'Aligning 4H/1D market structure with Central Bank rate bias improves swing trend follow-through.',
+    ],
+  },
+  {
+    mappingId: '30000000-0000-4000-8000-000000000910',
+    resourceId: '40000000-0000-4000-8000-000000000910',
+    lessonId: '20000000-0000-4000-8000-000000000023',
+    lessonSlug: 'forex-macro-news-rates',
+    displayOrder: 2,
+    relevanceScore: 96,
+    qualityScore: 91,
+    videoId: 'bm0sr7mQ5Tk',
+    title: 'How To Trade CPI & NFP The Right Way',
+    author: 'Words of Rizdom',
+    description:
+      'Practical framework for surviving red-folder inflation (CPI) and jobs (NFP) releases by avoiding initial spread whipsaws and executing post-news confirmation.',
+    beforeWatchContext:
+      'Watch how disciplined traders avoid gambling on the exact 8:30 AM spike and wait for spreads and market structure to stabilize.',
+    afterWatchTakeaways: [
+      'Check the Economic Calendar every morning before entering any Forex position.',
+      'Let initial CPI/NFP spread widening and two-way whipsaws pass, then trade clean post-news structure.',
+    ],
+  },
+
+  // =========================================================================
+  // MODULE 22: Stocks Market Hours & Order Types (stocks-market-hours-volume-order-types)
+  // =========================================================================
+  {
+    mappingId: '30000000-0000-4000-8000-000000000911',
+    resourceId: '40000000-0000-4000-8000-000000000911',
+    lessonId: '20000000-0000-4000-8000-000000000024',
+    lessonSlug: 'stocks-market-hours-volume-order-types',
+    displayOrder: 1,
+    relevanceScore: 98,
+    qualityScore: 91,
+    videoId: 't05XBsqgPQU',
+    title: 'Order Types Explained (Limit, Stop, Market) - For Beginner Traders',
+    author: 'Matt FXS',
+    description:
+      'Beginner-friendly walkthrough of Market Orders, Limit Orders, and Stop Orders so you control exact fill prices and place reliable protective stop losses.',
+    beforeWatchContext:
+      'Notice exactly when a Limit Order protects you from bad fills versus when a Stop Order ensures you exit cleanly at invalidation.',
+    afterWatchTakeaways: [
+      'Use Limit orders to cap your entry price and avoid surprise slippage in fast or thin stock books.',
+      'Attach a hard SL (Stop Loss) immediately using Shares = Risk $ ÷ Stop Distance ($).',
+    ],
+  },
+  {
+    mappingId: '30000000-0000-4000-8000-000000000912',
+    resourceId: '40000000-0000-4000-8000-000000000912',
+    lessonId: '20000000-0000-4000-8000-000000000024',
+    lessonSlug: 'stocks-market-hours-volume-order-types',
+    displayOrder: 2,
+    relevanceScore: 97,
+    qualityScore: 94,
+    videoId: '_qA3yFjdTuA',
+    title: 'The Definitive Stock Trading Guide (for Beginners)',
+    author: 'SMB Capital',
+    description:
+      'Prop-desk introduction to US equities covering Regular Trading Hours (9:30 AM–4:00 PM ET), volume selection, liquid stock filtering, and repeatable beginner habits.',
+    beforeWatchContext:
+      'Focus on why professional equity traders concentrate on high-volume Regular Trading Hours and liquid institutional names.',
+    afterWatchTakeaways: [
+      'Map Pre-Market levels before 9:30 AM ET, but prioritize Regular Hours for tight spreads and real volume.',
+      'Focus on liquid stocks trading 2M+ average daily shares rather than choppy illiquid tickers.',
+    ],
+  },
+
+  // =========================================================================
+  // MODULE 24: Stocks Earnings & Relative Strength (stocks-earnings-relative-strength)
+  // =========================================================================
+  {
+    mappingId: '30000000-0000-4000-8000-000000000913',
+    resourceId: '40000000-0000-4000-8000-000000000913',
+    lessonId: '20000000-0000-4000-8000-000000000025',
+    lessonSlug: 'stocks-earnings-relative-strength',
+    displayOrder: 1,
+    relevanceScore: 99,
+    qualityScore: 94,
+    videoId: 'FQIH6o18y9g',
+    title: 'How I Trade Earnings (My 4-Step Strategy)',
+    author: 'SMB Capital',
+    description:
+      'Institutional 4-step post-earnings playbook showing how prop traders react AFTER quarterly numbers drop using RVOL, clean catalyst surprise, and structured risk.',
+    beforeWatchContext:
+      'Notice why professionals wait for the Earnings surprise to print first instead of gambling on blind overnight gaps.',
+    afterWatchTakeaways: [
+      'Avoid holding short-term trades blindly through overnight Earnings where gaps jump past your SL (Stop Loss).',
+      'Trade post-earnings "Stocks in Play" with strong Guidance surprises and heavy RVOL (Relative Volume).',
+    ],
+  },
+  {
+    mappingId: '30000000-0000-4000-8000-000000000914',
+    resourceId: '40000000-0000-4000-8000-000000000914',
+    lessonId: '20000000-0000-4000-8000-000000000025',
+    lessonSlug: 'stocks-earnings-relative-strength',
+    displayOrder: 2,
+    relevanceScore: 97,
+    qualityScore: 93,
+    videoId: 'l7F9yIf8CeE',
+    title: 'Revealing My Secret Relative Strength Breakout Strategy',
+    author: 'SMB Capital',
+    description:
+      'Tactical equity breakdown demonstrating how comparing a stock’s pullbacks against SPY reveals institutional Relative Strength right before breakout expansion.',
+    beforeWatchContext:
+      'Watch how a stock holding Higher Lows while SPY dips signals active institutional accumulation underneath the surface.',
+    afterWatchTakeaways: [
+      'Keep SPY visible alongside your stock chart to spot Relative Strength (RS) leaders in real time.',
+      'Back the #1 RS leader inside today’s strongest sector rather than chasing weak sympathy laggards.',
+    ],
+  },
+  {
+    mappingId: '30000000-0000-4000-8000-000000000915',
+    resourceId: '40000000-0000-4000-8000-000000000915',
+    lessonId: '20000000-0000-4000-8000-000000000025',
+    lessonSlug: 'stocks-earnings-relative-strength',
+    displayOrder: 3,
+    relevanceScore: 94,
+    qualityScore: 92,
+    videoId: 'p5TbI2UnTww',
+    title: 'Reading Stock Charts: Relative Strength | Learn How To Invest: IBD',
+    author: "Investor's Business Daily",
+    description:
+      'Classic equity chart guide explaining how to read a Relative Strength line on daily and weekly stock charts to isolate institutional leaders.',
+    beforeWatchContext:
+      'Compare how multi-day and swing Relative Strength lines help you filter top-performing stocks before they break out.',
+    afterWatchTakeaways: [
+      'A rising Relative Strength line confirms your stock is outperforming the S&P 500 benchmark consistently.',
+      'Combine HTF Relative Strength with clean structural support and RVOL for Day 1 and Day 2 runners.',
+    ],
+  },
+
+  // =========================================================================
+  // MODULE 25: Indices NAS100 & SPX500 Basics (indices-nas100-spx500-basics)
+  // =========================================================================
+  {
+    mappingId: '30000000-0000-4000-8000-000000000916',
+    resourceId: '40000000-0000-4000-8000-000000000916',
+    lessonId: '20000000-0000-4000-8000-000000000026',
+    lessonSlug: 'indices-nas100-spx500-basics',
+    displayOrder: 1,
+    relevanceScore: 98,
+    qualityScore: 92,
+    videoId: 'QX1g_NqSfzs',
+    title: 'The ULTIMATE Guide to Trading US Indices | NASDAQ, DOW, S&P500',
+    author: 'TraderNick',
+    description:
+      'Practical comparison of NAS100 (Nasdaq), SPX500 (S&P 500), and US30 (Dow Jones), covering volatility personality, active NY hours, and point sizing.',
+    beforeWatchContext:
+      'Compare how smoothly SPX500 moves versus faster, wider-ranging NAS100 so you pick the right starting index and contract size.',
+    afterWatchTakeaways: [
+      'Start practicing on smoother SPX500 before moving into faster, wider-swinging NAS100.',
+      'Always verify your broker’s Dollar-per-Point multiplier and size via Risk $ ÷ (SL Points × $/Point).',
+    ],
+  },
+  {
+    mappingId: '30000000-0000-4000-8000-000000000917',
+    resourceId: '40000000-0000-4000-8000-000000000917',
+    lessonId: '20000000-0000-4000-8000-000000000026',
+    lessonSlug: 'indices-nas100-spx500-basics',
+    displayOrder: 2,
+    relevanceScore: 96,
+    qualityScore: 93,
+    videoId: 'S77ms4xtmXw',
+    title: "What's an Index? The Dow, S&P 500, and Nasdaq Explained",
+    author: 'Charles Schwab',
+    description:
+      'Clear institutional primer explaining what a Stock Index actually measures and how weighting differs across the Dow (US30), S&P 500 (SPX500), and Nasdaq (NAS100).',
+    beforeWatchContext:
+      'Focus on why mega-cap tech companies move NAS100 so strongly while SPX500 represents 500 diversified US leaders.',
+    afterWatchTakeaways: [
+      'An Index bundles top companies into one liquid chart, eliminating single-stock earnings shock risk.',
+      'Peak Index volume arrives at the 9:30 AM ET US cash equity open when all underlying stocks open.',
+    ],
+  },
+
+  // =========================================================================
+  // MODULE 27: Indices Risk-On Correlations (indices-risk-on-correlations)
+  // =========================================================================
+  {
+    mappingId: '30000000-0000-4000-8000-000000000918',
+    resourceId: '40000000-0000-4000-8000-000000000918',
+    lessonId: '20000000-0000-4000-8000-000000000027',
+    lessonSlug: 'indices-risk-on-correlations',
+    displayOrder: 1,
+    relevanceScore: 98,
+    qualityScore: 92,
+    videoId: 'RV-Ohf418L0',
+    title: 'What is the Fear Index? VIX Explained Simply',
+    author: 'Brian Feroldi',
+    description:
+      'Simple, clear breakdown of the CBOE Volatility Index (VIX), explaining what low vs. spiking VIX readings signal about market fear and candle volatility.',
+    beforeWatchContext:
+      'Watch how spiking VIX signals wider intraday index swings — telling you to widen structural stops and size contracts down.',
+    afterWatchTakeaways: [
+      'Use VIX as a volatility speedometer: higher VIX (>24) demands smaller contract size to keep risk at 1R.',
+      'Falling, calm VIX supports smoother Risk-On trends while surging VIX warns of fast two-way volatility.',
+    ],
+  },
+  {
+    mappingId: '30000000-0000-4000-8000-000000000919',
+    resourceId: '40000000-0000-4000-8000-000000000919',
+    lessonId: '20000000-0000-4000-8000-000000000027',
+    lessonSlug: 'indices-risk-on-correlations',
+    displayOrder: 2,
+    relevanceScore: 96,
+    qualityScore: 91,
+    videoId: 'MXyfXNcDNKA',
+    title: 'What Is The US Dollar Index & Why Is It So Important To Traders?',
+    author: 'UK Trading Academy',
+    description:
+      'Clear walkthrough of DXY (US Dollar Index) and how macro Dollar strength or weakness interacts with Risk-On Stock Indices, Forex, and global capital flows.',
+    beforeWatchContext:
+      'Observe how DXY rejecting major resistance often aligns with Risk-On buying across SPX500 and NAS100.',
+    afterWatchTakeaways: [
+      'Check DXY alongside VIX as a 5-second macro Risk-On / Risk-Off filter before 9:30 AM NY.',
+      'Pair cross-market clues (DXY, VIX, SPX/NAS SMT) with a confirmed BOS (Break of Structure) on your traded chart.',
+    ],
+  },
 ];
 
 export const VERIFIED_YOUTUBE_RESOURCES: LessonResourceWithDetails[] =

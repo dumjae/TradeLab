@@ -8,6 +8,7 @@ import {
   Clock,
   Flame,
   GraduationCap,
+  HelpCircle,
   LineChart,
   NotebookPen,
   SlidersHorizontal,
@@ -35,6 +36,7 @@ import type { LessonProgressRecord, OnboardingPreferences } from '../types/learn
 
 export interface DashboardPageProps {
   onOpenVault: () => void;
+  onOpenTour?: () => void;
 }
 
 type MarketFilter = 'all' | LessonMarketCategory;
@@ -67,7 +69,7 @@ function formatModuleOrder(order: number): string {
   return String(order).padStart(2, '0');
 }
 
-export function DashboardPage({ onOpenVault }: DashboardPageProps) {
+export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
   const { isTaglish, t } = useLanguage();
   const [marketFilter, setMarketFilter] = useState<MarketFilter>('all');
   const [progressRecords, setProgressRecords] = useState<LessonProgressRecord[]>([]);
@@ -186,6 +188,19 @@ export function DashboardPage({ onOpenVault }: DashboardPageProps) {
                   {t(UI_COPY.dashboard.openPaperTrading.en, UI_COPY.dashboard.openPaperTrading.taglish)}
                 </span>
               </Link>
+
+              {onOpenTour && (
+                <button
+                  type="button"
+                  onClick={onOpenTour}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-sky-500/35 bg-sky-500/10 px-3.5 py-2 text-xs font-semibold text-sky-600 transition-colors hover:bg-sky-500/20 dark:text-sky-400"
+                >
+                  <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>
+                    {t('How to Use App (1-Min Tour)', 'Paano Gamitin ang App (1-Min Tour)')}
+                  </span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -276,19 +291,22 @@ export function DashboardPage({ onOpenVault }: DashboardPageProps) {
                   id="beginner-start-heading"
                   className="text-sm font-semibold tracking-tight text-terminal-text"
                 >
-                  {t('New to Trading? Start Lesson 01', 'Baguhan sa Trading? Simulan sa Lesson 01')}
+                  {t(
+                    'Brand New to Trading? Start Lesson 01',
+                    'Baguhan sa Trading? Simulan sa Lesson 01',
+                  )}
                 </h2>
                 <p className="text-xs text-terminal-muted">
                   {t(
-                    'Learn green & red candles, OHLC (Open, High, Low, Close), and wicks in 10 minutes.',
-                    'Alamin ang green at red candles, OHLC (Open, High, Low, Close), at wicks sa loob ng 10 minutes.',
+                    'Lesson 01: Chart Reading Fundamentals — 5m, 15m, 1H, 1D timeframes, price axes, volume & chart tools before reading candles.',
+                    'Lesson 01: Chart Reading Fundamentals — 5m, 15m, 1H, 1D timeframes, presyo, volume at chart tools bago magbasa ng candlesticks.',
                   )}
                 </p>
               </div>
             </div>
 
             <Link
-              to="/academy/candlestick-anatomy"
+              to="/academy/chart-reading-fundamentals"
               className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-semibold text-brand-fg shadow-sm transition-all hover:opacity-95 active:scale-[0.98]"
             >
               <span>{t('Start Lesson 01', 'Simulan Lesson 01')}</span>
@@ -329,7 +347,10 @@ export function DashboardPage({ onOpenVault }: DashboardPageProps) {
               {t('Academy', 'Academy')}
             </p>
             <p className="truncate text-[11px] text-terminal-muted">
-              {t('18 bite-sized lessons', '18 maiikling aralin')}
+              {t(
+                `${CURRICULUM_LESSONS.length} bite-sized lessons`,
+                `${CURRICULUM_LESSONS.length} maiikling aralin`,
+              )}
             </p>
           </div>
         </Link>

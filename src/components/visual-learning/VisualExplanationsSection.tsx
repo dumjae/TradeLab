@@ -16,6 +16,8 @@ import {
   Play,
   PlayCircle,
   Plus,
+  TrendingDown,
+  TrendingUp,
   Youtube,
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
@@ -35,6 +37,7 @@ import {
 } from '../../services/personalLibraryService';
 import type {
   CurriculumLevel,
+  DiagramKind,
   LearningViewMode,
   Lesson,
 } from '../../types/academy';
@@ -122,6 +125,170 @@ const TUTORIAL_STEPS: Record<
     step: 4,
     en: 'Step through Before → Trigger → After.',
     taglish: 'Sundan ang Before → Trigger → After sa totoong chart.',
+  },
+};
+
+interface CheatCardDirectionCopy {
+  bullishSignEn: string;
+  bullishSignTaglish: string;
+  bullishRuleEn: string;
+  bullishRuleTaglish: string;
+  bearishSignEn: string;
+  bearishSignTaglish: string;
+  bearishRuleEn: string;
+  bearishRuleTaglish: string;
+}
+
+const DIAGRAM_CHEAT_CARDS: Record<DiagramKind, CheatCardDirectionCopy> = {
+  chart_fundamentals: {
+    bullishSignEn: 'Rising green candles with HH/HL + expanding green Volume on the right Y-axis.',
+    bullishSignTaglish: 'Umaangat na green candles (HH/HL) na may malakas na green Volume sa ibaba.',
+    bullishRuleEn: 'Confirm the HTF (1H/4H/1D) trend first, then read the countdown timer before candle close.',
+    bullishRuleTaglish: 'Silipin muna ang HTF (1H/4H/1D) trend at hintayin ang candle close bago pumasok.',
+    bearishSignEn: 'Falling red candles with LH/LL + heavy red Sell Volume spike & wide Bid/Ask spread.',
+    bearishSignTaglish: 'Bumababang red candles (LH/LL) na may malakas na red Sell Volume at malapad na Spread.',
+    bearishRuleEn: 'Avoid buying into heavy sell volume; check Bid/Ask spread before placing Short orders.',
+    bearishRuleTaglish: 'Huwag salubungin ang malakas na sell volume; i-check ang Bid/Ask spread bago mag-Short.',
+  },
+  candlestick_anatomy: {
+    bullishSignEn: 'Green candle: OPEN at bottom, CLOSE at top — strong body & long lower wick show buyers won.',
+    bullishSignTaglish: 'Green candle: OPEN sa ibaba, CLOSE sa itaas — makapal na body at mahabang lower wick = panalo buyers.',
+    bullishRuleEn: 'Wait for the candle timer to lock GREEN before confirming bullish momentum.',
+    bullishRuleTaglish: 'Hintaying mag-close nang GREEN ang candle bago sabihing malakas ang buyers.',
+    bearishSignEn: 'Red candle: OPEN at top, CLOSE at bottom — long upper wick shows sellers rejected higher prices.',
+    bearishSignTaglish: 'Red candle: OPEN sa itaas, CLOSE sa ibaba — mahabang upper wick = na-reject ng sellers.',
+    bearishRuleEn: 'Never ignore a strong red body close below support — it invalidates weak Long entries.',
+    bearishRuleTaglish: 'Huwag balewalain ang malakas na red close sa ilalim ng support — babala ito sa Long.',
+  },
+  market_structure: {
+    bullishSignEn: 'Ascending staircase of HH (Higher Highs) and HL (Higher Lows) with body-close BOS Up.',
+    bullishSignTaglish: 'Paakyat na hagdan ng HH (Higher Highs) at HL (Higher Lows) na may body-close BOS pataas.',
+    bullishRuleEn: 'Buy pullbacks above the protected HL; only a full close below HL breaks the uptrend.',
+    bullishRuleTaglish: 'Bumili sa pullback sa itaas ng HL; masisira lang ang uptrend kapag nag-close sa ilalim nito.',
+    bearishSignEn: 'Descending staircase of LH (Lower Highs) and LL (Lower Lows) with body-close BOS Down.',
+    bearishSignTaglish: 'Pababang hagdan ng LH (Lower Highs) at LL (Lower Lows) na may body-close BOS pababa.',
+    bearishRuleEn: 'Short rallies below the protected LH; invalidation happens if price closes above LH.',
+    bearishRuleTaglish: 'Mag-Short sa bounce sa ilalim ng LH; invalid ang setup kapag nag-close sa itaas ng LH.',
+  },
+  support_demand: {
+    bullishSignEn: 'Price taps a fresh Support / Demand Floor and prints strong bullish rejection wicks.',
+    bullishSignTaglish: 'Tumama ang presyo sa sariwang Support / Demand Floor at mabilis na tumalbog pataas.',
+    bullishRuleEn: 'Enter near the Demand zone with SL safely below the zone — never buy right into Supply.',
+    bullishRuleTaglish: 'Pumasok malapit sa Demand na may SL sa ilalim — huwag bumili mismo sa kisame (Supply).',
+    bearishSignEn: 'Price rallies into a fresh Resistance / Supply Ceiling and rejects sharply downward.',
+    bearishSignTaglish: 'Umakyat ang presyo sa sariwang Resistance / Supply Ceiling at tinulak pababa ng sellers.',
+    bearishRuleEn: 'Short from Supply with SL above the ceiling; take profit before reaching major Demand.',
+    bearishRuleTaglish: 'Mag-Short mula sa Supply na may SL sa itaas; mag-TP bago umabot sa malakas na Demand.',
+  },
+  liquidity_pools: {
+    bullishSignEn: 'Price sweeps SSL (Sell-Side Liquidity) below lows, then quickly reclaims the range.',
+    bullishSignTaglish: 'Na-sweep ang SSL (Sell-Side Liquidity) sa ilalim ng lows tapos mabilis bumalik sa loob.',
+    bullishRuleEn: 'After SSL is raided and reclaimed, target resting BSL (Buy-Side Liquidity) above highs.',
+    bullishRuleTaglish: 'Kapag na-raid at nabawi ang SSL, gawing target ang BSL (Buy-Side Liquidity) sa itaas.',
+    bearishSignEn: 'Price sweeps BSL (Buy-Side Liquidity) above highs, traps late buyers, and closes back inside.',
+    bearishSignTaglish: 'Na-sweep ang BSL (Buy-Side Liquidity) sa itaas ng highs, na-trap ang buyers at bumagsak.',
+    bearishRuleEn: 'After BSL is swept and rejected, target resting SSL (Sell-Side Liquidity) below lows.',
+    bearishRuleTaglish: 'Kapag na-sweep at na-reject ang BSL, gawing target ang SSL (Sell-Side Liquidity) sa ibaba.',
+  },
+  equal_highs_lows: {
+    bullishSignEn: 'Matching EQL (Equal Lows) attract stops below — wait for the raid wick & reclaim UP.',
+    bullishSignTaglish: 'Pantay na EQL (Equal Lows) ang magnet ng stops — hintayin ang raid wick at bawi pataas.',
+    bullishRuleEn: 'Avoid placing tight SL right under obvious EQL; enter Long after the sweep completes.',
+    bullishRuleTaglish: 'Huwag ilagay ang SL mismo sa ilalim ng EQL; mag-Long pagkatapos ma-sweep at mabawi.',
+    bearishSignEn: 'Matching EQH (Equal Highs) attract stops above — wait for the raid wick & rejection DOWN.',
+    bearishSignTaglish: 'Pantay na EQH (Equal Highs) ang magnet ng stops — hintayin ang raid wick at bagsak pababa.',
+    bearishRuleEn: 'Never blindly short a double top before the stop raid; confirm rejection close below EQH.',
+    bearishRuleTaglish: 'Huwag basta mag-Short sa double top bago ang raid; kumpirmahin muna ang close sa ilalim ng EQH.',
+  },
+  liquidity_sweep_vs_breakout: {
+    bullishSignEn: 'Wick below floor + body close above = Bullish Sweep; full green body above resistance = True Breakout.',
+    bullishSignTaglish: 'Wick sa ilalim + close sa itaas = Bullish Sweep; buong green close sa labas = True Breakout.',
+    bullishRuleEn: 'Let the candle finish closing so you know whether to fade a sweep or ride a breakout.',
+    bullishRuleTaglish: 'Laging hintayin ang candle close para malaman kung fakeout sweep o totoong breakout.',
+    bearishSignEn: 'Wick above ceiling + body close below = Bearish Sweep; full red body below support = True Breakdown.',
+    bearishSignTaglish: 'Wick sa itaas + close sa ilalim = Bearish Sweep; buong red close sa labas = True Breakdown.',
+    bearishRuleEn: 'Do not buy weak wicks above resistance; a red close back inside signals sellers took over.',
+    bearishRuleTaglish: 'Huwag habulin ang wick sa itaas ng resistance; ang red close pabalik sa loob ay trap.',
+  },
+  fair_value_gap: {
+    bullishSignEn: '3-candle upward displacement leaves an unfilled Bullish FVG between Candle 1 High & Candle 3 Low.',
+    bullishSignTaglish: '3-candle na mabilis na akyat na may bakanteng Bullish FVG sa pagitan ng C1 High at C3 Low.',
+    bullishRuleEn: 'Wait for a calm pullback into the Bullish FVG in an uptrend instead of chasing green candles.',
+    bullishRuleTaglish: 'Hintayin ang kalmadong pullback papasok sa Bullish FVG sa halip na habulin ang pump.',
+    bearishSignEn: '3-candle downward displacement leaves an unfilled Bearish FVG between Candle 1 Low & Candle 3 High.',
+    bearishSignTaglish: '3-candle na mabilis na bagsak na may bakanteng Bearish FVG sa pagitan ng C1 Low at C3 High.',
+    bearishRuleEn: 'Wait for a calm rally back into the Bearish FVG in a downtrend; invalid if price closes above it.',
+    bearishRuleTaglish: 'Hintayin ang rally pabalik sa Bearish FVG; invalid ito kapag nag-close ang candle sa itaas.',
+  },
+  order_block_choch: {
+    bullishSignEn: 'Downtrend breaks upward (Bullish CHoCH), leaving a Bullish OB (last red candle before rally).',
+    bullishSignTaglish: 'Binasag pataas ang downtrend (Bullish CHoCH) na may Bullish OB (huling red candle bago umakyat).',
+    bullishRuleEn: 'Wait for CHoCH first, then enter Long on the retest of the Bullish OB with SL below the low.',
+    bullishRuleTaglish: 'Unahin ang CHoCH, tapos mag-Long sa retest ng Bullish OB na may SL sa ilalim.',
+    bearishSignEn: 'Uptrend breaks downward (Bearish CHoCH), leaving a Bearish OB (last green candle before drop).',
+    bearishSignTaglish: 'Binasag pababa ang uptrend (Bearish CHoCH) na may Bearish OB (huling green candle bago bumagsak).',
+    bearishRuleEn: 'Wait for CHoCH down first, then enter Short on the retest of the Bearish OB with SL above the high.',
+    bearishRuleTaglish: 'Unahin ang CHoCH pababa, tapos mag-Short sa retest ng Bearish OB na may SL sa itaas.',
+  },
+  multi_timeframe: {
+    bullishSignEn: 'HTF (1H/4H) prints bullish bias + LTF (15m/5m) forms a higher low dip inside the 1H candle.',
+    bullishSignTaglish: 'Pataas ang HTF (1H/4H) at gumagawa ng mas malinis na dip entry sa LTF (15m/5m).',
+    bullishRuleEn: 'Align HTF direction with LTF entry for tighter Stop Loss and higher RR (Risk-to-Reward).',
+    bullishRuleTaglish: 'Pagtugmain ang HTF trend at LTF entry para mas maliit ang SL at mas malaki ang RR.',
+    bearishSignEn: 'HTF (1H/4H) prints bearish bias + LTF (15m/5m) rallies into resistance and rejects down.',
+    bearishSignTaglish: 'Pababa ang HTF (1H/4H) at nag-reject pababa ang bounce sa LTF (15m/5m).',
+    bearishRuleEn: 'Avoid fighting a bearish HTF candle just because a 5m candle turns green briefly.',
+    bearishRuleTaglish: 'Huwag labanan ang bearish HTF trend dahil lang sa maikling green bounce sa 5m.',
+  },
+  market_sessions: {
+    bullishSignEn: 'Asia builds range → London sweeps Asia Low → NY Overlap launches clean Bullish trend.',
+    bullishSignTaglish: 'Range sa Asia → sweep ng Asia Low sa London → malinis na Bullish rally sa NY Overlap.',
+    bullishRuleEn: 'Trade during London Open (2–5 AM NY) or NY Overlap (8–11 AM NY) when spreads are tightest.',
+    bullishRuleTaglish: 'Mag-trade sa London Open o NY Overlap kung kailan malakas ang volume at manipis ang spread.',
+    bearishSignEn: 'Asia builds range → London sweeps Asia High → NY Overlap drives clean Bearish selloff.',
+    bearishSignTaglish: 'Range sa Asia → sweep ng Asia High sa London → malinis na Bearish drop sa NY Overlap.',
+    bearishRuleEn: 'Skip slow off-hours chop and avoid chasing the very first minute of news spikes.',
+    bearishRuleTaglish: 'Iwasan ang mabagal na chop hours at huwag habulin ang unang minuto ng news spike.',
+  },
+  crypto_funding_dominance: {
+    bullishSignEn: 'Strong BTC Spot bids + negative Perps Funding create fuel for a clean Bullish Short Squeeze.',
+    bullishSignTaglish: 'Malakas na BTC Spot buying + negative Funding = gasolina para sa Bullish Short Squeeze.',
+    bullishRuleEn: 'Check BTC direction first and use Spot or low leverage with a defined SL.',
+    bullishRuleTaglish: 'I-check muna ang BTC chart at gumamit ng Spot o mababang leverage na may malinaw na SL.',
+    bearishSignEn: 'Extreme positive Funding (+0.08%) + stacked Ask Wall often triggers a Bearish Long Flush.',
+    bearishSignTaglish: 'Sobrang taas na positive Funding + makapal na Ask Wall = banta ng Bearish Long Flush.',
+    bearishRuleEn: 'Never chase leveraged pumps when Funding is overheated — wait for the flush & reset.',
+    bearishRuleTaglish: 'Huwag humabol sa pump kapag mainit ang Funding — hintayin ang liquidation flush.',
+  },
+  stocks_orb_gap: {
+    bullishSignEn: 'Overnight Gap UP + strong RVOL breakout above 5m ORB High while holding above VWAP.',
+    bullishSignTaglish: 'Overnight Gap UP + malakas na RVOL breakout sa itaas ng 5m ORB High at VWAP.',
+    bullishRuleEn: 'Wait for the first 5 minutes to frame ORB, then use Limit orders on clean pullbacks.',
+    bullishRuleTaglish: 'Hintayin ang unang 5 minutes para sa ORB box at gumamit ng Limit order sa pullback.',
+    bearishSignEn: 'Overnight Gap DOWN + heavy RVOL breakdown below 5m ORB Low while staying under VWAP.',
+    bearishSignTaglish: 'Overnight Gap DOWN + malakas na RVOL breakdown sa ilalim ng 5m ORB Low at VWAP.',
+    bearishRuleEn: 'Avoid holding blindly through Earnings gaps and never buy stocks trapped under VWAP.',
+    bearishRuleTaglish: 'Iwasang mag-hold sa Earnings gap at huwag bumili ng stock na nasa ilalim ng VWAP.',
+  },
+  risk_reward_model: {
+    bullishSignEn: 'Bullish Long 1:3 RR: fixed -1R Stop Loss below Entry, +3R Take Profit target 3× above.',
+    bullishSignTaglish: 'Bullish Long 1:3 RR: naka-fix na -1R SL sa ilalim ng Entry, +3R TP 3× mas mataas.',
+    bullishRuleEn: 'Risk max 1% per trade: Position Size = (Account × 1%) ÷ Stop-Loss Distance.',
+    bullishRuleTaglish: 'Max 1% risk lang bawat trade: i-compute muna ang Position Size bago pumasok.',
+    bearishSignEn: 'Bearish Short 1:3 RR: fixed -1R Stop Loss above Entry, +3R Take Profit target 3× below.',
+    bearishSignTaglish: 'Bearish Short 1:3 RR: naka-fix na -1R SL sa itaas ng Entry, +3R TP 3× mas mababa.',
+    bearishRuleEn: 'Never widen your Stop Loss on a losing Short — honor the 1% cap and daily loss limit.',
+    bearishRuleTaglish: 'Huwag kailanman palaparin ang SL kapag natatalo — sundin ang 1% risk at daily loss limit.',
+  },
+  trade_management_journal: {
+    bullishSignEn: 'Long Plan: bank partial at +1R, shift SL UP to BE (Breakeven), ride runner to +3R.',
+    bullishSignTaglish: 'Long Plan: mag-partial sa +1R, ilipat ang SL pataas sa BE (Breakeven), itakbo hanggang +3R.',
+    bullishRuleEn: 'Log Entry, SL, emotion, and rule adherence in your Journal right after closing.',
+    bullishRuleTaglish: 'I-log ang Entry, SL, emosyon, at pagsunod sa plano sa Journal pagkatapos ng trade.',
+    bearishSignEn: 'Short Plan: bank partial at +1R, shift SL DOWN to BE (Breakeven), ride drop to +3R.',
+    bearishSignTaglish: 'Short Plan: mag-partial sa +1R, ilipat ang SL pababa sa BE (Breakeven), itakbo hanggang +3R.',
+    bearishRuleEn: 'Do not move SL to BE too early before structure breaks; cut risk in half during drawdowns.',
+    bearishRuleTaglish: 'Huwag sobrang agang mag-BE bago mabasag ang structure; bawasan ang risk kapag drawdown.',
   },
 };
 
@@ -376,6 +543,43 @@ export function VisualExplanationsSection({
     }));
   }, [isTaglish, taglishEntry, lesson.beginnerFaq]);
 
+  const quickCheatCard = useMemo(() => {
+    const base = DIAGRAM_CHEAT_CARDS[lesson.diagramConfig.kind];
+    const bullishAnnotation = lesson.diagramConfig.annotations.find(
+      (item) => item.tone === 'bullish',
+    );
+    const bearishAnnotation = lesson.diagramConfig.annotations.find(
+      (item) => item.tone === 'bearish',
+    );
+
+    const bullishCue = isTaglish
+      ? base.bullishSignTaglish
+      : bullishAnnotation
+        ? `${expandAcronyms(bullishAnnotation.label)} — ${expandAcronyms(bullishAnnotation.sublabel)}`
+        : expandAcronyms(base.bullishSignEn);
+
+    const bullishTakeaway = isTaglish
+      ? base.bullishRuleTaglish
+      : expandAcronyms(base.bullishRuleEn);
+
+    const bearishCue = isTaglish
+      ? base.bearishSignTaglish
+      : bearishAnnotation
+        ? `${expandAcronyms(bearishAnnotation.label)} — ${expandAcronyms(bearishAnnotation.sublabel)}`
+        : expandAcronyms(base.bearishSignEn);
+
+    const bearishCaution = isTaglish
+      ? base.bearishRuleTaglish
+      : expandAcronyms(base.bearishRuleEn);
+
+    return {
+      bullishCue,
+      bullishTakeaway,
+      bearishCue,
+      bearishCaution,
+    };
+  }, [isTaglish, lesson.diagramConfig.annotations, lesson.diagramConfig.kind]);
+
   return (
     <section
       aria-label={`Visual explanations for ${lesson.title}`}
@@ -488,8 +692,100 @@ export function VisualExplanationsSection({
             </div>
           )}
 
-          {/* 2. Compact Interactive Visual Diagram */}
-          <ConceptDiagramSvg config={lesson.diagramConfig} />
+          {/* 2. Distinct Quick Cheat-Card (Written Rules — separate from Interactive Diagrams tab) */}
+          <div className="space-y-3 rounded-xl border border-terminal-border bg-terminal-surface p-3.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-brand/30 bg-brand-soft text-brand">
+                  <Layers className="h-3.5 w-3.5" aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="text-[11px] font-semibold uppercase tracking-wider text-terminal-text">
+                    {t(
+                      UI_COPY.diagrams.quickBlueprint.en,
+                      UI_COPY.diagrams.quickBlueprint.taglish,
+                    )}
+                  </h3>
+                  <p className="text-[11px] text-terminal-muted">
+                    {t(
+                      'Written Bullish vs. Bearish rules at a glance — open Diagram tab for visual blueprints.',
+                      'Mabilis na Bullish vs. Bearish rules — buksan ang Diagram tab para sa visual drawings.',
+                    )}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveMode('diagram')}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-brand px-3 py-1.5 text-[11px] font-semibold text-brand-fg shadow-sm transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand active:scale-[0.98]"
+              >
+                <Layers className="h-3.5 w-3.5" aria-hidden="true" />
+                <span>
+                  {t(
+                    UI_COPY.diagrams.openDiagramLab.en,
+                    UI_COPY.diagrams.openDiagramLab.taglish,
+                  )}
+                </span>
+                <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
+            </div>
+
+            {/* 2-Column Bullish vs. Bearish At-a-Glance Card */}
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+              {/* Bullish Column */}
+              <div className="rounded-xl border border-bull/35 bg-bull/5 p-3">
+                <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-bull">
+                  <TrendingUp className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  <span>{t('Bullish (Up / Long)', 'Bullish (Pataas / Buy)')}</span>
+                </div>
+                <p className="mt-1.5 text-xs font-medium leading-snug text-terminal-text">
+                  {quickCheatCard.bullishCue}
+                </p>
+                <p className="mt-1.5 border-t border-bull/20 pt-1.5 text-[11px] leading-snug text-terminal-muted">
+                  <strong className="font-semibold text-bull">
+                    {t('Key Takeaway:', 'Tandaan:')}{' '}
+                  </strong>
+                  {quickCheatCard.bullishTakeaway}
+                </p>
+              </div>
+
+              {/* Bearish Column */}
+              <div className="rounded-xl border border-bear/35 bg-bear/5 p-3">
+                <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-bear">
+                  <TrendingDown className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  <span>{t('Bearish (Down / Short)', 'Bearish (Pababa / Sell)')}</span>
+                </div>
+                <p className="mt-1.5 text-xs font-medium leading-snug text-terminal-text">
+                  {quickCheatCard.bearishCue}
+                </p>
+                <p className="mt-1.5 border-t border-bear/20 pt-1.5 text-[11px] leading-snug text-terminal-muted">
+                  <strong className="font-semibold text-bear">
+                    {t('Caution / Invalidation:', 'Babala / Invalidation:')}{' '}
+                  </strong>
+                  {quickCheatCard.bearishCaution}
+                </p>
+              </div>
+            </div>
+
+            {/* Concise Terminology Chips (Expanded Acronyms) */}
+            {lesson.terminology.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                {lesson.terminology.slice(0, 4).map((entry) => (
+                  <span
+                    key={entry.term}
+                    className="inline-flex items-center gap-1 rounded-full border border-terminal-border bg-terminal-bg px-2.5 py-0.5 text-[11px] text-terminal-muted"
+                  >
+                    {entry.shortCode && (
+                      <strong className="font-mono font-semibold text-brand">
+                        {entry.shortCode}
+                      </strong>
+                    )}
+                    <span className="text-terminal-text">{expandAcronyms(entry.term)}</span>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* 3. Scannable Collapsible Lesson Breakdown (reduces text fatigue) */}
           <div className="space-y-2">

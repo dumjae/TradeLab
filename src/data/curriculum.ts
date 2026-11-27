@@ -7,6 +7,7 @@ import type {
 } from '../types/academy';
 import type { LessonResourceWithDetails } from '../types/visual-learning';
 import { EXPANDED_LESSONS } from './expandedLessons';
+import { MARKET_TRACK_LESSONS } from './marketTrackLessons';
 import { VERIFIED_YOUTUBE_RESOURCES } from './verifiedVideos';
 
 export const LESSON_MARKET_CATEGORIES: Array<{
@@ -31,7 +32,8 @@ export const LESSON_STAGES: Array<{
     id: 'foundations',
     step: 1,
     label: 'Foundations',
-    tagline: 'Candlestick anatomy, market structure, and institutional supply/demand zones.',
+    tagline:
+      'Chart fundamentals (timeframes & chart tools), candlestick anatomy, market structure, and supply/demand zones.',
   },
   {
     id: 'price_action_smc',
@@ -43,7 +45,7 @@ export const LESSON_STAGES: Array<{
     id: 'market_playbooks',
     step: 3,
     label: 'Market Playbooks',
-    tagline: 'Specialized execution playbooks for Forex, Indices, Crypto, and Stocks.',
+    tagline: 'Dedicated 3-lesson tracks for Crypto, Forex, Stocks, and Indices.',
   },
   {
     id: 'execution_edge',
@@ -142,26 +144,27 @@ const CORE_LESSONS: Lesson[] = [
     level: 'beginner',
     marketCategory: 'general',
     learningStage: 'foundations',
-    moduleOrder: 2,
+    moduleOrder: 3,
     conceptKey: 'market-structure',
     estimatedMinutes: 15,
     learningObjectives: [
-      'Identify valid Swing Highs and Swing Lows on any candlestick timeframe.',
-      'Distinguish Bullish Structure (HH/HL), Bearish Structure (LH/LL), and Ranging Conditions.',
-      'Confirm a genuine Break of Structure (BOS) using candle body closes rather than wicks.',
-      'Locate the protected swing point that invalidates your directional bias.',
+      'Identify valid Swing Highs and Swing Lows on any candlestick chart (BTC, AAPL, EUR/USD, or SPX500).',
+      'Distinguish Bullish Structure (HH/HL — Higher Highs & Higher Lows), Bearish Structure (LH/LL — Lower Highs & Lower Lows), and Ranging Conditions.',
+      'Confirm a genuine BOS (Break of Structure) using candle body closes rather than thin wicks.',
+      'Locate the protected swing point that invalidates your directional bias across any market.',
     ],
     prerequisites: [
-      'Ability to read open, high, low, and close (OHLC) on a standard candlestick.',
+      'Chart Reading Fundamentals: Timeframes, Axes & Essential Tools',
+      'Candlestick Anatomy & Reading Price Action',
     ],
     terminology: [
       {
         term: 'Higher High / Higher Low',
         shortCode: 'HH / HL',
         definition:
-          'Ascending swing peaks and pullbacks that define a healthy bullish trend.',
+          'Ascending swing peaks and pullbacks that define a healthy bullish trend on any market (Crypto, Stocks, Forex, or Indices).',
         example:
-          'EUR/USD rallies to 1.0844, pulls back to 1.0816 (HL), then climbs to 1.0878 (HH).',
+          'AAPL climbs to $214, pulls back to $210 (HL), then pushes to $219 (HH) — identical to BTC, SPX500, or EUR/USD stair-stepping higher.',
       },
       {
         term: 'Lower High / Lower Low',
@@ -169,7 +172,7 @@ const CORE_LESSONS: Lesson[] = [
         definition:
           'Descending swing peaks and troughs that confirm sellers control market direction.',
         example:
-          'Price bounces to 2340, fails below prior resistance, then breaks below 2332.',
+          'BTC bounces to $65,400, fails below prior resistance, then breaks cleanly below $64,200.',
       },
       {
         term: 'Break of Structure',
@@ -177,15 +180,15 @@ const CORE_LESSONS: Lesson[] = [
         definition:
           'A decisive candle-body close beyond the prior structural swing in the direction of the trend.',
         example:
-          'A 15-minute bullish candle closes cleanly at 1.0847 above the 1.0844 swing high.',
+          'A 15-minute bullish candle closes cleanly above the prior swing high on BTC, AAPL, SPX500, or EUR/USD.',
       },
       {
         term: 'Protected Swing',
         shortCode: 'Invalidation',
         definition:
-          'The most recent Higher Low (in an uptrend) or Lower High (in a downtrend) that originated the BOS.',
+          'The most recent Higher Low (in an uptrend) or Lower High (in a downtrend) that originated the BOS (Break of Structure).',
         example:
-          'While EUR/USD holds above HL1 (1.0816), bullish structure remains intact.',
+          'While price holds above its latest Higher Low (such as $210 on AAPL or 1.0816 in our EUR/USD chart study), bullish structure remains intact.',
       },
     ],
     sections: [
@@ -470,12 +473,12 @@ const CORE_LESSONS: Lesson[] = [
     level: 'beginner',
     marketCategory: 'general',
     learningStage: 'price_action_smc',
-    moduleOrder: 4,
+    moduleOrder: 5,
     conceptKey: 'market-liquidity',
     estimatedMinutes: 16,
     learningObjectives: [
       'Explain why large market participants require resting liquidity to fill size without extreme slippage.',
-      'Locate Buy-Side Liquidity (BSL) resting above obvious highs and Sell-Side Liquidity (SSL) below obvious lows.',
+      'Locate Buy-Side Liquidity (BSL) resting above obvious highs and Sell-Side Liquidity (SSL) below obvious lows across Crypto, Stocks, Forex, and Indices.',
       'Understand how price rotates from one liquidity pool to the opposing pool.',
     ],
     prerequisites: [
@@ -488,7 +491,7 @@ const CORE_LESSONS: Lesson[] = [
         definition:
           'Concentrated resting market orders (stop-losses and breakout stops) that allow large positions to execute cleanly.',
         example:
-          'Hundreds of short stop-losses stacked 5–10 pips above a multi-touch session high.',
+          'Hundreds of short SL (Stop Loss) orders stacked just above a multi-touch high on BTC, AAPL, SPX500, or EUR/USD.',
       },
       {
         term: 'Buy-Side Liquidity',
@@ -793,7 +796,7 @@ const CORE_LESSONS: Lesson[] = [
     level: 'intermediate',
     marketCategory: 'general',
     learningStage: 'price_action_smc',
-    moduleOrder: 5,
+    moduleOrder: 6,
     conceptKey: 'equal-highs-lows',
     estimatedMinutes: 18,
     learningObjectives: [
@@ -1108,7 +1111,7 @@ const CORE_LESSONS: Lesson[] = [
     level: 'intermediate',
     marketCategory: 'general',
     learningStage: 'price_action_smc',
-    moduleOrder: 6,
+    moduleOrder: 7,
     conceptKey: 'liquidity-sweeps',
     estimatedMinutes: 22,
     learningObjectives: [
@@ -1480,12 +1483,12 @@ const CORE_LESSONS: Lesson[] = [
     level: 'intermediate',
     marketCategory: 'general',
     learningStage: 'price_action_smc',
-    moduleOrder: 7,
+    moduleOrder: 8,
     conceptKey: 'fair-value-gaps',
     estimatedMinutes: 18,
     learningObjectives: [
-      'Measure a Bullish FVG (Candle 1 High to Candle 3 Low) and Bearish FVG (Candle 1 Low to Candle 3 High) accurately.',
-      'Understand why price often retraces to rebalance an imbalance (including the 50% Consequent Encroachment midpoint).',
+      'Measure a Bullish FVG (Fair Value Gap: Candle 1 High to Candle 3 Low) and Bearish FVG (Candle 1 Low to Candle 3 High) accurately on any asset.',
+      'Understand why price often retraces to rebalance an imbalance (including the 50% Consequent Encroachment midpoint) across Crypto, Stocks, Forex, and Indices.',
       'Filter high-probability FVGs using structure and liquidity sweeps instead of trading every gap blindly.',
     ],
     prerequisites: [
@@ -1799,33 +1802,33 @@ const CORE_LESSONS: Lesson[] = [
     level: 'beginner',
     marketCategory: 'general',
     learningStage: 'steady_profitability',
-    moduleOrder: 16,
+    moduleOrder: 13,
     conceptKey: 'risk-psychology',
     estimatedMinutes: 20,
     learningObjectives: [
-      'Calculate exact position size from Account Equity, Risk %, and Structural Stop-Loss Distance.',
-      'Understand R-multiples and why positive expectancy does not require an 80%+ win rate.',
-      'Build pre-trade and post-loss routines that prevent revenge trading, FOMO, and premature profit-taking.',
+      'Calculate exact position size (Shares, Coins, Contracts, or Lots) from Account Equity, Risk %, and Structural SL (Stop Loss) Distance.',
+      'Understand R-multiples (1R Risk vs. +2R/+3R TP (Take Profit)) and why positive expectancy does not require an 80%+ win rate.',
+      'Build pre-trade and post-loss routines that prevent revenge trading, FOMO (Fear of Missing Out), and premature profit-taking.',
     ],
     prerequisites: [
       'Market Structure Basics (HH/HL, LH/LL & BOS)',
     ],
     terminology: [
       {
-        term: 'R-Multiple',
+        term: 'R-Multiple (Risk Unit)',
         shortCode: '1R',
         definition:
-          'Standardized unit of risk defined as the fixed dollar amount risked from entry to stop-loss on a single trade.',
+          'Standardized unit of risk defined as the fixed dollar amount risked from Entry to SL (Stop Loss) on a single trade.',
         example:
-          'Risking $100 (1R) to target $300 (+3R) gives a 1:3 Risk-to-Reward setup.',
+          'Risking $100 (1R) to target $300 TP (Take Profit, +3R) gives a 1:3 Risk-to-Reward setup on any market.',
       },
       {
-        term: 'Position Sizing Formula',
+        term: 'Universal Position Sizing Formula',
         shortCode: 'Risk Math',
         definition:
-          'Units/Lots = (Account Balance × Risk %) ÷ Stop-Loss Distance Value. Keeps dollar loss constant regardless of stop width.',
+          'Position Size = (Account Balance × Risk %) ÷ Stop-Loss Distance Value. Works identically for Stock Shares, Crypto Coins, Index Contracts, and Forex Lots.',
         example:
-          'On a $10,000 account risking 1% ($100) with a 20-pip EUR/USD stop, trade 0.50 standard lots ($5/pip).',
+          'Risking 1% ($100) on a $10,000 account: $2 Stock stop = 50 shares; 2% BTC stop = $5,000 notional; 25-pt MNQ stop = 2 contracts; 20-pip EUR/USD stop = 0.50 lots.',
       },
       {
         term: 'Expectancy',
@@ -1885,18 +1888,18 @@ const CORE_LESSONS: Lesson[] = [
     diagramConfig: {
       kind: 'risk_reward_model',
       title: '1:3 Asymmetric Risk-to-Reward & Structural Stop Model',
-      subtitle: 'Defining 1R invalidation first to unlock +3R expectancy',
+      subtitle: 'Defining 1R SL (Stop Loss) invalidation first to unlock +3R TP (Take Profit) expectancy',
       caption:
-        'Position size is scaled to the 20-pip structural stop (1R) so normal noise stays harmless while opposing liquidity delivers +3R.',
+        'Position size (Shares, Coins, Contracts, or Lots) scales directly to your structural SL (Stop Loss = 1R) so normal noise stays harmless while opposing liquidity delivers +3R.',
       legend: [
-        { label: 'Take Profit Zone (+3R)', colorToken: '#10b981' },
+        { label: 'TP (Take Profit Zone, +3R)', colorToken: '#10b981' },
         { label: 'Planned Entry Level', colorToken: '#38bdf8' },
-        { label: 'Structural Stop Loss (-1R)', colorToken: '#ef4444' },
+        { label: 'Structural SL (Stop Loss, -1R)', colorToken: '#ef4444' },
       ],
       annotations: [
-        { id: 'r1', label: 'Take Profit (+3R)', sublabel: 'Opposing Liquidity Target (+60 pips)', tone: 'bullish' },
+        { id: 'r1', label: 'TP (Take Profit, +3R)', sublabel: 'Opposing Liquidity Target (3× Stop Width)', tone: 'bullish' },
         { id: 'r2', label: 'Planned Entry', sublabel: 'Retracement Limit Execution', tone: 'neutral' },
-        { id: 'r3', label: 'Stop Loss (-1R)', sublabel: 'Below Protected Higher Low (-20 pips)', tone: 'bearish' },
+        { id: 'r3', label: 'SL (Stop Loss, -1R)', sublabel: 'Below Protected Higher Low (1R Cap)', tone: 'bearish' },
       ],
       walkthroughSteps: [
         'Locate structural invalidation first (Stop Loss = 1R distance).',
@@ -2092,6 +2095,7 @@ const CORE_LESSONS: Lesson[] = [
 export const CURRICULUM_LESSONS: Lesson[] = [
   ...CORE_LESSONS,
   ...EXPANDED_LESSONS,
+  ...MARKET_TRACK_LESSONS,
 ].sort((a, b) => a.moduleOrder - b.moduleOrder);
 
 /**

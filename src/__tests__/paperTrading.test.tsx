@@ -514,8 +514,8 @@ describe('LanguageContext & taglishTranslations', () => {
     expect(screen.getByTestId('translated')).toHaveTextContent('Home');
   });
 
-  it('provides LESSON_TAGLISH_SUMMARIES for all 18 curriculum slugs', () => {
-    expect(CURRICULUM_LESSONS).toHaveLength(18);
+  it('provides LESSON_TAGLISH_SUMMARIES for all 27 curriculum slugs', () => {
+    expect(CURRICULUM_LESSONS).toHaveLength(27);
     const missingSlugs: string[] = [];
 
     for (const lesson of CURRICULUM_LESSONS) {

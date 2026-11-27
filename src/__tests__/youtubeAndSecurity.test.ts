@@ -234,9 +234,9 @@ describe('api/_lib/urlSecurity — SSRF allowlist & text sanitization', () => {
 });
 
 describe('VERIFIED_YOUTUBE_RESOURCES — curriculum coverage & security integrity', () => {
-  it('contains 43 unique live-verified YouTube resources covering all 18 curriculum lessons, 5 market categories, and 5 stages', () => {
-    expect(CURRICULUM_LESSONS).toHaveLength(18);
-    expect(VERIFIED_YOUTUBE_RESOURCES).toHaveLength(43);
+  it('contains 62 unique live-verified YouTube resources covering all 27 curriculum lessons, 5 market categories, and 5 stages', () => {
+    expect(CURRICULUM_LESSONS).toHaveLength(27);
+    expect(VERIFIED_YOUTUBE_RESOURCES).toHaveLength(62);
 
     const expectedMarketCategories = ['general', 'forex', 'indices', 'crypto', 'stocks'];
     expect(LESSON_MARKET_CATEGORIES.map((category) => category.id)).toEqual(
@@ -291,8 +291,8 @@ describe('VERIFIED_YOUTUBE_RESOURCES — curriculum coverage & security integrit
       );
     }
 
-    expect(seenResourceIds.size).toBe(43);
-    expect(seenVideoIds.size).toBe(43);
+    expect(seenResourceIds.size).toBe(62);
+    expect(seenVideoIds.size).toBe(62);
 
     for (const lesson of CURRICULUM_LESSONS) {
       const videoCount = countsByLessonSlug.get(lesson.slug) ?? 0;

@@ -42,11 +42,18 @@ export default defineConfig({
             }
           }
 
+          if (normalized.includes('/src/data/chartScenarios')) {
+            return 'data-charts';
+          }
+
+          if (normalized.includes('/src/data/verifiedVideos')) {
+            return 'data-videos';
+          }
+
           if (
             normalized.includes('/src/data/curriculum') ||
             normalized.includes('/src/data/expandedLessons') ||
-            normalized.includes('/src/data/chartScenarios') ||
-            normalized.includes('/src/data/verifiedVideos')
+            normalized.includes('/src/data/marketTrackLessons')
           ) {
             return 'data-curriculum';
           }

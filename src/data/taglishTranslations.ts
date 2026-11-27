@@ -272,6 +272,173 @@ export const LESSON_TAGLISH_SUMMARIES: Record<string, LessonTaglishSummary> = {
       },
     ],
   },
+  'chart-reading-fundamentals': {
+    plainSummary:
+      'Ang trading chart ay may dalawang axis: ang X-Axis (oras sa ibaba) at Y-Axis (presyo sa kanan). Ang timeframe tulad ng 5m, 15m, 1H, 4H, at 1D ay nagsasabi kung gaano katagal nabubuo ang bawat candle, habang ang Volume sa ibaba ang nagpapakita kung gaano karaming buyers at sellers ang aktibo.',
+    quickTakeaway:
+      'Laging basahin nang sabay ang Timeframe, Price Level (Y-Axis), at Volume bago mag-drawing o mag-entry — mas mataas ang timeframe, mas malakas ang signal.',
+    faqs: [
+      {
+        question: 'Anong timeframe ang pinaka-beginner friendly?',
+        answer:
+          'Magsimula sa 1H o 4H para malinaw ang trend at hindi nakakalito, tapos gamitin ang 15m para masilip ang mas malinis na entry at SL (Stop Loss).',
+      },
+      {
+        question: 'Bakit kailangan pang tingnan ang Volume bars sa ibaba ng chart?',
+        answer:
+          'Ang malakas na Volume sa BOS (Break of Structure) ay patunay na totoong pera ang nagtutulak ng presyo — hindi lang manipis na fake move.',
+      },
+      {
+        question: 'Kailangan ba ng maraming indicators sa simula?',
+        answer:
+          'Hindi! Sapat na ang malinis na candlesticks, horizontal levels, at Volume para hindi malito ang mata mo.',
+      },
+    ],
+  },
+  'crypto-spot-perps-orderbook': {
+    plainSummary:
+      'Sa Crypto, kapag bumili ka sa Spot, hawak mo mismo ang coin at hindi ka ma-li-liquidate kahit bumaba ang presyo. Sa Perpetual Futures (Perps), may leverage at Funding Rate — mabilis kumita pero isang mahabang wick lang pwedeng maubos ang posisyon kung walang maayos na SL (Stop Loss). Ang Order Book naman ang listahan ng naghihintay na Bid (buy) at Ask (sell) walls.',
+    quickTakeaway:
+      'Mag-master muna sa Spot o mababang leverage na may malinaw na SL (Stop Loss) — iwasan ang mataas na leverage sa Perps dahil paborito ng market ang stop-hunt wicks.',
+    faqs: [
+      {
+        question: 'Ano ang pinaka-delikado sa Perpetual Futures para sa beginner?',
+        answer:
+          'Ang sobrang taas na leverage (tulad ng 20x–50x). Kahit 2%–3% normal pullback lang, automatic liquidation na agad bago pa umakyat ang coin.',
+      },
+      {
+        question: 'Paano nakakatulong ang Order Book Bid at Ask walls?',
+        answer:
+          'Ipinapakita nito kung saan may malaking kumpol ng limit orders. Kapag naubos (na-absorb) ang Ask wall, madalas mabilis ang breakout pataas.',
+      },
+    ],
+  },
+  'crypto-volatility-altcoin-cycles': {
+    plainSummary:
+      'Mas malalaki ang galaw ng Altcoins (tulad ng SOL at ETH) kumpara sa Bitcoin, kaya kailangan ng mas maliit na position size para manatili sa 1% risk per trade. Ang Liquidation Heatmap ay nagpapakita kung saan nagkukumpulan ang ma-li-liquidate na traders — madalas itong i-sweep bago magsimula ang Altcoin rotation.',
+    quickTakeaway:
+      'Kapag mas malaki ang volatility ng altcoin, bawasan ang position size para pareho pa rin ang 1% risk mo kung tamaan ang SL (Stop Loss).',
+    faqs: [
+      {
+        question: 'Bakit kailangang paliitin ang position size sa Altcoins?',
+        answer:
+          'Dahil pwedeng gumalaw ng 5%–10% ang altcoin sa isang araw. Kapag malapad ang SL (Stop Loss) distance mo, dapat mas maliit ang size para hindi masakit ang talo.',
+      },
+      {
+        question: 'Paano gumagana ang Altcoin Cycle?',
+        answer:
+          'Karaniwang unang umaangat si Bitcoin, tapos kapag kumalma si BTC, lumilipat ang capital sa malalaking altcoins (ETH/SOL) at saka sa mas maliliit na coins.',
+      },
+    ],
+  },
+  'forex-pairs-pips-lots-spreads': {
+    plainSummary:
+      'Sa Forex, laging magkapares ang currencies tulad ng EUR/USD. Ang Pip ang sukatan ng galaw ng presyo, ang Lot Size (Micro, Mini, Standard) ang nagdidikta kung magkano bawat pip, at ang Spread ang maliit na agwat ng Buy at Sell price na kinikita ng broker.',
+    quickTakeaway:
+      'Laging i-compute ang tamang Lot Size base sa layo ng SL (Stop Loss) pips mo, at mag-trade sa major pairs na may manipis na spread para malinis ang 1:2 RR (Risk-to-Reward Ratio).',
+    faqs: [
+      {
+        question: 'Paano ko malalaman kung anong Lot Size ang ligtas sa account ko?',
+        answer:
+          'Hatiin ang dollar risk mo (halimbawa 1% ng balance) sa bilang ng SL (Stop Loss) pips × pip value. Huwag manghula ng lot size!',
+      },
+      {
+        question: 'Bakit lumalapad ang Spread tuwing gabi o major news?',
+        answer:
+          'Kumokonti ang liquidity ng mga bangko sa rollover hours o bago ang balita, kaya mas mahal pumasok at mas madaling tamaan ang masikip na SL (Stop Loss).',
+      },
+    ],
+  },
+  'forex-macro-news-rates': {
+    plainSummary:
+      'Ang Central Banks (tulad ng Federal Reserve) at Interest Rates ang totoong makina ng Forex trends. Ang malalaking balita tulad ng CPI (Consumer Price Index — inflation) at NFP (Non-Farm Payrolls — trabaho) ay pwedeng magpabago ng rate expectations at magdulot ng matinding whipsaw sa loob ng ilang segundo.',
+    quickTakeaway:
+      'Huwag mag-sugal sa mismong minuto ng CPI (Consumer Price Index) o NFP (Non-Farm Payrolls) — hintaying kumalma ang spike at pumasok sa malinis na post-news pullback.',
+    faqs: [
+      {
+        question: 'Bakit lumalakas ang currency kapag tumaas ang inflation o interest rate?',
+        answer:
+          'Kapag mas mataas ang interest rate ng isang bansa, mas maraming malalaking investors ang nagpapalit ng pera papunta sa currency na iyon para sa mas mataas na yield.',
+      },
+      {
+        question: 'Dapat ba akong may bukas na trade bago ang red-folder news?',
+        answer:
+          'Para sa beginners, mas ligtas isara muna o i-protect sa BE (Breakeven) bago ang CPI/NFP/FOMC dahil sa biglaang spread spike at slippage.',
+      },
+    ],
+  },
+  'stocks-market-hours-volume-order-types': {
+    plainSummary:
+      'Hindi 24/7 ang US Stocks — bukas ang Regular Market Hours mula 9:30 AM hanggang 4:00 PM EST, at may manipis na Pre-Market at After-Hours sessions. Ang Limit Order ang nagbibigay sa iyo ng eksaktong presyo, samantalang ang Market Order ay instant fill pero pwedeng magka-slippage kapag mabilis ang galaw.',
+    quickTakeaway:
+      'Markahan ang Pre-Market High/Low, hintayin ang malakas na 9:30 AM EST Volume, at gumamit ng Limit Order sa pullback imbes na mag-chase gamit ang Market Order.',
+    faqs: [
+      {
+        question: 'Bakit delikado ang Market Order sa Pre-Market o unang minuto ng 9:30 AM?',
+        answer:
+          'Mabilis lumundag ang presyo at malapad ang spread kapag manipis ang orders, kaya pwedeng malayo sa inaasahan mo ang actual fill price.',
+      },
+      {
+        question: 'Kailan pinakamalakas ang Volume sa US Stocks?',
+        answer:
+          'Sa unang 1–2 oras (9:30–11:30 AM EST) at sa huling oras bago mag-close (3:00–4:00 PM EST). Mas mabagal kadalasan ang tanghali (lunch chop).',
+      },
+    ],
+  },
+  'stocks-earnings-relative-strength': {
+    plainSummary:
+      'Bawat quarter ay naglalabas ng Earnings Report ang mga kumpanya na nagdudulot ng malalaking price gaps. Ang RS (Relative Strength) ay kapag matibay pa rin o pataas ang isang stock kahit bumababa o humihinto ang buong market index — senyales ito ng malakas na institutional buying.',
+    quickTakeaway:
+      'Iwasang manghula bago ang Earnings release; mas ligtas i-trade ang post-earnings gap hold ng stock na may malinaw na RS (Relative Strength) at malinis na SL (Stop Loss).',
+    faqs: [
+      {
+        question: 'Bakit delikado mag-hold ng swing trade sa gabi ng Earnings report?',
+        answer:
+          'Pwedeng lumundag (gap) ng 10%–20% ang stock kinabukasan — lalampasan nito ang SL (Stop Loss) mo at mas malaki ang magiging talo kaysa plano.',
+      },
+      {
+        question: 'Paano makikita agad ang RS (Relative Strength) sa chart?',
+        answer:
+          'Ikumpara ang stock sa SPX500 o NAS100: kung gumagawa ng Higher Lows ang stock habang pababa ang index, ibig sabihin may malalaking buyers na sumasalo rito.',
+      },
+    ],
+  },
+  'indices-nas100-spx500-basics': {
+    plainSummary:
+      'Ang Stock Indices ay parang basket ng pinakamalalaking kumpanya: SPX500 (500 top US companies), NAS100 (100 top tech companies), at US30 (30 blue-chip giants). Imbes na pips, gumagalaw ito sa Points — at bawat broker ay may nakatakdang dollar value per point.',
+    quickTakeaway:
+      'Alamin muna ang eksaktong dollar value bawat Point ng SPX500 o NAS100 bago pumasok, at magsimula sa mas kalmadong SPX500 habang nag-pa-practice ng risk math.',
+    faqs: [
+      {
+        question: 'Alin ang mas mabilis at mas volatile — NAS100 o SPX500?',
+        answer:
+          'Mas mabilis at mas malaki ang galaw ng NAS100 dahil tech-heavy ito. Mas banayad ang SPX500 kaya madalas itong mas maganda para sa beginners.',
+      },
+      {
+        question: 'Paano kino-compute ang risk sa Indices?',
+        answer:
+          'Multiply lang ang SL (Stop Loss) points sa dollar-per-point value ng contract mo. Halimbawa: 10 points × $10/pt = $100 risk, target 25 points = $250 (+2.5R).',
+      },
+    ],
+  },
+  'indices-risk-on-correlations': {
+    plainSummary:
+      'Ang galaw ng Indices tulad ng NAS100 ay konektado sa malalaking macro indicators: kapag tumataas ang 10-Year Yields, DXY (US Dollar Index), at VIX (Volatility Index — fear gauge), madalas "Risk-Off" o bumabagsak ang stocks. Kapag humupa at bumaba ang VIX at Yields, nagiging "Risk-On" at lumalakas ang pag-akyat ng indices.',
+    quickTakeaway:
+      'Silipin muna ang DXY (US Dollar Index), 10Y Yields, at VIX (Volatility Index) bago mag-trade ng NAS100 o SPX500 para hindi ka sumasalubong sa malakas na macro wave.',
+    faqs: [
+      {
+        question: 'Ano ang ibig sabihin ng Risk-On at Risk-Off sa simpleng salita?',
+        answer:
+          'Risk-On = confident ang mga investors kaya bumibili sila ng stocks, indices, at crypto. Risk-Off = kinakabahan ang market kaya lumilipat sa cash/USD at bumababa ang indices.',
+      },
+      {
+        question: 'Paano ginagamit ang VIX (Volatility Index) sa pang-araw-araw na trading?',
+        answer:
+          'Kapag biglang pumalo pataas ang VIX, asahan ang mas malalaking wicks at bawasan ang position size; kapag nagsimulang kumalma ang VIX mula sa peak, mas malinis ang bullish reversals.',
+      },
+    ],
+  },
 };
 
 export const UI_COPY = {
@@ -308,8 +475,8 @@ export const UI_COPY = {
   academy: {
     title: { en: 'Structured Trading Academy', taglish: 'Kumpletong Trading Academy' },
     subtitle: {
-      en: '18 bite-sized lessons from candlestick basics to steady profitability.',
-      taglish: '18 maiikling lessons mula basics ng candlesticks hanggang steady profitability.',
+      en: '27 bite-sized lessons covering Universal Core fundamentals, dedicated market tracks, and steady profitability.',
+      taglish: '27 maiikling lessons na may Universal Core basics, hiwalay na market tracks, at steady profitability.',
     },
     allMarkets: { en: 'All Markets', taglish: 'Lahat ng Markets' },
     completed: { en: 'Completed', taglish: 'Tapos Na' },
@@ -388,5 +555,99 @@ export const UI_COPY = {
     experiencePrompt: { en: 'What is your current trading experience?', taglish: 'Ano ang kasalukuyang level mo sa trading?' },
     marketPrompt: { en: 'Which market do you want to focus on first?', taglish: 'Anong market ang gusto mong unahin?' },
     startButton: { en: 'Start My Learning Path', taglish: 'Simulan ang Pag-Aral' },
+  },
+  diagrams: {
+    both: { en: 'Both Views', taglish: 'Pareho (Up & Down)' },
+    bullish: { en: 'Bullish (Up)', taglish: 'Bullish (Pataas)' },
+    bearish: { en: 'Bearish (Down)', taglish: 'Bearish (Pababa)' },
+    quickBlueprint: { en: 'Quick Cheat-Card', taglish: 'Mabilis na Buod' },
+    openDiagramLab: {
+      en: 'Open Bullish & Bearish Diagrams',
+      taglish: 'Buksan ang Bullish at Bearish Diagrams',
+    },
+  },
+  walkthrough: {
+    tutorialTitle: { en: 'Step-by-Step Webapp Tutorial', taglish: 'Step-by-Step na Gabay sa App' },
+    skip: { en: 'Skip Tour', taglish: 'Laktawan Muna' },
+    back: { en: 'Back', taglish: 'Balik' },
+    next: { en: 'Next Step', taglish: 'Susunod' },
+    finish: { en: 'Start Learning', taglish: 'Simulan Na!' },
+    replayTutorial: { en: 'App Walkthrough', taglish: 'Gabay sa App' },
+    step1Title: {
+      en: '1. Switch EN / Taglish Anytime',
+      taglish: '1. Palitan ang EN / Taglish Kahit Kailan',
+    },
+    step1Body: {
+      en: 'Use the top language pill to read every lesson, diagram cheat-card, and quiz in plain English or natural Taglish.',
+      taglish: 'Gamitin ang language toggle sa itaas para mabasa ang bawat lesson, diagram, at quiz sa malinaw na English o Taglish.',
+    },
+    step1Cta: { en: 'Got It, Next', taglish: 'Gets, Susunod' },
+    step2Title: {
+      en: '2. Follow Universal Core & Market Tracks',
+      taglish: '2. Sundan ang Universal Core at Market Tracks',
+    },
+    step2Body: {
+      en: 'Learn chart reading, structure, liquidity, and risk math once in Universal Core, then pick your Crypto, Forex, Stocks, or Indices track.',
+      taglish: 'Unahin ang Universal Core para sa basics ng chart at risk, tapos piliin ang gusto mong Crypto, Forex, Stocks, o Indices track.',
+    },
+    step2Cta: { en: 'Explore Academy', taglish: 'Tingnan ang Academy' },
+    step3Title: {
+      en: '3. Study Both Bullish & Bearish Diagrams',
+      taglish: '3. Aralin ang Bullish at Bearish Diagrams',
+    },
+    step3Body: {
+      en: 'Every lesson includes clean Up & Down visual blueprints with Quick Cheat-Cards so you recognize setups in both directions.',
+      taglish: 'May malinis na pataas at pababa na visual blueprints at Mabilis na Buod bawat lesson para madaling tandaan ang setups.',
+    },
+    step3Cta: { en: 'Next: Practice Charts', taglish: 'Susunod: Practice Charts' },
+    step4Title: {
+      en: '4. Replay Real OHLCV Charts Step-by-Step',
+      taglish: '4. I-Replay ang OHLCV Charts Step-by-Step',
+    },
+    step4Body: {
+      en: 'Step through Before, Trigger, and After stages on 27 dedicated charts to train your eyes before risking a single cent.',
+      taglish: 'I-click ang Before, Trigger, at After sa 27 dedicated charts para masanay ang mata mo bago mag-trade.',
+    },
+    step4Cta: { en: 'Next: Demo Wallets', taglish: 'Susunod: Demo Wallets' },
+    step5Title: {
+      en: '5. Practice Risk-Free in Paper Trading',
+      taglish: '5. Mag-Practice Nang Ligtas sa Paper Trading',
+    },
+    step5Body: {
+      en: 'Open separate Crypto, Forex, or All-Markets demo wallets with realistic spreads, fees, SL (Stop Loss), and TP (Take Profit).',
+      taglish: 'Gumawa ng hiwalay na Crypto, Forex, o All-Markets demo wallets na may realistic spread, fee, SL (Stop Loss), at TP (Take Profit).',
+    },
+    step5Cta: { en: 'Next: Risk & Mentor', taglish: 'Susunod: Risk at Mentor' },
+    step6Title: {
+      en: '6. Size Trades, Journal & Ask AI Mentor',
+      taglish: '6. I-Compute ang Risk, Mag-Journal at Magtanong sa AI Mentor',
+    },
+    step6Body: {
+      en: 'Use the 1% Risk Calculator, log every demo trade in your Journal, and ask the AI Mentor whenever a concept feels unclear.',
+      taglish: 'Gamitin ang 1% Risk Calculator, i-log ang demo trades sa Journal, at magtanong sa AI Mentor kapag may hindi malinaw.',
+    },
+    step6Cta: { en: 'Start My First Lesson', taglish: 'Simulan ang Unang Lesson' },
+  },
+  academyTracks: {
+    universalCoreTitle: {
+      en: 'Universal Core (All Markets)',
+      taglish: 'Universal Core (Lahat ng Markets)',
+    },
+    universalCoreSubtitle: {
+      en: 'Master chart fundamentals, price action, liquidity, and risk math once — apply them across every market.',
+      taglish: 'Matutunan ang pagbasa ng chart, price action, liquidity, at risk math — magagamit sa lahat ng market.',
+    },
+    marketTracksTitle: {
+      en: 'Separate Market Tracks (Crypto, Forex, Stocks, Indices)',
+      taglish: 'Hiwalay na Market Tracks (Crypto, Forex, Stocks, Indices)',
+    },
+    marketTracksSubtitle: {
+      en: 'Choose your preferred market track to master its exact trading hours, fees, sizing units, and news catalysts.',
+      taglish: 'Piliin ang gusto mong market track para matutunan ang eksaktong trading hours, fees, sizing units, at catalysts nito.',
+    },
+    cryptoTrack: { en: 'Crypto Track', taglish: 'Crypto Track' },
+    forexTrack: { en: 'Forex Track', taglish: 'Forex Track' },
+    stocksTrack: { en: 'Stocks Track', taglish: 'Stocks Track' },
+    indicesTrack: { en: 'Indices Track', taglish: 'Indices Track' },
   },
 } as const satisfies Record<string, Record<string, BilingualCopy>>;

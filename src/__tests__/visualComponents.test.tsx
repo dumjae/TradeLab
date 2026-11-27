@@ -217,15 +217,15 @@ describe('MindsetVaultDrawer — filtering & custom personal trading rule creati
   });
 });
 
-describe('AcademyCatalogPage — 18-lesson catalog & market category filtering', () => {
-  it('renders all 18 lessons and narrows cleanly when filtering by Crypto and Forex', async () => {
+describe('AcademyCatalogPage — 27-lesson catalog & market category filtering', () => {
+  it('renders all 27 lessons and narrows cleanly when filtering by Crypto and Forex', async () => {
     const user = userEvent.setup();
     const cryptoLessons = CURRICULUM_LESSONS.filter((lesson) => lesson.marketCategory === 'crypto');
     const forexLessons = CURRICULUM_LESSONS.filter((lesson) => lesson.marketCategory === 'forex');
 
-    expect(CURRICULUM_LESSONS).toHaveLength(18);
-    expect(cryptoLessons.length).toBeGreaterThanOrEqual(1);
-    expect(forexLessons.length).toBeGreaterThanOrEqual(1);
+    expect(CURRICULUM_LESSONS).toHaveLength(27);
+    expect(cryptoLessons).toHaveLength(3);
+    expect(forexLessons).toHaveLength(3);
 
     render(
       <MemoryRouter initialEntries={['/academy']}>
@@ -233,8 +233,7 @@ describe('AcademyCatalogPage — 18-lesson catalog & market category filtering',
       </MemoryRouter>,
     );
 
-    // All 18 lessons render initially
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(18);
+    // All 27 lessons render initially across Universal Core & Dedicated Market Tracks
     for (const lesson of CURRICULUM_LESSONS) {
       expect(screen.getByText(lesson.title)).toBeInTheDocument();
     }
@@ -268,9 +267,9 @@ describe('AcademyCatalogPage — 18-lesson catalog & market category filtering',
   });
 });
 
-describe('Wave 3 — Total-Beginner Curriculum & 18/18 Historical Chart Verification', () => {
-  it('All 18 lessons have plain-English beginner summaries, FAQs, and linked historical charts', () => {
-    expect(CURRICULUM_LESSONS).toHaveLength(18);
+describe('Wave 3 — Total-Beginner Curriculum & 27/27 Historical Chart Verification', () => {
+  it('All 27 lessons have plain-English beginner summaries, FAQs, and linked historical charts', () => {
+    expect(CURRICULUM_LESSONS).toHaveLength(27);
 
     for (const lesson of CURRICULUM_LESSONS) {
       expect(lesson.plainEnglishSummary?.trim().length ?? 0).toBeGreaterThan(0);
@@ -293,7 +292,7 @@ describe('Wave 3 — Total-Beginner Curriculum & 18/18 Historical Chart Verifica
     }
   });
 
-  it('Lesson 1 (Candlestick Anatomy) immediately renders plain-English guide, labeled Green/Red candlestick diagram, FAQs, and its linked historical chart', async () => {
+  it('Lesson 02 (Candlestick Anatomy) shows Plain-English Quick Cheat-Card on Text tab, dual Green/Red SVGs on Diagram tab, and linked historical chart', async () => {
     const user = userEvent.setup();
     const lesson = getLessonBySlug('candlestick-anatomy');
     expect(lesson).toBeDefined();
@@ -304,8 +303,17 @@ describe('Wave 3 — Total-Beginner Curriculum & 18/18 Historical Chart Verifica
       </MemoryRouter>,
     );
 
-    // Default Learn view immediately displays In Plain English, labeled Green/Red SVG diagram, and FAQs
+    // Default Text view displays In Plain English, Quick Cheat-Card, and FAQs (no duplicate diagram SVG)
     expect(screen.getByText(/In Plain English/i)).toBeInTheDocument();
+    expect(screen.getByText(/Quick Cheat-Card/i)).toBeInTheDocument();
+    expect(screen.getByText(/Common Beginner Questions/i)).toBeInTheDocument();
+
+    // Opening Diagram tab reveals both Green (Bullish) and Red (Bearish) labeled candlestick SVGs
+    await user.click(screen.getByRole('button', { name: /Open Bullish & Bearish Diagrams/i }));
+    expect(screen.getByRole('tab', { name: /Diagram Explanation/i })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
     expect(screen.getByText(/GREEN CANDLE — Price Went UP/i)).toBeInTheDocument();
     expect(screen.getByText(/RED CANDLE — Price Went DOWN/i)).toBeInTheDocument();
     expect(screen.getAllByText('BODY').length).toBeGreaterThanOrEqual(2);
@@ -313,7 +321,6 @@ describe('Wave 3 — Total-Beginner Curriculum & 18/18 Historical Chart Verifica
     expect(screen.getAllByText('LOWER WICK').length).toBeGreaterThanOrEqual(2);
     expect(screen.getAllByText('OPEN').length).toBeGreaterThanOrEqual(2);
     expect(screen.getAllByText('CLOSE').length).toBeGreaterThanOrEqual(2);
-    expect(screen.getByText(/Common Beginner Questions/i)).toBeInTheDocument();
 
     // Switching to Historical Chart displays the linked BTC/USD candlestick anatomy scenario
     await user.click(screen.getByRole('tab', { name: /Historical Chart/i }));

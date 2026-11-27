@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, RotateCcw, Sparkles } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  RotateCcw,
+  Sparkles,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { UI_COPY } from '../../data/taglishTranslations';
 import { TRADING_ACRONYMS, expandAcronyms } from '../../lib/acronymHelper';
 import type { DiagramConfig, DiagramKind } from '../../types/academy';
 
@@ -8,8 +16,33 @@ export interface ConceptDiagramSvgProps {
   config: DiagramConfig;
 }
 
+export type DiagramBiasMode = 'both' | 'bullish' | 'bearish';
+type DiagramSide = 'bullish' | 'bearish';
+
 const FONT_MONO = 'IBM Plex Mono, ui-monospace, SFMono-Regular, monospace';
 const FONT_SANS = 'Plus Jakarta Sans, system-ui, -apple-system, sans-serif';
+
+const LEGEND_TOKEN_MAP: Record<string, string> = {
+  emerald: '#2e9e75',
+  bull: '#2e9e75',
+  green: '#2e9e75',
+  rose: '#d85a52',
+  bear: '#d85a52',
+  red: '#d85a52',
+  amber: '#d69b38',
+  gold: '#d69b38',
+  copper: '#dd7d3e',
+  brand: '#dd7d3e',
+  orange: '#dd7d3e',
+  cyan: '#0ea5e9',
+  sky: '#0ea5e9',
+  slate: '#a89f94',
+};
+
+function resolveLegendColor(token: string): string {
+  const normalized = token.trim().toLowerCase();
+  return LEGEND_TOKEN_MAP[normalized] ?? token;
+}
 
 function getTitleAcronymHint(title: string): string | null {
   const expanded = expandAcronyms(title);
@@ -27,15 +60,16 @@ function getTitleAcronymHint(title: string): string | null {
 
 interface DiagramSubProps {
   activeStep: number;
+  side: DiagramSide;
 }
 
 function DiagramTopBanner({ text, accent = '#dd7d3e' }: { text: string; accent?: string }) {
   return (
     <g>
       <rect
-        x="18"
-        y="10"
-        width="644"
+        x="14"
+        y="8"
+        width="612"
         height="22"
         rx="4"
         fill="#1b1917"
@@ -43,14 +77,14 @@ function DiagramTopBanner({ text, accent = '#dd7d3e' }: { text: string; accent?:
         strokeWidth="1"
       />
       <text
-        x="340"
-        y="24.5"
+        x="320"
+        y="22.5"
         textAnchor="middle"
         fill={accent}
-        fontSize="10"
+        fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
-        letterSpacing="0.4"
+        letterSpacing="0.35"
       >
         {text}
       </text>
@@ -62,21 +96,21 @@ function DiagramBottomNote({ text }: { text: string }) {
   return (
     <g>
       <rect
-        x="18"
-        y="270"
-        width="644"
-        height="28"
-        rx="6"
+        x="14"
+        y="246"
+        width="612"
+        height="26"
+        rx="5"
         fill="#1b1917"
         stroke="#25221f"
         strokeWidth="1"
       />
       <text
-        x="340"
-        y="288"
+        x="320"
+        y="262.5"
         textAnchor="middle"
         fill="#dcd4ca"
-        fontSize="10"
+        fontSize="9.5"
         fontFamily={FONT_SANS}
         fontWeight="500"
       >
@@ -86,1953 +120,733 @@ function DiagramBottomNote({ text }: { text: string }) {
   );
 }
 
-function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
+/* ==================== 1. CHART FUNDAMENTALS (NEW LESSON 01) ==================== */
+
+function ChartFundamentalsSvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
+  const accent = isBull ? '#4dc296' : '#e57c75';
+  const mainColor = isBull ? '#2e9e75' : '#d85a52';
+
+  const candles = isBull
+    ? [
+        { x: 64, o: 184, c: 170, h: 164, l: 192, bull: true, vol: 14 },
+        { x: 112, o: 170, c: 176, h: 166, l: 184, bull: false, vol: 10 },
+        { x: 160, o: 176, c: 152, h: 146, l: 180, bull: true, vol: 22 },
+        { x: 208, o: 152, c: 160, h: 148, l: 166, bull: false, vol: 12 },
+        { x: 256, o: 160, c: 132, h: 124, l: 164, bull: true, vol: 28 },
+        { x: 304, o: 132, c: 140, h: 128, l: 146, bull: false, vol: 13 },
+        { x: 352, o: 140, c: 106, h: 98, l: 144, bull: true, vol: 34 },
+        { x: 400, o: 106, c: 114, h: 102, l: 120, bull: false, vol: 15 },
+        { x: 448, o: 114, c: 82, h: 74, l: 118, bull: true, vol: 30 },
+        { x: 496, o: 82, c: 68, h: 60, l: 88, bull: true, vol: 26 },
+      ]
+    : [
+        { x: 64, o: 68, c: 84, h: 62, l: 92, bull: false, vol: 14 },
+        { x: 112, o: 84, c: 78, h: 72, l: 88, bull: true, vol: 11 },
+        { x: 160, o: 78, c: 106, h: 74, l: 112, bull: false, vol: 20 },
+        { x: 208, o: 106, c: 96, h: 90, l: 110, bull: true, vol: 12 },
+        { x: 256, o: 96, c: 128, h: 92, l: 134, bull: false, vol: 24 },
+        { x: 304, o: 128, c: 118, h: 112, l: 132, bull: true, vol: 13 },
+        { x: 352, o: 118, c: 158, h: 114, l: 166, bull: false, vol: 38 },
+        { x: 400, o: 158, c: 148, h: 142, l: 162, bull: true, vol: 14 },
+        { x: 448, o: 148, c: 176, h: 144, l: 184, bull: false, vol: 30 },
+        { x: 496, o: 176, c: 192, h: 172, l: 198, bull: false, vol: 27 },
+      ];
+
+  const prices = isBull
+    ? [
+        { y: 66, label: '$108.00' },
+        { y: 106, label: '$105.00' },
+        { y: 146, label: '$102.00' },
+        { y: 186, label: '$99.00' },
+      ]
+    : [
+        { y: 66, label: '$108.00' },
+        { y: 106, label: '$105.00' },
+        { y: 146, label: '$102.00' },
+        { y: 186, label: '$99.00' },
+      ];
+
+  return (
+    <g>
+      <DiagramTopBanner
+        text={
+          isBull
+            ? 'BULLISH CHART BASICS: UPTREND · X-AXIS TIME · Y-AXIS PRICE · VOLUME'
+            : 'BEARISH CHART BASICS: DOWNTREND · SELL VOLUME SPIKE · BID/ASK SPREAD'
+        }
+        accent={accent}
+      />
+
+      {/* Top-Left Timeframe Callout */}
+      <rect
+        x="22"
+        y="36"
+        width="214"
+        height="34"
+        rx="5"
+        fill="#1b1917"
+        stroke={activeStep === 0 ? '#e3b154' : '#332e29'}
+        strokeWidth={activeStep === 0 ? 1.75 : 1}
+      />
+      <text
+        x="30"
+        y="50"
+        fill="#e3b154"
+        fontSize="8.5"
+        fontFamily={FONT_MONO}
+        fontWeight="700"
+      >
+        {isBull ? 'TIMEFRAME: 1H = 4×15m = 12×5m' : 'HTF (1D) TREND vs LTF (5m) ENTRY'}
+      </text>
+      <text x="30" y="63" fill="#a89f94" fontSize="8" fontFamily={FONT_SANS}>
+        {isBull ? 'Each candle = 1 full time period' : 'Higher Timeframe sets main bias'}
+      </text>
+
+      {/* Main Chart Plot Frame */}
+      <line x1="22" y1="224" x2="544" y2="224" stroke="#524a42" strokeWidth="1.25" />
+      <line x1="544" y1="36" x2="544" y2="224" stroke="#524a42" strokeWidth="1.25" />
+
+      {/* Horizontal Price Guides + Right Y-Axis (Price) */}
+      {prices.map((p) => (
+        <g key={p.label}>
+          <line
+            x1="22"
+            y1={p.y}
+            x2="544"
+            y2={p.y}
+            stroke="#332e29"
+            strokeWidth="0.9"
+            strokeDasharray="3 4"
+          />
+          <text
+            x="552"
+            y={p.y + 3}
+            fill={activeStep === 1 ? '#e3b154' : '#a89f94'}
+            fontSize="8.5"
+            fontFamily={FONT_MONO}
+            fontWeight={activeStep === 1 ? '700' : '500'}
+          >
+            {p.label}
+          </text>
+        </g>
+      ))}
+
+      {/* Y-Axis Label */}
+      <text
+        x="618"
+        y="130"
+        textAnchor="middle"
+        fill="#e6955c"
+        fontSize="8"
+        fontFamily={FONT_MONO}
+        fontWeight="700"
+        transform="rotate(-90 618 130)"
+      >
+        Y-AXIS (PRICE)
+      </text>
+
+      {/* Live Price + Countdown Timer / Bid-Ask Spread Pill */}
+      {isBull ? (
+        <g>
+          <line
+            x1="496"
+            y1="68"
+            x2="544"
+            y2="68"
+            stroke="#2e9e75"
+            strokeWidth="1.25"
+            strokeDasharray="3 2"
+          />
+          <rect
+            x="546"
+            y="54"
+            width="78"
+            height="30"
+            rx="4"
+            fill="#2e9e75"
+            stroke="#88d9b8"
+            strokeWidth={activeStep === 0 ? 1.5 : 0.8}
+          />
+          <text
+            x="585"
+            y="66.5"
+            textAnchor="middle"
+            fill="#0f241c"
+            fontSize="8.5"
+            fontFamily={FONT_MONO}
+            fontWeight="800"
+          >
+            $107.85
+          </text>
+          <text
+            x="585"
+            y="78.5"
+            textAnchor="middle"
+            fill="#0f241c"
+            fontSize="8"
+            fontFamily={FONT_MONO}
+            fontWeight="700"
+          >
+            ⏱ 02:14
+          </text>
+        </g>
+      ) : (
+        <g>
+          <line
+            x1="496"
+            y1="184"
+            x2="544"
+            y2="184"
+            stroke="#d85a52"
+            strokeWidth="1.2"
+            strokeDasharray="3 2"
+          />
+          <line
+            x1="496"
+            y1="196"
+            x2="544"
+            y2="196"
+            stroke="#0ea5e9"
+            strokeWidth="1.2"
+            strokeDasharray="3 2"
+          />
+          <rect
+            x="546"
+            y="174"
+            width="78"
+            height="14"
+            rx="3"
+            fill="#d85a52"
+          />
+          <text
+            x="585"
+            y="184"
+            textAnchor="middle"
+            fill="#131110"
+            fontSize="7.8"
+            fontFamily={FONT_MONO}
+            fontWeight="800"
+          >
+            ASK $99.18
+          </text>
+          <rect
+            x="546"
+            y="191"
+            width="78"
+            height="14"
+            rx="3"
+            fill="#0ea5e9"
+          />
+          <text
+            x="585"
+            y="201"
+            textAnchor="middle"
+            fill="#131110"
+            fontSize="7.8"
+            fontFamily={FONT_MONO}
+            fontWeight="800"
+          >
+            BID $99.12
+          </text>
+          <text
+            x="585"
+            y="216"
+            textAnchor="middle"
+            fill="#38bdf8"
+            fontSize="7.5"
+            fontFamily={FONT_MONO}
+            fontWeight="700"
+          >
+            SPREAD: $0.06
+          </text>
+        </g>
+      )}
+
+      {/* Trend Direction Arrow Line */}
+      <polyline
+        points={isBull ? '52,190 256,144 496,64' : '52,64 256,118 496,192'}
+        fill="none"
+        stroke={mainColor}
+        strokeWidth="1.5"
+        strokeDasharray="5 4"
+        opacity="0.65"
+      />
+      <text
+        x={isBull ? 328 : 340}
+        y={isBull ? 66 : 64}
+        textAnchor="middle"
+        fill={accent}
+        fontSize="9"
+        fontFamily={FONT_MONO}
+        fontWeight="700"
+      >
+        {isBull ? 'UPTREND (Higher Highs & Higher Lows ▲)' : 'DOWNTREND (Lower Highs & Lower Lows ▼)'}
+      </text>
+
+      {/* Candlesticks + Bottom Volume Bars */}
+      {candles.map((c, idx) => {
+        const top = Math.min(c.o, c.c);
+        const bodyH = Math.max(Math.abs(c.c - c.o), 5);
+        const cColor = c.bull ? '#2e9e75' : '#d85a52';
+        const isVolHighlight = activeStep >= 2 && idx === 6;
+        return (
+          <g key={c.x}>
+            {/* Wick */}
+            <line x1={c.x} y1={c.h} x2={c.x} y2={c.l} stroke={cColor} strokeWidth="2" />
+            {/* Body */}
+            <rect x={c.x - 8} y={top} width="16" height={bodyH} rx="2" fill={cColor} />
+            {/* Volume Bar */}
+            <rect
+              x={c.x - 7}
+              y={224 - c.vol}
+              width="14"
+              height={c.vol}
+              rx="1.5"
+              fill={cColor}
+              opacity={isVolHighlight ? 1 : 0.45}
+              stroke={isVolHighlight ? '#e3b154' : 'none'}
+              strokeWidth="1.5"
+            />
+          </g>
+        );
+      })}
+
+      {/* Volume Callout Pill */}
+      <rect
+        x={isBull ? 290 : 280}
+        y="176"
+        width={isBull ? 124 : 144}
+        height="18"
+        rx="4"
+        fill="#131110"
+        stroke={activeStep >= 2 ? '#e3b154' : mainColor}
+        strokeWidth="1.2"
+      />
+      <text
+        x={isBull ? 352 : 352}
+        y="188"
+        textAnchor="middle"
+        fill={activeStep >= 2 ? '#edc677' : accent}
+        fontSize="8"
+        fontFamily={FONT_MONO}
+        fontWeight="700"
+      >
+        {isBull ? 'BUY VOLUME SURGE ▲' : 'SELL VOLUME SPIKE ▼'}
+      </text>
+
+      {/* X-Axis (Time) Ticks */}
+      <text x="64" y="237" textAnchor="middle" fill="#a89f94" fontSize="8" fontFamily={FONT_MONO}>
+        09:00
+      </text>
+      <text x="160" y="237" textAnchor="middle" fill="#a89f94" fontSize="8" fontFamily={FONT_MONO}>
+        10:00
+      </text>
+      <text x="256" y="237" textAnchor="middle" fill="#e6955c" fontSize="8" fontFamily={FONT_MONO} fontWeight="700">
+        X-AXIS (TIME)
+      </text>
+      <text x="352" y="237" textAnchor="middle" fill="#a89f94" fontSize="8" fontFamily={FONT_MONO}>
+        12:00
+      </text>
+      <text x="496" y="237" textAnchor="middle" fill="#a89f94" fontSize="8" fontFamily={FONT_MONO}>
+        14:00
+      </text>
+
+      <DiagramBottomNote
+        text={
+          isBull
+            ? 'Read left-to-right (Time), check Price on the right (Y-Axis), and confirm bullish trend pushes with rising Volume.'
+            : 'In a downtrend, confirm breakdowns with a red Sell Volume spike and check Bid/Ask Spread before placing orders.'
+        }
+      />
+    </g>
+  );
+}
+
+/* ==================== 2. CANDLESTICK ANATOMY ==================== */
+
+function CandlestickAnatomySvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
   const isOpenStep = activeStep === 0;
   const isBodyStep = activeStep === 1;
   const isWickStep = activeStep >= 2;
 
+  const mainFill = isBull ? '#2e9e75' : '#d85a52';
+  const mainStroke = isBull ? '#4dc296' : '#e57c75';
+  const mainTint = isBull ? '#88d9b8' : '#f0a39e';
+  const innerText = isBull ? '#0f241c' : '#2c1210';
+
   return (
     <g>
-      {/* Center divider */}
-      <line
-        x1="340"
-        y1="10"
-        x2="340"
-        y2="256"
-        stroke="#332e29"
-        strokeWidth="1"
-        strokeDasharray="4 4"
-      />
-
-      {/* LEFT HEADER: GREEN CANDLE */}
       <rect
-        x="16"
+        x="14"
         y="8"
-        width="310"
-        height="24"
-        rx="5"
-        fill="#2e9e75"
-        fillOpacity="0.14"
-        stroke="#2e9e75"
+        width="612"
+        height="22"
+        rx="4"
+        fill={mainFill}
+        fillOpacity="0.16"
+        stroke={mainFill}
         strokeOpacity="0.55"
       />
       <text
-        x="171"
-        y="23.5"
+        x="320"
+        y="22.5"
         textAnchor="middle"
-        fill="#4dc296"
-        fontSize="10.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        GREEN CANDLE — Price Went UP (Buyers Won)
-      </text>
-
-      {/* RIGHT HEADER: RED CANDLE */}
-      <rect
-        x="354"
-        y="8"
-        width="310"
-        height="24"
-        rx="5"
-        fill="#d85a52"
-        fillOpacity="0.14"
-        stroke="#d85a52"
-        strokeOpacity="0.55"
-      />
-      <text
-        x="509"
-        y="23.5"
-        textAnchor="middle"
-        fill="#e57c75"
-        fontSize="10.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        RED CANDLE — Price Went DOWN (Sellers Won)
-      </text>
-
-      {/* ================= LEFT: GREEN CANDLE ================= */}
-      {/* Upper wick */}
-      <line
-        x1="76"
-        y1="48"
-        x2="76"
-        y2="98"
-        stroke={isWickStep ? '#e3b154' : '#2e9e75'}
-        strokeWidth={isWickStep ? 4.5 : 3.5}
-        strokeLinecap="round"
-      />
-      {/* Lower wick */}
-      <line
-        x1="76"
-        y1="194"
-        x2="76"
-        y2="244"
-        stroke={isWickStep ? '#e3b154' : '#2e9e75'}
-        strokeWidth={isWickStep ? 4.5 : 3.5}
-        strokeLinecap="round"
-      />
-      {/* Body glow when Body/Close step active */}
-      {isBodyStep && (
-        <rect
-          x="48"
-          y="93"
-          width="56"
-          height="106"
-          rx="6"
-          fill="none"
-          stroke="#88d9b8"
-          strokeWidth="2"
-          strokeDasharray="4 3"
-        />
-      )}
-      {/* Green Body */}
-      <rect
-        x="53"
-        y="98"
-        width="46"
-        height="96"
-        rx="3"
-        fill="#2e9e75"
-        stroke="#4dc296"
-        strokeWidth="1.5"
-      />
-      {/* Direction cue inside green body */}
-      <text
-        x="76"
-        y="141"
-        textAnchor="middle"
-        fill="#0f241c"
-        fontSize="12"
-        fontFamily={FONT_MONO}
-        fontWeight="800"
-      >
-        ▲
-      </text>
-      <text
-        x="76"
-        y="156"
-        textAnchor="middle"
-        fill="#0f241c"
+        fill={mainStroke}
         fontSize="10"
         fontFamily={FONT_MONO}
-        fontWeight="800"
-      >
-        UP
-      </text>
-
-      {/* Left Callout 1: HIGH */}
-      <circle cx="76" cy="48" r={isWickStep ? 4.5 : 3.5} fill={isWickStep ? '#e3b154' : '#4dc296'} />
-      <line
-        x1="82"
-        y1="48"
-        x2="112"
-        y2="48"
-        stroke={isWickStep ? '#e3b154' : '#524a42'}
-        strokeWidth="1.25"
-        strokeDasharray="3 3"
-      />
-      <text x="116" y="51" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#4dc296" fontFamily={FONT_MONO} fontWeight="700">
-          HIGH
-        </tspan>
-        <tspan fill="#dcd4ca"> (Highest price reached)</tspan>
-      </text>
-
-      {/* Left Callout 2: UPPER WICK */}
-      <line
-        x1="80"
-        y1="72"
-        x2="112"
-        y2="72"
-        stroke={isWickStep ? '#e3b154' : '#524a42'}
-        strokeWidth={isWickStep ? 1.75 : 1.25}
-        strokeDasharray="3 3"
-      />
-      <text x="116" y="70" fill="#e3b154" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
-        UPPER WICK
-      </text>
-      <text x="116" y="81" fill="#a89f94" fontSize="8.5" fontFamily={FONT_SANS}>
-        Buyers pushed up, sellers pushed back
-      </text>
-
-      {/* Left Callout 3: CLOSE (top of green body) */}
-      <line
-        x1="50"
-        y1="98"
-        x2="112"
-        y2="98"
-        stroke={isBodyStep ? '#88d9b8' : '#4dc296'}
-        strokeWidth={isBodyStep ? 2 : 1.3}
-        strokeDasharray="3 3"
-      />
-      <circle cx="99" cy="98" r={isBodyStep ? 4.5 : 3.5} fill="#4dc296" />
-      <text x="116" y="101" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#4dc296" fontFamily={FONT_MONO} fontWeight="700">
-          CLOSE
-        </tspan>
-        <tspan fill="#88d9b8"> (Top of green box)</tspan>
-      </text>
-      <text x="116" y="112" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
-        Timer ended HIGHER → turns GREEN
-      </text>
-
-      {/* Left Callout 4: BODY */}
-      <line
-        x1="101"
-        y1="146"
-        x2="112"
-        y2="146"
-        stroke={isBodyStep ? '#f3efe9' : '#786e63'}
-        strokeWidth="1.5"
-      />
-      <text x="116" y="144" fill="#f3efe9" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
-        BODY
-      </text>
-      <text x="116" y="155" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
-        Distance from Open to Close
-      </text>
-
-      {/* Left Callout 5: OPEN (bottom of green body) */}
-      <line
-        x1="50"
-        y1="194"
-        x2="112"
-        y2="194"
-        stroke={isOpenStep ? '#e6955c' : '#dd7d3e'}
-        strokeWidth={isOpenStep ? 2.2 : 1.3}
-        strokeDasharray="3 3"
-      />
-      <circle cx="99" cy="194" r={isOpenStep ? 5 : 3.5} fill="#e6955c" />
-      <text x="116" y="191" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#e6955c" fontFamily={FONT_MONO} fontWeight="700">
-          OPEN
-        </tspan>
-        <tspan fill="#f0b68a"> (Bottom of green box)</tspan>
-      </text>
-      <text x="116" y="202" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
-        Where the timer started
-      </text>
-
-      {/* Left Callout 6: LOWER WICK */}
-      <line
-        x1="80"
-        y1="219"
-        x2="112"
-        y2="219"
-        stroke={isWickStep ? '#e3b154' : '#524a42'}
-        strokeWidth={isWickStep ? 1.75 : 1.25}
-        strokeDasharray="3 3"
-      />
-      <text x="116" y="218" fill="#e3b154" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
-        LOWER WICK
-      </text>
-      <text x="116" y="229" fill="#a89f94" fontSize="8.5" fontFamily={FONT_SANS}>
-        Price dipped, buyers pushed back up
-      </text>
-
-      {/* Left Callout 7: LOW */}
-      <circle cx="76" cy="244" r={isWickStep ? 4.5 : 3.5} fill={isWickStep ? '#e3b154' : '#4dc296'} />
-      <line
-        x1="82"
-        y1="244"
-        x2="112"
-        y2="244"
-        stroke={isWickStep ? '#e3b154' : '#524a42'}
-        strokeWidth="1.25"
-        strokeDasharray="3 3"
-      />
-      <text x="116" y="247" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#4dc296" fontFamily={FONT_MONO} fontWeight="700">
-          LOW
-        </tspan>
-        <tspan fill="#dcd4ca"> (Lowest price reached)</tspan>
-      </text>
-
-      {/* ================= RIGHT: RED CANDLE ================= */}
-      {/* Upper wick */}
-      <line
-        x1="404"
-        y1="48"
-        x2="404"
-        y2="98"
-        stroke={isWickStep ? '#e3b154' : '#d85a52'}
-        strokeWidth={isWickStep ? 4.5 : 3.5}
-        strokeLinecap="round"
-      />
-      {/* Lower wick */}
-      <line
-        x1="404"
-        y1="194"
-        x2="404"
-        y2="244"
-        stroke={isWickStep ? '#e3b154' : '#d85a52'}
-        strokeWidth={isWickStep ? 4.5 : 3.5}
-        strokeLinecap="round"
-      />
-      {/* Body glow when Body/Close step active */}
-      {isBodyStep && (
-        <rect
-          x="376"
-          y="93"
-          width="56"
-          height="106"
-          rx="6"
-          fill="none"
-          stroke="#f0a39e"
-          strokeWidth="2"
-          strokeDasharray="4 3"
-        />
-      )}
-      {/* Red Body */}
-      <rect
-        x="381"
-        y="98"
-        width="46"
-        height="96"
-        rx="3"
-        fill="#d85a52"
-        stroke="#e57c75"
-        strokeWidth="1.5"
-      />
-      {/* Direction cue inside red body */}
-      <text
-        x="404"
-        y="141"
-        textAnchor="middle"
-        fill="#2c1210"
-        fontSize="12"
-        fontFamily={FONT_MONO}
-        fontWeight="800"
-      >
-        ▼
-      </text>
-      <text
-        x="404"
-        y="156"
-        textAnchor="middle"
-        fill="#2c1210"
-        fontSize="10"
-        fontFamily={FONT_MONO}
-        fontWeight="800"
-      >
-        DOWN
-      </text>
-
-      {/* Right Callout 1: HIGH */}
-      <circle cx="404" cy="48" r={isWickStep ? 4.5 : 3.5} fill={isWickStep ? '#e3b154' : '#e57c75'} />
-      <line
-        x1="410"
-        y1="48"
-        x2="440"
-        y2="48"
-        stroke={isWickStep ? '#e3b154' : '#524a42'}
-        strokeWidth="1.25"
-        strokeDasharray="3 3"
-      />
-      <text x="444" y="51" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#e57c75" fontFamily={FONT_MONO} fontWeight="700">
-          HIGH
-        </tspan>
-        <tspan fill="#dcd4ca"> (Highest price reached)</tspan>
-      </text>
-
-      {/* Right Callout 2: UPPER WICK */}
-      <line
-        x1="408"
-        y1="72"
-        x2="440"
-        y2="72"
-        stroke={isWickStep ? '#e3b154' : '#524a42'}
-        strokeWidth={isWickStep ? 1.75 : 1.25}
-        strokeDasharray="3 3"
-      />
-      <text x="444" y="70" fill="#e3b154" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
-        UPPER WICK
-      </text>
-      <text x="444" y="81" fill="#a89f94" fontSize="8.5" fontFamily={FONT_SANS}>
-        Brief rally rejected by sellers
-      </text>
-
-      {/* Right Callout 3: OPEN (TOP of red body!) */}
-      <line
-        x1="378"
-        y1="98"
-        x2="440"
-        y2="98"
-        stroke={isOpenStep ? '#e6955c' : '#dd7d3e'}
-        strokeWidth={isOpenStep ? 2.2 : 1.3}
-        strokeDasharray="3 3"
-      />
-      <circle cx="427" cy="98" r={isOpenStep ? 5 : 3.5} fill="#e6955c" />
-      <text x="444" y="101" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#e6955c" fontFamily={FONT_MONO} fontWeight="700">
-          OPEN
-        </tspan>
-        <tspan fill="#f0b68a"> (Started HIGHER — TOP!)</tspan>
-      </text>
-      <text x="444" y="112" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
-        Mirror of green: Open sits at TOP
-      </text>
-
-      {/* Right Callout 4: BODY */}
-      <line
-        x1="429"
-        y1="146"
-        x2="440"
-        y2="146"
-        stroke={isBodyStep ? '#f3efe9' : '#786e63'}
-        strokeWidth="1.5"
-      />
-      <text x="444" y="144" fill="#f3efe9" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
-        BODY
-      </text>
-      <text x="444" y="155" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
-        Price dropped from Open to Close
-      </text>
-
-      {/* Right Callout 5: CLOSE (BOTTOM of red body!) */}
-      <line
-        x1="378"
-        y1="194"
-        x2="440"
-        y2="194"
-        stroke={isBodyStep ? '#f0a39e' : '#d85a52'}
-        strokeWidth={isBodyStep ? 2 : 1.3}
-        strokeDasharray="3 3"
-      />
-      <circle cx="427" cy="194" r={isBodyStep ? 4.5 : 3.5} fill="#e57c75" />
-      <text x="444" y="191" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#e57c75" fontFamily={FONT_MONO} fontWeight="700">
-          CLOSE
-        </tspan>
-        <tspan fill="#f0a39e"> (Ended LOWER → RED)</tspan>
-      </text>
-      <text x="444" y="202" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
-        Closed below Open → locks RED
-      </text>
-
-      {/* Right Callout 6: LOWER WICK */}
-      <line
-        x1="408"
-        y1="219"
-        x2="440"
-        y2="219"
-        stroke={isWickStep ? '#e3b154' : '#524a42'}
-        strokeWidth={isWickStep ? 1.75 : 1.25}
-        strokeDasharray="3 3"
-      />
-      <text x="444" y="218" fill="#e3b154" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
-        LOWER WICK
-      </text>
-      <text x="444" y="229" fill="#a89f94" fontSize="8.5" fontFamily={FONT_SANS}>
-        Dipped lower, then bounced back
-      </text>
-
-      {/* Right Callout 7: LOW */}
-      <circle cx="404" cy="244" r={isWickStep ? 4.5 : 3.5} fill={isWickStep ? '#e3b154' : '#e57c75'} />
-      <line
-        x1="410"
-        y1="244"
-        x2="440"
-        y2="244"
-        stroke={isWickStep ? '#e3b154' : '#524a42'}
-        strokeWidth="1.25"
-        strokeDasharray="3 3"
-      />
-      <text x="444" y="247" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#e57c75" fontFamily={FONT_MONO} fontWeight="700">
-          LOW
-        </tspan>
-        <tspan fill="#dcd4ca"> (Lowest price reached)</tspan>
-      </text>
-
-      {/* ================= BOTTOM TIMELINE BAR ================= */}
-      <rect
-        x="16"
-        y="262"
-        width="648"
-        height="40"
-        rx="7"
-        fill="#1b1917"
-        stroke="#25221f"
-        strokeWidth="1"
-      />
-      {/* Step Pill 1: Timer Starts (Open) */}
-      <rect
-        x="24"
-        y="269"
-        width="188"
-        height="26"
-        rx="5"
-        fill={isOpenStep ? '#dd7d3e' : '#25221f'}
-        fillOpacity={isOpenStep ? 0.25 : 0.7}
-        stroke={isOpenStep ? '#e6955c' : '#332e29'}
-        strokeWidth={isOpenStep ? 1.5 : 1}
-      />
-      <text
-        x="118"
-        y="285.5"
-        textAnchor="middle"
-        fill={isOpenStep ? '#f0b68a' : '#dcd4ca'}
-        fontSize="9.5"
-        fontFamily={FONT_MONO}
         fontWeight="700"
       >
-        1. Timer Starts (Open)
+        {isBull
+          ? 'GREEN CANDLE — Price Went UP (Buyers Won)'
+          : 'RED CANDLE — Price Went DOWN (Sellers Won)'}
       </text>
 
-      <text x="225" y="286" textAnchor="middle" fill="#786e63" fontSize="13" fontWeight="700">
-        →
-      </text>
-
-      {/* Step Pill 2: Price Moves Up/Down (Wicks) */}
-      <rect
-        x="238"
-        y="269"
-        width="202"
-        height="26"
-        rx="5"
-        fill={isWickStep ? '#d69b38' : '#25221f'}
-        fillOpacity={isWickStep ? 0.25 : 0.7}
-        stroke={isWickStep ? '#e3b154' : '#332e29'}
-        strokeWidth={isWickStep ? 1.5 : 1}
-      />
-      <text
-        x="339"
-        y="285.5"
-        textAnchor="middle"
-        fill={isWickStep ? '#edc677' : '#dcd4ca'}
-        fontSize="9.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        2. Price Moves (Wicks)
-      </text>
-
-      <text x="453" y="286" textAnchor="middle" fill="#786e63" fontSize="13" fontWeight="700">
-        →
-      </text>
-
-      {/* Step Pill 3: Timer Ends (Close & Color Locks) */}
-      <rect
-        x="466"
-        y="269"
-        width="190"
-        height="26"
-        rx="5"
-        fill={isBodyStep ? '#2e9e75' : '#25221f'}
-        fillOpacity={isBodyStep ? 0.25 : 0.7}
-        stroke={isBodyStep ? '#4dc296' : '#332e29'}
-        strokeWidth={isBodyStep ? 1.5 : 1}
-      />
-      <text
-        x="561"
-        y="285.5"
-        textAnchor="middle"
-        fill={isBodyStep ? '#88d9b8' : '#dcd4ca'}
-        fontSize="9.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        3. Timer Ends (Color Locks)
-      </text>
-    </g>
-  );
-}
-
-function SupportDemandSvg({ activeStep }: DiagramSubProps) {
-  return (
-    <g>
-      <DiagramTopBanner
-        text="FLOOR (SUPPORT / DEMAND) VS. CEILING (RESISTANCE / SUPPLY)"
-        accent="#4dc296"
-      />
-
-      {/* Ceiling / Resistance / Supply Zone */}
-      <rect
-        x="34"
-        y="42"
-        width="612"
-        height="46"
-        rx="6"
-        fill="#d85a52"
-        fillOpacity={activeStep === 1 ? 0.28 : 0.14}
-        stroke="#d85a52"
-        strokeWidth={activeStep === 1 ? 2 : 1.25}
-        strokeDasharray="6 4"
-      />
-      <text
-        x="340"
-        y="61"
-        textAnchor="middle"
-        fill="#f0a39e"
-        fontSize="11"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        CEILING = RESISTANCE / SUPPLY ZONE
-      </text>
-      <text
-        x="340"
-        y="77"
-        textAnchor="middle"
-        fill="#f3efe9"
-        fontSize="9.5"
-        fontFamily={FONT_SANS}
-      >
-        Sellers step in here and push price back DOWN ▼
-      </text>
-
-      {/* Floor / Support / Demand Zone */}
-      <rect
-        x="34"
-        y="212"
-        width="612"
-        height="46"
-        rx="6"
-        fill="#2e9e75"
-        fillOpacity={activeStep === 0 ? 0.28 : 0.14}
-        stroke="#2e9e75"
-        strokeWidth={activeStep === 0 ? 2 : 1.25}
-        strokeDasharray="6 4"
-      />
-      <text
-        x="340"
-        y="231"
-        textAnchor="middle"
-        fill="#88d9b8"
-        fontSize="11"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        FLOOR = SUPPORT / DEMAND ZONE
-      </text>
-      <text
-        x="340"
-        y="247"
-        textAnchor="middle"
-        fill="#f3efe9"
-        fontSize="9.5"
-        fontFamily={FONT_SANS}
-      >
-        Buyers step in here and bounce price back UP ▲
-      </text>
-
-      {/* Bouncing Price Path */}
-      <polyline
-        points="54,158 136,212 240,88 344,212 448,88 538,212 626,118"
-        fill="none"
-        stroke="#f3efe9"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      {/* Buyer bounce nodes on Floor */}
-      {[
-        { x: 136, label: 'Bounce #1' },
-        { x: 344, label: 'Bounce #2' },
-        { x: 538, label: 'Bounce #3' },
-      ].map((pt) => (
-        <g key={pt.label}>
-          <circle
-            cx={pt.x}
-            cy={212}
-            r={activeStep === 0 ? 7.5 : 5.5}
-            fill="#2e9e75"
-            stroke="#131110"
-            strokeWidth="2"
-          />
-          <text
-            x={pt.x}
-            y={199}
-            textAnchor="middle"
-            fill="#4dc296"
-            fontSize="9.5"
-            fontFamily={FONT_MONO}
-            fontWeight="700"
-          >
-            ▲ {pt.label}
-          </text>
-        </g>
-      ))}
-
-      {/* Seller rejection nodes on Ceiling */}
-      {[
-        { x: 240, label: 'Rejected #1' },
-        { x: 448, label: 'Rejected #2' },
-      ].map((pt) => (
-        <g key={pt.label}>
-          <circle
-            cx={pt.x}
-            cy={88}
-            r={activeStep === 1 ? 7.5 : 5.5}
-            fill="#d85a52"
-            stroke="#131110"
-            strokeWidth="2"
-          />
-          <text
-            x={pt.x}
-            y={107}
-            textAnchor="middle"
-            fill="#e57c75"
-            fontSize="9.5"
-            fontFamily={FONT_MONO}
-            fontWeight="700"
-          >
-            ▼ {pt.label}
-          </text>
-        </g>
-      ))}
-
-      {/* Breakout hint pill on step 2+ */}
-      {activeStep >= 2 && (
-        <g>
-          <rect
-            x="554"
-            y="100"
-            width="92"
-            height="22"
-            rx="4"
-            fill="#dd7d3e"
-            fillOpacity="0.22"
-            stroke="#e6955c"
-          />
-          <text
-            x="600"
-            y="114.5"
-            textAnchor="middle"
-            fill="#f0b68a"
-            fontSize="9"
-            fontFamily={FONT_MONO}
-            fontWeight="700"
-          >
-            Watch Reaction
-          </text>
-        </g>
-      )}
-
-      <DiagramBottomNote text="Simple Rule: Buy near the Floor (Demand) when buyers show up — never chase right into the Ceiling (Supply)." />
-    </g>
-  );
-}
-
-function OrderBlockChochSvg({ activeStep }: DiagramSubProps) {
-  return (
-    <g>
-      <DiagramTopBanner
-        text="DOWNTREND → U-TURN BREAK (CHoCH) → ORDER BLOCK PULLBACK → RALLY UP"
-        accent="#e3b154"
-      />
-
-      {/* Last Lower High horizontal line for CHoCH */}
+      {/* Upper Wick */}
       <line
         x1="150"
-        y1="126"
-        x2="380"
-        y2="126"
-        stroke="#e6955c"
-        strokeWidth={activeStep === 1 ? 2.25 : 1.5}
-        strokeDasharray="6 4"
-      />
-      <rect
-        x="266"
-        y="102"
-        width="136"
-        height="20"
-        rx="4"
-        fill="#dd7d3e"
-        fillOpacity={activeStep === 1 ? 0.3 : 0.16}
-        stroke="#e6955c"
-      />
-      <text
-        x="334"
-        y="115.5"
-        textAnchor="middle"
-        fill="#f0b68a"
-        fontSize="9.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        2. CHoCH (U-Turn Break!)
-      </text>
-
-      {/* Order Block Shaded Zone extending from Last Red Candle */}
-      <rect
-        x="212"
-        y="188"
-        width="302"
-        height="42"
-        rx="5"
-        fill="#d69b38"
-        fillOpacity={activeStep === 2 ? 0.28 : 0.14}
-        stroke="#d69b38"
-        strokeWidth={activeStep === 2 ? 2 : 1.25}
-        strokeDasharray="5 3"
-      />
-      <text
-        x="356"
-        y="246"
-        textAnchor="middle"
-        fill="#e3b154"
-        fontSize="9.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        3. ORDER BLOCK = Last Red Candle Before Big Rally
-      </text>
-
-      {/* Stage 1: Downtrend price line */}
-      <polyline
-        points="42,66 106,144 150,126 226,222"
-        fill="none"
-        stroke="#d85a52"
-        strokeWidth={activeStep === 0 ? 3.5 : 2.5}
+        y1="44"
+        x2="150"
+        y2="88"
+        stroke={isWickStep ? '#e3b154' : mainFill}
+        strokeWidth={isWickStep ? 4.5 : 3.5}
         strokeLinecap="round"
-        strokeLinejoin="round"
       />
-      <text
-        x="86"
-        y="58"
-        textAnchor="middle"
-        fill="#e57c75"
-        fontSize="9.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        1. Downtrend
-      </text>
-      <circle cx="150" cy="126" r="4.5" fill="#e57c75" />
+      {/* Lower Wick */}
+      <line
+        x1="150"
+        y1="176"
+        x2="150"
+        y2="220"
+        stroke={isWickStep ? '#e3b154' : mainFill}
+        strokeWidth={isWickStep ? 4.5 : 3.5}
+        strokeLinecap="round"
+      />
+
+      {isBodyStep && (
+        <rect
+          x="118"
+          y="83"
+          width="64"
+          height="98"
+          rx="6"
+          fill="none"
+          stroke={mainTint}
+          strokeWidth="2"
+          strokeDasharray="4 3"
+        />
+      )}
+
+      {/* Candle Body */}
+      <rect
+        x="124"
+        y="88"
+        width="52"
+        height="88"
+        rx="3"
+        fill={mainFill}
+        stroke={mainStroke}
+        strokeWidth="1.5"
+      />
       <text
         x="150"
-        y="116"
-        textAnchor="middle"
-        fill="#a89f94"
-        fontSize="8.5"
-        fontFamily={FONT_MONO}
-      >
-        Last High
-      </text>
-
-      {/* Last Red Candle (Order Block visual) */}
-      <line x1="226" y1="180" x2="226" y2="236" stroke="#d85a52" strokeWidth="2" />
-      <rect
-        x="215"
-        y="190"
-        width="22"
-        height="36"
-        rx="2"
-        fill="#d85a52"
-        stroke="#e3b154"
-        strokeWidth="1.5"
-      />
-
-      {/* Stage 2: Strong Green Impulse Breaking CHoCH */}
-      <polyline
-        points="238,208 292,126 356,74"
-        fill="none"
-        stroke="#2e9e75"
-        strokeWidth="3.25"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="292" cy="126" r={activeStep === 1 ? 6.5 : 4.5} fill="#e6955c" />
-
-      {/* Stage 3: Calm Pullback to Order Block */}
-      <polyline
-        points="356,74 422,148 468,206"
-        fill="none"
-        stroke="#a89f94"
-        strokeWidth="2.25"
-        strokeDasharray="5 4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle
-        cx="468"
-        cy="206"
-        r={activeStep === 2 ? 7.5 : 5.5}
-        fill="#d69b38"
-        stroke="#131110"
-        strokeWidth="2"
-      />
-      <text
-        x="468"
-        y="181"
-        textAnchor="middle"
-        fill="#edc677"
-        fontSize="9.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        4. Pullback Entry
-      </text>
-
-      {/* Stage 4: Rally Up */}
-      <polyline
-        points="468,206 544,120 624,54"
-        fill="none"
-        stroke="#2e9e75"
-        strokeWidth={activeStep >= 3 ? 4 : 3}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle
-        cx="624"
-        cy="54"
-        r={activeStep >= 3 ? 7 : 5}
-        fill="#2e9e75"
-        stroke="#131110"
-        strokeWidth="2"
-      />
-      <text
-        x="592"
-        y="48"
-        textAnchor="middle"
-        fill="#4dc296"
-        fontSize="10"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        5. Rally Up ▲
-      </text>
-
-      <DiagramBottomNote text="Plain English: Never catch a falling knife. Wait for the U-Turn (CHoCH), then buy the calm pullback to the Order Block." />
-    </g>
-  );
-}
-
-function MultiTimeframeSvg({ activeStep }: DiagramSubProps) {
-  return (
-    <g>
-      {/* Top Split Headers */}
-      <rect
-        x="18"
-        y="10"
-        width="234"
-        height="24"
-        rx="5"
-        fill="#2e9e75"
-        fillOpacity="0.15"
-        stroke="#2e9e75"
-        strokeOpacity="0.5"
-      />
-      <text
-        x="135"
-        y="25.5"
-        textAnchor="middle"
-        fill="#4dc296"
-        fontSize="10"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        ZOOM OUT: 1-HOUR CANDLE
-      </text>
-
-      <rect
-        x="312"
-        y="10"
-        width="350"
-        height="24"
-        rx="5"
-        fill="#dd7d3e"
-        fillOpacity="0.15"
-        stroke="#dd7d3e"
-        strokeOpacity="0.5"
-      />
-      <text
-        x="487"
-        y="25.5"
-        textAnchor="middle"
-        fill="#e6955c"
-        fontSize="10"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        ZOOM IN: FOUR 15-MINUTE CANDLES INSIDE IT
-      </text>
-
-      {/* Left Panel Frame */}
-      <rect
-        x="18"
-        y="42"
-        width="234"
-        height="218"
-        rx="7"
-        fill="#1b1917"
-        fillOpacity={activeStep === 0 ? 0.9 : 0.55}
-        stroke={activeStep === 0 ? '#2e9e75' : '#25221f'}
-        strokeWidth={activeStep === 0 ? 1.75 : 1}
-      />
-
-      {/* Right Panel Frame */}
-      <rect
-        x="312"
-        y="42"
-        width="350"
-        height="218"
-        rx="7"
-        fill="#1b1917"
-        fillOpacity={activeStep >= 2 ? 0.9 : 0.55}
-        stroke={activeStep >= 2 ? '#e6955c' : '#25221f'}
-        strokeWidth={activeStep >= 2 ? 1.75 : 1}
-      />
-
-      {/* Horizontal OHLC alignment guides across both panels */}
-      {[
-        { y: 64, label: 'HIGH', color: '#4dc296' },
-        { y: 94, label: 'CLOSE', color: '#4dc296' },
-        { y: 196, label: 'OPEN', color: '#e6955c' },
-        { y: 230, label: 'LOW', color: '#e3b154' },
-      ].map((lvl) => (
-        <g key={lvl.label}>
-          <line
-            x1="126"
-            y1={lvl.y}
-            x2="648"
-            y2={lvl.y}
-            stroke={lvl.color}
-            strokeWidth={activeStep === 1 ? 1.4 : 0.9}
-            strokeDasharray="4 4"
-            opacity={activeStep === 1 ? 0.85 : 0.35}
-          />
-          <text
-            x="40"
-            y={lvl.y + 3.5}
-            fill={lvl.color}
-            fontSize="8.5"
-            fontFamily={FONT_MONO}
-            fontWeight="700"
-          >
-            {lvl.label}
-          </text>
-        </g>
-      ))}
-
-      {/* LEFT: 1 Big 1-Hour Green Candle */}
-      <line x1="142" y1="64" x2="142" y2="230" stroke="#2e9e75" strokeWidth="4" strokeLinecap="round" />
-      <rect
-        x="114"
-        y="94"
-        width="56"
-        height="102"
-        rx="4"
-        fill="#2e9e75"
-        stroke="#4dc296"
-        strokeWidth="1.5"
-      />
-      <text
-        x="142"
-        y="150"
-        textAnchor="middle"
-        fill="#0f241c"
-        fontSize="12"
-        fontFamily={FONT_MONO}
-        fontWeight="800"
-      >
-        1H
-      </text>
-      <text
-        x="135"
-        y="251"
-        textAnchor="middle"
-        fill="#a89f94"
-        fontSize="9"
-        fontFamily={FONT_MONO}
-      >
-        1 Candle = 60 Minutes
-      </text>
-
-      {/* Center Bracket showing 1H = 4 x 15m */}
-      <path
-        d="M 262 64 L 274 64 L 274 230 L 262 230"
-        fill="none"
-        stroke="#e3b154"
-        strokeWidth="2"
-      />
-      <line x1="274" y1="147" x2="306" y2="147" stroke="#e3b154" strokeWidth="2" />
-      <rect x="256" y="132" width="52" height="30" rx="5" fill="#131110" stroke="#e3b154" />
-      <text
-        x="282"
-        y="145"
-        textAnchor="middle"
-        fill="#e3b154"
-        fontSize="9.5"
-        fontFamily={FONT_MONO}
-        fontWeight="800"
-      >
-        = 4×
-      </text>
-      <text
-        x="282"
-        y="157"
-        textAnchor="middle"
-        fill="#f4dca4"
-        fontSize="8"
-        fontFamily={FONT_MONO}
-      >
-        15m
-      </text>
-
-      {/* RIGHT: 4 exact 15-minute candles building the 1H candle */}
-      {/* Candle 1 (0-15m): Red Dip creating 1H Open & 1H Low */}
-      <line x1="362" y1="190" x2="362" y2="230" stroke="#d85a52" strokeWidth="2.5" />
-      <rect x="348" y="196" width="28" height="22" rx="2" fill="#d85a52" />
-      <text x="362" y="250" textAnchor="middle" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_MONO}>
-        0–15m
-      </text>
-
-      {/* Candle 2 (15-30m): Green Turnaround */}
-      <line x1="444" y1="142" x2="444" y2="224" stroke="#2e9e75" strokeWidth="2.5" />
-      <rect
-        x="430"
-        y="152"
-        width="28"
-        height="66"
-        rx="2"
-        fill="#2e9e75"
-        stroke={activeStep >= 2 ? '#e3b154' : 'none'}
-        strokeWidth="2"
-      />
-      <text x="444" y="250" textAnchor="middle" fill="#4dc296" fontSize="8.5" fontFamily={FONT_MONO}>
-        15–30m
-      </text>
-
-      {/* Candle 3 (30-45m): Big Green Surge creating 1H High */}
-      <line x1="526" y1="64" x2="526" y2="160" stroke="#2e9e75" strokeWidth="2.5" />
-      <rect x="512" y="80" width="28" height="72" rx="2" fill="#2e9e75" />
-      <text x="526" y="250" textAnchor="middle" fill="#4dc296" fontSize="8.5" fontFamily={FONT_MONO}>
-        30–45m
-      </text>
-
-      {/* Candle 4 (45-60m): Small Red Pullback landing at 1H Close */}
-      <line x1="608" y1="74" x2="608" y2="108" stroke="#d85a52" strokeWidth="2.5" />
-      <rect x="594" y="80" width="28" height="14" rx="2" fill="#d85a52" />
-      <text x="608" y="250" textAnchor="middle" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_MONO}>
-        45–60m
-      </text>
-
-      {/* Callout inside right panel */}
-      <text
-        x="444"
         y="128"
         textAnchor="middle"
-        fill="#e3b154"
-        fontSize="8.5"
+        fill={innerText}
+        fontSize="13"
         fontFamily={FONT_MONO}
-        fontWeight="700"
+        fontWeight="800"
       >
-        Cleaner Entry!
+        {isBull ? '▲' : '▼'}
       </text>
-
-      <DiagramBottomNote text="Pro Secret: Zoom Out (1H/4H) to see the main trend, then Zoom In (15m) to catch the dip before it rallies." />
-    </g>
-  );
-}
-
-function MarketSessionsSvg({ activeStep }: DiagramSubProps) {
-  const sessions = [
-    {
-      id: 'asia',
-      x: 24,
-      w: 180,
-      title: 'ASIA SESSION',
-      time: '7:00 PM – 2:00 AM NY',
-      badge: 'Quiet Range',
-      note: 'Sideways, builds highs/lows',
-      color: '#d69b38',
-      textLight: '#edc677',
-      active: activeStep === 0,
-    },
-    {
-      id: 'london',
-      x: 210,
-      w: 146,
-      title: 'LONDON OPEN',
-      time: '2:00 AM – 8:00 AM NY',
-      badge: 'Big Move',
-      note: 'Sweeps Asia & launches trend',
-      color: '#dd7d3e',
-      textLight: '#f0b68a',
-      active: activeStep === 1,
-    },
-    {
-      id: 'ny_overlap',
-      x: 362,
-      w: 162,
-      title: 'NY OVERLAP ★',
-      time: '8:00 AM – 12:00 PM NY',
-      badge: 'Peak Volume',
-      note: 'Fastest, cleanest moves',
-      color: '#2e9e75',
-      textLight: '#88d9b8',
-      active: activeStep >= 2,
-    },
-    {
-      id: 'ny_late',
-      x: 530,
-      w: 126,
-      title: 'NY LATE DAY',
-      time: '12:00 PM – 5:00 PM',
-      badge: 'Slowdown',
-      note: 'Lower volume / chop',
-      color: '#786e63',
-      textLight: '#dcd4ca',
-      active: false,
-    },
-  ];
-
-  return (
-    <g>
-      <DiagramTopBanner
-        text="24-HOUR MARKET SESSIONS (ALL TIMES IN NEW YORK / EST)"
-        accent="#e6955c"
-      />
-
-      {/* Volume / Activity Curve Area */}
-      <text x="28" y="54" fill="#a89f94" fontSize="9" fontFamily={FONT_MONO} fontWeight="600">
-        TRADING VOLUME &amp; SPEED
-      </text>
-      <path
-        d="M 24 148 L 24 134 Q 70 128, 114 136 Q 160 142, 204 132 L 244 92 Q 285 72, 356 88 Q 405 46, 445 50 Q 490 54, 524 100 Q 580 132, 656 140 L 656 148 Z"
-        fill="#2e9e75"
-        fillOpacity="0.14"
-      />
-      <path
-        d="M 24 134 Q 70 128, 114 136 Q 160 142, 204 132 L 244 92 Q 285 72, 356 88 Q 405 46, 445 50 Q 490 54, 524 100 Q 580 132, 656 140"
-        fill="none"
-        stroke="#4dc296"
-        strokeWidth="2.75"
-        strokeLinecap="round"
-      />
-      {/* Peak callout dot */}
-      <circle cx="442" cy="50" r="5.5" fill="#2e9e75" stroke="#131110" strokeWidth="2" />
       <text
-        x="442"
-        y="43"
+        x="150"
+        y="144"
         textAnchor="middle"
-        fill="#88d9b8"
-        fontSize="9"
+        fill={innerText}
+        fontSize="10"
         fontFamily={FONT_MONO}
-        fontWeight="700"
+        fontWeight="800"
       >
-        PEAK ACTIVITY (LONDON + NY)
+        {isBull ? 'UP' : 'DOWN'}
       </text>
 
-      {/* Baseline */}
-      <line x1="24" y1="148" x2="656" y2="148" stroke="#332e29" strokeWidth="1" />
-
-      {/* 4 Horizontal Session Blocks */}
-      {sessions.map((s) => (
-        <g key={s.id}>
-          <rect
-            x={s.x}
-            y="160"
-            width={s.w}
-            height="84"
-            rx="6"
-            fill={s.color}
-            fillOpacity={s.active ? 0.24 : 0.1}
-            stroke={s.color}
-            strokeWidth={s.active ? 2 : 1.1}
-          />
-          <text
-            x={s.x + s.w / 2}
-            y="178"
-            textAnchor="middle"
-            fill={s.textLight}
-            fontSize="10"
-            fontFamily={FONT_MONO}
-            fontWeight="700"
-          >
-            {s.title}
-          </text>
-          <text
-            x={s.x + s.w / 2}
-            y="194"
-            textAnchor="middle"
-            fill="#f3efe9"
-            fontSize="8.5"
-            fontFamily={FONT_MONO}
-          >
-            {s.time}
-          </text>
-          <rect
-            x={s.x + 12}
-            y="202"
-            width={s.w - 24}
-            height="17"
-            rx="4"
-            fill={s.color}
-            fillOpacity="0.22"
-          />
-          <text
-            x={s.x + s.w / 2}
-            y="214"
-            textAnchor="middle"
-            fill={s.textLight}
-            fontSize="8.5"
-            fontFamily={FONT_MONO}
-            fontWeight="700"
-          >
-            {s.badge}
-          </text>
-          <text
-            x={s.x + s.w / 2}
-            y="235"
-            textAnchor="middle"
-            fill="#a89f94"
-            fontSize="8.2"
-            fontFamily={FONT_SANS}
-          >
-            {s.note}
-          </text>
-        </g>
-      ))}
-
-      {/* Time axis ticks */}
-      <text x="24" y="259" fill="#786e63" fontSize="8.5" fontFamily={FONT_MONO}>
-        7 PM
-      </text>
-      <text x="210" y="259" fill="#e6955c" fontSize="8.5" fontFamily={FONT_MONO} fontWeight="700">
-        2 AM (London)
-      </text>
-      <text x="362" y="259" fill="#4dc296" fontSize="8.5" fontFamily={FONT_MONO} fontWeight="700">
-        8 AM (NY Open)
-      </text>
-      <text x="530" y="259" fill="#a89f94" fontSize="8.5" fontFamily={FONT_MONO}>
-        12 PM
-      </text>
-      <text x="656" y="259" textAnchor="end" fill="#786e63" fontSize="8.5" fontFamily={FONT_MONO}>
-        5 PM NY
-      </text>
-
-      <DiagramBottomNote text="Beginner Tip: Focus on London Open (2–5 AM NY) or NY Overlap (8–11 AM NY) — skip slow, choppy hours." />
-    </g>
-  );
-}
-
-function CryptoFundingDominanceSvg({ activeStep }: DiagramSubProps) {
-  return (
-    <g>
-      <DiagramTopBanner
-        text="CRYPTO 3-STAGE CYCLE: BTC LEADS → CROWDED LEVERAGE → LIQUIDATION FLUSH"
-        accent="#e3b154"
-      />
-
-      {/* STAGE 1 CARD */}
-      <rect
-        x="20"
-        y="44"
-        width="196"
-        height="212"
-        rx="8"
-        fill="#2e9e75"
-        fillOpacity={activeStep === 0 ? 0.16 : 0.07}
-        stroke="#2e9e75"
-        strokeWidth={activeStep === 0 ? 2 : 1.1}
-      />
-      <text
-        x="118"
-        y="66"
-        textAnchor="middle"
-        fill="#4dc296"
-        fontSize="10.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        STAGE 1: BTC LEADS
-      </text>
-      <text x="118" y="82" textAnchor="middle" fill="#f3efe9" fontSize="9.5" fontFamily={FONT_SANS}>
-        Money enters Bitcoin first
-      </text>
-      {/* Mini BTC dominance visual */}
-      <rect x="34" y="96" width="168" height="82" rx="5" fill="#131110" stroke="#25221f" />
-      <text x="44" y="113" fill="#4dc296" fontSize="9" fontFamily={FONT_MONO} fontWeight="700">
-        BTC Dominance ▲
-      </text>
-      <polyline
-        points="44,164 78,150 110,154 146,128 188,112"
-        fill="none"
-        stroke="#2e9e75"
-        strokeWidth="2.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="188" cy="112" r="4" fill="#4dc296" />
-      <text x="44" y="172" fill="#786e63" fontSize="8" fontFamily={FONT_MONO}>
-        Funding: 0.01% (Healthy)
-      </text>
-      <text x="118" y="200" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
-        • Big spot buyers load BTC
-      </text>
-      <text x="118" y="217" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
-        • Low leverage, steady rise
-      </text>
-      <text x="118" y="234" textAnchor="middle" fill="#88d9b8" fontSize="9" fontFamily={FONT_SANS}>
-        • Altcoins wait their turn
-      </text>
-
-      {/* Arrow 1 -> 2 */}
-      <text x="229" y="154" textAnchor="middle" fill="#e3b154" fontSize="16" fontWeight="700">
-        →
-      </text>
-
-      {/* STAGE 2 CARD */}
-      <rect
-        x="242"
-        y="44"
-        width="196"
-        height="212"
-        rx="8"
-        fill="#d69b38"
-        fillOpacity={activeStep === 1 ? 0.18 : 0.07}
-        stroke="#d69b38"
-        strokeWidth={activeStep === 1 ? 2 : 1.1}
-      />
-      <text
-        x="340"
-        y="66"
-        textAnchor="middle"
-        fill="#e3b154"
-        fontSize="10.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        STAGE 2: OVERCROWDED
-      </text>
-      <text x="340" y="82" textAnchor="middle" fill="#f3efe9" fontSize="9.5" fontFamily={FONT_SANS}>
-        Crowded Leveraged Longs
-      </text>
-      {/* Mini Funding Gauge visual */}
-      <rect x="256" y="96" width="168" height="82" rx="5" fill="#131110" stroke="#25221f" />
-      <text x="266" y="113" fill="#e3b154" fontSize="9" fontFamily={FONT_MONO} fontWeight="700">
-        HIGH FUNDING: +0.08%
-      </text>
-      {/* Meter track */}
-      <rect x="266" y="124" width="148" height="14" rx="4" fill="#25221f" />
-      <rect x="266" y="124" width="130" height="14" rx="4" fill="#d69b38" />
-      <rect x="366" y="124" width="30" height="14" rx="4" fill="#d85a52" />
-      <text x="266" y="156" fill="#f0a39e" fontSize="8.5" fontFamily={FONT_MONO} fontWeight="700">
-        20x / 50x LONGS PACKED
-      </text>
-      <text x="266" y="170" fill="#a89f94" fontSize="8" fontFamily={FONT_SANS}>
-        Late buyers borrow heavily
-      </text>
-      <text x="340" y="200" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
-        • Everyone bets UP on margin
-      </text>
-      <text x="340" y="217" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
-        • Longs pay steep funding fees
-      </text>
-      <text x="340" y="234" textAnchor="middle" fill="#edc677" fontSize="9" fontFamily={FONT_SANS}>
-        • Fragile — ripe for a flush!
-      </text>
-
-      {/* Arrow 2 -> 3 */}
-      <text x="451" y="154" textAnchor="middle" fill="#d85a52" fontSize="16" fontWeight="700">
-        →
-      </text>
-
-      {/* STAGE 3 CARD */}
-      <rect
-        x="464"
-        y="44"
-        width="196"
-        height="212"
-        rx="8"
-        fill="#d85a52"
-        fillOpacity={activeStep >= 2 ? 0.18 : 0.07}
-        stroke="#d85a52"
-        strokeWidth={activeStep >= 2 ? 2 : 1.1}
-      />
-      <text
-        x="562"
-        y="66"
-        textAnchor="middle"
-        fill="#e57c75"
-        fontSize="10.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        STAGE 3: FLUSH &amp; RESET
-      </text>
-      <text x="562" y="82" textAnchor="middle" fill="#f3efe9" fontSize="9.5" fontFamily={FONT_SANS}>
-        Liquidation Sweep &amp; Reset
-      </text>
-      {/* Mini Liquidation Wick visual */}
-      <rect x="478" y="96" width="168" height="82" rx="5" fill="#131110" stroke="#25221f" />
-      <polyline
-        points="488,118 524,114 548,166 574,126 634,106"
-        fill="none"
-        stroke="#d85a52"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <polyline
-        points="548,166 574,126 634,106"
-        fill="none"
-        stroke="#2e9e75"
-        strokeWidth="2.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="548" cy="166" r="4.5" fill="#d85a52" />
-      <text x="588" y="168" textAnchor="middle" fill="#f0a39e" fontSize="8" fontFamily={FONT_MONO}>
-        Liq. Wipeout
-      </text>
-      <text x="598" y="109" textAnchor="middle" fill="#88d9b8" fontSize="8" fontFamily={FONT_MONO}>
-        Clean Reset ✓
-      </text>
-      <text x="562" y="200" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
-        • Sharp wick wipes 50x longs
-      </text>
-      <text x="562" y="217" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
-        • Funding drops back to ~0%
-      </text>
-      <text x="562" y="234" textAnchor="middle" fill="#88d9b8" fontSize="9" fontFamily={FONT_SANS}>
-        • Real uptrend can resume
-      </text>
-
-      <DiagramBottomNote text="Simple Rule: Never chase pumps when Crypto Funding is overheated — wait for the liquidation flush & reset." />
-    </g>
-  );
-}
-
-function StocksOrbGapSvg({ activeStep }: DiagramSubProps) {
-  return (
-    <g>
-      <DiagramTopBanner
-        text="STOCKS PLAYBOOK: OVERNIGHT GAP UP → 5-MIN OPENING RANGE BOX → VOLUME BREAKOUT"
-        accent="#4dc296"
-      />
-
-      {/* Vertical 9:30 AM Market Open divider */}
+      {/* Callout 1: HIGH */}
+      <circle cx="150" cy="44" r={isWickStep ? 4.5 : 3.5} fill={isWickStep ? '#e3b154' : mainStroke} />
       <line
-        x1="252"
-        y1="42"
-        x2="252"
-        y2="256"
-        stroke="#e6955c"
-        strokeWidth="1.5"
-        strokeDasharray="5 4"
-      />
-      <text
-        x="252"
-        y="54"
-        textAnchor="middle"
-        fill="#e6955c"
-        fontSize="9"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        9:30 AM OPEN
-      </text>
-
-      {/* 1. Yesterday Close section */}
-      <line x1="26" y1="186" x2="246" y2="186" stroke="#786e63" strokeWidth="1.5" strokeDasharray="4 4" />
-      <text x="86" y="202" textAnchor="middle" fill="#a89f94" fontSize="9" fontFamily={FONT_MONO}>
-        Yesterday Close ($100)
-      </text>
-      {/* Calm yesterday candles */}
-      <line x1="56" y1="168" x2="56" y2="196" stroke="#a89f94" strokeWidth="1.5" />
-      <rect x="49" y="176" width="14" height="14" rx="1.5" fill="#786e63" />
-      <line x1="88" y1="170" x2="88" y2="194" stroke="#2e9e75" strokeWidth="1.5" />
-      <rect x="81" y="176" width="14" height="12" rx="1.5" fill="#2e9e75" />
-      <line x1="120" y1="174" x2="120" y2="194" stroke="#2e9e75" strokeWidth="1.5" />
-      <rect x="113" y="178" width="14" height="10" rx="1.5" fill="#2e9e75" />
-
-      {/* 2. Overnight Gap Up band */}
-      <rect
-        x="146"
-        y="126"
-        width="98"
-        height="60"
-        rx="5"
-        fill="#dd7d3e"
-        fillOpacity={activeStep === 0 ? 0.25 : 0.12}
-        stroke="#e6955c"
-        strokeDasharray="4 3"
-      />
-      <line
-        x1="195"
-        y1="182"
-        x2="195"
-        y2="132"
-        stroke="#e6955c"
-        strokeWidth="2.25"
-        strokeDasharray="4 2"
-      />
-      <polygon points="195,128 189,138 201,138" fill="#e6955c" />
-      <text
-        x="195"
-        y="108"
-        textAnchor="middle"
-        fill="#f0b68a"
-        fontSize="9.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        OVERNIGHT GAP UP
-      </text>
-      <text x="195" y="120" textAnchor="middle" fill="#a89f94" fontSize="8.5" fontFamily={FONT_SANS}>
-        (+4% on Earnings/News)
-      </text>
-
-      {/* 3. 5-Min Opening Range Box (ORB) */}
-      <rect
-        x="260"
-        y="100"
-        width="126"
-        height="56"
-        rx="4"
-        fill="#d69b38"
-        fillOpacity={activeStep === 1 ? 0.28 : 0.14}
-        stroke="#d69b38"
-        strokeWidth={activeStep === 1 ? 2 : 1.3}
-      />
-      <line x1="260" y1="100" x2="646" y2="100" stroke="#d69b38" strokeWidth="1.25" strokeDasharray="5 4" />
-      <text
-        x="323"
-        y="80"
-        textAnchor="middle"
-        fill="#e3b154"
-        fontSize="9.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        5-MIN OPENING RANGE
-      </text>
-      <text x="323" y="93" textAnchor="middle" fill="#edc677" fontSize="8.5" fontFamily={FONT_MONO}>
-        ORB HIGH ($105.20)
-      </text>
-      <text x="323" y="170" textAnchor="middle" fill="#a89f94" fontSize="8.5" fontFamily={FONT_MONO}>
-        ORB LOW ($103.80)
-      </text>
-      {/* First 5m candle inside ORB */}
-      <line x1="296" y1="102" x2="296" y2="154" stroke="#2e9e75" strokeWidth="2" />
-      <rect x="287" y="114" width="18" height="28" rx="2" fill="#2e9e75" />
-      <line x1="346" y1="106" x2="346" y2="150" stroke="#d85a52" strokeWidth="2" />
-      <rect x="337" y="118" width="18" height="20" rx="2" fill="#d85a52" />
-
-      {/* 4. High-Volume Breakout Candles */}
-      {/* Breakout candle */}
-      <line x1="422" y1="68" x2="422" y2="128" stroke="#2e9e75" strokeWidth="2.5" />
-      <rect
-        x="411"
-        y="76"
-        width="22"
-        height="46"
-        rx="2"
-        fill="#2e9e75"
-        stroke={activeStep >= 2 ? '#88d9b8' : 'none'}
-        strokeWidth="2"
-      />
-      {/* Retest */}
-      <line x1="478" y1="74" x2="478" y2="104" stroke="#d85a52" strokeWidth="2" />
-      <rect x="469" y="80" width="18" height="16" rx="2" fill="#d85a52" />
-      {/* Continuation rally */}
-      <line x1="534" y1="54" x2="534" y2="96" stroke="#2e9e75" strokeWidth="2.25" />
-      <rect x="524" y="60" width="20" height="32" rx="2" fill="#2e9e75" />
-      <line x1="590" y1="44" x2="590" y2="76" stroke="#2e9e75" strokeWidth="2.25" />
-      <rect x="580" y="48" width="20" height="24" rx="2" fill="#2e9e75" />
-
-      <text
-        x="512"
-        y="52"
-        textAnchor="middle"
-        fill="#4dc296"
-        fontSize="9.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        HIGH-VOLUME BREAKOUT ▲
-      </text>
-
-      {/* Bottom Volume Bars Strip */}
-      <line x1="26" y1="256" x2="652" y2="256" stroke="#332e29" strokeWidth="1" />
-      <text x="30" y="248" fill="#786e63" fontSize="8.5" fontFamily={FONT_MONO}>
-        VOLUME:
-      </text>
-      {[
-        { x: 82, h: 14, color: '#524a42' },
-        { x: 114, h: 12, color: '#524a42' },
-        { x: 288, h: 28, color: '#d69b38' },
-        { x: 338, h: 22, color: '#d69b38' },
-        { x: 412, h: 52, color: '#2e9e75' },
-        { x: 470, h: 20, color: '#786e63' },
-        { x: 525, h: 38, color: '#2e9e75' },
-        { x: 581, h: 32, color: '#2e9e75' },
-      ].map((bar) => (
-        <rect
-          key={bar.x}
-          x={bar.x}
-          y={256 - bar.h}
-          width="18"
-          height={bar.h}
-          rx="2"
-          fill={bar.color}
-          opacity={bar.x === 412 ? 1 : 0.7}
-        />
-      ))}
-      <text
-        x="422"
-        y="198"
-        textAnchor="middle"
-        fill="#4dc296"
-        fontSize="8.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        VOL SPIKE ✓
-      </text>
-
-      <DiagramBottomNote text="Simple Rule: Let the first 5 minutes draw the Opening Range box, then only trade a breakout backed by heavy Volume." />
-    </g>
-  );
-}
-
-function TradeManagementJournalSvg({ activeStep }: DiagramSubProps) {
-  return (
-    <g>
-      <DiagramTopBanner
-        text="TRADE MANAGEMENT: SAFETY NET → PARTIAL AT 1:1 → MOVE STOP TO ZERO RISK → 1:3 TARGET"
-        accent="#e6955c"
-      />
-
-      {/* Final Target 1:3 Line */}
-      <line x1="40" y1="58" x2="640" y2="58" stroke="#2e9e75" strokeWidth="1.75" strokeDasharray="6 4" />
-      <rect x="466" y="42" width="174" height="20" rx="4" fill="#2e9e75" fillOpacity="0.2" stroke="#2e9e75" />
-      <text
-        x="553"
-        y="55.5"
-        textAnchor="middle"
-        fill="#88d9b8"
-        fontSize="9.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        5. FINAL TARGET 1:3 (+3R)
-      </text>
-
-      {/* Partial Profit 1:1 Line */}
-      <line x1="40" y1="138" x2="640" y2="138" stroke="#d69b38" strokeWidth="1.5" strokeDasharray="5 4" />
-      <rect
-        x="210"
-        y="112"
-        width="182"
-        height="20"
-        rx="4"
-        fill="#d69b38"
-        fillOpacity={activeStep === 1 ? 0.3 : 0.16}
-        stroke="#d69b38"
-      />
-      <text
-        x="301"
-        y="125.5"
-        textAnchor="middle"
-        fill="#edc677"
-        fontSize="9.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        3. PARTIAL PROFIT AT 1:1 (+1R)
-      </text>
-
-      {/* Initial Risk Box (-1R) from Entry down to Stop Loss */}
-      <rect
-        x="86"
-        y="184"
-        width="198"
-        height="46"
-        rx="4"
-        fill="#d85a52"
-        fillOpacity={activeStep === 0 ? 0.28 : 0.14}
-        stroke="#d85a52"
+        x1="156"
+        y1="44"
+        x2="214"
+        y2="44"
+        stroke={isWickStep ? '#e3b154' : '#524a42'}
         strokeWidth="1.25"
+        strokeDasharray="3 3"
       />
-      <text
-        x="185"
-        y="246"
-        textAnchor="middle"
-        fill="#e57c75"
-        fontSize="9.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        2. STOP LOSS (Safety Net -1R)
+      <text x="220" y="47" fontSize="9.5" fontFamily={FONT_SANS}>
+        <tspan fill={mainStroke} fontFamily={FONT_MONO} fontWeight="700">
+          HIGH
+        </tspan>
+        <tspan fill="#dcd4ca"> — Highest price reached in this period</tspan>
       </text>
 
-      {/* Entry / Breakeven Line */}
-      <line x1="40" y1="184" x2="292" y2="184" stroke="#dd7d3e" strokeWidth="2" />
-      {/* Zero-Risk Line after Stop moved to Entry */}
+      {/* Callout 2: UPPER WICK */}
       <line
-        x1="292"
-        y1="184"
-        x2="640"
-        y2="184"
-        stroke="#2e9e75"
-        strokeWidth={activeStep === 1 ? 2.75 : 2}
-        strokeDasharray="6 3"
+        x1="154"
+        y1="66"
+        x2="214"
+        y2="66"
+        stroke={isWickStep ? '#e3b154' : '#524a42'}
+        strokeWidth={isWickStep ? 1.8 : 1.25}
+        strokeDasharray="3 3"
       />
+      <text x="220" y="69" fontSize="9.5" fontFamily={FONT_SANS}>
+        <tspan fill="#e3b154" fontFamily={FONT_MONO} fontWeight="700">
+          UPPER WICK
+        </tspan>
+        <tspan fill="#a89f94">
+          {isBull ? ' — Buyers pushed higher, sellers pushed back' : ' — Brief rally rejected by sellers'}
+        </tspan>
+      </text>
 
-      {/* Curved/Vertical Arrow showing Stop Loss moved up to Entry */}
-      <line x1="302" y1="228" x2="302" y2="192" stroke="#e6955c" strokeWidth="2.5" />
-      <polygon points="302,185 296,195 308,195" fill="#e6955c" />
-      <rect
+      {/* Callout 3: TOP OF BODY (CLOSE for Bullish, OPEN for Bearish) */}
+      <line
+        x1="120"
+        y1="88"
+        x2="214"
+        y2="88"
+        stroke={isBull ? (isBodyStep ? '#88d9b8' : '#4dc296') : isOpenStep ? '#e6955c' : '#dd7d3e'}
+        strokeWidth={isBull ? (isBodyStep ? 2.2 : 1.4) : isOpenStep ? 2.2 : 1.4}
+        strokeDasharray="3 3"
+      />
+      <circle
+        cx="176"
+        cy="88"
+        r={isBull ? (isBodyStep ? 4.5 : 3.5) : isOpenStep ? 4.5 : 3.5}
+        fill={isBull ? '#4dc296' : '#e6955c'}
+      />
+      <text x="220" y="91" fontSize="9.5" fontFamily={FONT_SANS}>
+        <tspan fill={isBull ? '#4dc296' : '#e6955c'} fontFamily={FONT_MONO} fontWeight="700">
+          {isBull ? 'CLOSE' : 'OPEN'}
+        </tspan>
+        <tspan fill={isBull ? '#88d9b8' : '#f0b68a'}>
+          {isBull
+            ? ' (Top of green body — ended HIGHER)'
+            : ' (Top of red body — started HIGHER)'}
+        </tspan>
+      </text>
+
+      {/* Callout 4: BODY */}
+      <line
+        x1="178"
+        y1="132"
+        x2="214"
+        y2="132"
+        stroke={isBodyStep ? '#f3efe9' : '#786e63'}
+        strokeWidth="1.5"
+      />
+      <text x="220" y="135" fontSize="9.5" fontFamily={FONT_SANS}>
+        <tspan fill="#f3efe9" fontFamily={FONT_MONO} fontWeight="700">
+          BODY
+        </tspan>
+        <tspan fill="#dcd4ca">
+          {isBull
+            ? ' — Net upward gain from Open to Close'
+            : ' — Net downward drop from Open to Close'}
+        </tspan>
+      </text>
+
+      {/* Callout 5: BOTTOM OF BODY (OPEN for Bullish, CLOSE for Bearish) */}
+      <line
+        x1="120"
+        y1="176"
+        x2="214"
+        y2="176"
+        stroke={isBull ? (isOpenStep ? '#e6955c' : '#dd7d3e') : isBodyStep ? '#f0a39e' : '#d85a52'}
+        strokeWidth={isBull ? (isOpenStep ? 2.2 : 1.4) : isBodyStep ? 2.2 : 1.4}
+        strokeDasharray="3 3"
+      />
+      <circle
+        cx="176"
+        cy="176"
+        r={isBull ? (isOpenStep ? 4.5 : 3.5) : isBodyStep ? 4.5 : 3.5}
+        fill={isBull ? '#e6955c' : '#e57c75'}
+      />
+      <text x="220" y="179" fontSize="9.5" fontFamily={FONT_SANS}>
+        <tspan fill={isBull ? '#e6955c' : '#e57c75'} fontFamily={FONT_MONO} fontWeight="700">
+          {isBull ? 'OPEN' : 'CLOSE'}
+        </tspan>
+        <tspan fill={isBull ? '#f0b68a' : '#f0a39e'}>
+          {isBull
+            ? ' (Bottom of green body — started LOWER)'
+            : ' (Bottom of red body — ended LOWER)'}
+        </tspan>
+      </text>
+
+      {/* Callout 6: LOWER WICK */}
+      <line
+        x1="154"
+        y1="198"
+        x2="214"
+        y2="198"
+        stroke={isWickStep ? '#e3b154' : '#524a42'}
+        strokeWidth={isWickStep ? 1.8 : 1.25}
+        strokeDasharray="3 3"
+      />
+      <text x="220" y="201" fontSize="9.5" fontFamily={FONT_SANS}>
+        <tspan fill="#e3b154" fontFamily={FONT_MONO} fontWeight="700">
+          LOWER WICK
+        </tspan>
+        <tspan fill="#a89f94">
+          {isBull ? ' — Dipped down, buyers snapped price back up' : ' — Dipped lower, slight bounce before close'}
+        </tspan>
+      </text>
+
+      {/* Callout 7: LOW */}
+      <circle cx="150" cy="220" r={isWickStep ? 4.5 : 3.5} fill={isWickStep ? '#e3b154' : mainStroke} />
+      <line
+        x1="156"
+        y1="220"
+        x2="214"
+        y2="220"
+        stroke={isWickStep ? '#e3b154' : '#524a42'}
+        strokeWidth="1.25"
+        strokeDasharray="3 3"
+      />
+      <text x="220" y="223" fontSize="9.5" fontFamily={FONT_SANS}>
+        <tspan fill={mainStroke} fontFamily={FONT_MONO} fontWeight="700">
+          LOW
+        </tspan>
+        <tspan fill="#dcd4ca"> — Lowest price reached in this period</tspan>
+      </text>
+
+      {/* Bottom 3-step bar */}
+      <rect x="14" y="242" width="612" height="30" rx="6" fill="#1b1917" stroke="#25221f" />
+      <text
+        x="116"
+        y="260.5"
+        textAnchor="middle"
+        fill={isOpenStep ? '#f0b68a' : '#a89f94'}
+        fontSize="9"
+        fontFamily={FONT_MONO}
+        fontWeight="700"
+      >
+        1. Timer Opens ({isBull ? 'Bottom' : 'Top'})
+      </text>
+      <text x="218" y="261" textAnchor="middle" fill="#786e63" fontSize="11">
+        →
+      </text>
+      <text
         x="320"
-        y="196"
-        width="254"
-        height="34"
-        rx="5"
-        fill="#dd7d3e"
-        fillOpacity={activeStep === 1 ? 0.28 : 0.14}
-        stroke="#e6955c"
-        strokeWidth={activeStep === 1 ? 1.75 : 1}
-      />
-      <text
-        x="447"
-        y="211"
+        y="260.5"
         textAnchor="middle"
-        fill="#f0b68a"
-        fontSize="9.5"
+        fill={isWickStep ? '#edc677' : '#a89f94'}
+        fontSize="9"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
-        4. MOVE STOP TO ENTRY (ZERO RISK!)
+        2. Wicks Record Rejections
+      </text>
+      <text x="424" y="261" textAnchor="middle" fill="#786e63" fontSize="11">
+        →
       </text>
       <text
-        x="447"
-        y="224"
+        x="526"
+        y="260.5"
         textAnchor="middle"
-        fill="#dcd4ca"
-        fontSize="8.5"
-        fontFamily={FONT_SANS}
-      >
-        Worst case now = breakeven + banked partial profit
-      </text>
-
-      {/* Price Path */}
-      <polyline
-        points="42,216 106,184 166,204 294,138 368,158 468,100 562,58"
-        fill="none"
-        stroke="#f3efe9"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      {/* Milestone 1: Entry */}
-      <circle
-        cx="106"
-        cy="184"
-        r={activeStep === 0 ? 7 : 5.5}
-        fill="#dd7d3e"
-        stroke="#131110"
-        strokeWidth="2"
-      />
-      <text
-        x="96"
-        y="172"
-        textAnchor="middle"
-        fill="#e6955c"
-        fontSize="9.5"
+        fill={isBodyStep ? mainTint : mainStroke}
+        fontSize="9"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
-        1. ENTRY
+        3. Closes {isBull ? 'Higher (GREEN)' : 'Lower (RED)'}
       </text>
-
-      {/* Milestone 3: Partial 1:1 */}
-      <circle
-        cx="294"
-        cy="138"
-        r={activeStep === 1 ? 7 : 5.5}
-        fill="#d69b38"
-        stroke="#131110"
-        strokeWidth="2"
-      />
-
-      {/* Milestone 5: Target 1:3 */}
-      <circle
-        cx="562"
-        cy="58"
-        r={activeStep >= 2 ? 7.5 : 5.5}
-        fill="#2e9e75"
-        stroke="#131110"
-        strokeWidth="2"
-      />
-
-      <DiagramBottomNote text="Journal Habit: Record Entry, Stop, Partial, & Result on every trade so discipline compounds your edge." />
     </g>
   );
 }
 
-/* ==================== EXISTING 6 DIAGRAMS (UPGRADED WITH PLAIN-ENGLISH HELPERS) ==================== */
+/* ==================== 3. MARKET STRUCTURE ==================== */
 
-function MarketStructureSvg({ activeStep }: DiagramSubProps) {
+function MarketStructureSvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
+  const mainColor = isBull ? '#2e9e75' : '#d85a52';
+  const lightColor = isBull ? '#4dc296' : '#e57c75';
+
+  const points = isBull
+    ? '42,216 122,148 182,184 282,108 350,144 466,68 538,100 604,50'
+    : '42,52 122,120 182,84 282,160 350,124 466,200 538,168 604,218';
+
+  const nodes = isBull
+    ? [
+        { x: 122, y: 148, label: 'HH 1', color: '#4dc296', dy: -12 },
+        { x: 182, y: 184, label: 'HL 1 (Floor)', color: '#e3b154', dy: 18 },
+        { x: 282, y: 108, label: 'HH 2', color: '#4dc296', dy: -12 },
+        { x: 350, y: 144, label: 'HL 2', color: '#4dc296', dy: 18 },
+        { x: 466, y: 68, label: 'HH 3', color: '#4dc296', dy: -12 },
+      ]
+    : [
+        { x: 122, y: 120, label: 'LL 1', color: '#e57c75', dy: 18 },
+        { x: 182, y: 84, label: 'LH 1 (Ceiling)', color: '#e3b154', dy: -12 },
+        { x: 282, y: 160, label: 'LL 2', color: '#e57c75', dy: 18 },
+        { x: 350, y: 124, label: 'LH 2', color: '#e57c75', dy: -12 },
+        { x: 466, y: 200, label: 'LL 3', color: '#e57c75', dy: 18 },
+      ];
+
   return (
     <g>
       <DiagramTopBanner
-        text="UPTREND STAIRCASE: HIGHER HIGHS (HH), HIGHER LOWS (HL) & BREAK OF STRUCTURE (BOS)"
-        accent="#4dc296"
+        text={
+          isBull
+            ? 'BULLISH STRUCTURE: HIGHER HIGHS (HH), HIGHER LOWS (HL) & BOS UP'
+            : 'BEARISH STRUCTURE: LOWER HIGHS (LH), LOWER LOWS (LL) & BOS DOWN'
+        }
+        accent={lightColor}
       />
 
-      {/* Bullish trend swing path */}
       <polyline
-        points="48,236 132,162 194,202 296,120 368,160 490,74 568,110 634,56"
+        points={points}
         fill="none"
-        stroke="#2e9e75"
+        stroke={mainColor}
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
 
-      {/* BOS horizontal lines */}
+      {/* BOS horizontal levels */}
       <line
-        x1="132"
-        y1="162"
-        x2="282"
-        y2="162"
+        x1="122"
+        y1={isBull ? 148 : 120}
+        x2="268"
+        y2={isBull ? 148 : 120}
         stroke="#dd7d3e"
         strokeWidth="1.75"
         strokeDasharray="6 4"
-        opacity={activeStep === 1 ? 1 : 0.65}
+        opacity={activeStep === 1 ? 1 : 0.7}
       />
       <line
-        x1="296"
-        y1="120"
-        x2="466"
-        y2="120"
+        x1="282"
+        y1={isBull ? 108 : 160}
+        x2="448"
+        y2={isBull ? 108 : 160}
         stroke="#dd7d3e"
         strokeWidth="1.75"
         strokeDasharray="6 4"
-        opacity={activeStep === 2 ? 1 : 0.65}
+        opacity={activeStep === 2 ? 1 : 0.7}
       />
 
-      {/* Protected Swing Low highlight */}
+      {/* Protected Swing Level */}
       <line
-        x1="194"
-        y1="202"
-        x2="404"
-        y2="202"
+        x1="182"
+        y1={isBull ? 184 : 84}
+        x2="388"
+        y2={isBull ? 184 : 84}
         stroke="#d69b38"
-        strokeWidth="1.75"
+        strokeWidth="1.6"
         strokeDasharray="4 4"
-        opacity={activeStep === 3 ? 1 : 0.6}
+        opacity={activeStep >= 3 ? 1 : 0.6}
       />
 
-      {/* Swing nodes */}
-      {[
-        { x: 132, y: 162, label: 'HH 1 (Peak)', color: '#2e9e75', dy: -14 },
-        { x: 194, y: 202, label: 'HL 1 (Protected Floor)', color: '#d69b38', dy: 22 },
-        { x: 296, y: 120, label: 'HH 2 (Higher Peak)', color: '#2e9e75', dy: -14 },
-        { x: 368, y: 160, label: 'HL 2 (Higher Floor)', color: '#2e9e75', dy: 22 },
-        { x: 490, y: 74, label: 'HH 3', color: '#2e9e75', dy: -14 },
-      ].map((node, index) => (
+      {nodes.map((node, index) => (
         <g key={node.label}>
           <circle
             cx={node.x}
@@ -2047,7 +861,7 @@ function MarketStructureSvg({ activeStep }: DiagramSubProps) {
             y={node.y + node.dy}
             textAnchor="middle"
             fill={node.color}
-            fontSize="10"
+            fontSize="9.5"
             fontFamily={FONT_MONO}
             fontWeight="700"
           >
@@ -2056,519 +870,1834 @@ function MarketStructureSvg({ activeStep }: DiagramSubProps) {
         </g>
       ))}
 
-      <rect x="200" y="138" width="96" height="19" rx="4" fill="#dd7d3e" fillOpacity="0.2" />
+      {/* BOS Pill 1 */}
+      <rect x="190" y={isBull ? 126 : 124} width="94" height="18" rx="4" fill="#dd7d3e" fillOpacity="0.22" />
       <text
-        x="248"
-        y="151"
+        x="237"
+        y={isBull ? 138 : 136}
         textAnchor="middle"
-        fill="#e6955c"
-        fontSize="9.5"
+        fill="#f0b68a"
+        fontSize="9"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
-        BOS (Break Up)
+        {isBull ? 'BOS Up ▲' : 'BOS Down ▼'}
       </text>
 
-      <rect x="374" y="96" width="96" height="19" rx="4" fill="#dd7d3e" fillOpacity="0.2" />
+      {/* BOS Pill 2 */}
+      <rect x="358" y={isBull ? 86 : 164} width="94" height="18" rx="4" fill="#dd7d3e" fillOpacity="0.22" />
       <text
-        x="422"
-        y="109"
+        x="405"
+        y={isBull ? 98 : 176}
         textAnchor="middle"
-        fill="#e6955c"
-        fontSize="9.5"
+        fill="#f0b68a"
+        fontSize="9"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
-        BOS (Break Up)
+        {isBull ? 'BOS Up ▲' : 'BOS Down ▼'}
       </text>
 
-      <DiagramBottomNote text="Glossary: HH = Higher High (new peak) • HL = Higher Low (higher floor) • BOS = Break of Structure (uptrend continues)." />
+      <DiagramBottomNote
+        text={
+          isBull
+            ? 'HH (Higher High) + HL (Higher Low) + full candle close above prior high = valid Bullish BOS (Break of Structure).'
+            : 'LH (Lower High) + LL (Lower Low) + full candle close below prior low = valid Bearish BOS (Break of Structure).'
+        }
+      />
     </g>
   );
 }
 
-function LiquidityPoolsSvg({ activeStep }: DiagramSubProps) {
+/* ==================== 4. SUPPORT / RESISTANCE & SUPPLY / DEMAND ==================== */
+
+function SupportDemandSvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
+  const accent = isBull ? '#4dc296' : '#e57c75';
+
   return (
     <g>
       <DiagramTopBanner
-        text="LIQUIDITY POOLS: WHERE STOP-LOSSES CLUSTER ABOVE HIGHS (BSL) & BELOW LOWS (SSL)"
-        accent="#e3b154"
+        text={
+          isBull
+            ? 'BULLISH DEMAND / SUPPORT FLOOR: BUYERS DEFEND ZONE & LAUNCH UP'
+            : 'BEARISH SUPPLY / RESISTANCE CEILING: SELLERS DEFEND ZONE & DROP'
+        }
+        accent={accent}
       />
 
-      {/* Buy-side liquidity band */}
+      {/* Top Supply / Resistance Zone */}
       <rect
-        x="38"
-        y="50"
-        width="604"
-        height="38"
-        rx="6"
-        fill="#d69b38"
-        fillOpacity={activeStep === 0 ? 0.25 : 0.13}
-        stroke="#d69b38"
-        strokeDasharray="5 4"
+        x="28"
+        y="40"
+        width="584"
+        height="40"
+        rx="5"
+        fill="#d85a52"
+        fillOpacity={!isBull || activeStep === 1 ? 0.25 : 0.1}
+        stroke="#d85a52"
+        strokeWidth={!isBull ? 1.8 : 1.1}
+        strokeDasharray="6 4"
       />
       <text
-        x="340"
-        y="67"
+        x="320"
+        y="57"
         textAnchor="middle"
-        fill="#e3b154"
-        fontSize="10.5"
+        fill="#f0a39e"
+        fontSize="10"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
-        BSL = BUY-SIDE LIQUIDITY (Stop-Losses Stacked Above Highs)
+        RESISTANCE / SUPPLY ZONE (CEILING)
       </text>
-      <text x="340" y="81" textAnchor="middle" fill="#f3efe9" fontSize="9" fontFamily={FONT_SANS}>
-        Sellers&apos; stop-losses &amp; breakout buy orders sit waiting here
+      <text x="320" y="71" textAnchor="middle" fill="#dcd4ca" fontSize="8.8" fontFamily={FONT_SANS}>
+        {isBull ? 'Target area above — watch for seller reactions' : 'Institutions sell here and push price DOWN ▼'}
       </text>
 
-      {/* Range price path */}
+      {/* Bottom Demand / Support Zone */}
+      <rect
+        x="28"
+        y="194"
+        width="584"
+        height="40"
+        rx="5"
+        fill="#2e9e75"
+        fillOpacity={isBull || activeStep === 0 ? 0.25 : 0.1}
+        stroke="#2e9e75"
+        strokeWidth={isBull ? 1.8 : 1.1}
+        strokeDasharray="6 4"
+      />
+      <text
+        x="320"
+        y="211"
+        textAnchor="middle"
+        fill="#88d9b8"
+        fontSize="10"
+        fontFamily={FONT_MONO}
+        fontWeight="700"
+      >
+        SUPPORT / DEMAND ZONE (FLOOR)
+      </text>
+      <text x="320" y="225" textAnchor="middle" fill="#dcd4ca" fontSize="8.8" fontFamily={FONT_SANS}>
+        {isBull ? 'Institutions buy here and bounce price UP ▲' : 'Target area below — take profit before buyers step in'}
+      </text>
+
+      {/* Price Path */}
       <polyline
-        points="54,154 126,96 202,208 278,98 354,206 432,100 498,200 568,74 622,170"
+        points={
+          isBull
+            ? '44,126 128,196 220,124 318,196 426,112 508,196 594,86'
+            : '44,154 128,80 220,152 318,80 426,162 508,80 594,190'
+        }
         fill="none"
-        stroke="#a89f94"
-        strokeWidth="2.75"
+        stroke="#f3efe9"
+        strokeWidth="2.8"
+        strokeLinecap="round"
         strokeLinejoin="round"
       />
 
-      {/* Sweep marker above BSL */}
+      {/* Highlighted reaction points */}
+      {(isBull
+        ? [
+            { x: 128, y: 196, label: '▲ Demand #1' },
+            { x: 318, y: 196, label: '▲ Demand #2' },
+            { x: 508, y: 196, label: '▲ Long Entry' },
+          ]
+        : [
+            { x: 128, y: 80, label: '▼ Supply #1' },
+            { x: 318, y: 80, label: '▼ Supply #2' },
+            { x: 508, y: 80, label: '▼ Short Entry' },
+          ]
+      ).map((pt, i) => (
+        <g key={pt.label}>
+          <circle
+            cx={pt.x}
+            cy={pt.y}
+            r={activeStep === i ? 7 : 5.5}
+            fill={isBull ? '#2e9e75' : '#d85a52'}
+            stroke="#131110"
+            strokeWidth="2"
+          />
+          <text
+            x={pt.x}
+            y={isBull ? pt.y - 12 : pt.y + 18}
+            textAnchor="middle"
+            fill={accent}
+            fontSize="9"
+            fontFamily={FONT_MONO}
+            fontWeight="700"
+          >
+            {pt.label}
+          </text>
+        </g>
+      ))}
+
+      {/* Final Impulse Label */}
+      <circle cx="594" cy={isBull ? 86 : 190} r="5.5" fill={isBull ? '#2e9e75' : '#d85a52'} />
+      <text
+        x="568"
+        y={isBull ? 105 : 178}
+        textAnchor="middle"
+        fill={accent}
+        fontSize="9"
+        fontFamily={FONT_MONO}
+        fontWeight="700"
+      >
+        {isBull ? 'Rally UP ▲' : 'Drop DOWN ▼'}
+      </text>
+
+      <DiagramBottomNote
+        text={
+          isBull
+            ? 'Bullish Rule: Wait for price to revisit a Demand Floor + bullish close before buying — never chase into Supply.'
+            : 'Bearish Rule: Wait for price to revisit a Supply Ceiling + bearish rejection before shorting toward Support.'
+        }
+      />
+    </g>
+  );
+}
+
+/* ==================== 5. LIQUIDITY POOLS (BSL & SSL) ==================== */
+
+function LiquidityPoolsSvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
+  const accent = isBull ? '#4dc296' : '#e57c75';
+
+  return (
+    <g>
+      <DiagramTopBanner
+        text={
+          isBull
+            ? 'BULLISH LIQUIDITY PLAY: SWEEP SSL (BELOW LOWS) → REVERSAL TO BSL ▲'
+            : 'BEARISH LIQUIDITY PLAY: SWEEP BSL (ABOVE HIGHS) → REVERSAL TO SSL ▼'
+        }
+        accent={accent}
+      />
+
+      {/* BSL Band */}
+      <rect
+        x="28"
+        y="42"
+        width="584"
+        height="36"
+        rx="5"
+        fill="#d69b38"
+        fillOpacity={!isBull && activeStep === 0 ? 0.28 : 0.14}
+        stroke="#d69b38"
+        strokeDasharray="5 4"
+      />
+      <text x="320" y="58" textAnchor="middle" fill="#e3b154" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
+        BSL = BUY-SIDE LIQUIDITY (Stop-Losses Above Highs)
+      </text>
+      <text x="320" y="71" textAnchor="middle" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
+        {isBull ? 'Take Profit target magnet for Bullish Longs ▲' : 'Institutions raid these stops before selling DOWN ▼'}
+      </text>
+
+      {/* SSL Band */}
+      <rect
+        x="28"
+        y="198"
+        width="584"
+        height="36"
+        rx="5"
+        fill="#dd7d3e"
+        fillOpacity={isBull && activeStep === 0 ? 0.28 : 0.14}
+        stroke="#dd7d3e"
+        strokeDasharray="5 4"
+      />
+      <text x="320" y="214" textAnchor="middle" fill="#f0b68a" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
+        SSL = SELL-SIDE LIQUIDITY (Stop-Losses Below Lows)
+      </text>
+      <text x="320" y="227" textAnchor="middle" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
+        {isBull ? 'Institutions raid these stops before rallying UP ▲' : 'Take Profit target magnet for Bearish Shorts ▼'}
+      </text>
+
+      {/* Range + Sweep + Expansion */}
+      <polyline
+        points={
+          isBull
+            ? '48,136 124,84 202,190 286,88 370,190 444,218 516,136 592,64'
+            : '48,142 124,192 202,86 286,188 370,86 444,58 516,142 592,212'
+        }
+        fill="none"
+        stroke="#a89f94"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+      />
+      <polyline
+        points={isBull ? '444,218 516,136 592,64' : '444,58 516,142 592,212'}
+        fill="none"
+        stroke={isBull ? '#2e9e75' : '#d85a52'}
+        strokeWidth="3.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      {/* Sweep Node */}
       <circle
-        cx="568"
-        cy="74"
-        r={activeStep >= 2 ? 7.5 : 5.5}
-        fill="#d85a52"
+        cx="444"
+        cy={isBull ? 218 : 58}
+        r={activeStep >= 1 ? 7.5 : 5.5}
+        fill={isBull ? '#2e9e75' : '#d85a52'}
         stroke="#131110"
         strokeWidth="2"
       />
       <text
-        x="568"
-        y="46"
+        x="444"
+        y={isBull ? 186 : 96}
         textAnchor="middle"
-        fill="#e57c75"
-        fontSize="9.5"
+        fill={accent}
+        fontSize="9"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
-        Stop Hunt / Tap
+        {isBull ? '1. SSL Swept!' : '1. BSL Swept!'}
       </text>
 
-      {/* Sell-side liquidity band */}
-      <rect
-        x="38"
-        y="214"
-        width="604"
-        height="38"
-        rx="6"
-        fill="#dd7d3e"
-        fillOpacity={activeStep === 1 ? 0.25 : 0.13}
-        stroke="#dd7d3e"
-        strokeDasharray="5 4"
+      {/* Target Node */}
+      <circle
+        cx="592"
+        cy={isBull ? 64 : 212}
+        r={activeStep >= 2 ? 7 : 5}
+        fill="#e3b154"
+        stroke="#131110"
+        strokeWidth="2"
       />
       <text
-        x="340"
-        y="231"
+        x="558"
+        y={isBull ? 92 : 188}
         textAnchor="middle"
-        fill="#e6955c"
-        fontSize="10.5"
+        fill="#edc677"
+        fontSize="9"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
-        SSL = SELL-SIDE LIQUIDITY (Stop-Losses Stacked Below Lows)
-      </text>
-      <text x="340" y="245" textAnchor="middle" fill="#f3efe9" fontSize="9" fontFamily={FONT_SANS}>
-        Buyers&apos; stop-losses &amp; breakdown sell orders sit waiting here
+        {isBull ? '2. Target BSL ▲' : '2. Target SSL ▼'}
       </text>
 
-      <DiagramBottomNote text="Plain English: Big institutions need huge order pools to fill trades — they often sweep BSL or SSL before reversing." />
+      <DiagramBottomNote
+        text={
+          isBull
+            ? 'Bullish Liquidity Cycle: Price raids SSL (Sell-Side Liquidity) below lows, traps sellers, then drives toward BSL.'
+            : 'Bearish Liquidity Cycle: Price raids BSL (Buy-Side Liquidity) above highs, traps buyers, then drops toward SSL.'
+        }
+      />
     </g>
   );
 }
 
-function EqualHighsLowsSvg({ activeStep }: DiagramSubProps) {
+/* ==================== 6. EQUAL HIGHS (EQH) & EQUAL LOWS (EQL) ==================== */
+
+function EqualHighsLowsSvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
+  const mainColor = isBull ? '#2e9e75' : '#d85a52';
+  const accent = isBull ? '#4dc296' : '#e57c75';
+
   return (
     <g>
       <DiagramTopBanner
-        text="EQUAL HIGHS (EQH): WHY 'DOUBLE TOPS' ATTRACT STOP RAIDS BEFORE DROPPING"
-        accent="#e3b154"
+        text={
+          isBull
+            ? 'BULLISH EQUAL LOWS (EQL): STOP RAID BELOW DOUBLE BOTTOM → RALLY UP'
+            : 'BEARISH EQUAL HIGHS (EQH): STOP RAID ABOVE DOUBLE TOP → DROP DOWN'
+        }
+        accent={accent}
       />
 
-      {/* Equal Highs line */}
+      {/* EQL / EQH dashed level */}
       <line
-        x1="64"
-        y1="88"
-        x2="616"
-        y2="88"
+        x1="46"
+        y1={isBull ? 192 : 84}
+        x2="594"
+        y2={isBull ? 192 : 84}
         stroke="#d69b38"
         strokeWidth="2"
         strokeDasharray="6 4"
       />
       <text
-        x="236"
-        y="74"
+        x="224"
+        y={isBull ? 210 : 72}
         textAnchor="middle"
         fill="#e3b154"
-        fontSize="10.5"
+        fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
-        $$$ EQUAL HIGHS (EQH) — Matching Peaks = Stop Cluster
+        {isBull
+          ? '$$$ EQUAL LOWS (EQL) — Buyers’ Stop Cluster'
+          : '$$$ EQUAL HIGHS (EQH) — Sellers’ Stop Cluster'}
       </text>
 
-      {/* Price bouncing cleanly twice then sweeping */}
+      {/* Price Action */}
       <polyline
-        points="54,204 138,90 218,178 310,90 398,170 468,58 518,136 610,236"
+        points={
+          isBull
+            ? '48,80 132,190 212,114 300,190 380,124 446,222 496,150 584,54'
+            : '48,196 132,86 212,162 300,86 380,152 446,54 496,126 584,222'
+        }
         fill="none"
-        stroke="#2e9e75"
-        strokeWidth="2.75"
+        stroke="#a89f94"
+        strokeWidth="2.6"
         strokeLinejoin="round"
       />
-      {/* Rejection leg colored bearish */}
       <polyline
-        points="468,58 518,136 610,236"
+        points={isBull ? '446,222 496,150 584,54' : '446,54 496,126 584,222'}
         fill="none"
-        stroke="#d85a52"
-        strokeWidth="3.25"
+        stroke={mainColor}
+        strokeWidth="3.2"
+        strokeLinecap="round"
         strokeLinejoin="round"
       />
 
-      <circle cx="138" cy="90" r="5" fill="#d69b38" />
-      <circle cx="310" cy="90" r="5" fill="#d69b38" />
+      {/* Equal touches */}
+      <circle cx="132" cy={isBull ? 190 : 86} r="5" fill="#d69b38" />
+      <circle cx="300" cy={isBull ? 190 : 86} r="5" fill="#d69b38" />
+      {/* Sweep Wick Node */}
       <circle
-        cx="468"
-        cy="58"
-        r={activeStep >= 1 ? 8 : 6}
-        fill="#d85a52"
+        cx="446"
+        cy={isBull ? 222 : 54}
+        r={activeStep >= 1 ? 7.5 : 5.5}
+        fill={mainColor}
         stroke="#131110"
         strokeWidth="2"
       />
       <text
-        x="484"
-        y="48"
+        x="458"
+        y={isBull ? 236 : 46}
         textAnchor="middle"
-        fill="#e57c75"
-        fontSize="10"
+        fill={accent}
+        fontSize="9.2"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
         Stop Raid Wick (Trap!)
       </text>
+
       <text
-        x="568"
-        y="252"
+        x="554"
+        y={isBull ? 48 : 235}
         textAnchor="middle"
-        fill="#e57c75"
-        fontSize="10"
+        fill={accent}
+        fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
-        Fast Reversal Down ▼
+        {isBull ? 'Fast Reversal UP ▲' : 'Fast Reversal DOWN ▼'}
       </text>
 
-      <DiagramBottomNote text="Plain English: Two matching peaks (EQH) tempt traders to put stops right above — price often spikes above to trigger them, then drops." />
+      <DiagramBottomNote
+        text={
+          isBull
+            ? 'Two matching lows (EQL) invite retail Stop Losses right below — wait for the raid & reclaim before going Long.'
+            : 'Two matching highs (EQH) invite retail Stop Losses right above — wait for the raid & rejection before Shorting.'
+        }
+      />
     </g>
   );
 }
 
-function LiquiditySweepVsBreakoutSvg({ activeStep }: DiagramSubProps) {
+/* ==================== 7. LIQUIDITY SWEEP VS TRUE BREAKOUT ==================== */
+
+function LiquiditySweepVsBreakoutSvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
+  const accent = isBull ? '#4dc296' : '#e57c75';
+
   return (
     <g>
       <DiagramTopBanner
-        text="FAKEOUT TRAP (SWEEP) VS. REAL BREAKOUT — WATCH WHERE THE CANDLE BODY CLOSES!"
-        accent="#e6955c"
+        text={
+          isBull
+            ? 'BULLISH: SSL SWEEP REVERSAL UP (LEFT) vs. TRUE BREAKOUT UP (RIGHT)'
+            : 'BEARISH: BSL SWEEP REVERSAL DOWN (LEFT) vs. TRUE BREAKDOWN DOWN (RIGHT)'
+        }
+        accent={accent}
       />
 
-      {/* Divider */}
-      <line x1="340" y1="38" x2="340" y2="260" stroke="#332e29" strokeDasharray="4 4" />
+      <line x1="320" y1="36" x2="320" y2="238" stroke="#332e29" strokeDasharray="4 4" />
 
-      {/* Left side: Liquidity Sweep */}
-      <text
-        x="170"
-        y="56"
-        textAnchor="middle"
-        fill="#e3b154"
-        fontSize="11.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        LIQUIDITY SWEEP (FAKEOUT TRAP)
-      </text>
-      <line x1="38" y1="120" x2="306" y2="120" stroke="#d69b38" strokeDasharray="5 4" strokeWidth="1.75" />
-      <line x1="96" y1="146" x2="96" y2="196" stroke="#2e9e75" strokeWidth="2" />
-      <rect x="87" y="156" width="18" height="32" fill="#2e9e75" rx="2" />
-      <line x1="164" y1="74" x2="164" y2="166" stroke="#d85a52" strokeWidth="2.5" />
-      <rect
-        x="154"
-        y="128"
-        width="20"
-        height="28"
-        fill="#d85a52"
-        rx="2"
-        stroke={activeStep === 0 ? '#e3b154' : 'none'}
-        strokeWidth="2"
+      {isBull ? (
+        <>
+          {/* LEFT: BULLISH SWEEP BELOW FLOOR -> REVERSAL UP */}
+          <text x="166" y="52" textAnchor="middle" fill="#e3b154" fontSize="10" fontFamily={FONT_MONO} fontWeight="700">
+            BULLISH SWEEP (FAKE BREAKDOWN)
+          </text>
+          <line x1="32" y1="168" x2="298" y2="168" stroke="#d69b38" strokeDasharray="5 4" strokeWidth="1.6" />
+          {/* Approach red */}
+          <line x1="88" y1="108" x2="88" y2="162" stroke="#d85a52" strokeWidth="2" />
+          <rect x="79" y="116" width="18" height="36" fill="#d85a52" rx="2" />
+          {/* Sweep green candle wicking below floor, closing above */}
+          <line x1="158" y1="126" x2="158" y2="218" stroke="#2e9e75" strokeWidth="2.5" />
+          <rect
+            x="148"
+            y="134"
+            width="20"
+            height="28"
+            fill="#2e9e75"
+            rx="2"
+            stroke={activeStep === 0 ? '#e3b154' : 'none'}
+            strokeWidth="2"
+          />
+          <text x="158" y="232" textAnchor="middle" fill="#e3b154" fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+            Wick Below, Body Closes ABOVE!
+          </text>
+          {/* Rally green */}
+          <line x1="228" y1="74" x2="228" y2="146" stroke="#2e9e75" strokeWidth="2.2" />
+          <rect x="218" y="82" width="20" height="54" fill="#2e9e75" rx="2" />
+
+          {/* RIGHT: BULLISH TRUE BREAKOUT ABOVE RESISTANCE */}
+          <text x="478" y="52" textAnchor="middle" fill="#4dc296" fontSize="10" fontFamily={FONT_MONO} fontWeight="700">
+            TRUE BULLISH BREAKOUT ▲
+          </text>
+          <line x1="342" y1="146" x2="608" y2="146" stroke="#dd7d3e" strokeDasharray="5 4" strokeWidth="1.6" />
+          <line x1="398" y1="152" x2="398" y2="204" stroke="#2e9e75" strokeWidth="2" />
+          <rect x="389" y="158" width="18" height="34" fill="#2e9e75" rx="2" />
+          <line x1="468" y1="84" x2="468" y2="162" stroke="#2e9e75" strokeWidth="2.5" />
+          <rect
+            x="458"
+            y="92"
+            width="20"
+            height="56"
+            fill="#2e9e75"
+            rx="2"
+            stroke={activeStep >= 1 ? '#e6955c' : 'none'}
+            strokeWidth="2"
+          />
+          <text x="468" y="76" textAnchor="middle" fill="#4dc296" fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+            Full Body Closes ABOVE
+          </text>
+          <line x1="538" y1="68" x2="538" y2="136" stroke="#2e9e75" strokeWidth="2.2" />
+          <rect x="528" y="76" width="20" height="44" fill="#2e9e75" rx="2" />
+          <text x="478" y="232" textAnchor="middle" fill="#dcd4ca" fontSize="8.8" fontFamily={FONT_SANS}>
+            Holds above broken resistance → Continuation
+          </text>
+        </>
+      ) : (
+        <>
+          {/* LEFT: BEARISH SWEEP ABOVE CEILING -> REVERSAL DOWN */}
+          <text x="166" y="52" textAnchor="middle" fill="#e3b154" fontSize="10" fontFamily={FONT_MONO} fontWeight="700">
+            BEARISH SWEEP (FAKE BREAKOUT)
+          </text>
+          <line x1="32" y1="112" x2="298" y2="112" stroke="#d69b38" strokeDasharray="5 4" strokeWidth="1.6" />
+          <line x1="88" y1="126" x2="88" y2="180" stroke="#2e9e75" strokeWidth="2" />
+          <rect x="79" y="134" width="18" height="34" fill="#2e9e75" rx="2" />
+          <line x1="158" y1="68" x2="158" y2="156" stroke="#d85a52" strokeWidth="2.5" />
+          <rect
+            x="148"
+            y="120"
+            width="20"
+            height="28"
+            fill="#d85a52"
+            rx="2"
+            stroke={activeStep === 0 ? '#e3b154' : 'none'}
+            strokeWidth="2"
+          />
+          <text x="158" y="64" textAnchor="middle" fill="#e3b154" fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+            Wick Above, Body Closes BELOW!
+          </text>
+          <line x1="228" y1="136" x2="228" y2="216" stroke="#d85a52" strokeWidth="2.2" />
+          <rect x="218" y="144" width="20" height="58" fill="#d85a52" rx="2" />
+          <text x="166" y="232" textAnchor="middle" fill="#dcd4ca" fontSize="8.8" fontFamily={FONT_SANS}>
+            Body closes back inside → Bearish Reversal
+          </text>
+
+          {/* RIGHT: BEARISH TRUE BREAKDOWN BELOW SUPPORT */}
+          <text x="478" y="52" textAnchor="middle" fill="#e57c75" fontSize="10" fontFamily={FONT_MONO} fontWeight="700">
+            TRUE BEARISH BREAKDOWN ▼
+          </text>
+          <line x1="342" y1="134" x2="608" y2="134" stroke="#dd7d3e" strokeDasharray="5 4" strokeWidth="1.6" />
+          <line x1="398" y1="78" x2="398" y2="128" stroke="#d85a52" strokeWidth="2" />
+          <rect x="389" y="86" width="18" height="34" fill="#d85a52" rx="2" />
+          <line x1="468" y1="118" x2="468" y2="198" stroke="#d85a52" strokeWidth="2.5" />
+          <rect
+            x="458"
+            y="132"
+            width="20"
+            height="56"
+            fill="#d85a52"
+            rx="2"
+            stroke={activeStep >= 1 ? '#e6955c' : 'none'}
+            strokeWidth="2"
+          />
+          <text x="468" y="212" textAnchor="middle" fill="#e57c75" fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+            Full Body Closes BELOW
+          </text>
+          <line x1="538" y1="154" x2="538" y2="224" stroke="#d85a52" strokeWidth="2.2" />
+          <rect x="528" y="164" width="20" height="46" fill="#d85a52" rx="2" />
+          <text x="478" y="232" textAnchor="middle" fill="#dcd4ca" fontSize="8.8" fontFamily={FONT_SANS}>
+            Holds below broken support → Continuation
+          </text>
+        </>
+      )}
+
+      <DiagramBottomNote
+        text={
+          isBull
+            ? 'Always wait for the candle close: wick below support = Bullish Sweep; full green close above resistance = True Breakout.'
+            : 'Always wait for the candle close: wick above resistance = Bearish Sweep; full red close below support = True Breakdown.'
+        }
       />
-      <text x="164" y="68" textAnchor="middle" fill="#e3b154" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
-        Wick Only Above Line!
-      </text>
-      <line x1="232" y1="142" x2="232" y2="230" stroke="#d85a52" strokeWidth="2" />
-      <rect x="222" y="150" width="20" height="68" fill="#d85a52" rx="2" />
-      <text x="170" y="252" textAnchor="middle" fill="#dcd4ca" fontSize="9.5" fontFamily={FONT_SANS}>
-        Body closes back BELOW line → Reversal
-      </text>
-
-      {/* Right side: True Breakout */}
-      <text
-        x="510"
-        y="56"
-        textAnchor="middle"
-        fill="#4dc296"
-        fontSize="11.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        TRUE BREAKOUT (REAL STRENGTH)
-      </text>
-      <line x1="374" y1="160" x2="642" y2="160" stroke="#dd7d3e" strokeDasharray="5 4" strokeWidth="1.75" />
-      <line x1="432" y1="166" x2="432" y2="216" stroke="#2e9e75" strokeWidth="2" />
-      <rect x="423" y="172" width="18" height="34" fill="#2e9e75" rx="2" />
-      <line x1="498" y1="94" x2="498" y2="172" stroke="#2e9e75" strokeWidth="2.5" />
-      <rect
-        x="488"
-        y="104"
-        width="20"
-        height="58"
-        fill="#2e9e75"
-        rx="2"
-        stroke={activeStep >= 1 ? '#e6955c' : 'none'}
-        strokeWidth="2"
-      />
-      <text x="498" y="86" textAnchor="middle" fill="#4dc296" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
-        Full Body Closes Above
-      </text>
-      <line x1="564" y1="82" x2="564" y2="158" stroke="#2e9e75" strokeWidth="2" />
-      <rect x="555" y="92" width="18" height="44" fill="#2e9e75" rx="2" />
-      <text x="510" y="252" textAnchor="middle" fill="#dcd4ca" fontSize="9.5" fontFamily={FONT_SANS}>
-        Holds above broken level → Continuation
-      </text>
-
-      <DiagramBottomNote text="Golden Rule: A Wick poking past resistance is often a trap. Wait for a full Candle Body Close to confirm a breakout." />
     </g>
   );
 }
 
-function FairValueGapSvg({ activeStep }: DiagramSubProps) {
+/* ==================== 8. FAIR VALUE GAP (FVG) ==================== */
+
+function FairValueGapSvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
+  const mainColor = isBull ? '#2e9e75' : '#d85a52';
+  const accent = isBull ? '#4dc296' : '#e57c75';
+
   return (
     <g>
       <DiagramTopBanner
-        text="FAIR VALUE GAP (FVG): A 3-CANDLE PRICE GAP THAT ACTS LIKE A PULLBACK MAGNET"
-        accent="#e6955c"
+        text={
+          isBull
+            ? 'BULLISH FAIR VALUE GAP (FVG): 3-CANDLE UPWARD IMBALANCE → LONG RETEST'
+            : 'BEARISH FAIR VALUE GAP (FVG): 3-CANDLE DOWNWARD IMBALANCE → SHORT RETEST'
+        }
+        accent={accent}
       />
 
-      {/* FVG Shaded Imbalance Zone between Candle 1 High (172) and Candle 3 Low (122) */}
+      {/* Shaded FVG Zone */}
       <rect
-        x="156"
-        y="122"
+        x="140"
+        y="114"
         width="454"
-        height="50"
+        height="46"
         rx="4"
-        fill="#dd7d3e"
+        fill={isBull ? '#2e9e75' : '#d85a52'}
         fillOpacity={activeStep === 1 ? 0.28 : 0.16}
-        stroke="#dd7d3e"
+        stroke={isBull ? '#2e9e75' : '#d85a52'}
         strokeDasharray="5 3"
       />
       <text
-        x="492"
-        y="144"
+        x="484"
+        y="134"
         textAnchor="middle"
-        fill="#e6955c"
-        fontSize="10.5"
+        fill={accent}
+        fontSize="10"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
-        FAIR VALUE GAP (FVG)
+        {isBull ? 'BULLISH FVG (FAIR VALUE GAP)' : 'BEARISH FVG (FAIR VALUE GAP)'}
       </text>
-      <text x="492" y="159" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
-        Empty gap between C1 High &amp; C3 Low
+      <text x="484" y="149" textAnchor="middle" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
+        {isBull ? 'Empty gap: Candle 1 High → Candle 3 Low' : 'Empty gap: Candle 1 Low → Candle 3 High'}
       </text>
 
-      {/* Candle 1 */}
-      <line x1="146" y1="172" x2="146" y2="240" stroke="#2e9e75" strokeWidth="2" />
-      <rect x="132" y="186" width="28" height="44" fill="#2e9e75" rx="3" />
-      <text x="146" y="256" textAnchor="middle" fill="#a89f94" fontSize="9.5" fontFamily={FONT_MONO}>
+      {isBull ? (
+        <>
+          {/* Candle 1 */}
+          <line x1="126" y1="160" x2="126" y2="222" stroke="#2e9e75" strokeWidth="2" />
+          <rect x="113" y="172" width="26" height="40" fill="#2e9e75" rx="3" />
+          {/* Candle 2 (Fast Up) */}
+          <line x1="202" y1="74" x2="202" y2="188" stroke="#2e9e75" strokeWidth="2.5" />
+          <rect x="187" y="86" width="30" height="88" fill="#2e9e75" rx="3" />
+          {/* Candle 3 */}
+          <line x1="278" y1="56" x2="278" y2="114" stroke="#2e9e75" strokeWidth="2" />
+          <rect x="265" y="64" width="26" height="36" fill="#2e9e75" rx="3" />
+        </>
+      ) : (
+        <>
+          {/* Candle 1 */}
+          <line x1="126" y1="52" x2="126" y2="114" stroke="#d85a52" strokeWidth="2" />
+          <rect x="113" y="62" width="26" height="40" fill="#d85a52" rx="3" />
+          {/* Candle 2 (Fast Down) */}
+          <line x1="202" y1="88" x2="202" y2="202" stroke="#d85a52" strokeWidth="2.5" />
+          <rect x="187" y="100" width="30" height="88" fill="#d85a52" rx="3" />
+          {/* Candle 3 */}
+          <line x1="278" y1="160" x2="278" y2="222" stroke="#d85a52" strokeWidth="2" />
+          <rect x="265" y="174" width="26" height="36" fill="#d85a52" rx="3" />
+        </>
+      )}
+
+      <text x="126" y="236" textAnchor="middle" fill="#a89f94" fontSize="8.8" fontFamily={FONT_MONO}>
         Candle 1
       </text>
-
-      {/* Candle 2 (Displacement) */}
-      <line x1="224" y1="78" x2="224" y2="204" stroke="#2e9e75" strokeWidth="2.5" />
-      <rect x="208" y="92" width="32" height="96" fill="#2e9e75" rx="3" />
-      <text x="224" y="256" textAnchor="middle" fill="#4dc296" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
-        Candle 2 (Fast Jump)
+      <text x="202" y="236" textAnchor="middle" fill={accent} fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+        Candle 2 (Impulse)
       </text>
-
-      {/* Candle 3 */}
-      <line x1="302" y1="62" x2="302" y2="122" stroke="#2e9e75" strokeWidth="2" />
-      <rect x="288" y="72" width="28" height="36" fill="#2e9e75" rx="3" />
-      <text x="302" y="256" textAnchor="middle" fill="#a89f94" fontSize="9.5" fontFamily={FONT_MONO}>
+      <text x="278" y="236" textAnchor="middle" fill="#a89f94" fontSize="8.8" fontFamily={FONT_MONO}>
         Candle 3
       </text>
 
-      {/* Mitigation retrace arrow */}
+      {/* Retrace & Continuation Path */}
       <polyline
-        points="338,88 410,144 524,70"
+        points={isBull ? '312,80 384,138 510,58' : '312,196 384,136 510,218'}
         fill="none"
         stroke="#d69b38"
-        strokeWidth="2.5"
+        strokeWidth="2.6"
         strokeDasharray="6 3"
       />
-      <circle cx="410" cy="144" r="6" fill="#d69b38" />
-      <text x="410" y="112" textAnchor="middle" fill="#e3b154" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
-        Pullback Entry (Fills Gap)
+      <circle cx="384" cy="137" r={activeStep >= 2 ? 7 : 5.5} fill="#d69b38" stroke="#131110" strokeWidth="2" />
+      <text
+        x="384"
+        y={isBull ? 104 : 180}
+        textAnchor="middle"
+        fill="#edc677"
+        fontSize="9"
+        fontFamily={FONT_MONO}
+        fontWeight="700"
+      >
+        {isBull ? 'Long Entry (Fills Gap ▲)' : 'Short Entry (Fills Gap ▼)'}
       </text>
+      <circle cx="510" cy={isBull ? 58 : 218} r="5" fill={mainColor} />
 
-      <DiagramBottomNote text="Plain English: When Candle 2 shoots up so fast that Candle 1 and Candle 3 wicks don't overlap, price often returns to fill the gap." />
+      <DiagramBottomNote
+        text={
+          isBull
+            ? 'Bullish FVG: Fast upward jump leaves an unfilled gap — enter Long on the calm pullback into the FVG.'
+            : 'Bearish FVG: Fast downward drop leaves an unfilled gap — enter Short on the calm rally back into the FVG.'
+        }
+      />
     </g>
   );
 }
 
-function RiskRewardModelSvg({ activeStep }: DiagramSubProps) {
+/* ==================== 9. ORDER BLOCK & CHoCH ==================== */
+
+function OrderBlockChochSvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
+  const accent = isBull ? '#4dc296' : '#e57c75';
+
   return (
     <g>
       <DiagramTopBanner
-        text="1:3 RISK-TO-REWARD: RISK $1 TO MAKE $3 (WIN JUST 40% AND STILL GROW)"
-        accent="#4dc296"
+        text={
+          isBull
+            ? 'BULLISH REVERSAL: CHoCH UP → BULLISH ORDER BLOCK (OB) RETEST → RALLY'
+            : 'BEARISH REVERSAL: CHoCH DOWN → BEARISH ORDER BLOCK (OB) RETEST → DROP'
+        }
+        accent={accent}
       />
 
-      {/* Reward Box (+3R) */}
+      {/* CHoCH Horizontal Line */}
+      <line
+        x1="140"
+        y1={isBull ? 116 : 158}
+        x2="358"
+        y2={isBull ? 116 : 158}
+        stroke="#e6955c"
+        strokeWidth={activeStep === 1 ? 2.2 : 1.4}
+        strokeDasharray="6 4"
+      />
       <rect
-        x="220"
-        y="46"
-        width="380"
-        height="122"
-        rx="6"
-        fill="#2e9e75"
-        fillOpacity={activeStep >= 2 ? 0.24 : 0.14}
-        stroke="#2e9e75"
-        strokeWidth="1.5"
+        x="248"
+        y={isBull ? 92 : 164}
+        width="142"
+        height="19"
+        rx="4"
+        fill="#dd7d3e"
+        fillOpacity={activeStep === 1 ? 0.3 : 0.16}
+        stroke="#e6955c"
       />
       <text
-        x="410"
-        y="104"
+        x="319"
+        y={isBull ? 105 : 177}
         textAnchor="middle"
-        fill="#4dc296"
-        fontSize="13.5"
+        fill="#f0b68a"
+        fontSize="8.8"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
-        REWARD TARGET (+3R)
-      </text>
-      <text x="410" y="122" textAnchor="middle" fill="#dcd4ca" fontSize="9.5" fontFamily={FONT_SANS}>
-        Make $3 for every $1 risked (3× larger than Stop box)
+        {isBull ? '2. CHoCH (Break UP!)' : '2. CHoCH (Break DOWN!)'}
       </text>
 
-      {/* Entry Line */}
-      <line x1="70" y1="168" x2="600" y2="168" stroke="#dd7d3e" strokeWidth="2" />
-      <text
-        x="140"
-        y="161"
-        textAnchor="middle"
-        fill="#e6955c"
-        fontSize="10.5"
-        fontFamily={FONT_MONO}
-        fontWeight="700"
-      >
-        PLANNED ENTRY
-      </text>
-
-      {/* Risk Box (-1R) */}
+      {/* Order Block Zone */}
       <rect
-        x="220"
-        y="168"
-        width="380"
-        height="44"
-        rx="6"
-        fill="#d85a52"
-        fillOpacity={activeStep === 0 ? 0.28 : 0.16}
-        stroke="#d85a52"
-        strokeWidth="1.5"
+        x="198"
+        y={isBull ? 174 : 58}
+        width="292"
+        height="38"
+        rx="5"
+        fill="#d69b38"
+        fillOpacity={activeStep === 2 ? 0.28 : 0.14}
+        stroke="#d69b38"
+        strokeWidth={activeStep === 2 ? 2 : 1.25}
+        strokeDasharray="5 3"
       />
       <text
-        x="410"
-        y="194"
+        x="344"
+        y={isBull ? 226 : 51}
         textAnchor="middle"
-        fill="#f0a39e"
-        fontSize="11.5"
+        fill="#e3b154"
+        fontSize="8.8"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
-        FIXED RISK (-1R / MAX 1% ACCOUNT)
+        {isBull
+          ? '3. BULLISH OB (Last Red Candle Before Rally)'
+          : '3. BEARISH OB (Last Green Candle Before Drop)'}
       </text>
 
-      {/* Simulated Price Path */}
+      {/* Prior Trend Leg */}
       <polyline
-        points="68,204 160,144 226,168 286,188 378,128 474,94 568,54"
+        points={isBull ? '38,60 98,134 140,116 212,204' : '38,214 98,140 140,158 212,70'}
         fill="none"
-        stroke="#f3efe9"
-        strokeWidth="2.75"
+        stroke={isBull ? '#d85a52' : '#2e9e75'}
+        strokeWidth={activeStep === 0 ? 3.2 : 2.4}
+        strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="226" cy="168" r="5" fill="#dd7d3e" />
-      <circle cx="568" cy="54" r="6" fill="#2e9e75" />
-
       <text
-        x="340"
-        y="246"
+        x="76"
+        y={isBull ? 52 : 226}
         textAnchor="middle"
-        fill="#a89f94"
-        fontSize="10"
+        fill={isBull ? '#e57c75' : '#4dc296'}
+        fontSize="8.8"
         fontFamily={FONT_MONO}
+        fontWeight="700"
       >
-        Position Size = (Account × Risk %) ÷ Stop-Loss Distance
+        {isBull ? '1. Downtrend' : '1. Uptrend'}
       </text>
 
-      <DiagramBottomNote text="Math Made Simple: One +3R winner pays for three -1R losses. Never risk more than 1% of your account on one trade." />
+      {/* Order Block Candle */}
+      <line
+        x1="212"
+        y1={isBull ? 168 : 54}
+        x2="212"
+        y2={isBull ? 218 : 104}
+        stroke={isBull ? '#d85a52' : '#2e9e75'}
+        strokeWidth="2"
+      />
+      <rect
+        x="202"
+        y={isBull ? 176 : 62}
+        width="20"
+        height="34"
+        rx="2"
+        fill={isBull ? '#d85a52' : '#2e9e75'}
+        stroke="#e3b154"
+        strokeWidth="1.5"
+      />
+
+      {/* CHoCH Impulse Leg */}
+      <polyline
+        points={isBull ? '222,192 276,116 336,68' : '222,82 276,158 336,206'}
+        fill="none"
+        stroke={isBull ? '#2e9e75' : '#d85a52'}
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="276" cy={isBull ? 116 : 158} r={activeStep === 1 ? 6 : 4.5} fill="#e6955c" />
+
+      {/* Pullback to OB */}
+      <polyline
+        points={isBull ? '336,68 400,140 444,192' : '336,206 400,134 444,82'}
+        fill="none"
+        stroke="#a89f94"
+        strokeWidth="2.2"
+        strokeDasharray="5 4"
+      />
+      <circle
+        cx="444"
+        cy={isBull ? 192 : 82}
+        r={activeStep === 2 ? 7 : 5.5}
+        fill="#d69b38"
+        stroke="#131110"
+        strokeWidth="2"
+      />
+      <text
+        x="444"
+        y={isBull ? 166 : 114}
+        textAnchor="middle"
+        fill="#edc677"
+        fontSize="8.8"
+        fontFamily={FONT_MONO}
+        fontWeight="700"
+      >
+        4. OB Entry
+      </text>
+
+      {/* Expansion Leg */}
+      <polyline
+        points={isBull ? '444,192 518,112 590,52' : '444,82 518,162 590,222'}
+        fill="none"
+        stroke={isBull ? '#2e9e75' : '#d85a52'}
+        strokeWidth={activeStep >= 3 ? 3.8 : 3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="590" cy={isBull ? 52 : 222} r="5.5" fill={isBull ? '#2e9e75' : '#d85a52'} />
+      <text
+        x="560"
+        y={isBull ? 46 : 235}
+        textAnchor="middle"
+        fill={accent}
+        fontSize="9.2"
+        fontFamily={FONT_MONO}
+        fontWeight="700"
+      >
+        {isBull ? '5. Rally UP ▲' : '5. Drop DOWN ▼'}
+      </text>
+
+      <DiagramBottomNote
+        text={
+          isBull
+            ? 'Wait for Bullish CHoCH (Change of Character), then buy the calm pullback into the Bullish OB (Order Block).'
+            : 'Wait for Bearish CHoCH (Change of Character), then short the calm retest into the Bearish OB (Order Block).'
+        }
+      />
     </g>
   );
 }
 
-function renderDiagramGraphics(kind: DiagramKind, activeStep: number) {
+/* ==================== 10. MULTI-TIMEFRAME ALIGNMENT ==================== */
+
+function MultiTimeframeSvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
+  const mainColor = isBull ? '#2e9e75' : '#d85a52';
+  const accent = isBull ? '#4dc296' : '#e57c75';
+
+  return (
+    <g>
+      {/* Left Header */}
+      <rect
+        x="16"
+        y="8"
+        width="216"
+        height="22"
+        rx="4"
+        fill={mainColor}
+        fillOpacity="0.16"
+        stroke={mainColor}
+        strokeOpacity="0.5"
+      />
+      <text x="124" y="22.5" textAnchor="middle" fill={accent} fontSize="9.2" fontFamily={FONT_MONO} fontWeight="700">
+        {isBull ? 'HTF: 1H BULLISH CANDLE' : 'HTF: 1H BEARISH CANDLE'}
+      </text>
+
+      {/* Right Header */}
+      <rect
+        x="294"
+        y="8"
+        width="330"
+        height="22"
+        rx="4"
+        fill="#dd7d3e"
+        fillOpacity="0.16"
+        stroke="#dd7d3e"
+        strokeOpacity="0.5"
+      />
+      <text x="459" y="22.5" textAnchor="middle" fill="#e6955c" fontSize="9.2" fontFamily={FONT_MONO} fontWeight="700">
+        LTF: FOUR 15m CANDLES INSIDE IT
+      </text>
+
+      {/* Panel Frames */}
+      <rect
+        x="16"
+        y="38"
+        width="216"
+        height="198"
+        rx="6"
+        fill="#1b1917"
+        stroke={activeStep === 0 ? mainColor : '#25221f'}
+        strokeWidth={activeStep === 0 ? 1.7 : 1}
+      />
+      <rect
+        x="294"
+        y="38"
+        width="330"
+        height="198"
+        rx="6"
+        fill="#1b1917"
+        stroke={activeStep >= 2 ? '#e6955c' : '#25221f'}
+        strokeWidth={activeStep >= 2 ? 1.7 : 1}
+      />
+
+      {/* Horizontal OHLC alignment guides */}
+      {[
+        { y: 58, label: 'HIGH', color: accent },
+        { y: 86, label: isBull ? 'CLOSE' : 'OPEN', color: isBull ? '#4dc296' : '#e6955c' },
+        { y: 178, label: isBull ? 'OPEN' : 'CLOSE', color: isBull ? '#e6955c' : '#e57c75' },
+        { y: 208, label: 'LOW', color: '#e3b154' },
+      ].map((lvl) => (
+        <g key={lvl.label}>
+          <line
+            x1="112"
+            y1={lvl.y}
+            x2="610"
+            y2={lvl.y}
+            stroke={lvl.color}
+            strokeWidth={activeStep === 1 ? 1.3 : 0.85}
+            strokeDasharray="4 4"
+            opacity={activeStep === 1 ? 0.85 : 0.35}
+          />
+          <text x="30" y={lvl.y + 3} fill={lvl.color} fontSize="8" fontFamily={FONT_MONO} fontWeight="700">
+            {lvl.label}
+          </text>
+        </g>
+      ))}
+
+      {/* Left 1H Candle */}
+      <line x1="130" y1="58" x2="130" y2="208" stroke={mainColor} strokeWidth="3.8" strokeLinecap="round" />
+      <rect x="104" y="86" width="52" height="92" rx="4" fill={mainColor} stroke={accent} strokeWidth="1.4" />
+      <text
+        x="130"
+        y="137"
+        textAnchor="middle"
+        fill={isBull ? '#0f241c' : '#2c1210'}
+        fontSize="11.5"
+        fontFamily={FONT_MONO}
+        fontWeight="800"
+      >
+        1H
+      </text>
+
+      {/* Center = 4x 15m connector */}
+      <path d="M 242 58 L 254 58 L 254 208 L 242 208" fill="none" stroke="#e3b154" strokeWidth="1.8" />
+      <line x1="254" y1="133" x2="286" y2="133" stroke="#e3b154" strokeWidth="1.8" />
+      <rect x="238" y="118" width="48" height="28" rx="4" fill="#131110" stroke="#e3b154" />
+      <text x="262" y="131" textAnchor="middle" fill="#e3b154" fontSize="9" fontFamily={FONT_MONO} fontWeight="800">
+        = 4×
+      </text>
+      <text x="262" y="142" textAnchor="middle" fill="#f4dca4" fontSize="7.8" fontFamily={FONT_MONO}>
+        15m
+      </text>
+
+      {/* Right 4x 15m candles */}
+      {isBull ? (
+        <>
+          <line x1="340" y1="172" x2="340" y2="208" stroke="#d85a52" strokeWidth="2.2" />
+          <rect x="328" y="178" width="24" height="20" rx="2" fill="#d85a52" />
+
+          <line x1="418" y1="132" x2="418" y2="202" stroke="#2e9e75" strokeWidth="2.2" />
+          <rect
+            x="406"
+            y="140"
+            width="24"
+            height="58"
+            rx="2"
+            fill="#2e9e75"
+            stroke={activeStep >= 2 ? '#e3b154' : 'none'}
+            strokeWidth="2"
+          />
+
+          <line x1="496" y1="58" x2="496" y2="148" stroke="#2e9e75" strokeWidth="2.2" />
+          <rect x="484" y="72" width="24" height="68" rx="2" fill="#2e9e75" />
+
+          <line x1="574" y1="68" x2="574" y2="98" stroke="#d85a52" strokeWidth="2.2" />
+          <rect x="562" y="74" width="24" height="12" rx="2" fill="#d85a52" />
+
+          <text x="418" y="122" textAnchor="middle" fill="#e3b154" fontSize="8.2" fontFamily={FONT_MONO} fontWeight="700">
+            Long Dip Entry!
+          </text>
+        </>
+      ) : (
+        <>
+          <line x1="340" y1="58" x2="340" y2="96" stroke="#2e9e75" strokeWidth="2.2" />
+          <rect x="328" y="68" width="24" height="18" rx="2" fill="#2e9e75" />
+
+          <line x1="418" y1="66" x2="418" y2="138" stroke="#d85a52" strokeWidth="2.2" />
+          <rect
+            x="406"
+            y="72"
+            width="24"
+            height="58"
+            rx="2"
+            fill="#d85a52"
+            stroke={activeStep >= 2 ? '#e3b154' : 'none'}
+            strokeWidth="2"
+          />
+
+          <line x1="496" y1="120" x2="496" y2="208" stroke="#d85a52" strokeWidth="2.2" />
+          <rect x="484" y="128" width="24" height="66" rx="2" fill="#d85a52" />
+
+          <line x1="574" y1="168" x2="574" y2="198" stroke="#2e9e75" strokeWidth="2.2" />
+          <rect x="562" y="178" width="24" height="14" rx="2" fill="#2e9e75" />
+
+          <text x="418" y="152" textAnchor="middle" fill="#e3b154" fontSize="8.2" fontFamily={FONT_MONO} fontWeight="700">
+            Short Pop Entry!
+          </text>
+        </>
+      )}
+
+      {['0–15m', '15–30m', '30–45m', '45–60m'].map((tLabel, idx) => (
+        <text
+          key={tLabel}
+          x={340 + idx * 78}
+          y="226"
+          textAnchor="middle"
+          fill="#a89f94"
+          fontSize="8"
+          fontFamily={FONT_MONO}
+        >
+          {tLabel}
+        </text>
+      ))}
+
+      <DiagramBottomNote
+        text={
+          isBull
+            ? 'Bullish Alignment: HTF (Higher Timeframe 1H/4H) points UP → zoom into LTF (15m) to buy the dip with a tight SL.'
+            : 'Bearish Alignment: HTF (Higher Timeframe 1H/4H) points DOWN → zoom into LTF (15m) to short the bounce with a tight SL.'
+        }
+      />
+    </g>
+  );
+}
+
+/* ==================== 11. MARKET SESSIONS & KILLZONES ==================== */
+
+function MarketSessionsSvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
+  const mainColor = isBull ? '#2e9e75' : '#d85a52';
+  const accent = isBull ? '#4dc296' : '#e57c75';
+
+  return (
+    <g>
+      <DiagramTopBanner
+        text={
+          isBull
+            ? 'BULLISH SESSION CYCLE: ASIA RANGE → LONDON SWEEP LOW → NY RALLY UP'
+            : 'BEARISH SESSION CYCLE: ASIA RANGE → LONDON SWEEP HIGH → NY DROP DOWN'
+        }
+        accent={accent}
+      />
+
+      {/* 3 Session Columns */}
+      <rect
+        x="22"
+        y="38"
+        width="172"
+        height="198"
+        rx="6"
+        fill="#d69b38"
+        fillOpacity={activeStep === 0 ? 0.16 : 0.08}
+        stroke="#d69b38"
+        strokeWidth={activeStep === 0 ? 1.8 : 1}
+      />
+      <text x="108" y="54" textAnchor="middle" fill="#edc677" fontSize="9.2" fontFamily={FONT_MONO} fontWeight="700">
+        1. ASIA SESSION
+      </text>
+      <text x="108" y="66" textAnchor="middle" fill="#a89f94" fontSize="8" fontFamily={FONT_MONO}>
+        7 PM – 2 AM NY (Range)
+      </text>
+
+      <rect
+        x="202"
+        y="38"
+        width="192"
+        height="198"
+        rx="6"
+        fill="#dd7d3e"
+        fillOpacity={activeStep === 1 ? 0.18 : 0.08}
+        stroke="#dd7d3e"
+        strokeWidth={activeStep === 1 ? 1.8 : 1}
+      />
+      <text x="298" y="54" textAnchor="middle" fill="#f0b68a" fontSize="9.2" fontFamily={FONT_MONO} fontWeight="700">
+        2. LONDON KILLZONE
+      </text>
+      <text x="298" y="66" textAnchor="middle" fill="#a89f94" fontSize="8" fontFamily={FONT_MONO}>
+        2 AM – 5 AM NY (Sweep)
+      </text>
+
+      <rect
+        x="402"
+        y="38"
+        width="216"
+        height="198"
+        rx="6"
+        fill={mainColor}
+        fillOpacity={activeStep >= 2 ? 0.18 : 0.08}
+        stroke={mainColor}
+        strokeWidth={activeStep >= 2 ? 1.8 : 1}
+      />
+      <text x="510" y="54" textAnchor="middle" fill={accent} fontSize="9.2" fontFamily={FONT_MONO} fontWeight="700">
+        3. NY OVERLAP ★ PEAK
+      </text>
+      <text x="510" y="66" textAnchor="middle" fill="#a89f94" fontSize="8" fontFamily={FONT_MONO}>
+        8 AM – 11 AM NY (Trend)
+      </text>
+
+      {/* Asia Range High & Low Box */}
+      <rect x="34" y="114" width="148" height="58" rx="4" fill="#d69b38" fillOpacity="0.14" stroke="#d69b38" strokeDasharray="4 3" />
+      <line x1="182" y1={isBull ? 172 : 114} x2="386" y2={isBull ? 172 : 114} stroke="#d69b38" strokeDasharray="5 4" strokeWidth="1.25" />
+
+      {/* Session Price Trajectory */}
+      <polyline
+        points={
+          isBull
+            ? '40,142 74,120 108,166 142,122 176,162 248,198 304,146 376,130 460,104 596,74'
+            : '40,142 74,166 108,120 142,164 176,124 248,84 304,138 376,154 460,182 596,214'
+        }
+        fill="none"
+        stroke="#f3efe9"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <polyline
+        points={isBull ? '248,198 304,146 460,104 596,74' : '248,84 304,138 460,182 596,214'}
+        fill="none"
+        stroke={mainColor}
+        strokeWidth="3.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      <circle cx="248" cy={isBull ? 198 : 84} r="5.5" fill="#e6955c" stroke="#131110" strokeWidth="2" />
+      <text
+        x="294"
+        y={isBull ? 216 : 94}
+        textAnchor="middle"
+        fill="#f0b68a"
+        fontSize="8.5"
+        fontFamily={FONT_MONO}
+        fontWeight="700"
+      >
+        {isBull ? 'Sweeps Asia Low' : 'Sweeps Asia High'}
+      </text>
+
+      <circle cx="596" cy={isBull ? 74 : 214} r="5.5" fill={mainColor} />
+      <text
+        x="522"
+        y={isBull ? 126 : 162}
+        textAnchor="middle"
+        fill={accent}
+        fontSize="9.2"
+        fontFamily={FONT_MONO}
+        fontWeight="700"
+      >
+        {isBull ? 'Bullish Expansion ▲' : 'Bearish Expansion ▼'}
+      </text>
+
+      <DiagramBottomNote
+        text={
+          isBull
+            ? 'Power of 3 (Bullish): Asia accumulates range → London sweeps Asia Low → NY Overlap drives the Bullish trend.'
+            : 'Power of 3 (Bearish): Asia accumulates range → London sweeps Asia High → NY Overlap drives the Bearish trend.'
+        }
+      />
+    </g>
+  );
+}
+
+/* ==================== 12. CRYPTO FUNDING & DOMINANCE ==================== */
+
+function CryptoFundingDominanceSvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
+  const accent = isBull ? '#4dc296' : '#e57c75';
+
+  const cards = isBull
+    ? [
+        {
+          x: 18,
+          title: '1. SPOT DEMAND',
+          sub: 'BTC Spot Bids Load',
+          metric: 'BTC.D ▲ · Funding 0.01%',
+          points: '34,154 64,142 94,146 128,122 168,108',
+          lineColor: '#2e9e75',
+          note: 'Healthy low-leverage rise',
+          border: '#2e9e75',
+          active: activeStep === 0,
+        },
+        {
+          x: 224,
+          title: '2. CROWDED SHORTS',
+          sub: 'Negative Funding Trap',
+          metric: 'Funding: -0.05% (Crowded)',
+          points: '240,126 274,132 308,144 342,140 374,132',
+          lineColor: '#d69b38',
+          note: 'Late bears over-leveraged',
+          border: '#d69b38',
+          active: activeStep === 1,
+        },
+        {
+          x: 430,
+          title: '3. SHORT SQUEEZE ▲',
+          sub: 'Liq. Sweep & Breakout',
+          metric: 'Shorts Liquidated ▲',
+          points: '446,154 476,158 504,126 538,108 584,96',
+          lineColor: '#2e9e75',
+          note: 'Clean rally & Alt rotation',
+          border: '#2e9e75',
+          active: activeStep >= 2,
+        },
+      ]
+    : [
+        {
+          x: 18,
+          title: '1. EUPHORIA LONGS',
+          sub: 'Overheated Perps Funding',
+          metric: 'Funding: +0.09% (Extreme)',
+          points: '34,154 66,136 98,120 132,112 168,106',
+          lineColor: '#d69b38',
+          note: '20x–50x Longs packed',
+          border: '#d69b38',
+          active: activeStep === 0,
+        },
+        {
+          x: 224,
+          title: '2. ASK WALL ABSORB',
+          sub: 'Order Book Resistance',
+          metric: 'Heavy Ask Wall Blocks UP',
+          points: '240,116 274,108 308,118 342,110 374,128',
+          lineColor: '#dd7d3e',
+          note: 'Buyers fail to break wall',
+          border: '#dd7d3e',
+          active: activeStep === 1,
+        },
+        {
+          x: 430,
+          title: '3. LONG FLUSH ▼',
+          sub: 'Liquidation Cascade',
+          metric: '50x Longs Wiped ▼',
+          points: '446,104 476,112 508,156 542,146 584,166',
+          lineColor: '#d85a52',
+          note: 'Sharp red wick resets OI',
+          border: '#d85a52',
+          active: activeStep >= 2,
+        },
+      ];
+
+  return (
+    <g>
+      <DiagramTopBanner
+        text={
+          isBull
+            ? 'BULLISH CRYPTO FLOW: SPOT DEMAND → NEGATIVE FUNDING → SHORT SQUEEZE ▲'
+            : 'BEARISH CRYPTO FLOW: OVERHEATED FUNDING → ASK WALL → LONG LIQUIDATION FLUSH ▼'
+        }
+        accent={accent}
+      />
+
+      {cards.map((card, i) => (
+        <g key={card.title}>
+          <rect
+            x={card.x}
+            y="40"
+            width="192"
+            height="196"
+            rx="7"
+            fill={card.border}
+            fillOpacity={card.active ? 0.18 : 0.08}
+            stroke={card.border}
+            strokeWidth={card.active ? 1.8 : 1}
+          />
+          <text
+            x={card.x + 96}
+            y="60"
+            textAnchor="middle"
+            fill={card.border === '#2e9e75' ? '#4dc296' : card.border === '#d85a52' ? '#e57c75' : '#edc677'}
+            fontSize="9.5"
+            fontFamily={FONT_MONO}
+            fontWeight="700"
+          >
+            {card.title}
+          </text>
+          <text x={card.x + 96} y="75" textAnchor="middle" fill="#f3efe9" fontSize="8.8" fontFamily={FONT_SANS}>
+            {card.sub}
+          </text>
+
+          {/* Mini chart screen */}
+          <rect x={card.x + 12} y="86" width="168" height="90" rx="5" fill="#131110" stroke="#25221f" />
+          <text x={card.x + 20} y="102" fill="#e3b154" fontSize="8" fontFamily={FONT_MONO} fontWeight="700">
+            {card.metric}
+          </text>
+          <polyline
+            points={card.points}
+            fill="none"
+            stroke={card.lineColor}
+            strokeWidth="2.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+
+          <text x={card.x + 96} y="202" textAnchor="middle" fill="#dcd4ca" fontSize="8.8" fontFamily={FONT_SANS}>
+            {card.note}
+          </text>
+
+          {i < 2 && (
+            <text x={card.x + 199} y="140" textAnchor="middle" fill="#e3b154" fontSize="14" fontWeight="700">
+              →
+            </text>
+          )}
+        </g>
+      ))}
+
+      <DiagramBottomNote
+        text={
+          isBull
+            ? 'Bullish Crypto Edge: Spot buying + negative Perpetuals Funding fuels clean Short Squeezes without chasing.'
+            : 'Bearish Crypto Warning: Extreme positive Funding + high leverage invites a violent Long Liquidation Flush.'
+        }
+      />
+    </g>
+  );
+}
+
+/* ==================== 13. STOCKS GAP & OPENING RANGE (ORB) ==================== */
+
+function StocksOrbGapSvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
+  const mainColor = isBull ? '#2e9e75' : '#d85a52';
+  const accent = isBull ? '#4dc296' : '#e57c75';
+
+  return (
+    <g>
+      <DiagramTopBanner
+        text={
+          isBull
+            ? 'BULLISH STOCKS ORB: OVERNIGHT GAP UP → 5m ORB BOX → HIGH-VOLUME BREAKOUT ▲'
+            : 'BEARISH STOCKS ORB: OVERNIGHT GAP DOWN → 5m ORB BOX → HIGH-VOLUME BREAKDOWN ▼'
+        }
+        accent={accent}
+      />
+
+      {/* 9:30 AM Vertical Line */}
+      <line x1="234" y1="38" x2="234" y2="236" stroke="#e6955c" strokeWidth="1.4" strokeDasharray="5 4" />
+      <text x="234" y="49" textAnchor="middle" fill="#e6955c" fontSize="8.5" fontFamily={FONT_MONO} fontWeight="700">
+        9:30 AM OPEN
+      </text>
+
+      {/* Yesterday Close Line */}
+      <line
+        x1="22"
+        y1={isBull ? 174 : 74}
+        x2="228"
+        y2={isBull ? 174 : 74}
+        stroke="#786e63"
+        strokeWidth="1.4"
+        strokeDasharray="4 4"
+      />
+      <text
+        x="78"
+        y={isBull ? 190 : 66}
+        textAnchor="middle"
+        fill="#a89f94"
+        fontSize="8.5"
+        fontFamily={FONT_MONO}
+      >
+        Prior Close ($100)
+      </text>
+
+      {/* Overnight Gap Band */}
+      <rect
+        x="130"
+        y={isBull ? 118 : 78}
+        width="96"
+        height="54"
+        rx="4"
+        fill={isBull ? '#2e9e75' : '#d85a52'}
+        fillOpacity={activeStep === 0 ? 0.25 : 0.12}
+        stroke={mainColor}
+        strokeDasharray="4 3"
+      />
+      <text x="178" y={isBull ? 142 : 102} textAnchor="middle" fill={accent} fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+        {isBull ? 'GAP UP +4%' : 'GAP DOWN -4%'}
+      </text>
+      <text x="178" y={isBull ? 156 : 116} textAnchor="middle" fill="#dcd4ca" fontSize="8" fontFamily={FONT_SANS}>
+        Earnings / Catalyst
+      </text>
+
+      {/* 5-Min Opening Range Box (ORB) */}
+      <rect
+        x="244"
+        y={isBull ? 96 : 104}
+        width="116"
+        height="52"
+        rx="4"
+        fill="#d69b38"
+        fillOpacity={activeStep === 1 ? 0.28 : 0.14}
+        stroke="#d69b38"
+        strokeWidth={activeStep === 1 ? 1.8 : 1.2}
+      />
+      <line
+        x1="244"
+        y1={isBull ? 96 : 156}
+        x2="612"
+        y2={isBull ? 96 : 156}
+        stroke="#d69b38"
+        strokeWidth="1.2"
+        strokeDasharray="5 4"
+      />
+      <text x="302" y={isBull ? 86 : 96} textAnchor="middle" fill="#e3b154" fontSize="8.5" fontFamily={FONT_MONO} fontWeight="700">
+        5m ORB BOX
+      </text>
+      {/* 2 candles inside ORB */}
+      <line x1="278" y1="104" x2="278" y2="146" stroke="#2e9e75" strokeWidth="2" />
+      <rect x="270" y="114" width="16" height="22" rx="1.5" fill="#2e9e75" />
+      <line x1="326" y1="108" x2="326" y2="144" stroke="#d85a52" strokeWidth="2" />
+      <rect x="318" y="118" width="16" height="18" rx="1.5" fill="#d85a52" />
+
+      {/* Breakout / Breakdown Candles */}
+      {isBull ? (
+        <>
+          <line x1="398" y1="62" x2="398" y2="122" stroke="#2e9e75" strokeWidth="2.4" />
+          <rect x="388" y="70" width="20" height="44" rx="2" fill="#2e9e75" stroke={activeStep >= 2 ? '#88d9b8' : 'none'} strokeWidth="2" />
+          <line x1="454" y1="68" x2="454" y2="100" stroke="#d85a52" strokeWidth="2" />
+          <rect x="446" y="76" width="16" height="16" rx="2" fill="#d85a52" />
+          <line x1="510" y1="48" x2="510" y2="90" stroke="#2e9e75" strokeWidth="2.2" />
+          <rect x="501" y="54" width="18" height="30" rx="2" fill="#2e9e75" />
+          <line x1="564" y1="40" x2="564" y2="70" stroke="#2e9e75" strokeWidth="2.2" />
+          <rect x="555" y="44" width="18" height="22" rx="2" fill="#2e9e75" />
+          <text x="486" y="46" textAnchor="middle" fill="#4dc296" fontSize="9" fontFamily={FONT_MONO} fontWeight="700">
+            RVOL BREAKOUT ABOVE VWAP ▲
+          </text>
+        </>
+      ) : (
+        <>
+          <line x1="398" y1="138" x2="398" y2="196" stroke="#d85a52" strokeWidth="2.4" />
+          <rect x="388" y="144" width="20" height="44" rx="2" fill="#d85a52" stroke={activeStep >= 2 ? '#f0a39e' : 'none'} strokeWidth="2" />
+          <line x1="454" y1="154" x2="454" y2="186" stroke="#2e9e75" strokeWidth="2" />
+          <rect x="446" y="162" width="16" height="16" rx="2" fill="#2e9e75" />
+          <line x1="510" y1="164" x2="510" y2="206" stroke="#d85a52" strokeWidth="2.2" />
+          <rect x="501" y="170" width="18" height="30" rx="2" fill="#d85a52" />
+          <line x1="564" y1="178" x2="564" y2="212" stroke="#d85a52" strokeWidth="2.2" />
+          <rect x="555" y="182" width="18" height="22" rx="2" fill="#d85a52" />
+          <text x="486" y="148" textAnchor="middle" fill="#e57c75" fontSize="9" fontFamily={FONT_MONO} fontWeight="700">
+            RVOL BREAKDOWN BELOW VWAP ▼
+          </text>
+        </>
+      )}
+
+      {/* Volume Bars at bottom */}
+      <line x1="22" y1="236" x2="616" y2="236" stroke="#332e29" strokeWidth="1" />
+      <text x="26" y="230" fill="#786e63" fontSize="8" fontFamily={FONT_MONO}>
+        VOL:
+      </text>
+      {[
+        { x: 271, h: 20, c: '#d69b38' },
+        { x: 319, h: 16, c: '#d69b38' },
+        { x: 389, h: 42, c: mainColor },
+        { x: 447, h: 16, c: '#786e63' },
+        { x: 502, h: 28, c: mainColor },
+        { x: 556, h: 24, c: mainColor },
+      ].map((b) => (
+        <rect key={b.x} x={b.x} y={236 - b.h} width="16" height={b.h} rx="1.5" fill={b.c} opacity={b.x === 389 ? 1 : 0.65} />
+      ))}
+
+      <DiagramBottomNote
+        text={
+          isBull
+            ? 'Bullish ORB: Gap Up + strong Relative Volume (RVOL) breakout above 5m Opening Range & VWAP.'
+            : 'Bearish ORB: Gap Down + strong Relative Volume (RVOL) breakdown below 5m Opening Range & VWAP.'
+        }
+      />
+    </g>
+  );
+}
+
+/* ==================== 14. RISK-TO-REWARD MODEL (1:3 RR) ==================== */
+
+function RiskRewardModelSvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
+  const accent = isBull ? '#4dc296' : '#e57c75';
+
+  return (
+    <g>
+      <DiagramTopBanner
+        text={
+          isBull
+            ? 'BULLISH LONG 1:3 RR (RISK-TO-REWARD): RISK $1 BELOW → TARGET $3 ABOVE'
+            : 'BEARISH SHORT 1:3 RR (RISK-TO-REWARD): RISK $1 ABOVE → TARGET $3 BELOW'
+        }
+        accent={accent}
+      />
+
+      {isBull ? (
+        <>
+          {/* Reward Box (+3R) ABOVE Entry */}
+          <rect
+            x="200"
+            y="42"
+            width="392"
+            height="112"
+            rx="6"
+            fill="#2e9e75"
+            fillOpacity={activeStep >= 2 ? 0.25 : 0.14}
+            stroke="#2e9e75"
+            strokeWidth="1.5"
+          />
+          <text x="396" y="96" textAnchor="middle" fill="#4dc296" fontSize="12" fontFamily={FONT_MONO} fontWeight="700">
+            TAKE PROFIT (+3R REWARD ▲)
+          </text>
+          <text x="396" y="114" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
+            3× larger than Stop Loss box
+          </text>
+
+          {/* Entry Line */}
+          <line x1="48" y1="154" x2="592" y2="154" stroke="#dd7d3e" strokeWidth="2" />
+          <text x="122" y="147" textAnchor="middle" fill="#e6955c" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
+            LONG ENTRY
+          </text>
+
+          {/* Risk Box (-1R) BELOW Entry */}
+          <rect
+            x="200"
+            y="154"
+            width="392"
+            height="42"
+            rx="6"
+            fill="#d85a52"
+            fillOpacity={activeStep === 0 ? 0.28 : 0.16}
+            stroke="#d85a52"
+            strokeWidth="1.5"
+          />
+          <text x="396" y="179" textAnchor="middle" fill="#f0a39e" fontSize="10" fontFamily={FONT_MONO} fontWeight="700">
+            STOP LOSS (-1R / MAX 1% RISK)
+          </text>
+
+          {/* Price Path */}
+          <polyline
+            points="52,188 144,132 208,154 276,172 368,116 462,84 556,48"
+            fill="none"
+            stroke="#f3efe9"
+            strokeWidth="2.6"
+            strokeLinejoin="round"
+          />
+          <circle cx="208" cy="154" r="5" fill="#dd7d3e" />
+          <circle cx="556" cy="48" r="6" fill="#2e9e75" />
+        </>
+      ) : (
+        <>
+          {/* Risk Box (-1R) ABOVE Entry */}
+          <rect
+            x="200"
+            y="42"
+            width="392"
+            height="42"
+            rx="6"
+            fill="#d85a52"
+            fillOpacity={activeStep === 0 ? 0.28 : 0.16}
+            stroke="#d85a52"
+            strokeWidth="1.5"
+          />
+          <text x="396" y="67" textAnchor="middle" fill="#f0a39e" fontSize="10" fontFamily={FONT_MONO} fontWeight="700">
+            STOP LOSS (-1R / MAX 1% RISK)
+          </text>
+
+          {/* Entry Line */}
+          <line x1="48" y1="84" x2="592" y2="84" stroke="#dd7d3e" strokeWidth="2" />
+          <text x="122" y="77" textAnchor="middle" fill="#e6955c" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
+            SHORT ENTRY
+          </text>
+
+          {/* Reward Box (+3R) BELOW Entry */}
+          <rect
+            x="200"
+            y="84"
+            width="392"
+            height="112"
+            rx="6"
+            fill="#2e9e75"
+            fillOpacity={activeStep >= 2 ? 0.25 : 0.14}
+            stroke="#2e9e75"
+            strokeWidth="1.5"
+          />
+          <text x="396" y="140" textAnchor="middle" fill="#4dc296" fontSize="12" fontFamily={FONT_MONO} fontWeight="700">
+            TAKE PROFIT (+3R REWARD ▼)
+          </text>
+          <text x="396" y="158" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
+            Short profits when price drops 3× your Stop distance
+          </text>
+
+          {/* Price Path */}
+          <polyline
+            points="52,50 144,106 208,84 276,66 368,122 462,156 556,190"
+            fill="none"
+            stroke="#f3efe9"
+            strokeWidth="2.6"
+            strokeLinejoin="round"
+          />
+          <circle cx="208" cy="84" r="5" fill="#dd7d3e" />
+          <circle cx="556" cy="190" r="6" fill="#2e9e75" />
+        </>
+      )}
+
+      <text x="320" y="224" textAnchor="middle" fill="#a89f94" fontSize="9" fontFamily={FONT_MONO}>
+        Position Size = (Account × 1% Risk) ÷ Stop-Loss Distance
+      </text>
+
+      <DiagramBottomNote
+        text={
+          isBull
+            ? 'Long Math: Stop Loss sits below Entry; Take Profit sits 3× higher. One +3R winner pays for three -1R losses.'
+            : 'Short Math: Stop Loss sits above Entry; Take Profit sits 3× lower. Same strict 1% risk cap applies to Shorts.'
+        }
+      />
+    </g>
+  );
+}
+
+/* ==================== 15. TRADE MANAGEMENT & JOURNAL ==================== */
+
+function TradeManagementJournalSvg({ activeStep, side }: DiagramSubProps) {
+  const isBull = side === 'bullish';
+  const accent = isBull ? '#4dc296' : '#e57c75';
+
+  return (
+    <g>
+      <DiagramTopBanner
+        text={
+          isBull
+            ? 'BULLISH LONG MANAGEMENT: PARTIAL AT +1R → MOVE SL UP TO BE → +3R TARGET'
+            : 'BEARISH SHORT MANAGEMENT: PARTIAL AT +1R → MOVE SL DOWN TO BE → +3R TARGET'
+        }
+        accent={accent}
+      />
+
+      {isBull ? (
+        <>
+          {/* Final TP +3R */}
+          <line x1="32" y1="52" x2="608" y2="52" stroke="#2e9e75" strokeWidth="1.6" strokeDasharray="6 4" />
+          <rect x="444" y="38" width="164" height="19" rx="4" fill="#2e9e75" fillOpacity="0.2" stroke="#2e9e75" />
+          <text x="526" y="51" textAnchor="middle" fill="#88d9b8" fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+            5. FINAL TP 1:3 (+3R)
+          </text>
+
+          {/* Partial +1R */}
+          <line x1="32" y1="124" x2="608" y2="124" stroke="#d69b38" strokeWidth="1.4" strokeDasharray="5 4" />
+          <rect x="200" y="100" width="168" height="19" rx="4" fill="#d69b38" fillOpacity={activeStep === 1 ? 0.3 : 0.16} stroke="#d69b38" />
+          <text x="284" y="113" textAnchor="middle" fill="#edc677" fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+            3. PARTIAL AT 1:1 (+1R)
+          </text>
+
+          {/* Initial Risk Box */}
+          <rect x="76" y="168" width="190" height="42" rx="4" fill="#d85a52" fillOpacity={activeStep === 0 ? 0.28 : 0.14} stroke="#d85a52" />
+          <text x="171" y="224" textAnchor="middle" fill="#e57c75" fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+            2. INITIAL SL (-1R)
+          </text>
+
+          {/* Entry / Breakeven Line */}
+          <line x1="32" y1="168" x2="278" y2="168" stroke="#dd7d3e" strokeWidth="2" />
+          <line x1="278" y1="168" x2="608" y2="168" stroke="#2e9e75" strokeWidth="2" strokeDasharray="6 3" />
+
+          {/* Arrow moving SL UP to Entry */}
+          <line x1="286" y1="208" x2="286" y2="176" stroke="#e6955c" strokeWidth="2.4" />
+          <polygon points="286,169 280,179 292,179" fill="#e6955c" />
+          <rect x="304" y="178" width="244" height="30" rx="5" fill="#dd7d3e" fillOpacity="0.16" stroke="#e6955c" />
+          <text x="426" y="196.5" textAnchor="middle" fill="#f0b68a" fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+            4. MOVE SL UP TO BE (ZERO RISK!)
+          </text>
+
+          {/* Price Path */}
+          <polyline
+            points="36,198 96,168 156,188 278,124 352,142 448,90 538,52"
+            fill="none"
+            stroke="#f3efe9"
+            strokeWidth="2.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="96" cy="168" r="5.5" fill="#dd7d3e" stroke="#131110" strokeWidth="2" />
+          <text x="86" y="158" textAnchor="middle" fill="#e6955c" fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+            1. ENTRY
+          </text>
+          <circle cx="278" cy="124" r="5.5" fill="#d69b38" stroke="#131110" strokeWidth="2" />
+          <circle cx="538" cy="52" r="6" fill="#2e9e75" stroke="#131110" strokeWidth="2" />
+        </>
+      ) : (
+        <>
+          {/* Initial Risk Box ABOVE Short Entry */}
+          <rect x="76" y="54" width="190" height="42" rx="4" fill="#d85a52" fillOpacity={activeStep === 0 ? 0.28 : 0.14} stroke="#d85a52" />
+          <text x="171" y="48" textAnchor="middle" fill="#e57c75" fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+            2. INITIAL SL ABOVE (-1R)
+          </text>
+
+          {/* Short Entry / Breakeven Line */}
+          <line x1="32" y1="96" x2="278" y2="96" stroke="#dd7d3e" strokeWidth="2" />
+          <line x1="278" y1="96" x2="608" y2="96" stroke="#2e9e75" strokeWidth="2" strokeDasharray="6 3" />
+
+          {/* Arrow moving SL DOWN to Entry */}
+          <line x1="286" y1="56" x2="286" y2="88" stroke="#e6955c" strokeWidth="2.4" />
+          <polygon points="286,95 280,85 292,85" fill="#e6955c" />
+          <rect x="304" y="56" width="256" height="30" rx="5" fill="#dd7d3e" fillOpacity="0.16" stroke="#e6955c" />
+          <text x="432" y="74.5" textAnchor="middle" fill="#f0b68a" fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+            4. MOVE SL DOWN TO BE (ZERO RISK!)
+          </text>
+
+          {/* Partial +1R */}
+          <line x1="32" y1="142" x2="608" y2="142" stroke="#d69b38" strokeWidth="1.4" strokeDasharray="5 4" />
+          <rect x="200" y="148" width="168" height="19" rx="4" fill="#d69b38" fillOpacity={activeStep === 1 ? 0.3 : 0.16} stroke="#d69b38" />
+          <text x="284" y="161" textAnchor="middle" fill="#edc677" fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+            3. PARTIAL AT 1:1 (+1R)
+          </text>
+
+          {/* Final TP +3R BELOW */}
+          <line x1="32" y1="214" x2="608" y2="214" stroke="#2e9e75" strokeWidth="1.6" strokeDasharray="6 4" />
+          <rect x="444" y="219" width="164" height="19" rx="4" fill="#2e9e75" fillOpacity="0.2" stroke="#2e9e75" />
+          <text x="526" y="232" textAnchor="middle" fill="#88d9b8" fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+            5. FINAL TP 1:3 (+3R)
+          </text>
+
+          {/* Short Price Path */}
+          <polyline
+            points="36,68 96,96 156,78 278,142 352,124 448,176 538,214"
+            fill="none"
+            stroke="#f3efe9"
+            strokeWidth="2.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="96" cy="96" r="5.5" fill="#dd7d3e" stroke="#131110" strokeWidth="2" />
+          <text x="86" y="114" textAnchor="middle" fill="#e6955c" fontSize="8.8" fontFamily={FONT_MONO} fontWeight="700">
+            1. SHORT
+          </text>
+          <circle cx="278" cy="142" r="5.5" fill="#d69b38" stroke="#131110" strokeWidth="2" />
+          <circle cx="538" cy="214" r="6" fill="#2e9e75" stroke="#131110" strokeWidth="2" />
+        </>
+      )}
+
+      <DiagramBottomNote
+        text={
+          isBull
+            ? 'Long Journal Habit: Bank partial at +1R, shift SL (Stop Loss) up to BE (Breakeven), let runner reach +3R.'
+            : 'Short Journal Habit: Bank partial at +1R, shift SL (Stop Loss) down to BE (Breakeven), let runner drop to +3R.'
+        }
+      />
+    </g>
+  );
+}
+
+/* ==================== RENDER DISPATCHER ==================== */
+
+function renderDiagramGraphics(kind: DiagramKind, activeStep: number, side: DiagramSide) {
   switch (kind) {
+    case 'chart_fundamentals':
+      return <ChartFundamentalsSvg activeStep={activeStep} side={side} />;
     case 'candlestick_anatomy':
-      return <CandlestickAnatomySvg activeStep={activeStep} />;
+      return <CandlestickAnatomySvg activeStep={activeStep} side={side} />;
     case 'support_demand':
-      return <SupportDemandSvg activeStep={activeStep} />;
+      return <SupportDemandSvg activeStep={activeStep} side={side} />;
     case 'order_block_choch':
-      return <OrderBlockChochSvg activeStep={activeStep} />;
+      return <OrderBlockChochSvg activeStep={activeStep} side={side} />;
     case 'multi_timeframe':
-      return <MultiTimeframeSvg activeStep={activeStep} />;
+      return <MultiTimeframeSvg activeStep={activeStep} side={side} />;
     case 'market_sessions':
-      return <MarketSessionsSvg activeStep={activeStep} />;
+      return <MarketSessionsSvg activeStep={activeStep} side={side} />;
     case 'crypto_funding_dominance':
-      return <CryptoFundingDominanceSvg activeStep={activeStep} />;
+      return <CryptoFundingDominanceSvg activeStep={activeStep} side={side} />;
     case 'stocks_orb_gap':
-      return <StocksOrbGapSvg activeStep={activeStep} />;
+      return <StocksOrbGapSvg activeStep={activeStep} side={side} />;
     case 'trade_management_journal':
-      return <TradeManagementJournalSvg activeStep={activeStep} />;
+      return <TradeManagementJournalSvg activeStep={activeStep} side={side} />;
     case 'market_structure':
-      return <MarketStructureSvg activeStep={activeStep} />;
+      return <MarketStructureSvg activeStep={activeStep} side={side} />;
     case 'liquidity_pools':
-      return <LiquidityPoolsSvg activeStep={activeStep} />;
+      return <LiquidityPoolsSvg activeStep={activeStep} side={side} />;
     case 'equal_highs_lows':
-      return <EqualHighsLowsSvg activeStep={activeStep} />;
+      return <EqualHighsLowsSvg activeStep={activeStep} side={side} />;
     case 'liquidity_sweep_vs_breakout':
-      return <LiquiditySweepVsBreakoutSvg activeStep={activeStep} />;
+      return <LiquiditySweepVsBreakoutSvg activeStep={activeStep} side={side} />;
     case 'fair_value_gap':
-      return <FairValueGapSvg activeStep={activeStep} />;
+      return <FairValueGapSvg activeStep={activeStep} side={side} />;
     case 'risk_reward_model':
-      return <RiskRewardModelSvg activeStep={activeStep} />;
+      return <RiskRewardModelSvg activeStep={activeStep} side={side} />;
   }
 }
 
 export function ConceptDiagramSvg({ config }: ConceptDiagramSvgProps) {
   const { t } = useLanguage();
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [biasMode, setBiasMode] = useState<DiagramBiasMode>('both');
   const totalSteps = Math.max(config.walkthroughSteps.length, 1);
 
   useEffect(() => {
     setActiveStep(0);
+    setBiasMode('both');
   }, [config.kind, config.title]);
 
   const safeStep = activeStep >= totalSteps ? 0 : activeStep;
@@ -2586,54 +2715,158 @@ export function ConceptDiagramSvg({ config }: ConceptDiagramSvgProps) {
     setActiveStep(0);
   };
 
+  const visibleSides: DiagramSide[] =
+    biasMode === 'both' ? ['bullish', 'bearish'] : [biasMode];
+
   return (
     <div className="space-y-3">
       <div className="overflow-hidden rounded-xl border border-terminal-border bg-terminal-surface">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-terminal-border bg-terminal-elevated/60 px-3.5 py-2.5">
-          <div className="min-w-0">
-            <h4 className="text-xs font-semibold text-terminal-text sm:text-sm">{config.title}</h4>
+        {/* Header + Bias Toggle */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-terminal-border bg-terminal-elevated/60 px-3.5 py-2.5">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h4 className="text-xs font-semibold text-terminal-text sm:text-sm">
+                {config.title}
+              </h4>
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-brand/35 bg-brand-soft px-2 py-0.5 font-mono text-[10px] font-semibold text-brand">
+                <Sparkles className="h-2.5 w-2.5" aria-hidden="true" />
+                {t('Bullish & Bearish Blueprint', 'Bullish at Bearish Diagram')}
+              </span>
+            </div>
             {titleAcronymHint && (
               <p className="mt-0.5 font-mono text-[10px] text-brand">{titleAcronymHint}</p>
             )}
             <p className="text-[11px] text-terminal-muted">{expandAcronyms(config.subtitle)}</p>
           </div>
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-brand/35 bg-brand-soft px-2.5 py-0.5 font-mono text-[10px] font-semibold text-brand">
-            <Sparkles className="h-3 w-3" aria-hidden="true" />
-            {t('Interactive Blueprint', 'Interactive Diagram')}
-          </span>
-        </div>
 
-        <div className="bg-[#131110] p-2.5 sm:p-3.5">
-          <div className="mx-auto max-w-2xl">
-            <svg
-              viewBox="0 0 680 310"
-              className="h-auto w-full max-h-[340px] select-none"
-              role="img"
-              aria-label={expandAcronyms(config.title)}
+          {/* Accessible 3-Way Bias Toggle */}
+          <div
+            role="group"
+            aria-label={t('Select diagram direction view', 'Piliin ang direksyon ng diagram')}
+            className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-terminal-border bg-terminal-bg p-1"
+          >
+            <button
+              type="button"
+              aria-pressed={biasMode === 'both'}
+              onClick={() => setBiasMode('both')}
+              className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+                biasMode === 'both'
+                  ? 'bg-brand text-brand-fg shadow-sm'
+                  : 'text-terminal-muted hover:text-terminal-text'
+              }`}
             >
-              {/* Subtle warm obsidian grid */}
-              <defs>
-                <pattern
-                  id={`grid-${config.kind}`}
-                  width="44"
-                  height="44"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <path
-                    d="M 44 0 L 0 0 0 44"
-                    fill="none"
-                    stroke="#332e29"
-                    strokeWidth="0.75"
-                    opacity="0.55"
-                  />
-                </pattern>
-              </defs>
-              <rect width="680" height="310" fill={`url(#grid-${config.kind})`} rx="8" />
-              {renderDiagramGraphics(config.kind, safeStep)}
-            </svg>
+              {t(UI_COPY.diagrams.both.en, UI_COPY.diagrams.both.taglish)}
+            </button>
+            <button
+              type="button"
+              aria-pressed={biasMode === 'bullish'}
+              onClick={() => setBiasMode('bullish')}
+              className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+                biasMode === 'bullish'
+                  ? 'bg-bull/20 text-bull ring-1 ring-bull/50'
+                  : 'text-terminal-muted hover:text-bull'
+              }`}
+            >
+              <TrendingUp className="h-3 w-3" aria-hidden="true" />
+              <span>{t(UI_COPY.diagrams.bullish.en, UI_COPY.diagrams.bullish.taglish)}</span>
+            </button>
+            <button
+              type="button"
+              aria-pressed={biasMode === 'bearish'}
+              onClick={() => setBiasMode('bearish')}
+              className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+                biasMode === 'bearish'
+                  ? 'bg-bear/20 text-bear ring-1 ring-bear/50'
+                  : 'text-terminal-muted hover:text-bear'
+              }`}
+            >
+              <TrendingDown className="h-3 w-3" aria-hidden="true" />
+              <span>{t(UI_COPY.diagrams.bearish.en, UI_COPY.diagrams.bearish.taglish)}</span>
+            </button>
           </div>
         </div>
 
+        {/* Dual Bullish & Bearish SVG Grid (or Zoomed Single View) */}
+        <div className="bg-[#131110] p-2.5 sm:p-3.5">
+          <div
+            className={
+              biasMode === 'both'
+                ? 'grid grid-cols-1 gap-3 xl:grid-cols-2'
+                : 'mx-auto max-w-3xl'
+            }
+          >
+            {visibleSides.map((side) => {
+              const isBull = side === 'bullish';
+              const patternId = `grid-${config.kind}-${side}`;
+              return (
+                <div
+                  key={side}
+                  className={`overflow-hidden rounded-xl border bg-[#1b1917] ${
+                    isBull ? 'border-[#2e9e75]/45' : 'border-[#d85a52]/45'
+                  }`}
+                >
+                  <div
+                    className={`flex items-center justify-between gap-2 border-b px-3 py-1.5 ${
+                      isBull
+                        ? 'border-[#2e9e75]/25 bg-[#2e9e75]/10'
+                        : 'border-[#d85a52]/25 bg-[#d85a52]/10'
+                    }`}
+                  >
+                    <span
+                      className={`inline-flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-wider ${
+                        isBull ? 'text-[#4dc296]' : 'text-[#e57c75]'
+                      }`}
+                    >
+                      {isBull ? (
+                        <TrendingUp className="h-3 w-3" aria-hidden="true" />
+                      ) : (
+                        <TrendingDown className="h-3 w-3" aria-hidden="true" />
+                      )}
+                      {isBull
+                        ? t('BULLISH • UP / LONG', 'BULLISH • PATAAS / BUY')
+                        : t('BEARISH • DOWN / SHORT', 'BEARISH • PABABA / SELL')}
+                    </span>
+                    <span className="font-mono text-[9.5px] text-[#a89f94]">
+                      {isBull
+                        ? t('Buyers in Control', 'Buyers ang Lamang')
+                        : t('Sellers in Control', 'Sellers ang Lamang')}
+                    </span>
+                  </div>
+
+                  <div className="p-2">
+                    <svg
+                      viewBox="0 0 640 280"
+                      className="h-auto w-full select-none"
+                      role="img"
+                      aria-label={`${isBull ? 'Bullish' : 'Bearish'} diagram: ${expandAcronyms(config.title)}`}
+                    >
+                      <defs>
+                        <pattern
+                          id={patternId}
+                          width="40"
+                          height="40"
+                          patternUnits="userSpaceOnUse"
+                        >
+                          <path
+                            d="M 40 0 L 0 0 0 40"
+                            fill="none"
+                            stroke="#332e29"
+                            strokeWidth="0.75"
+                            opacity="0.55"
+                          />
+                        </pattern>
+                      </defs>
+                      <rect width="640" height="280" fill={`url(#${patternId})`} rx="6" />
+                      {renderDiagramGraphics(config.kind, safeStep, side)}
+                    </svg>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Legend & Caption */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-terminal-border bg-terminal-elevated/40 px-3.5 py-2">
           <div className="flex flex-wrap items-center gap-2.5">
             {config.legend.map((entry) => (
@@ -2643,7 +2876,7 @@ export function ConceptDiagramSvg({ config }: ConceptDiagramSvgProps) {
               >
                 <span
                   className="h-2 w-2 rounded-sm"
-                  style={{ backgroundColor: entry.colorToken }}
+                  style={{ backgroundColor: resolveLegendColor(entry.colorToken) }}
                   aria-hidden="true"
                 />
                 {expandAcronyms(entry.label)}

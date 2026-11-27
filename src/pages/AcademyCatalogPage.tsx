@@ -2,9 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
+  BarChart3,
   BookOpen,
+  Building2,
   CheckCircle2,
   Clock,
+  Coins,
+  Compass,
+  Globe,
   GraduationCap,
   Layers,
   RotateCcw,
@@ -22,11 +27,13 @@ import { TRADING_ACRONYMS, expandAcronyms } from '../lib/acronymHelper';
 import { listLessonProgress } from '../services/progressService';
 import type {
   CurriculumLevel,
+  Lesson,
   LessonMarketCategory,
   LessonStage,
 } from '../types/academy';
 
 type MarketFilter = 'all' | LessonMarketCategory;
+type SpecificMarketId = Exclude<LessonMarketCategory, 'general'>;
 type LevelFilter = 'all' | CurriculumLevel;
 
 const MARKET_BADGE_STYLES: Record<LessonMarketCategory, string> = {
@@ -60,16 +67,16 @@ const LEVEL_LABELS: Record<CurriculumLevel, { en: string; taglish: string }> = {
 
 const STAGE_TAGLISH_COPY: Record<LessonStage, { label: string; tagline: string }> = {
   foundations: {
-    label: 'Simula at Price Action Basics',
-    tagline: 'Basahin ang candles, trend structure, at support/resistance nang malinaw.',
+    label: 'Simula at Pagbasa ng Chart',
+    tagline: 'Timeframes, axes, chart tools, candlesticks, structure, at support/resistance.',
   },
   price_action_smc: {
     label: 'Liquidity at SMC (Smart Money Concepts)',
     tagline: 'Alamin kung saan nakatago ang stop losses, fakeouts, at FVG (Fair Value Gap).',
   },
   market_playbooks: {
-    label: 'Playbooks Bawat Market',
-    tagline: 'Tamang timing para sa Forex, Indices, Crypto, at Stocks.',
+    label: 'Hiwalay na Market Tracks',
+    tagline: 'Tamang rules para sa Crypto, Forex, Stocks, at Indices.',
   },
   execution_edge: {
     label: 'Malinis na Entry at Trade Management',
@@ -80,6 +87,83 @@ const STAGE_TAGLISH_COPY: Record<LessonStage, { label: string; tagline: string }
     tagline: 'Ingatan ang account gamit ang 1% risk rule, journal, at drawdown control.',
   },
 };
+
+const CATALOG_FILTER_TABS: Array<{
+  id: MarketFilter;
+  en: string;
+  taglish: string;
+}> = [
+  { id: 'all', en: 'All', taglish: 'Lahat' },
+  { id: 'general', en: 'Universal Core', taglish: 'Universal Core' },
+  { id: 'crypto', en: 'Crypto', taglish: 'Crypto' },
+  { id: 'forex', en: 'Forex', taglish: 'Forex' },
+  { id: 'stocks', en: 'Stocks', taglish: 'Stocks' },
+  { id: 'indices', en: 'Indices', taglish: 'Indices' },
+];
+
+interface MarketTrackMeta {
+  id: SpecificMarketId;
+  titleEn: string;
+  titleTaglish: string;
+  taglineEn: string;
+  taglineTaglish: string;
+  icon: typeof Coins;
+  iconWrapClass: string;
+  cardBorderHover: string;
+  badgeClass: string;
+  stepPillClass: string;
+}
+
+const DEDICATED_MARKET_TRACKS: MarketTrackMeta[] = [
+  {
+    id: 'crypto',
+    titleEn: UI_COPY.academyTracks.cryptoTrack.en,
+    titleTaglish: UI_COPY.academyTracks.cryptoTrack.taglish,
+    taglineEn: 'Spot vs. Perps, 24/7 liquidity sweeps, funding rates & altcoin sizing.',
+    taglineTaglish: 'Spot vs. Perps, 24/7 liquidity sweeps, funding rates at altcoin sizing.',
+    icon: Coins,
+    iconWrapClass: 'border-teal-500/35 bg-teal-500/10 text-teal-600 dark:text-teal-400',
+    cardBorderHover: 'hover:border-teal-500/50',
+    badgeClass: MARKET_BADGE_STYLES.crypto,
+    stepPillClass: 'bg-teal-500/15 text-teal-600 dark:text-teal-400',
+  },
+  {
+    id: 'forex',
+    titleEn: UI_COPY.academyTracks.forexTrack.en,
+    titleTaglish: UI_COPY.academyTracks.forexTrack.taglish,
+    taglineEn: 'Currency pairs, pips/lots, London & NY Killzones, CPI & NFP rates.',
+    taglineTaglish: 'Currency pairs, pips/lots, London & NY Killzones, CPI at NFP rates.',
+    icon: Globe,
+    iconWrapClass: 'border-sky-500/35 bg-sky-500/10 text-sky-600 dark:text-sky-400',
+    cardBorderHover: 'hover:border-sky-500/50',
+    badgeClass: MARKET_BADGE_STYLES.forex,
+    stepPillClass: 'bg-sky-500/15 text-sky-600 dark:text-sky-400',
+  },
+  {
+    id: 'stocks',
+    titleEn: UI_COPY.academyTracks.stocksTrack.en,
+    titleTaglish: UI_COPY.academyTracks.stocksTrack.taglish,
+    taglineEn: 'Market hours, Limit vs. Market orders, pre-market gaps, VWAP & earnings.',
+    taglineTaglish: 'Market hours, Limit vs. Market orders, pre-market gaps, VWAP at earnings.',
+    icon: Building2,
+    iconWrapClass: 'border-rose-500/35 bg-rose-500/10 text-rose-600 dark:text-rose-400',
+    cardBorderHover: 'hover:border-rose-500/50',
+    badgeClass: MARKET_BADGE_STYLES.stocks,
+    stepPillClass: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
+  },
+  {
+    id: 'indices',
+    titleEn: UI_COPY.academyTracks.indicesTrack.en,
+    titleTaglish: UI_COPY.academyTracks.indicesTrack.taglish,
+    taglineEn: 'NAS100 & SPX500 point math, 9:30 AM NY Open sweeps & VIX/DXY correlations.',
+    taglineTaglish: 'NAS100 at SPX500 point math, 9:30 AM NY Open sweeps at VIX/DXY.',
+    icon: BarChart3,
+    iconWrapClass: 'border-amber-500/35 bg-amber-500/10 text-amber-600 dark:text-amber-400',
+    cardBorderHover: 'hover:border-amber-500/50',
+    badgeClass: MARKET_BADGE_STYLES.indices,
+    stepPillClass: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+  },
+];
 
 const LEVEL_FILTERS: Array<{ id: LevelFilter; en: string; taglish: string }> = [
   { id: 'all', en: 'All Levels', taglish: 'Lahat' },
@@ -184,8 +268,9 @@ export function AcademyCatalogPage() {
       if (normalizedQuery.length > 0) {
         const marketLabel = (marketLabelMap[lesson.marketCategory] ?? '').toLowerCase();
         const expandedTitle = expandAcronyms(lesson.title);
+        const taglishSummary = LESSON_TAGLISH_SUMMARIES[lesson.slug]?.plainSummary ?? '';
         const haystack =
-          `${lesson.title} ${expandedTitle} ${lesson.conceptKey} ${lesson.level} ${LEVEL_LABELS[lesson.level].en} ${marketLabel} ${formatModuleOrder(lesson.moduleOrder)}`.toLowerCase();
+          `${lesson.title} ${expandedTitle} ${lesson.plainEnglishSummary ?? ''} ${taglishSummary} ${lesson.conceptKey} ${lesson.level} ${LEVEL_LABELS[lesson.level].en} ${marketLabel} ${formatModuleOrder(lesson.moduleOrder)}`.toLowerCase();
         if (!haystack.includes(normalizedQuery)) {
           return false;
         }
@@ -194,12 +279,37 @@ export function AcademyCatalogPage() {
     });
   }, [marketFilter, levelFilter, normalizedQuery, marketLabelMap]);
 
-  const groupedStages = useMemo(() => {
-    return LESSON_STAGES.map((stage) => ({
-      stage,
-      lessons: filteredLessons.filter((lesson) => lesson.learningStage === stage.id),
+  const universalCoreLessons = useMemo(
+    () => filteredLessons.filter((lesson) => lesson.marketCategory === 'general'),
+    [filteredLessons],
+  );
+
+  const universalCoreStages = useMemo(() => {
+    return LESSON_STAGES.filter((stage) => stage.id !== 'market_playbooks')
+      .map((stage) => ({
+        stage,
+        lessons: universalCoreLessons.filter((lesson) => lesson.learningStage === stage.id),
+      }))
+      .filter((group) => group.lessons.length > 0);
+  }, [universalCoreLessons]);
+
+  const marketTrackGroups = useMemo(() => {
+    return DEDICATED_MARKET_TRACKS.map((track) => ({
+      track,
+      lessons: filteredLessons.filter((lesson) => lesson.marketCategory === track.id),
     })).filter((group) => group.lessons.length > 0);
   }, [filteredLessons]);
+
+  const showUniversalSection =
+    (marketFilter === 'all' || marketFilter === 'general') && universalCoreStages.length > 0;
+
+  const showMarketTracksSection =
+    marketFilter !== 'general' && marketTrackGroups.length > 0;
+
+  const activeSpecificTrackGroup =
+    marketFilter !== 'all' && marketFilter !== 'general'
+      ? marketTrackGroups.find((group) => group.track.id === marketFilter) ?? null
+      : null;
 
   const handleSelectMarket = (nextMarket: MarketFilter) => {
     setMarketFilter(nextMarket);
@@ -221,6 +331,91 @@ export function AcademyCatalogPage() {
     setSearchQuery('');
   };
 
+  const renderLessonCard = (lesson: Lesson, trackIndex?: number) => {
+    const isCompleted = completedSlugs.has(lesson.slug);
+    const acronymHint = getTitleAcronymHint(lesson.title);
+    const summaryText = isTaglish
+      ? (LESSON_TAGLISH_SUMMARIES[lesson.slug]?.plainSummary ??
+        expandAcronyms(lesson.plainEnglishSummary ?? ''))
+      : expandAcronyms(lesson.plainEnglishSummary ?? '');
+
+    return (
+      <Link
+        key={lesson.id}
+        to={`/academy/${lesson.slug}`}
+        className={`group flex flex-col justify-between rounded-xl border bg-terminal-surface p-3.5 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:border-brand/50 ${
+          isCompleted ? 'border-bull/40' : 'border-terminal-border/90'
+        }`}
+      >
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="font-mono text-[11px] font-semibold text-terminal-muted tabular-nums">
+                {trackIndex !== undefined
+                  ? `0${trackIndex + 1}`
+                  : formatModuleOrder(lesson.moduleOrder)}
+              </span>
+              <span
+                className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${MARKET_BADGE_STYLES[lesson.marketCategory]}`}
+              >
+                {lesson.marketCategory === 'general'
+                  ? t('Universal', 'Universal')
+                  : (marketLabelMap[lesson.marketCategory] ?? lesson.marketCategory)}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              {isCompleted && (
+                <span
+                  aria-label="Lesson completed"
+                  className="inline-flex items-center gap-0.5 rounded-full border border-bull/40 bg-bull/15 px-1.5 py-0.5 text-[10px] font-semibold text-bull"
+                >
+                  <CheckCircle2 className="h-2.5 w-2.5" aria-hidden="true" />
+                  {t('Done', 'Tapos')}
+                </span>
+              )}
+              <span
+                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${LEVEL_BADGE_STYLES[lesson.level]}`}
+              >
+                {t(LEVEL_LABELS[lesson.level].en, LEVEL_LABELS[lesson.level].taglish)}
+              </span>
+            </div>
+          </div>
+
+          <h3 className="line-clamp-2 text-[13px] font-semibold leading-snug text-terminal-text transition-colors group-hover:text-brand">
+            {lesson.title}
+          </h3>
+
+          {acronymHint && (
+            <p className="truncate font-mono text-[10px] text-brand/90">{acronymHint}</p>
+          )}
+
+          {summaryText && (
+            <p className="line-clamp-2 text-[11px] leading-relaxed text-terminal-muted">
+              {summaryText}
+            </p>
+          )}
+        </div>
+
+        <div className="mt-3 flex items-center justify-between border-t border-terminal-border/60 pt-2 text-[11px] text-terminal-muted">
+          <span className="inline-flex items-center gap-1 font-mono tabular-nums">
+            <Clock className="h-3 w-3 text-sky-500 dark:text-sky-400" aria-hidden="true" />
+            {lesson.estimatedMinutes} {UI_COPY.academy.minutesShort.en}
+          </span>
+          <span className="inline-flex items-center gap-1 font-semibold text-brand">
+            {isCompleted
+              ? t('Review', 'Balikan')
+              : t(UI_COPY.academy.startLesson.en, UI_COPY.academy.startLesson.taglish)}
+            <ArrowRight
+              className="h-3 w-3 transition-transform group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
+          </span>
+        </div>
+      </Link>
+    );
+  };
+
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       {/* Compact Catalog Header */}
@@ -236,8 +431,9 @@ export function AcademyCatalogPage() {
                   {t(UI_COPY.academy.title.en, UI_COPY.academy.title.taglish)}
                 </h1>
                 <span className="inline-flex items-center rounded-full border border-brand/30 bg-brand-soft px-2 py-0.5 font-mono text-[10px] font-semibold text-brand tabular-nums">
-                  {CURRICULUM_LESSONS.length} {t('Lessons', 'Aralin')} · {LESSON_STAGES.length}{' '}
-                  {t('Stages', 'Stage')}
+                  {marketCounts.general} {t('Universal', 'Universal')} +{' '}
+                  {CURRICULUM_LESSONS.length - marketCounts.general}{' '}
+                  {t('Market Tracks', 'Market Tracks')}
                 </span>
               </div>
               <p className="text-xs text-terminal-muted">
@@ -285,46 +481,30 @@ export function AcademyCatalogPage() {
           </div>
         </div>
 
-        {/* Filter Bar: Market Pills + Level Segmented Pills */}
+        {/* Filter Bar: Top Quick Tabs (All, Universal Core, Crypto, Forex, Stocks, Indices) + Level Pills */}
         <div className="mt-4 flex flex-col gap-2.5 border-t border-terminal-border/70 pt-3.5 md:flex-row md:items-center md:justify-between">
           <div
             role="group"
-            aria-label="Filter lessons by market category"
+            aria-label="Filter lessons by market track"
             className="no-scrollbar flex flex-nowrap items-center gap-1.5 overflow-x-auto pb-0.5"
           >
-            <button
-              type="button"
-              onClick={() => handleSelectMarket('all')}
-              aria-pressed={marketFilter === 'all'}
-              className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-all ${
-                marketFilter === 'all'
-                  ? MARKET_ACTIVE_PILL_STYLES.all
-                  : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-brand/40 hover:text-terminal-text'
-              }`}
-            >
-              <span>{t('All', 'Lahat')}</span>
-              <span className="font-mono text-[10px] opacity-80 tabular-nums">
-                {marketCounts.all}
-              </span>
-            </button>
-
-            {LESSON_MARKET_CATEGORIES.map((category) => {
-              const isActive = marketFilter === category.id;
+            {CATALOG_FILTER_TABS.map((tab) => {
+              const isActive = marketFilter === tab.id;
               return (
                 <button
-                  key={category.id}
+                  key={tab.id}
                   type="button"
-                  onClick={() => handleSelectMarket(category.id)}
+                  onClick={() => handleSelectMarket(tab.id)}
                   aria-pressed={isActive}
                   className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-all ${
                     isActive
-                      ? MARKET_ACTIVE_PILL_STYLES[category.id]
+                      ? MARKET_ACTIVE_PILL_STYLES[tab.id]
                       : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-brand/40 hover:text-terminal-text'
                   }`}
                 >
-                  <span>{category.label}</span>
+                  <span>{t(tab.en, tab.taglish)}</span>
                   <span className="font-mono text-[10px] opacity-80 tabular-nums">
-                    {marketCounts[category.id]}
+                    ({marketCounts[tab.id]})
                   </span>
                 </button>
               );
@@ -377,8 +557,8 @@ export function AcademyCatalogPage() {
         </div>
       )}
 
-      {/* 5-Stage Compact Roadmap */}
-      {groupedStages.length === 0 ? (
+      {/* Empty State */}
+      {!showUniversalSection && !showMarketTracksSection ? (
         <section className="flex flex-col items-center justify-center rounded-2xl border border-terminal-border bg-terminal-surface px-6 py-12 text-center">
           <Layers className="h-7 w-7 text-terminal-muted" aria-hidden="true" />
           <h2 className="mt-2.5 text-sm font-semibold text-terminal-text">
@@ -396,143 +576,286 @@ export function AcademyCatalogPage() {
             className="mt-3.5 inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95"
           >
             <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
-            {t(`Show All ${CURRICULUM_LESSONS.length} Lessons`, `Ipakita Lahat (${CURRICULUM_LESSONS.length})`)}
+            {t(
+              `Show All ${CURRICULUM_LESSONS.length} Lessons`,
+              `Ipakita Lahat (${CURRICULUM_LESSONS.length})`,
+            )}
           </button>
         </section>
       ) : (
-        <div className="space-y-5">
-          {groupedStages.map(({ stage, lessons }) => {
-            const stageDoneCount = lessons.filter((lesson) =>
-              completedSlugs.has(lesson.slug),
-            ).length;
-            const stageTaglish = STAGE_TAGLISH_COPY[stage.id];
-
-            return (
-              <section
-                key={stage.id}
-                aria-labelledby={`stage-heading-${stage.id}`}
-                className="space-y-2.5"
-              >
-                {/* Compact Stage Header */}
-                <div className="flex flex-wrap items-center justify-between gap-2 px-0.5">
-                  <div className="flex min-w-0 items-center gap-2.5">
-                    <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-brand/30 bg-brand-soft font-mono text-[11px] font-bold text-brand tabular-nums">
-                      {stage.step}
-                    </span>
-                    <div className="min-w-0">
-                      <h2
-                        id={`stage-heading-${stage.id}`}
-                        className="text-sm font-bold tracking-tight text-terminal-text"
-                      >
-                        Stage {stage.step}: {t(stage.label, stageTaglish.label)}
-                      </h2>
-                      <p className="line-clamp-1 text-[11px] text-terminal-muted">
-                        {t(expandAcronyms(stage.tagline), stageTaglish.tagline)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <span
-                    className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-semibold tabular-nums ${
-                      stageDoneCount === lessons.length && lessons.length > 0
-                        ? 'border-bull/40 bg-bull/15 text-bull'
-                        : 'border-terminal-border bg-terminal-surface text-terminal-muted'
-                    }`}
-                  >
-                    {stageDoneCount}/{lessons.length} {t('done', 'tapos')}
+        <div className="space-y-7">
+          {/* SECTION 1: UNIVERSAL CORE TRACK (ALL MARKETS) */}
+          {showUniversalSection && (
+            <section aria-labelledby="universal-core-section-heading" className="space-y-4">
+              <div className="flex flex-col gap-2 rounded-2xl border border-brand/30 bg-brand-soft/35 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-2.5">
+                  <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-brand/30 bg-brand-soft text-brand">
+                    <Compass className="h-4 w-4" aria-hidden="true" />
                   </span>
+                  <div className="space-y-0.5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2
+                        id="universal-core-section-heading"
+                        className="text-sm font-bold tracking-tight text-terminal-text sm:text-base"
+                      >
+                        {t(
+                          UI_COPY.academyTracks.universalCoreTitle.en,
+                          UI_COPY.academyTracks.universalCoreTitle.taglish,
+                        )}
+                      </h2>
+                      <span className="rounded-full border border-brand/30 bg-terminal-surface px-2 py-0.5 font-mono text-[10px] font-semibold text-brand tabular-nums">
+                        {universalCoreLessons.length} {t('Lessons', 'Aralin')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-terminal-muted">
+                      {t(
+                        UI_COPY.academyTracks.universalCoreSubtitle.en,
+                        UI_COPY.academyTracks.universalCoreSubtitle.taglish,
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-5">
+                {universalCoreStages.map(({ stage, lessons }, idx) => {
+                  const stageDoneCount = lessons.filter((lesson) =>
+                    completedSlugs.has(lesson.slug),
+                  ).length;
+                  const stageTaglish = STAGE_TAGLISH_COPY[stage.id];
+                  const displayStepNumber = idx + 1;
+
+                  return (
+                    <section
+                      key={stage.id}
+                      aria-labelledby={`stage-heading-${stage.id}`}
+                      className="space-y-2.5"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2 px-0.5">
+                        <div className="flex min-w-0 items-center gap-2.5">
+                          <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-brand/30 bg-brand-soft font-mono text-[11px] font-bold text-brand tabular-nums">
+                            {displayStepNumber}
+                          </span>
+                          <div className="min-w-0">
+                            <h3
+                              id={`stage-heading-${stage.id}`}
+                              className="text-sm font-bold tracking-tight text-terminal-text"
+                            >
+                              {t(`Part ${displayStepNumber}:`, `Bahagi ${displayStepNumber}:`)}{' '}
+                              {t(stage.label, stageTaglish.label)}
+                            </h3>
+                            <p className="line-clamp-1 text-[11px] text-terminal-muted">
+                              {t(expandAcronyms(stage.tagline), stageTaglish.tagline)}
+                            </p>
+                          </div>
+                        </div>
+
+                        <span
+                          className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-semibold tabular-nums ${
+                            stageDoneCount === lessons.length && lessons.length > 0
+                              ? 'border-bull/40 bg-bull/15 text-bull'
+                              : 'border-terminal-border bg-terminal-surface text-terminal-muted'
+                          }`}
+                        >
+                          {stageDoneCount}/{lessons.length} {t('done', 'tapos')}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+                        {lessons.map((lesson) => renderLessonCard(lesson))}
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* SECTION 2: DEDICATED MARKET TRACKS (SEPARATE LISTS PER MARKET) */}
+          {showMarketTracksSection && (
+            <section aria-labelledby="market-tracks-section-heading" className="space-y-4">
+              <div className="flex flex-col gap-2 rounded-2xl border border-terminal-border/90 bg-terminal-surface px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-2.5">
+                  <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400">
+                    <Layers className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                  <div className="space-y-0.5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2
+                        id="market-tracks-section-heading"
+                        className="text-sm font-bold tracking-tight text-terminal-text sm:text-base"
+                      >
+                        {activeSpecificTrackGroup
+                          ? t(
+                              activeSpecificTrackGroup.track.titleEn,
+                              activeSpecificTrackGroup.track.titleTaglish,
+                            )
+                          : t(
+                              UI_COPY.academyTracks.marketTracksTitle.en,
+                              UI_COPY.academyTracks.marketTracksTitle.taglish,
+                            )}
+                      </h2>
+                      <span className="rounded-full border border-terminal-border bg-terminal-bg px-2 py-0.5 font-mono text-[10px] font-semibold text-terminal-muted tabular-nums">
+                        {activeSpecificTrackGroup
+                          ? `${activeSpecificTrackGroup.lessons.length} ${t('Lessons', 'Aralin')}`
+                          : t('4 Markets · 3 Lessons Each', '4 Markets · 3 Aralin Bawat Isa')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-terminal-muted">
+                      {activeSpecificTrackGroup
+                        ? t(
+                            activeSpecificTrackGroup.track.taglineEn,
+                            activeSpecificTrackGroup.track.taglineTaglish,
+                          )
+                        : t(
+                            UI_COPY.academyTracks.marketTracksSubtitle.en,
+                            UI_COPY.academyTracks.marketTracksSubtitle.taglish,
+                          )}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Compact Scannable Lesson Cards */}
+                {activeSpecificTrackGroup && (
+                  <button
+                    type="button"
+                    onClick={() => handleSelectMarket('all')}
+                    className="inline-flex shrink-0 items-center gap-1 rounded-full border border-terminal-border bg-terminal-bg px-3 py-1 text-[11px] font-medium text-terminal-text transition-colors hover:border-brand/45 hover:text-brand"
+                  >
+                    {t('View All 4 Market Tracks', 'Tingnan Lahat ng 4 Markets')}
+                  </button>
+                )}
+              </div>
+
+              {activeSpecificTrackGroup ? (
+                /* Focused single market track view: full rich 3-column cards */
                 <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-                  {lessons.map((lesson) => {
-                    const isCompleted = completedSlugs.has(lesson.slug);
-                    const acronymHint = getTitleAcronymHint(lesson.title);
-                    const summaryText = isTaglish
-                      ? (LESSON_TAGLISH_SUMMARIES[lesson.slug]?.plainSummary ??
-                        expandAcronyms(lesson.plainEnglishSummary ?? ''))
-                      : expandAcronyms(lesson.plainEnglishSummary ?? '');
+                  {activeSpecificTrackGroup.lessons.map((lesson, idx) =>
+                    renderLessonCard(lesson, idx),
+                  )}
+                </div>
+              ) : (
+                /* All-markets view: Crisp 2x2 Dedicated Market Track Cards */
+                <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2">
+                  {marketTrackGroups.map(({ track, lessons }) => {
+                    const TrackIcon = track.icon;
+                    const doneCount = lessons.filter((lesson) =>
+                      completedSlugs.has(lesson.slug),
+                    ).length;
 
                     return (
-                      <Link
-                        key={lesson.id}
-                        to={`/academy/${lesson.slug}`}
-                        className={`group flex flex-col justify-between rounded-xl border bg-terminal-surface p-3.5 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:border-brand/50 ${
-                          isCompleted
-                            ? 'border-bull/40'
-                            : 'border-terminal-border/90'
-                        }`}
+                      <article
+                        key={track.id}
+                        className={`flex flex-col rounded-2xl border border-terminal-border/90 bg-terminal-surface p-4 shadow-sm transition-colors ${track.cardBorderHover}`}
                       >
-                        <div className="space-y-1.5">
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-mono text-[11px] font-semibold text-terminal-muted tabular-nums">
-                                {formatModuleOrder(lesson.moduleOrder)}
-                              </span>
-                              <span
-                                className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${MARKET_BADGE_STYLES[lesson.marketCategory]}`}
-                              >
-                                {marketLabelMap[lesson.marketCategory] ?? lesson.marketCategory}
-                              </span>
-                            </div>
-
-                            <div className="flex items-center gap-1">
-                              {isCompleted && (
+                        {/* Track Card Header */}
+                        <div className="flex items-start justify-between gap-2 border-b border-terminal-border/70 pb-3">
+                          <div className="flex min-w-0 items-start gap-2.5">
+                            <span
+                              className={`mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${track.iconWrapClass}`}
+                            >
+                              <TrackIcon className="h-4 w-4" aria-hidden="true" />
+                            </span>
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <h3 className="text-sm font-bold tracking-tight text-terminal-text">
+                                  {t(track.titleEn, track.titleTaglish)}
+                                </h3>
                                 <span
-                                  aria-label="Lesson completed"
-                                  className="inline-flex items-center gap-0.5 rounded-full border border-bull/40 bg-bull/15 px-1.5 py-0.5 text-[10px] font-semibold text-bull"
+                                  className={`rounded-full border px-2 py-0.5 font-mono text-[10px] font-semibold tabular-nums ${
+                                    doneCount === lessons.length && lessons.length > 0
+                                      ? 'border-bull/40 bg-bull/15 text-bull'
+                                      : track.badgeClass
+                                  }`}
                                 >
-                                  <CheckCircle2 className="h-2.5 w-2.5" aria-hidden="true" />
-                                  {t('Done', 'Tapos')}
+                                  {doneCount}/{lessons.length} {t('done', 'tapos')}
                                 </span>
-                              )}
-                              <span
-                                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${LEVEL_BADGE_STYLES[lesson.level]}`}
-                              >
-                                {t(LEVEL_LABELS[lesson.level].en, LEVEL_LABELS[lesson.level].taglish)}
-                              </span>
+                              </div>
+                              <p className="mt-0.5 line-clamp-1 text-[11px] text-terminal-muted">
+                                {t(track.taglineEn, track.taglineTaglish)}
+                              </p>
                             </div>
                           </div>
 
-                          <h3 className="line-clamp-2 text-[13px] font-semibold leading-snug text-terminal-text transition-colors group-hover:text-brand">
-                            {lesson.title}
-                          </h3>
-
-                          {acronymHint && (
-                            <p className="truncate font-mono text-[10px] text-brand/90">
-                              {acronymHint}
-                            </p>
-                          )}
-
-                          {summaryText && (
-                            <p className="line-clamp-2 text-[11px] leading-relaxed text-terminal-muted">
-                              {summaryText}
-                            </p>
-                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleSelectMarket(track.id)}
+                            className="shrink-0 rounded-full border border-terminal-border bg-terminal-bg px-2.5 py-1 text-[10px] font-semibold text-terminal-muted transition-colors hover:border-brand/45 hover:text-brand"
+                          >
+                            {t('Focus', 'Buksan')}
+                          </button>
                         </div>
 
-                        <div className="mt-3 flex items-center justify-between border-t border-terminal-border/60 pt-2 text-[11px] text-terminal-muted">
-                          <span className="inline-flex items-center gap-1 font-mono tabular-nums">
-                            <Clock className="h-3 w-3 text-sky-500 dark:text-sky-400" aria-hidden="true" />
-                            {lesson.estimatedMinutes} {UI_COPY.academy.minutesShort.en}
-                          </span>
-                          <span className="inline-flex items-center gap-1 font-semibold text-brand">
-                            {isCompleted
-                              ? t('Review', 'Balikan')
-                              : t(UI_COPY.academy.startLesson.en, UI_COPY.academy.startLesson.taglish)}
-                            <ArrowRight
-                              className="h-3 w-3 transition-transform group-hover:translate-x-0.5"
-                              aria-hidden="true"
-                            />
-                          </span>
-                        </div>
-                      </Link>
+                        {/* Dedicated Ordered 1-2-3 Market Lesson List */}
+                        <ol className="mt-2.5 space-y-2">
+                          {lessons.map((lesson, lessonIdx) => {
+                            const isCompleted = completedSlugs.has(lesson.slug);
+                            const summaryText = isTaglish
+                              ? (LESSON_TAGLISH_SUMMARIES[lesson.slug]?.plainSummary ??
+                                expandAcronyms(lesson.plainEnglishSummary ?? ''))
+                              : expandAcronyms(lesson.plainEnglishSummary ?? '');
+
+                            return (
+                              <li key={lesson.id}>
+                                <Link
+                                  to={`/academy/${lesson.slug}`}
+                                  className={`group flex items-start justify-between gap-2.5 rounded-xl border px-3 py-2.5 transition-all hover:border-brand/50 hover:bg-terminal-bg/80 ${
+                                    isCompleted
+                                      ? 'border-bull/35 bg-bull/5'
+                                      : 'border-terminal-border/75 bg-terminal-bg/45'
+                                  }`}
+                                >
+                                  <div className="flex min-w-0 items-start gap-2.5">
+                                    {isCompleted ? (
+                                      <CheckCircle2
+                                        className="mt-0.5 h-4 w-4 shrink-0 text-bull"
+                                        aria-label="Lesson completed"
+                                      />
+                                    ) : (
+                                      <span
+                                        className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md font-mono text-[10px] font-bold tabular-nums ${track.stepPillClass}`}
+                                      >
+                                        {lessonIdx + 1}
+                                      </span>
+                                    )}
+
+                                    <div className="min-w-0">
+                                      <p className="line-clamp-1 text-xs font-semibold text-terminal-text transition-colors group-hover:text-brand">
+                                        {lesson.title}
+                                      </p>
+                                      {summaryText && (
+                                        <p className="mt-0.5 line-clamp-1 text-[11px] text-terminal-muted">
+                                          {summaryText}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  <div className="flex shrink-0 items-center gap-1.5 pt-0.5">
+                                    <span
+                                      className={`hidden rounded-full px-2 py-0.5 text-[10px] font-semibold sm:inline-flex ${LEVEL_BADGE_STYLES[lesson.level]}`}
+                                    >
+                                      {t(
+                                        LEVEL_LABELS[lesson.level].en,
+                                        LEVEL_LABELS[lesson.level].taglish,
+                                      )}
+                                    </span>
+                                    <ArrowRight
+                                      className="h-3.5 w-3.5 text-terminal-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand"
+                                      aria-hidden="true"
+                                    />
+                                  </div>
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ol>
+                      </article>
                     );
                   })}
                 </div>
-              </section>
-            );
-          })}
+              )}
+            </section>
+          )}
         </div>
       )}
     </div>

@@ -64,7 +64,10 @@ function RouteLoadingFallback() {
 
 export function App() {
   const [vaultOpen, setVaultOpen] = useState<boolean>(false);
+  const [tourOpen, setTourOpen] = useState<boolean>(false);
   const openVault = () => setVaultOpen(true);
+  const openTour = () => setTourOpen(true);
+  const closeTour = () => setTourOpen(false);
 
   return (
     <ErrorBoundary>
@@ -106,6 +109,9 @@ export function App() {
                         vaultOpen={vaultOpen}
                         onOpenVault={openVault}
                         onCloseVault={() => setVaultOpen(false)}
+                        tourOpen={tourOpen}
+                        onOpenTour={openTour}
+                        onCloseTour={closeTour}
                       >
                         <Suspense fallback={<RouteLoadingFallback />}>
                           <Outlet />
@@ -114,7 +120,10 @@ export function App() {
                     </LearnerRoute>
                   }
                 >
-                  <Route path="/" element={<DashboardPage onOpenVault={openVault} />} />
+                  <Route
+                    path="/"
+                    element={<DashboardPage onOpenVault={openVault} onOpenTour={openTour} />}
+                  />
                   <Route path="/academy" element={<AcademyCatalogPage />} />
                   <Route path="/academy/:slug" element={<LessonPage />} />
                   <Route path="/practice" element={<PracticePage />} />

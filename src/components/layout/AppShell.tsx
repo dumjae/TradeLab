@@ -6,6 +6,7 @@ import {
   CandlestickChart,
   Flame,
   GraduationCap,
+  HelpCircle,
   Home,
   LayoutDashboard,
   LineChart,
@@ -28,6 +29,7 @@ import { expandAcronyms } from '../../lib/acronymHelper';
 import { getStorageMode } from '../../lib/supabase';
 import type { LessonMarketCategory } from '../../types/academy';
 import { UserAccountMenu } from '../auth/UserAccountMenu';
+import { AppWalkthroughModal } from '../learning/AppWalkthroughModal';
 import { MindsetVaultDrawer } from '../quotes/MindsetVaultDrawer';
 
 export interface AppShellProps {
@@ -35,6 +37,9 @@ export interface AppShellProps {
   vaultOpen: boolean;
   onOpenVault: () => void;
   onCloseVault: () => void;
+  tourOpen?: boolean;
+  onOpenTour?: () => void;
+  onCloseTour?: () => void;
 }
 
 type SidebarMarketFilter = 'all' | LessonMarketCategory;
@@ -155,10 +160,14 @@ export function AppShell({
   vaultOpen,
   onOpenVault,
   onCloseVault,
+  tourOpen,
+  onOpenTour,
+  onCloseTour,
 }: AppShellProps) {
   const { user } = useAuth();
   const { isTaglish, toggleLang, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [internalTourOpen, setInternalTourOpen] = useState<boolean>(false);
   const [sidebarMarketFilter, setSidebarMarketFilter] = useState<SidebarMarketFilter>('all');
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     if (typeof window === 'undefined') {
@@ -167,6 +176,22 @@ export function AppShell({
     const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
     return stored === 'light' ? 'light' : 'dark';
   });
+
+  const resolvedTourOpen = tourOpen ?? internalTourOpen;
+  const handleOpenTour = () => {
+    if (onOpenTour) {
+      onOpenTour();
+    } else {
+      setInternalTourOpen(true);
+    }
+  };
+  const handleCloseTour = () => {
+    if (onCloseTour) {
+      onCloseTour();
+    } else {
+      setInternalTourOpen(false);
+    }
+  };
 
   const storageMode = getStorageMode();
   const isAdmin = user?.role === 'admin';
@@ -185,6 +210,16 @@ export function AppShell({
     }
     return CURRICULUM_LESSONS.filter((lesson) => lesson.marketCategory === sidebarMarketFilter);
   }, [sidebarMarketFilter]);
+
+  const universalSidebarLessons = useMemo(
+    () => CURRICULUM_LESSONS.filter((lesson) => lesson.marketCategory === 'general'),
+    [],
+  );
+
+  const marketTrackSidebarLessons = useMemo(
+    () => CURRICULUM_LESSONS.filter((lesson) => lesson.marketCategory !== 'general'),
+    [],
+  );
 
   useEffect(() => {
     const root = document.documentElement;
@@ -314,6 +349,17 @@ export function AppShell({
               </span>
             </button>
 
+            {/* Always-accessible How to Use App Walkthrough Trigger */}
+            <button
+              type="button"
+              onClick={handleOpenTour}
+              aria-label="Open step-by-step app tutorial"
+              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-sky-500/30 bg-sky-500/10 px-2.5 text-[11px] font-medium text-sky-600 transition-colors hover:bg-sky-500/20 dark:text-sky-400"
+            >
+              <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="hidden md:inline">{t('How to Use', 'Paano Gamitin')}</span>
+            </button>
+
             {/* Always-accessible Mindset Vault Trigger */}
             <button
               type="button"
@@ -428,38 +474,131 @@ export function AppShell({
                   })}
                 </div>
 
-                <ul className="mt-1.5 flex-1 space-y-0.5 overflow-y-auto pr-1">
-                  {sidebarLessons.map((lesson) => {
-                    const cleanShortTitle = expandAcronyms(lesson.title.split('(')[0].trim());
-                    return (
-                      <li key={lesson.id}>
-                        <NavLink
-                          to={`/academy/${lesson.slug}`}
-                          title={expandAcronyms(lesson.title)}
-                          className={({ isActive }) =>
-                            `flex items-center justify-between gap-1.5 rounded-lg px-2 py-1.5 text-xs transition-colors ${
-                              isActive
-                                ? 'bg-brand-soft font-semibold text-brand'
-                                : 'text-terminal-muted hover:bg-terminal-elevated/60 hover:text-terminal-text'
-                            }`
-                          }
-                        >
-                          <span className="truncate">
-                            <span className="mr-1.5 font-mono text-[10px] opacity-65 tabular-nums">
-                              {formatModuleOrder(lesson.moduleOrder)}
-                            </span>
-                            {cleanShortTitle}
+                <div className="mt-1.5 flex-1 overflow-y-auto pr-1">
+                  {sidebarMarketFilter === 'all' ? (
+                    <div className="space-y-3">
+                      <div>
+                        <div className="flex items-center justify-between px-2 pb-1">
+                          <p className="text-[9px] font-semibold uppercase tracking-wider text-brand">
+                            {t('Universal Core (All Markets)', 'Universal Core (Lahat)')}
+                          </p>
+                          <span className="font-mono text-[9px] text-terminal-muted tabular-nums">
+                            01–{formatModuleOrder(universalSidebarLessons.length)}
                           </span>
-                          <span
-                            className={`shrink-0 rounded border px-1 py-0.5 font-mono text-[9px] font-semibold leading-none ${MARKET_TAG_STYLES[lesson.marketCategory]}`}
-                          >
-                            {marketShortCodeMap[lesson.marketCategory] ?? 'GEN'}
+                        </div>
+                        <ul className="space-y-0.5">
+                          {universalSidebarLessons.map((lesson) => {
+                            const cleanShortTitle = expandAcronyms(lesson.title.split('(')[0].trim());
+                            return (
+                              <li key={lesson.id}>
+                                <NavLink
+                                  to={`/academy/${lesson.slug}`}
+                                  title={expandAcronyms(lesson.title)}
+                                  className={({ isActive }) =>
+                                    `flex items-center justify-between gap-1.5 rounded-lg px-2 py-1.5 text-xs transition-colors ${
+                                      isActive
+                                        ? 'bg-brand-soft font-semibold text-brand'
+                                        : 'text-terminal-muted hover:bg-terminal-elevated/60 hover:text-terminal-text'
+                                    }`
+                                  }
+                                >
+                                  <span className="truncate">
+                                    <span className="mr-1.5 font-mono text-[10px] opacity-65 tabular-nums">
+                                      {formatModuleOrder(lesson.moduleOrder)}
+                                    </span>
+                                    {cleanShortTitle}
+                                  </span>
+                                  <span
+                                    className={`shrink-0 rounded border px-1 py-0.5 font-mono text-[9px] font-semibold leading-none ${MARKET_TAG_STYLES[lesson.marketCategory]}`}
+                                  >
+                                    {marketShortCodeMap[lesson.marketCategory] ?? 'CORE'}
+                                  </span>
+                                </NavLink>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+
+                      <div className="border-t border-terminal-border/70 pt-2">
+                        <div className="flex items-center justify-between px-2 pb-1">
+                          <p className="text-[9px] font-semibold uppercase tracking-wider text-sky-600 dark:text-sky-400">
+                            {t('Market Tracks', 'Hiwalay na Markets')}
+                          </p>
+                          <span className="font-mono text-[9px] text-terminal-muted tabular-nums">
+                            {formatModuleOrder(universalSidebarLessons.length + 1)}–
+                            {formatModuleOrder(CURRICULUM_LESSONS.length)}
                           </span>
-                        </NavLink>
-                      </li>
-                    );
-                  })}
-                </ul>
+                        </div>
+                        <ul className="space-y-0.5">
+                          {marketTrackSidebarLessons.map((lesson) => {
+                            const cleanShortTitle = expandAcronyms(lesson.title.split('(')[0].trim());
+                            return (
+                              <li key={lesson.id}>
+                                <NavLink
+                                  to={`/academy/${lesson.slug}`}
+                                  title={expandAcronyms(lesson.title)}
+                                  className={({ isActive }) =>
+                                    `flex items-center justify-between gap-1.5 rounded-lg px-2 py-1.5 text-xs transition-colors ${
+                                      isActive
+                                        ? 'bg-brand-soft font-semibold text-brand'
+                                        : 'text-terminal-muted hover:bg-terminal-elevated/60 hover:text-terminal-text'
+                                    }`
+                                  }
+                                >
+                                  <span className="truncate">
+                                    <span className="mr-1.5 font-mono text-[10px] opacity-65 tabular-nums">
+                                      {formatModuleOrder(lesson.moduleOrder)}
+                                    </span>
+                                    {cleanShortTitle}
+                                  </span>
+                                  <span
+                                    className={`shrink-0 rounded border px-1 py-0.5 font-mono text-[9px] font-semibold leading-none ${MARKET_TAG_STYLES[lesson.marketCategory]}`}
+                                  >
+                                    {marketShortCodeMap[lesson.marketCategory] ?? 'CORE'}
+                                  </span>
+                                </NavLink>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    </div>
+                  ) : (
+                    <ul className="space-y-0.5">
+                      {sidebarLessons.map((lesson) => {
+                        const cleanShortTitle = expandAcronyms(lesson.title.split('(')[0].trim());
+                        return (
+                          <li key={lesson.id}>
+                            <NavLink
+                              to={`/academy/${lesson.slug}`}
+                              title={expandAcronyms(lesson.title)}
+                              className={({ isActive }) =>
+                                `flex items-center justify-between gap-1.5 rounded-lg px-2 py-1.5 text-xs transition-colors ${
+                                  isActive
+                                    ? 'bg-brand-soft font-semibold text-brand'
+                                    : 'text-terminal-muted hover:bg-terminal-elevated/60 hover:text-terminal-text'
+                                }`
+                              }
+                            >
+                              <span className="truncate">
+                                <span className="mr-1.5 font-mono text-[10px] opacity-65 tabular-nums">
+                                  {formatModuleOrder(lesson.moduleOrder)}
+                                </span>
+                                {cleanShortTitle}
+                              </span>
+                              <span
+                                className={`shrink-0 rounded border px-1 py-0.5 font-mono text-[9px] font-semibold leading-none ${MARKET_TAG_STYLES[lesson.marketCategory]}`}
+                              >
+                                {marketShortCodeMap[lesson.marketCategory] ?? 'CORE'}
+                              </span>
+                            </NavLink>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -537,6 +676,18 @@ export function AppShell({
                   );
                 })}
               </nav>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleOpenTour();
+                }}
+                className="mt-3 flex items-center gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 px-3 py-2 text-xs font-semibold text-sky-600 transition-colors hover:bg-sky-500/20 dark:text-sky-400"
+              >
+                <HelpCircle className="h-4 w-4" aria-hidden="true" />
+                {t('How to Use App (6-Step Tour)', 'Paano Gamitin ang App (Gabay)')}
+              </button>
 
               <div className="mt-5 border-t border-terminal-border/80 pt-4">
                 <div className="flex items-center justify-between px-2">
@@ -624,6 +775,7 @@ export function AppShell({
       </nav>
 
       <MindsetVaultDrawer isOpen={vaultOpen} onClose={onCloseVault} />
+      <AppWalkthroughModal isOpen={resolvedTourOpen} onClose={handleCloseTour} />
     </div>
   );
 }
