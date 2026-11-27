@@ -5,6 +5,7 @@ import {
   ArrowRight,
   Bot,
   BookOpen,
+  Check,
   CheckCircle2,
   ChevronDown,
   Clock,
@@ -22,6 +23,10 @@ import {
   LESSON_STAGES,
   getLessonBySlug,
 } from '../data/curriculum';
+import {
+  listLessonProgress,
+  toggleLessonCompleted,
+} from '../services/progressService';
 import { getPublishedLessonResources } from '../services/visualResourcesService';
 import type { LearningViewMode, LessonMarketCategory } from '../types/academy';
 import type { LessonResourceWithDetails, MentorCitation } from '../types/visual-learning';
@@ -78,6 +83,8 @@ export function LessonPage() {
   const [objectivesOpen, setObjectivesOpen] = useState<boolean>(false);
   const [mobileTab, setMobileTab] = useState<MobileWorkspaceTab>('study');
   const [desktopSideTab, setDesktopSideTab] = useState<DesktopSideTab>('mentor');
+  const [isCompleted, setIsCompleted] = useState<boolean>(false);
+  const [togglingComplete, setTogglingComplete] = useState<boolean>(false);
 
   const initialMode = parseModeParam(searchParams.get('mode'));
   const initialResourceId = searchParams.get('resource');
@@ -93,9 +100,14 @@ export function LessonPage() {
   useEffect(() => {
     let active = true;
     const loadResources = async () => {
-      const published = await getPublishedLessonResources(lesson.slug);
+      const [published, progressRecords] = await Promise.all([
+        getPublishedLessonResources(lesson.slug),
+        listLessonProgress(),
+      ]);
       if (active) {
         setResources(published);
+        const match = progressRecords.find((record) => record.lessonSlug === lesson.slug);
+        setIsCompleted(Boolean(match?.completed));
       }
     };
     void loadResources();
@@ -103,6 +115,19 @@ export function LessonPage() {
       active = false;
     };
   }, [lesson.slug]);
+
+  const handleToggleComplete = async () => {
+    if (togglingComplete) {
+      return;
+    }
+    setTogglingComplete(true);
+    try {
+      const updated = await toggleLessonCompleted(lesson.slug, !isCompleted);
+      setIsCompleted(updated.completed);
+    } finally {
+      setTogglingComplete(false);
+    }
+  };
 
   const currentIndex = CURRICULUM_LESSONS.findIndex((item) => item.slug === lesson.slug);
   const prevLesson = currentIndex > 0 ? CURRICULUM_LESSONS[currentIndex - 1] : null;
@@ -203,6 +228,30 @@ export function LessonPage() {
             >
               <Compass className="h-3.5 w-3.5" aria-hidden="true" />
               <span className="hidden sm:inline">{tutorialMode ? 'Guide: ON' : 'Guide'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => void handleToggleComplete()}
+              disabled={togglingComplete}
+              aria-pressed={isCompleted}
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60 ${
+                isCompleted
+                  ? 'border-emerald-500/45 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                  : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-emerald-500/45 hover:text-emerald-600 dark:hover:text-emerald-400'
+              }`}
+            >
+              {isCompleted ? (
+                <>
+                  <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>Completed ✓</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>Mark Complete</span>
+                </>
+              )}
             </button>
 
             <Link

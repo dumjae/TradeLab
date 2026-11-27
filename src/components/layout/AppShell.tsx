@@ -11,6 +11,7 @@ import {
   LineChart,
   Menu,
   Moon,
+  NotebookPen,
   Shield,
   Sun,
   X,
@@ -41,6 +42,7 @@ const NAV_ITEMS = [
   { to: '/academy', label: 'Trading Academy', icon: BookOpen, end: false },
   { to: '/practice', label: 'Practice Exercises', icon: GraduationCap, end: false },
   { to: '/backtest', label: 'Market Backtester', icon: LineChart, end: false },
+  { to: '/journal', label: 'Trade Journal', icon: NotebookPen, end: false },
   { to: '/lab', label: 'Trading Lab', icon: CandlestickChart, end: false },
   { to: '/library', label: 'My Library', icon: Bookmark, end: false },
 ];
@@ -49,7 +51,7 @@ const MOBILE_BOTTOM_NAV = [
   { to: '/', label: 'Home', icon: Home, end: true },
   { to: '/academy', label: 'Academy', icon: BookOpen, end: false },
   { to: '/backtest', label: 'Backtest', icon: LineChart, end: false },
-  { to: '/practice', label: 'Practice', icon: GraduationCap, end: false },
+  { to: '/journal', label: 'Journal', icon: NotebookPen, end: false },
   { to: '/library', label: 'Library', icon: Bookmark, end: false },
 ];
 

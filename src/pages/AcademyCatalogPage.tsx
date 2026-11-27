@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
   BookOpen,
+  CheckCircle2,
   Clock,
   GraduationCap,
   Layers,
@@ -15,6 +16,7 @@ import {
   LESSON_MARKET_CATEGORIES,
   LESSON_STAGES,
 } from '../data/curriculum';
+import { listLessonProgress } from '../services/progressService';
 import type {
   CurriculumLevel,
   LessonMarketCategory,
@@ -77,6 +79,26 @@ export function AcademyCatalogPage() {
   );
   const [levelFilter, setLevelFilter] = useState<LevelFilter>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [completedSlugs, setCompletedSlugs] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
+    let active = true;
+    void listLessonProgress().then((records) => {
+      if (!active) {
+        return;
+      }
+      const next = new Set<string>();
+      for (const record of records) {
+        if (record.completed && record.lessonSlug) {
+          next.add(record.lessonSlug);
+        }
+      }
+      setCompletedSlugs(next);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const marketLabelMap = useMemo(
     () =>
@@ -335,85 +357,119 @@ export function AcademyCatalogPage() {
         </section>
       ) : (
         <div className="space-y-6">
-          {groupedStages.map(({ stage, lessons }) => (
-            <section
-              key={stage.id}
-              aria-labelledby={`stage-heading-${stage.id}`}
-              className="space-y-3"
-            >
-              {/* Compact Stage Header */}
-              <div className="flex flex-wrap items-center justify-between gap-2 px-1">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
-                    {stage.step}
-                  </span>
-                  <div className="min-w-0">
-                    <h2
-                      id={`stage-heading-${stage.id}`}
-                      className="truncate text-sm font-bold tracking-tight text-terminal-text sm:text-base"
+          {groupedStages.map(({ stage, lessons }) => {
+            const stageDoneCount = lessons.filter((lesson) =>
+              completedSlugs.has(lesson.slug),
+            ).length;
+            return (
+              <section
+                key={stage.id}
+                aria-labelledby={`stage-heading-${stage.id}`}
+                className="space-y-3"
+              >
+                {/* Compact Stage Header */}
+                <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                      {stage.step}
+                    </span>
+                    <div className="min-w-0">
+                      <h2
+                        id={`stage-heading-${stage.id}`}
+                        className="truncate text-sm font-bold tracking-tight text-terminal-text sm:text-base"
+                      >
+                        {stage.label}
+                      </h2>
+                      <p className="truncate text-[11px] text-terminal-muted">{stage.tagline}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    <span
+                      className={`rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums ${
+                        stageDoneCount === lessons.length && lessons.length > 0
+                          ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                          : 'border-terminal-border bg-terminal-surface text-terminal-muted'
+                      }`}
                     >
-                      {stage.label}
-                    </h2>
-                    <p className="truncate text-[11px] text-terminal-muted">{stage.tagline}</p>
+                      {stageDoneCount}/{lessons.length} done
+                    </span>
+                    <span className="rounded-full border border-terminal-border bg-terminal-surface px-2.5 py-0.5 font-mono text-[11px] text-terminal-muted tabular-nums">
+                      {lessons.length} {lessons.length === 1 ? 'lesson' : 'lessons'}
+                    </span>
                   </div>
                 </div>
 
-                <span className="shrink-0 rounded-full border border-terminal-border bg-terminal-surface px-2.5 py-0.5 font-mono text-[11px] text-terminal-muted tabular-nums">
-                  {lessons.length} {lessons.length === 1 ? 'lesson' : 'lessons'}
-                </span>
-              </div>
+                {/* Compact Tappable Lesson Cards */}
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {lessons.map((lesson) => {
+                    const isCompleted = completedSlugs.has(lesson.slug);
+                    return (
+                      <Link
+                        key={lesson.id}
+                        to={`/academy/${lesson.slug}`}
+                        className={`group flex flex-col justify-between rounded-2xl border bg-terminal-surface p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/45 ${
+                          isCompleted
+                            ? 'border-emerald-500/35'
+                            : 'border-terminal-border/90'
+                        }`}
+                      >
+                        <div className="space-y-2.5">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono text-xs font-semibold text-terminal-muted tabular-nums">
+                                {formatModuleOrder(lesson.moduleOrder)}
+                              </span>
+                              <span
+                                className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${MARKET_BADGE_STYLES[lesson.marketCategory]}`}
+                              >
+                                {marketLabelMap[lesson.marketCategory] ?? lesson.marketCategory}
+                              </span>
+                            </div>
 
-              {/* Compact Tappable Lesson Cards */}
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {lessons.map((lesson) => (
-                  <Link
-                    key={lesson.id}
-                    to={`/academy/${lesson.slug}`}
-                    className="group flex flex-col justify-between rounded-2xl border border-terminal-border/90 bg-terminal-surface p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/45"
-                  >
-                    <div className="space-y-2.5">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-semibold text-terminal-muted tabular-nums">
-                            {formatModuleOrder(lesson.moduleOrder)}
-                          </span>
-                          <span
-                            className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${MARKET_BADGE_STYLES[lesson.marketCategory]}`}
-                          >
-                            {marketLabelMap[lesson.marketCategory] ?? lesson.marketCategory}
-                          </span>
+                            <div className="flex items-center gap-1.5">
+                              {isCompleted && (
+                                <span
+                                  aria-label="Lesson completed"
+                                  className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400"
+                                >
+                                  <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
+                                  Done
+                                </span>
+                              )}
+                              <span
+                                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${LEVEL_BADGE_STYLES[lesson.level]}`}
+                              >
+                                {lesson.level}
+                              </span>
+                            </div>
+                          </div>
+
+                          <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-terminal-text transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                            {lesson.title}
+                          </h3>
                         </div>
 
-                        <span
-                          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${LEVEL_BADGE_STYLES[lesson.level]}`}
-                        >
-                          {lesson.level}
-                        </span>
-                      </div>
-
-                      <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-terminal-text transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
-                        {lesson.title}
-                      </h3>
-                    </div>
-
-                    <div className="mt-3.5 flex items-center justify-between border-t border-terminal-border/60 pt-2.5 text-xs text-terminal-muted">
-                      <span className="inline-flex items-center gap-1 font-mono text-[11px] tabular-nums">
-                        <Clock className="h-3 w-3 text-sky-500 dark:text-sky-400" aria-hidden="true" />
-                        {lesson.estimatedMinutes}m
-                      </span>
-                      <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                        Study
-                        <ArrowRight
-                          className="h-3 w-3 transition-transform group-hover:translate-x-0.5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          ))}
+                        <div className="mt-3.5 flex items-center justify-between border-t border-terminal-border/60 pt-2.5 text-xs text-terminal-muted">
+                          <span className="inline-flex items-center gap-1 font-mono text-[11px] tabular-nums">
+                            <Clock className="h-3 w-3 text-sky-500 dark:text-sky-400" aria-hidden="true" />
+                            {lesson.estimatedMinutes}m
+                          </span>
+                          <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                            {isCompleted ? 'Review' : 'Study'}
+                            <ArrowRight
+                              className="h-3 w-3 transition-transform group-hover:translate-x-0.5"
+                              aria-hidden="true"
+                            />
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })}
         </div>
       )}
     </div>

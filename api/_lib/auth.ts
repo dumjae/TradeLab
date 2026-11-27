@@ -23,6 +23,14 @@ export interface CronOrAdminVerificationResult {
   error?: string;
 }
 
+export interface UserVerificationResult {
+  authorized: boolean;
+  userId?: string;
+  mode: 'supabase' | 'unconfigured';
+  statusCode: 200 | 401 | 503;
+  error?: string;
+}
+
 const MAX_BEARER_TOKEN_LENGTH = 8192;
 
 function getHeaderValue(
@@ -229,4 +237,53 @@ export async function verifyCronOrAdmin(
     statusCode: adminResult.statusCode,
     error: adminResult.error ?? 'Unauthorized request.',
   };
+}
+
+export async function verifyAuthenticatedUser(
+  req: AuthRequestLike,
+): Promise<UserVerificationResult> {
+  const supabase = createServerSupabaseClient();
+  if (!supabase) {
+    return {
+      authorized: true,
+      mode: 'unconfigured',
+      statusCode: 200,
+    };
+  }
+
+  const token = extractBearerToken(req.headers);
+  if (!token) {
+    return {
+      authorized: false,
+      mode: 'supabase',
+      statusCode: 401,
+      error: 'Authentication required to access live AI Mentor.',
+    };
+  }
+
+  try {
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error || !data.user) {
+      return {
+        authorized: false,
+        mode: 'supabase',
+        statusCode: 401,
+        error: 'Authentication required to access live AI Mentor.',
+      };
+    }
+
+    return {
+      authorized: true,
+      userId: data.user.id,
+      mode: 'supabase',
+      statusCode: 200,
+    };
+  } catch {
+    return {
+      authorized: false,
+      mode: 'supabase',
+      statusCode: 503,
+      error: 'Authentication verification failed due to an upstream error.',
+    };
+  }
 }

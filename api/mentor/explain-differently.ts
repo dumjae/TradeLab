@@ -8,7 +8,7 @@ import {
   getLessonBySlug,
   STARTER_ORIGINAL_RESOURCES,
 } from '../../src/data/curriculum';
-import { createServerSupabaseClient } from '../_lib/auth';
+import { createServerSupabaseClient, verifyAuthenticatedUser } from '../_lib/auth';
 import { generateGroundedExplanation } from '../_lib/mentorGrounding';
 import { ExplainDifferentlyRequestSchema } from '../_lib/urlSecurity';
 import { type ApiRequest, type ApiResponse, parseJsonBody } from '../_lib/youtube';
@@ -247,6 +247,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
     res.status(429).json({
       error: 'Too many AI Mentor requests. Please pause briefly before asking again.',
     });
+    return;
+  }
+
+  const auth = await verifyAuthenticatedUser(req);
+  if (!auth.authorized) {
+    res
+      .status(auth.statusCode)
+      .json({ error: auth.error ?? 'Authentication required to access live AI Mentor.' });
     return;
   }
 

@@ -12,6 +12,7 @@ import type {
   MentorCitation,
 } from '../types/visual-learning';
 import { getLessonByConceptKey, getLessonBySlug } from '../data/curriculum';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { getPublishedLessonResources } from './visualResourcesService';
 
 function generateMessageId(): string {
@@ -265,9 +266,25 @@ export async function requestAlternativeExplanation(
 
   // 2. Try grounded serverless Gemini endpoint when learner asks a question or requests live AI
   try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data } = await supabase.auth.getSession();
+        const accessToken = data.session?.access_token;
+        if (accessToken) {
+          headers.Authorization = `Bearer ${accessToken}`;
+        }
+      } catch {
+        // Proceed without auth header; server or local fallback handles unauthenticated requests
+      }
+    }
+
     const response = await fetch('/api/mentor/explain-differently', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(req),
       signal: AbortSignal.timeout(12_000),
     });
