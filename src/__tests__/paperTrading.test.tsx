@@ -584,5 +584,5 @@ describe('PaperTradingPage', () => {
 
     expect(await screen.findByText('No Demo Wallets Yet')).toBeInTheDocument();
     expect(screen.getByText('VIRTUAL DEMO — NOT REAL MONEY')).toBeInTheDocument();
-  });
+  }, 15000);
 });

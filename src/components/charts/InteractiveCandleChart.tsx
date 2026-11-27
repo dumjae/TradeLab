@@ -202,14 +202,14 @@ export function InteractiveCandleChart({
     let resizeObserver: ResizeObserver | null = null;
 
     try {
-      const bg = isDark ? '#131722' : '#ffffff';
-      const textColor = isDark ? '#8b909a' : '#5d606b';
-      const gridColor = isDark ? 'rgba(42, 46, 57, 0.55)' : 'rgba(224, 227, 235, 0.75)';
-      const borderColor = isDark ? '#2a2e39' : '#e0e3eb';
+      const bg = isDark ? '#0f131a' : '#ffffff';
+      const textColor = isDark ? '#8c94a4' : '#555e6f';
+      const gridColor = isDark ? 'rgba(38, 46, 61, 0.55)' : 'rgba(223, 228, 236, 0.75)';
+      const borderColor = isDark ? '#262e3d' : '#dfe4ec';
       const bullCandle = '#089981';
       const bearCandle = '#f23645';
       const crosshairColor = isDark ? '#758696' : '#787b86';
-      const crosshairLabelBg = isDark ? '#2a2e39' : '#131722';
+      const crosshairLabelBg = isDark ? '#1e2531' : '#111621';
 
       chart = createChart(container, {
         width: Math.max(container.clientWidth || 640, 280),

@@ -65,15 +65,15 @@ export function PreTradeChecklistCard() {
   return (
     <section
       aria-labelledby="pre-trade-checklist-heading"
-      className="rounded-3xl border border-terminal-border/90 bg-terminal-surface p-5 shadow-sm sm:p-6"
+      className="rounded-lg border border-terminal-border bg-terminal-surface p-5 sm:p-6"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <span
-            className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border transition-colors ${
+            className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border transition-colors ${
               isReady
-                ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-500 dark:text-emerald-400'
-                : 'border-sky-500/30 bg-sky-500/10 text-sky-500 dark:text-sky-400'
+                ? 'border-bull/35 bg-bull/10 text-bull'
+                : 'border-brand/30 bg-brand-soft text-brand-text'
             }`}
           >
             <ShieldCheck className="h-4 w-4" aria-hidden="true" />
@@ -81,7 +81,7 @@ export function PreTradeChecklistCard() {
           <div>
             <h2
               id="pre-trade-checklist-heading"
-              className="text-sm font-semibold text-terminal-text sm:text-base"
+              className="text-sm font-semibold tracking-tight text-terminal-text sm:text-[15px]"
             >
               Pre-Trade Discipline Check
             </h2>
@@ -93,9 +93,9 @@ export function PreTradeChecklistCard() {
 
         <div className="flex items-center gap-2">
           <span
-            className={`rounded-full border px-2.5 py-1 font-mono text-[11px] font-semibold tabular-nums ${
+            className={`rounded-md border px-2.5 py-1 font-mono text-[11px] font-semibold tabular-nums ${
               isReady
-                ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                ? 'border-bull/35 bg-bull/10 text-bull'
                 : 'border-terminal-border bg-terminal-bg text-terminal-muted'
             }`}
           >
@@ -106,7 +106,7 @@ export function PreTradeChecklistCard() {
             type="button"
             onClick={handleReset}
             disabled={completedCount === 0}
-            className="inline-flex items-center gap-1 rounded-full border border-terminal-border bg-terminal-bg px-3 py-1 text-xs font-medium text-terminal-muted transition-colors hover:border-emerald-500/40 hover:text-terminal-text disabled:cursor-not-allowed disabled:opacity-45"
+            className="inline-flex items-center gap-1 rounded-md border border-terminal-border bg-terminal-bg px-2.5 py-1 text-xs font-medium text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-terminal-text disabled:cursor-not-allowed disabled:opacity-45 tl-press"
           >
             <RotateCcw className="h-3 w-3" aria-hidden="true" />
             Reset
@@ -114,9 +114,9 @@ export function PreTradeChecklistCard() {
         </div>
       </div>
 
-      {/* Contextual Wisdom Pill */}
-      <div className="mt-4 flex items-center gap-2 rounded-2xl border border-amber-500/25 bg-amber-500/5 px-3.5 py-2.5 text-xs">
-        <Quote className="h-3.5 w-3.5 shrink-0 text-amber-500 dark:text-amber-400" aria-hidden="true" />
+      {/* Contextual Wisdom Strip */}
+      <div className="mt-4 flex items-center gap-2.5 rounded-md border border-terminal-border border-l-2 border-l-caution bg-terminal-bg px-3.5 py-2.5 text-xs">
+        <Quote className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
         <p className="min-w-0 truncate text-terminal-text">
           “{quote?.quoteText ?? 'Protect downside first; A+ setups always return.'}”{' '}
           <span className="text-terminal-muted">
@@ -136,17 +136,17 @@ export function PreTradeChecklistCard() {
               role="checkbox"
               aria-checked={isChecked}
               onClick={() => toggleItem(item.id)}
-              className={`flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-all ${
+              className={`flex w-full items-center gap-3 rounded-md border px-3.5 py-3 text-left transition-colors tl-press ${
                 isChecked
-                  ? 'border-emerald-500/40 bg-emerald-500/10'
-                  : 'border-terminal-border bg-terminal-bg/75 hover:border-emerald-500/35'
+                  ? 'border-bull/35 bg-bull/10'
+                  : 'border-terminal-border bg-terminal-bg hover:border-brand/40 hover:bg-terminal-elevated/40'
               }`}
             >
               <span
                 aria-hidden="true"
-                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors ${
+                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${
                   isChecked
-                    ? 'border-brand bg-brand text-brand-fg'
+                    ? 'border-bull bg-bull text-white'
                     : 'border-terminal-border bg-terminal-surface text-transparent'
                 }`}
               >
@@ -154,13 +154,7 @@ export function PreTradeChecklistCard() {
               </span>
 
               <span className="min-w-0 flex-1">
-                <span
-                  className={`block text-xs font-semibold sm:text-sm ${
-                    isChecked
-                      ? 'text-emerald-700 dark:text-emerald-300'
-                      : 'text-terminal-text'
-                  }`}
-                >
+                <span className="block text-xs font-semibold text-terminal-text sm:text-sm">
                   {item.label}
                 </span>
                 <span className="block text-[11px] text-terminal-muted">{item.hint}</span>
@@ -170,17 +164,17 @@ export function PreTradeChecklistCard() {
         })}
       </div>
 
-      {/* Emerald Confirmation Banner when 5/5 Checked */}
+      {/* Semantic Confirmation Banner when 5/5 Checked */}
       {isReady && (
         <div
           role="status"
-          className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-3 text-emerald-700 dark:text-emerald-300"
+          className="mt-4 flex items-center justify-between gap-3 rounded-md border border-bull/35 bg-bull/10 px-4 py-3 text-bull"
         >
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden="true" />
             <span className="text-xs font-semibold sm:text-sm">Ready to Execute</span>
           </div>
-          <span className="font-mono text-[11px] font-semibold">5/5 Verified</span>
+          <span className="font-mono text-[11px] font-semibold tabular-nums">5/5 Verified</span>
         </div>
       )}
     </section>

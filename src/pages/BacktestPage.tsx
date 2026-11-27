@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
-import { LineChart } from 'lucide-react';
 import {
   AssetSelectorBar,
   type DateRangePreset,
-  type SelectableAssetClass,
+  type SelectableAssetClass as AssetClassChoice,
 } from '../components/backtest/AssetSelectorBar';
 import { BacktestChartCanvas } from '../components/backtest/BacktestChartCanvas';
 import { BacktestMetricsPanel } from '../components/backtest/BacktestMetricsPanel';
@@ -152,7 +151,7 @@ function computePresetDates(preset: DateRangePreset): { startDate: string; endDa
 }
 
 export function BacktestPage() {
-  const [assetClass, setAssetClass] = useState<SelectableAssetClass>('crypto');
+  const [assetClass, setAssetClass] = useState<AssetClassChoice>('crypto');
   const [symbol, setSymbol] = useState<string>('BTCUSDT');
   const [timeframe, setTimeframe] = useState<MarketTimeframe>('15m');
   const [startDate, setStartDate] = useState<string>('');
@@ -208,7 +207,10 @@ export function BacktestPage() {
       forceRefresh: refreshTrigger.force,
     })
       .then((response) => {
-        if (!cancelled) setMarket(response);
+        if (!cancelled) {
+          setMarket(response);
+          dispatch({ type: 'reset', startIndex: defaultStartIndex(response.candles.length) });
+        }
       })
       .catch(() => {
         if (!cancelled) setMarket(null);
@@ -321,7 +323,7 @@ export function BacktestPage() {
     setRefreshTrigger((prev) => (prev.force ? { count: prev.count, force: false } : prev));
   };
 
-  const handleAssetClass = (next: SelectableAssetClass) => {
+  const handleAssetClass = (next: AssetClassChoice) => {
     const first = MARKET_SYMBOLS.find((item) => item.assetClass === next);
     setCsvMarket(null);
     setCsvError(null);
@@ -400,6 +402,7 @@ export function BacktestPage() {
       fetchedAt: new Date().toISOString(),
       note: `Loaded ${parsed.candles.length} candles from ${file.name}. Pick a symbol or click Refresh Data to return to market feeds.`,
     });
+    dispatch({ type: 'reset', startIndex: defaultStartIndex(parsed.candles.length) });
   };
 
   const handleExecute = (order: {
@@ -470,18 +473,23 @@ export function BacktestPage() {
   const maxStart = Math.max(1, Math.floor(candles.length * 0.8));
 
   return (
-    <div className="mx-auto max-w-[1400px] space-y-5">
-      <header className="flex items-center gap-3 px-1">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-brand/30 bg-brand-soft text-brand-text">
-          <LineChart className="h-4.5 w-4.5" aria-hidden="true" />
-        </span>
-        <div className="min-w-0">
-          <h1 className="text-lg font-semibold tracking-tight text-terminal-text">
+    <div className="mx-auto min-w-0 max-w-[1400px] space-y-5 tl-page-enter">
+      <header className="flex flex-wrap items-end justify-between gap-3 border-b border-terminal-border pb-4">
+        <div className="min-w-0 space-y-1">
+          <h1 className="text-xl font-semibold leading-tight tracking-[-0.025em] text-terminal-text sm:text-2xl">
             Market Backtester
           </h1>
-          <p className="truncate text-xs text-terminal-muted">
+          <p className="max-w-[65ch] text-xs leading-relaxed text-terminal-muted sm:text-sm">
             Bar-by-bar historical replay with hidden future candles.
           </p>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2 font-mono text-xs tabular-nums text-terminal-muted">
+          <span className="font-semibold text-terminal-text">{activeSymbol}</span>
+          <span aria-hidden="true" className="opacity-40">
+            ·
+          </span>
+          <span>{timeframe.toUpperCase()}</span>
         </div>
       </header>
 
@@ -511,14 +519,14 @@ export function BacktestPage() {
       {candles.length === 0 ? (
         <div
           role="status"
-          className="rounded-xl border border-dashed border-terminal-border bg-terminal-surface p-10 text-center text-xs text-terminal-muted"
+          className="rounded-lg border border-dashed border-terminal-border bg-terminal-surface p-10 text-center text-xs text-terminal-muted"
         >
           {loading
             ? 'Loading market candles…'
             : 'No candles available for this window. Try another date range, symbol, or upload a CSV.'}
         </div>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_350px]">
+        <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_350px]">
           <div className="min-w-0 space-y-4">
             <div className="flex min-w-0 flex-col gap-2 lg:flex-row lg:items-stretch">
               <TradingViewDrawingRail

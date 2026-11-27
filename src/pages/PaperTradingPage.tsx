@@ -865,8 +865,8 @@ export function PaperTradingPage() {
   // Loading state
   if (loadingAccounts) {
     return (
-      <div className="mx-auto flex min-h-[50vh] max-w-6xl items-center justify-center p-6">
-        <div className="inline-flex items-center gap-2 rounded-2xl border border-terminal-border bg-terminal-surface px-4 py-3 text-xs font-medium text-terminal-muted">
+      <div className="mx-auto flex min-h-[50vh] max-w-6xl items-center justify-center py-6 tl-page-enter">
+        <div className="inline-flex items-center gap-2 rounded-lg border border-terminal-border bg-terminal-surface px-4 py-3 text-xs font-medium text-terminal-muted">
           <Loader2 className="h-4 w-4 animate-spin text-brand" aria-hidden="true" />
           {t('Loading your demo wallets…', 'Binubuksan ang mga demo wallet mo…')}
         </div>
@@ -877,21 +877,21 @@ export function PaperTradingPage() {
   // Empty State when all wallets have been deleted
   if (!activeAccount) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <div className="rounded-3xl border border-terminal-border bg-terminal-surface p-6 text-center shadow-sm sm:p-8">
-          <div className="mx-auto inline-flex items-center gap-1.5 rounded-full border border-amber-500/35 bg-amber-500/10 px-3 py-1 font-mono text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+      <div className="mx-auto max-w-3xl py-8 tl-page-enter">
+        <div className="rounded-lg border border-terminal-border bg-terminal-surface p-6 text-center sm:p-8">
+          <div className="mx-auto inline-flex items-center gap-1.5 rounded-md border border-amber-500/35 bg-amber-500/10 px-3 py-1 font-mono text-[11px] font-semibold text-amber-700 dark:text-amber-300">
             <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
             VIRTUAL DEMO — NOT REAL MONEY
           </div>
 
-          <div className="mx-auto mt-5 flex h-12 w-12 items-center justify-center rounded-2xl border border-brand/30 bg-brand-soft text-brand">
-            <Wallet className="h-6 w-6" aria-hidden="true" />
+          <div className="mx-auto mt-5 flex h-11 w-11 items-center justify-center rounded-md border border-terminal-border bg-terminal-bg text-brand-text">
+            <Wallet className="h-5 w-5" aria-hidden="true" />
           </div>
 
-          <h1 className="mt-4 text-xl font-bold tracking-tight text-terminal-text">
+          <h1 className="mt-4 text-xl font-semibold tracking-[-0.025em] text-terminal-text sm:text-2xl">
             {t(copy.emptyWalletsTitle.en, copy.emptyWalletsTitle.taglish)}
           </h1>
-          <p className="mx-auto mt-1.5 max-w-md text-xs leading-relaxed text-terminal-muted sm:text-sm">
+          <p className="mx-auto mt-2 max-w-[54ch] text-xs leading-relaxed text-terminal-muted sm:text-sm">
             {t(copy.emptyWalletsBody.en, copy.emptyWalletsBody.taglish)}
           </p>
 
@@ -909,7 +909,7 @@ export function PaperTradingPage() {
                   simulateFeesSpread: true,
                 })
               }
-              className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-4 py-2.5 text-xs font-semibold text-brand-fg shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md bg-brand px-4 py-2 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95 disabled:opacity-60 tl-press"
             >
               <Plus className="h-3.5 w-3.5" aria-hidden="true" />
               Crypto Demo ($10,000)
@@ -928,7 +928,7 @@ export function PaperTradingPage() {
                   simulateFeesSpread: true,
                 })
               }
-              className="inline-flex items-center gap-1.5 rounded-xl border border-terminal-border bg-terminal-bg px-4 py-2.5 text-xs font-semibold text-terminal-text transition-colors hover:border-brand/50 hover:text-brand disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-terminal-border bg-terminal-bg px-4 py-2 text-xs font-semibold text-terminal-text transition-colors hover:border-brand/50 hover:text-brand-text disabled:opacity-60 tl-press"
             >
               <Plus className="h-3.5 w-3.5" aria-hidden="true" />
               Forex Demo ($10,000)
@@ -938,7 +938,7 @@ export function PaperTradingPage() {
               type="button"
               disabled={walletBusy}
               onClick={() => setEmptyCreateModalOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-dashed border-brand/50 bg-terminal-bg px-4 py-2.5 text-xs font-semibold text-brand transition-colors hover:bg-brand-soft disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-dashed border-brand/50 bg-terminal-bg px-4 py-2 text-xs font-semibold text-brand-text transition-colors hover:bg-brand-soft disabled:opacity-60 tl-press"
             >
               <Plus className="h-3.5 w-3.5" aria-hidden="true" />
               {t('Custom Wallet', 'Custom na Wallet')}
@@ -957,12 +957,35 @@ export function PaperTradingPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-4 px-4 py-5 sm:px-6">
+    <div className="mx-auto min-w-0 max-w-[1400px] space-y-4 tl-page-enter">
+      {/* Unboxed Editorial Workstation Title Row */}
+      <header className="flex flex-wrap items-end justify-between gap-3 border-b border-terminal-border pb-4">
+        <div className="min-w-0 space-y-1">
+          <h1 className="text-xl font-semibold leading-tight tracking-[-0.025em] text-terminal-text sm:text-2xl">
+            {t('Paper Trading Simulator', 'Paper Trading Simulator')}
+          </h1>
+          <p className="max-w-[65ch] text-xs leading-relaxed text-terminal-muted sm:text-sm">
+            {t(
+              'Practice live market execution with virtual demo wallets, position sizing, and realistic fees.',
+              'Mag-practice ng live market execution gamit ang virtual demo wallets, tamang position sizing, at realistic fees.',
+            )}
+          </p>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2 font-mono text-xs tabular-nums text-terminal-muted">
+          <span className="font-semibold text-terminal-text">{symbolOption.symbol}</span>
+          <span aria-hidden="true" className="opacity-40">
+            ·
+          </span>
+          <span>{timeframe.toUpperCase()}</span>
+        </div>
+      </header>
+
       {/* Toast Notification */}
       {toast && (
         <div
           role="status"
-          className={`flex items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 text-xs font-semibold shadow-sm ${
+          className={`flex items-center justify-between gap-3 rounded-md border px-3.5 py-2.5 text-xs font-semibold ${
             toast.tone === 'bull'
               ? 'border-bull/40 bg-bull/10 text-bull'
               : toast.tone === 'bear'
@@ -970,15 +993,15 @@ export function PaperTradingPage() {
                 : 'border-brand/35 bg-brand-soft text-terminal-text'
           }`}
         >
-          <span className="inline-flex items-center gap-2">
+          <span className="inline-flex min-w-0 items-center gap-2">
             <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden="true" />
-            {toast.text}
+            <span className="break-words">{toast.text}</span>
           </span>
           <button
             type="button"
             aria-label="Dismiss notification"
             onClick={() => setToast(null)}
-            className="rounded-md p-0.5 opacity-75 hover:opacity-100"
+            className="shrink-0 rounded-md p-0.5 opacity-75 transition-opacity hover:opacity-100"
           >
             <X className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
@@ -1041,11 +1064,11 @@ export function PaperTradingPage() {
       />
 
       {/* 3. Main Desk Grid: Chart + Drawing Rail + Optional Watchlist (left) + Order Ticket (right) */}
-      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-12">
-        <div className="space-y-2.5 lg:col-span-8">
+      <div className="grid min-w-0 grid-cols-1 items-start gap-4 lg:grid-cols-12">
+        <div className="min-w-0 space-y-2.5 lg:col-span-8">
           {/* Compact Live Feed Ticker Strip + Watchlist Toggle */}
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-terminal-border bg-terminal-surface px-3 py-2">
-            <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex min-w-0 flex-wrap items-center gap-2.5">
               <span
                 className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 font-mono text-[11px] font-semibold ${feedMeta.pillClass}`}
               >
@@ -1055,7 +1078,7 @@ export function PaperTradingPage() {
                 />
                 {feedMeta.label}
               </span>
-              <span className="font-mono text-xs font-bold text-terminal-text tabular-nums">
+              <span className="font-mono text-xs font-semibold text-terminal-text tabular-nums">
                 {symbolOption.symbol} · {currentMarketPrice.toFixed(symbolOption.decimals)}
               </span>
               <span className="inline-flex items-center gap-1 text-[11px] text-terminal-muted">
@@ -1069,7 +1092,7 @@ export function PaperTradingPage() {
                 type="button"
                 aria-pressed={watchlistOpen}
                 onClick={() => setWatchlistOpen((prev) => !prev)}
-                className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+                className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-semibold transition-colors tl-press ${
                   watchlistOpen
                     ? 'border-brand bg-brand-soft text-brand-text'
                     : 'border-terminal-border bg-terminal-bg text-terminal-text hover:border-brand/50 hover:text-brand-text'
@@ -1083,7 +1106,7 @@ export function PaperTradingPage() {
                 type="button"
                 disabled={refreshingQuote}
                 onClick={handleManualRefresh}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1 text-[11px] font-semibold text-terminal-text transition-colors hover:border-brand/50 hover:text-brand-text disabled:opacity-60"
+                className="inline-flex items-center gap-1.5 rounded-md border border-terminal-border bg-terminal-bg px-2.5 py-1 text-[11px] font-semibold text-terminal-text transition-colors hover:border-brand/50 hover:text-brand-text disabled:opacity-60 tl-press"
               >
                 <RefreshCw
                   className={`h-3 w-3 ${refreshingQuote ? 'animate-spin text-brand' : ''}`}
@@ -1098,8 +1121,8 @@ export function PaperTradingPage() {
           <div
             className={
               watchlistOpen
-                ? 'grid grid-cols-1 items-start gap-2.5 xl:grid-cols-[minmax(0,1fr)_235px]'
-                : ''
+                ? 'grid min-w-0 grid-cols-1 items-start gap-2.5 xl:grid-cols-[minmax(0,1fr)_235px]'
+                : 'min-w-0'
             }
           >
             <div className="flex min-w-0 flex-col gap-2 lg:flex-row lg:items-stretch">
@@ -1137,7 +1160,7 @@ export function PaperTradingPage() {
           </div>
         </div>
 
-        <div className="lg:col-span-4">
+        <div className="min-w-0 lg:col-span-4">
           <PaperOrderTicket
             account={activeAccount}
             symbolOption={symbolOption}

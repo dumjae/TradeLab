@@ -34,7 +34,7 @@ function renderSourceBadge(sourceType: MentorResponseSourceType) {
   switch (sourceType) {
     case 'verified_source':
       return (
-        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+        <span className="inline-flex items-center gap-1 rounded-md border border-bull/35 bg-bull/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-bull">
           <ShieldCheck className="h-3 w-3" aria-hidden="true" />
           Verified Source
         </span>
@@ -110,12 +110,12 @@ export function ExplainDifferentlyPanel({
   return (
     <section
       aria-labelledby="explain-differently-heading"
-      className="rounded-2xl border border-terminal-border bg-terminal-surface p-3.5 sm:p-4"
+      className="rounded-lg border border-terminal-border bg-terminal-surface p-3.5 sm:p-4"
     >
       {/* Compact 1-Line Header */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <HelpCircle className="h-4 w-4 text-amber-500 dark:text-amber-400" aria-hidden="true" />
+          <HelpCircle className="h-4 w-4 text-brand-text" aria-hidden="true" />
           <h3
             id="explain-differently-heading"
             className="text-xs font-semibold text-terminal-text"
@@ -126,7 +126,7 @@ export function ExplainDifferentlyPanel({
 
         <div className="flex items-center gap-1.5">
           {isPracticeGuarded && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/35 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] font-medium text-amber-500 dark:text-amber-400">
+            <span className="inline-flex items-center gap-1 rounded-md border border-caution/35 bg-caution/10 px-2 py-0.5 font-mono text-[10px] font-medium text-caution">
               <ShieldAlert className="h-3 w-3" aria-hidden="true" />
               Hints Only
             </span>
@@ -136,7 +136,7 @@ export function ExplainDifferentlyPanel({
               type="button"
               disabled={loading}
               onClick={() => void handleSelectStyle(selectedStyle, true)}
-              className="inline-flex items-center gap-1 rounded-full border border-sky-500/35 bg-sky-500/10 px-2.5 py-0.5 font-mono text-[10px] font-semibold text-sky-600 transition-colors hover:bg-sky-500 hover:text-slate-950 dark:text-sky-400 disabled:opacity-50"
+              className="tl-press inline-flex items-center gap-1 rounded-md border border-brand/35 bg-brand-soft px-2.5 py-0.5 font-mono text-[10px] font-semibold text-brand-text transition-colors hover:bg-brand hover:text-brand-fg disabled:opacity-50"
             >
               <Sparkles className="h-2.5 w-2.5" aria-hidden="true" />
               Ask Live Gemini
@@ -156,10 +156,10 @@ export function ExplainDifferentlyPanel({
               title={styleMeta.description}
               onClick={() => void handleSelectStyle(styleMeta.id, false)}
               disabled={loading}
-              className={`rounded-xl border px-3 py-2 text-left text-xs font-medium transition-all ${
+              className={`tl-press rounded-md border px-3 py-2 text-left text-xs font-medium transition-all ${
                 active
-                  ? 'border-emerald-500 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                  : 'border-terminal-border bg-terminal-bg text-terminal-text hover:border-emerald-500/40'
+                  ? 'border-brand bg-brand-soft text-brand-text'
+                  : 'border-terminal-border bg-terminal-bg text-terminal-text hover:border-brand/45'
               }`}
             >
               {styleMeta.label}
@@ -169,8 +169,8 @@ export function ExplainDifferentlyPanel({
       </div>
 
       {loading && (
-        <div className="mt-3 flex items-center gap-2 rounded-xl border border-terminal-border bg-terminal-bg px-3.5 py-3 text-xs text-terminal-muted">
-          <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-400" aria-hidden="true" />
+        <div className="mt-3 flex items-center gap-2 rounded-md border border-terminal-border bg-terminal-bg px-3.5 py-3 text-xs text-terminal-muted">
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-brand-text" aria-hidden="true" />
           Preparing explanation…
         </div>
       )}
@@ -178,14 +178,14 @@ export function ExplainDifferentlyPanel({
       {error && (
         <div
           role="alert"
-          className="mt-3 rounded-xl border border-rose-500/35 bg-rose-500/10 px-3.5 py-2.5 text-xs text-rose-300"
+          className="mt-3 rounded-md border border-bear/35 bg-bear/10 px-3.5 py-2.5 text-xs text-bear"
         >
           {error}
         </div>
       )}
 
       {!loading && response && (
-        <div className="mt-3 space-y-2.5 rounded-xl border border-terminal-border bg-terminal-bg p-3.5">
+        <div className="mt-3 space-y-2.5 rounded-md border border-terminal-border bg-terminal-bg p-3.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h4 className="text-xs font-semibold text-terminal-text">{response.headline}</h4>
             <div className="flex flex-wrap items-center gap-1.5">
@@ -202,7 +202,7 @@ export function ExplainDifferentlyPanel({
                   key={step}
                   className="flex items-start gap-2 text-xs leading-relaxed text-terminal-text"
                 >
-                  <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border border-emerald-500/35 bg-emerald-500/10 font-mono text-[10px] font-semibold text-emerald-500 dark:text-emerald-400 tabular-nums">
+                  <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border border-brand/35 bg-brand-soft font-mono text-[10px] font-semibold text-brand-text tabular-nums">
                     {index + 1}
                   </span>
                   <span>{step}</span>
@@ -211,8 +211,8 @@ export function ExplainDifferentlyPanel({
             </ol>
           )}
 
-          <div className="flex items-start gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-2 text-xs text-emerald-700 dark:text-emerald-300">
-            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" aria-hidden="true" />
+          <div className="flex items-start gap-2 rounded-md border-l-2 border-bull bg-bull/10 px-2.5 py-2 text-xs text-terminal-text">
+            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-bull" aria-hidden="true" />
             <span>{response.keyTakeaway}</span>
           </div>
 
@@ -225,12 +225,12 @@ export function ExplainDifferentlyPanel({
                   onClick={() =>
                     onJumpToCitation?.(citation.resourceId, citation.startSeconds)
                   }
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-600 transition-colors hover:bg-emerald-500/20 dark:text-emerald-300"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-brand/30 bg-brand-soft px-2.5 py-1 text-[11px] font-medium text-brand-text transition-colors hover:bg-brand hover:text-brand-fg"
                 >
-                  <ShieldCheck className="h-3 w-3 text-emerald-400" aria-hidden="true" />
+                  <ShieldCheck className="h-3 w-3" aria-hidden="true" />
                   <span className="truncate">{citation.segmentTitle ?? citation.title}</span>
                   {citation.startSeconds !== undefined && (
-                    <span className="font-mono text-[10px] text-emerald-500 dark:text-emerald-400 tabular-nums">
+                    <span className="font-mono text-[10px] opacity-85 tabular-nums">
                       @{formatTimestamp(citation.startSeconds)}
                     </span>
                   )}

@@ -94,10 +94,13 @@ export function AuthCallbackPage() {
   }, [exchanging, loading, user, navigate]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-terminal-bg px-4 text-terminal-text">
-      <div className="w-full max-w-md rounded-3xl border border-terminal-border bg-terminal-surface p-7 shadow-xl">
+    <main
+      id="main-content"
+      className="flex min-h-[100dvh] items-center justify-center bg-terminal-bg px-4 text-terminal-text"
+    >
+      <div className="w-full max-w-md rounded-lg border border-terminal-border bg-terminal-surface p-7 tl-page-enter">
         <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-400">
+          <span className="flex h-10 w-10 items-center justify-center rounded-md border border-terminal-border bg-brand-soft text-brand-text">
             <Activity className="h-5 w-5" aria-hidden="true" />
           </span>
           <div>
@@ -112,17 +115,17 @@ export function AuthCallbackPage() {
           <div className="mt-6 space-y-4">
             <div
               role="alert"
-              className="flex items-start gap-2.5 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300"
+              className="flex items-start gap-2.5 rounded-md border border-bear/40 bg-bear/10 p-4 text-xs text-terminal-text"
             >
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-400" aria-hidden="true" />
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-bear" aria-hidden="true" />
               <div>
-                <p className="font-semibold text-rose-200">Authentication could not be completed</p>
-                <p className="mt-1 leading-relaxed text-rose-300/90">{callbackError}</p>
+                <p className="font-semibold text-bear">Authentication could not be completed</p>
+                <p className="mt-1 leading-relaxed text-terminal-muted">{callbackError}</p>
               </div>
             </div>
             <Link
               to="/login"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-terminal-border bg-terminal-bg px-4 py-3 text-xs font-semibold text-terminal-text transition-colors hover:border-emerald-500/40"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-terminal-border bg-terminal-bg px-4 py-2.5 text-xs font-semibold text-terminal-text hover:border-brand/50 hover:bg-terminal-elevated tl-press"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
               Return to Sign In
@@ -135,19 +138,19 @@ export function AuthCallbackPage() {
             </p>
             <Link
               to="/login"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-xs font-semibold text-brand-fg transition-colors hover:brightness-110"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-brand px-4 py-2.5 text-xs font-semibold text-brand-fg hover:brightness-110 tl-press"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
               Go to Sign In
             </Link>
           </div>
         ) : (
-          <div className="mt-6 flex items-center gap-3 rounded-2xl border border-terminal-border bg-terminal-bg px-4 py-3.5 text-xs text-terminal-muted">
-            <Loader2 className="h-4 w-4 animate-spin text-emerald-400" aria-hidden="true" />
+          <div className="mt-6 flex items-center gap-3 rounded-md border border-terminal-border bg-terminal-bg px-4 py-3.5 text-xs text-terminal-muted">
+            <Loader2 className="h-4 w-4 animate-spin text-brand-text" aria-hidden="true" />
             <span>Completing sign-in and loading your workspace…</span>
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

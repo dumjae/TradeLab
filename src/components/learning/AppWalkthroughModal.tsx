@@ -25,7 +25,6 @@ export interface AppWalkthroughModalProps {
 interface WalkthroughStepConfig {
   id: string;
   icon: typeof Compass;
-  accentClass: string;
   titleEn: string;
   titleTaglish: string;
   descriptionEn: string;
@@ -41,7 +40,6 @@ const WALKTHROUGH_STEPS: WalkthroughStepConfig[] = [
   {
     id: 'welcome-setup',
     icon: Compass,
-    accentClass: 'border-brand/35 bg-brand-soft text-brand',
     titleEn: 'Welcome & Quick Setup',
     titleTaglish: 'Welcome at Mabilis na Setup',
     descriptionEn:
@@ -63,7 +61,6 @@ const WALKTHROUGH_STEPS: WalkthroughStepConfig[] = [
   {
     id: 'foundations-and-markets',
     icon: BookOpen,
-    accentClass: 'border-bull/35 bg-bull/15 text-bull',
     titleEn: 'Start With Foundations -> Pick Your Market',
     titleTaglish: 'Unahin ang Foundations -> Piliin ang Market Mo',
     descriptionEn:
@@ -85,7 +82,6 @@ const WALKTHROUGH_STEPS: WalkthroughStepConfig[] = [
   {
     id: 'four-lesson-modes',
     icon: Layers,
-    accentClass: 'border-sky-500/35 bg-sky-500/10 text-sky-600 dark:text-sky-400',
     titleEn: 'Learn Inside Every Lesson (4 Modes)',
     titleTaglish: 'Mag-aral sa Bawat Lesson (4 Modes)',
     descriptionEn:
@@ -107,7 +103,6 @@ const WALKTHROUGH_STEPS: WalkthroughStepConfig[] = [
   {
     id: 'backtester-replay',
     icon: LineChart,
-    accentClass: 'border-teal-500/35 bg-teal-500/10 text-teal-600 dark:text-teal-400',
     titleEn: 'Replay & Test Fast in Backtester',
     titleTaglish: 'Mag-Replay nang Mabilis sa Backtester',
     descriptionEn:
@@ -129,7 +124,6 @@ const WALKTHROUGH_STEPS: WalkthroughStepConfig[] = [
   {
     id: 'virtual-demo-wallets',
     icon: Wallet,
-    accentClass: 'border-bull/35 bg-bull/15 text-bull',
     titleEn: 'Trade Live Virtual Demo Wallets',
     titleTaglish: 'Mag-Trade sa Virtual Demo Wallets',
     descriptionEn:
@@ -151,7 +145,6 @@ const WALKTHROUGH_STEPS: WalkthroughStepConfig[] = [
   {
     id: 'journal-mindset-vault',
     icon: NotebookPen,
-    accentClass: 'border-amber-500/35 bg-amber-500/10 text-amber-600 dark:text-amber-400',
     titleEn: 'Journal & Build Consistency',
     titleTaglish: 'Mag-Journal at Magpatibay ng Disiplina',
     descriptionEn:
@@ -252,14 +245,14 @@ export function AppWalkthroughModal({ isOpen, onClose }: AppWalkthroughModalProp
         type="button"
         aria-label="Close walkthrough modal"
         onClick={handleClose}
-        className="fixed inset-0 bg-black/65 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/70"
       />
 
-      <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-2xl border border-terminal-border bg-terminal-surface shadow-2xl">
+      <div className="tl-page-enter relative z-10 w-full max-w-lg overflow-hidden rounded-lg border border-terminal-border bg-terminal-surface">
         {/* Top Header Strip */}
-        <div className="flex items-center justify-between gap-3 border-b border-terminal-border/80 bg-terminal-bg/60 px-4 py-3 sm:px-5">
+        <div className="flex items-center justify-between gap-3 border-b border-terminal-border bg-terminal-bg px-4 py-3 sm:px-5">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center rounded-full border border-brand/30 bg-brand-soft px-2.5 py-0.5 font-mono text-[10px] font-semibold text-brand tabular-nums">
+            <span className="inline-flex items-center rounded-md border border-brand/30 bg-brand-soft px-2 py-0.5 font-mono text-[10px] font-semibold text-brand-text tabular-nums">
               {t(`Step ${stepIndex + 1} of ${totalSteps}`, `Hakbang ${stepIndex + 1} sa ${totalSteps}`)}
             </span>
             <span className="text-xs font-medium text-terminal-muted">
@@ -271,7 +264,7 @@ export function AppWalkthroughModal({ isOpen, onClose }: AppWalkthroughModalProp
             type="button"
             onClick={handleClose}
             aria-label="Close tutorial"
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-terminal-border bg-terminal-surface text-terminal-muted transition-colors hover:border-brand/45 hover:text-terminal-text"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-terminal-border bg-terminal-surface text-terminal-muted transition-colors hover:border-brand/45 hover:text-terminal-text"
           >
             <X className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
@@ -280,9 +273,7 @@ export function AppWalkthroughModal({ isOpen, onClose }: AppWalkthroughModalProp
         {/* Main Step Body */}
         <div className="space-y-4 p-4 sm:p-5">
           <div className="flex items-start gap-3">
-            <span
-              className={`mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${activeStep.accentClass}`}
-            >
+            <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-brand/30 bg-brand-soft text-brand-text">
               <StepIcon className="h-5 w-5" aria-hidden="true" />
             </span>
 
@@ -300,14 +291,14 @@ export function AppWalkthroughModal({ isOpen, onClose }: AppWalkthroughModalProp
           </div>
 
           {/* Two Crisp Actionable Tips */}
-          <ul className="space-y-2 rounded-xl border border-terminal-border/80 bg-terminal-bg/70 p-3">
+          <ul className="space-y-2 rounded-md border border-terminal-border bg-terminal-bg p-3">
             {[0, 1].map((tipIdx) => (
               <li
                 key={`${activeStep.id}-tip-${tipIdx}`}
                 className="flex items-start gap-2 text-xs leading-snug text-terminal-text/90"
               >
                 <CheckCircle2
-                  className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand"
+                  className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-text"
                   aria-hidden="true"
                 />
                 <span>{t(activeStep.tipsEn[tipIdx], activeStep.tipsTaglish[tipIdx])}</span>
@@ -317,20 +308,20 @@ export function AppWalkthroughModal({ isOpen, onClose }: AppWalkthroughModalProp
 
           {/* Optional Direct Jump Button for Steps 2-6 */}
           {activeStep.routePath && activeStep.tryLabelEn && activeStep.tryLabelTaglish ? (
-            <div className="flex items-center justify-between gap-2 rounded-xl border border-brand/25 bg-brand-soft/40 px-3 py-2">
+            <div className="flex items-center justify-between gap-2 rounded-md border border-brand/25 bg-brand-soft/60 px-3 py-2">
               <span className="text-[11px] font-medium text-terminal-muted">
                 {t('Want to jump straight in?', 'Gusto mo na bang subukan agad?')}
               </span>
               <button
                 type="button"
                 onClick={handleTryItNow}
-                className="inline-flex shrink-0 items-center gap-1 rounded-full bg-brand px-3 py-1 text-[11px] font-semibold text-brand-fg shadow-sm transition-opacity hover:opacity-95"
+                className="tl-press inline-flex shrink-0 items-center gap-1 rounded-md bg-brand px-3 py-1 text-[11px] font-semibold text-brand-fg transition-opacity hover:opacity-95"
               >
                 <span>{t(activeStep.tryLabelEn, activeStep.tryLabelTaglish)}</span>
               </button>
             </div>
           ) : (
-            <div className="flex items-center justify-between gap-2 rounded-xl border border-terminal-border/70 bg-terminal-bg/50 px-3 py-2">
+            <div className="flex items-center justify-between gap-2 rounded-md border border-terminal-border bg-terminal-bg px-3 py-2">
               <span className="text-[11px] text-terminal-muted">
                 {t(
                   'Take 45 seconds to preview the full study -> replay -> demo workflow.',
@@ -373,13 +364,13 @@ export function AppWalkthroughModal({ isOpen, onClose }: AppWalkthroughModalProp
         </div>
 
         {/* Footer Controls */}
-        <div className="flex items-center justify-between gap-2 border-t border-terminal-border/80 bg-terminal-bg/60 px-4 py-3 sm:px-5">
+        <div className="flex items-center justify-between gap-2 border-t border-terminal-border bg-terminal-bg px-4 py-3 sm:px-5">
           <div className="flex items-center gap-2">
             {!isFirstStep ? (
               <button
                 type="button"
                 onClick={() => setStepIndex((prev) => Math.max(prev - 1, 0))}
-                className="inline-flex items-center gap-1 rounded-full border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-brand/45 hover:text-brand"
+                className="tl-press inline-flex items-center gap-1 rounded-md border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-brand/45 hover:text-brand-text"
               >
                 <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
                 {t(UI_COPY.walkthrough.back.en, UI_COPY.walkthrough.back.taglish)}
@@ -388,7 +379,7 @@ export function AppWalkthroughModal({ isOpen, onClose }: AppWalkthroughModalProp
               <button
                 type="button"
                 onClick={handleClose}
-                className="rounded-full px-2.5 py-1.5 text-xs font-medium text-terminal-muted transition-colors hover:text-terminal-text"
+                className="rounded-md px-2.5 py-1.5 text-xs font-medium text-terminal-muted transition-colors hover:text-terminal-text"
               >
                 {t(UI_COPY.walkthrough.skip.en, UI_COPY.walkthrough.skip.taglish)}
               </button>
@@ -398,7 +389,7 @@ export function AppWalkthroughModal({ isOpen, onClose }: AppWalkthroughModalProp
           <button
             type="button"
             onClick={handleNextOrFinish}
-            className="inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-brand-fg shadow-sm transition-all hover:opacity-95 active:scale-[0.98]"
+            className="tl-press inline-flex items-center gap-1.5 rounded-md bg-brand px-4 py-1.5 text-xs font-semibold text-brand-fg transition-all hover:opacity-95"
           >
             <span>
               {isLastStep

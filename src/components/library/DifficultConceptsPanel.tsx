@@ -65,18 +65,18 @@ export function DifficultConceptsPanel({
   return (
     <section
       aria-labelledby="difficult-concepts-heading"
-      className="rounded-2xl border border-terminal-border bg-terminal-surface p-4 sm:p-5"
+      className="space-y-3"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-amber-400" aria-hidden="true" />
+          <AlertTriangle className="h-4 w-4 text-caution" aria-hidden="true" />
           <h2
             id="difficult-concepts-heading"
-            className="font-mono text-xs font-bold uppercase tracking-wider text-terminal-text"
+            className="text-sm font-semibold tracking-tight text-terminal-text"
           >
             My Difficult Concepts
           </h2>
-          <span className="rounded-full border border-amber-500/35 bg-amber-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-amber-400 tabular-nums">
+          <span className="font-mono text-[11px] font-medium text-terminal-muted tabular-nums">
             {concepts.filter((c) => !c.isMastered).length} active
           </span>
         </div>
@@ -85,7 +85,7 @@ export function DifficultConceptsPanel({
           <button
             type="button"
             onClick={() => setShowMastered((prev) => !prev)}
-            className="text-xs font-medium text-sky-400 hover:text-sky-300"
+            className="text-xs font-medium text-brand-text hover:underline"
           >
             {showMastered ? 'Hide Mastered' : 'Show Mastered'}
           </button>
@@ -93,25 +93,21 @@ export function DifficultConceptsPanel({
       </div>
 
       {loading ? (
-        <div className="mt-3 h-20 animate-pulse rounded-xl bg-terminal-elevated/60" />
+        <div className="h-16 animate-pulse rounded-md bg-terminal-elevated/60" />
       ) : displayed.length === 0 ? (
-        <div className="mt-3 rounded-xl border border-dashed border-terminal-border bg-terminal-bg/60 p-4 text-xs text-terminal-muted">
+        <div className="rounded-md border border-dashed border-terminal-border p-4 text-xs text-terminal-muted">
           <p className="font-medium text-terminal-text">No active difficult concepts queued.</p>
-          <p className="mt-1">
+          <p className="mt-1 leading-relaxed">
             Whenever you click “Mark Concept Difficult”, use “Explain Differently”, or miss a
             practice concept twice, TradeLab builds a focused Review Bundle here.
           </p>
         </div>
       ) : (
-        <div className="mt-3 space-y-2.5">
+        <div className="divide-y divide-terminal-border border-t border-terminal-border">
           {displayed.map((concept) => (
             <article
               key={concept.id}
-              className={`rounded-xl border p-3.5 ${
-                concept.isMastered
-                  ? 'border-emerald-500/30 bg-emerald-500/5'
-                  : 'border-terminal-border bg-terminal-bg'
-              }`}
+              className="py-3.5"
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="space-y-1">
@@ -120,7 +116,7 @@ export function DifficultConceptsPanel({
                       {concept.conceptLabel}
                     </h3>
                     {concept.isMastered && (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/35 bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-semibold text-emerald-400">
+                      <span className="inline-flex items-center gap-1 rounded-md border border-bull/35 bg-bull/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-bull">
                         <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
                         Mastered
                       </span>
@@ -131,18 +127,18 @@ export function DifficultConceptsPanel({
                     {concept.triggerSources.map((trigger) => (
                       <span
                         key={trigger}
-                        className="rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 font-mono text-[10px] text-amber-400"
+                        className="rounded border border-terminal-border bg-terminal-surface px-1.5 py-0.5 font-mono text-[10px] text-terminal-muted"
                       >
                         {TRIGGER_LABELS[trigger]}
                       </span>
                     ))}
                     {concept.mistakeCount > 0 && (
-                      <span className="rounded border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 font-mono text-[10px] text-rose-400 tabular-nums">
+                      <span className="rounded border border-bear/30 bg-bear/10 px-1.5 py-0.5 font-mono text-[10px] text-bear tabular-nums">
                         {concept.mistakeCount} mistake{concept.mistakeCount === 1 ? '' : 's'}
                       </span>
                     )}
                     {concept.consecutiveCorrect > 0 && !concept.isMastered && (
-                      <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[10px] text-emerald-400 tabular-nums">
+                      <span className="rounded border border-bull/30 bg-bull/10 px-1.5 py-0.5 font-mono text-[10px] text-bull tabular-nums">
                         {concept.consecutiveCorrect}/3 mastery streak
                       </span>
                     )}
@@ -152,7 +148,7 @@ export function DifficultConceptsPanel({
                 <div className="flex flex-wrap items-center gap-2">
                   <Link
                     to={`/academy/${concept.lessonSlug}?mode=diagram`}
-                    className="inline-flex items-center gap-1 rounded-lg border border-sky-500/35 bg-sky-500/10 px-2.5 py-1.5 text-xs font-semibold text-sky-400 transition-colors hover:bg-sky-500 hover:text-slate-950"
+                    className="tl-press inline-flex items-center gap-1 rounded-md border border-terminal-border bg-terminal-surface px-2.5 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-brand/45 hover:text-brand-text"
                   >
                     <Sparkles className="h-3 w-3" aria-hidden="true" />
                     Review Bundle
@@ -163,7 +159,7 @@ export function DifficultConceptsPanel({
                     <button
                       type="button"
                       onClick={() => void handleReopen(concept.id)}
-                      className="inline-flex items-center gap-1 rounded-lg border border-terminal-border bg-terminal-elevated px-2.5 py-1.5 text-xs font-medium text-terminal-muted hover:text-terminal-text"
+                      className="tl-press inline-flex items-center gap-1 rounded-md border border-terminal-border bg-terminal-bg px-2.5 py-1.5 text-xs font-medium text-terminal-muted hover:text-terminal-text"
                     >
                       <RotateCcw className="h-3 w-3" aria-hidden="true" />
                       Reopen
@@ -172,7 +168,7 @@ export function DifficultConceptsPanel({
                     <button
                       type="button"
                       onClick={() => void handleMarkMastered(concept.id)}
-                      className="inline-flex items-center gap-1 rounded-lg border border-brand/40 bg-brand/10 px-2.5 py-1.5 text-xs font-semibold text-brand transition-colors hover:bg-brand hover:text-brand-fg"
+                      className="tl-press inline-flex items-center gap-1 rounded-md border border-brand/35 bg-brand-soft px-2.5 py-1.5 text-xs font-semibold text-brand-text transition-colors hover:bg-brand hover:text-brand-fg"
                     >
                       <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
                       Mark as Mastered

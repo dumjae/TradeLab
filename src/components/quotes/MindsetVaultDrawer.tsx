@@ -147,20 +147,30 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
 
   return (
     <div
-      className="fixed inset-0 z-50 flex justify-end bg-slate-950/70 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex justify-end"
       role="dialog"
       aria-modal="true"
       aria-labelledby="mindset-vault-title"
     >
-      <div className="flex h-full w-full max-w-xl flex-col border-l border-terminal-border bg-terminal-bg shadow-2xl">
+      <button
+        type="button"
+        aria-label="Close Mindset Vault backdrop"
+        onClick={onClose}
+        className="fixed inset-0 bg-black/55"
+      />
+
+      <div className="relative z-10 flex h-full w-full max-w-xl flex-col border-l border-terminal-border bg-terminal-bg tl-drawer-enter">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-terminal-border bg-terminal-surface px-5 py-4">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-500/35 bg-amber-500/15 text-amber-400">
-              <Flame className="h-5 w-5" aria-hidden="true" />
+            <span className="flex h-8 w-8 items-center justify-center rounded-md border border-caution/35 bg-caution/10 text-amber-600 dark:text-amber-400">
+              <Flame className="h-4 w-4" aria-hidden="true" />
             </span>
             <div>
-              <h2 id="mindset-vault-title" className="text-sm font-bold text-terminal-text">
+              <h2
+                id="mindset-vault-title"
+                className="text-[15px] font-semibold tracking-tight text-terminal-text"
+              >
                 Trader Mindset &amp; Motivation Vault
               </h2>
               <p className="text-[11px] text-terminal-muted">
@@ -173,9 +183,9 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
             type="button"
             onClick={onClose}
             aria-label="Close Mindset Vault"
-            className="rounded-lg p-1.5 text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-terminal-text"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-terminal-text tl-press"
           >
-            <X className="h-5 w-5" aria-hidden="true" />
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
 
@@ -195,14 +205,14 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Search quotes, authors, discipline, risk..."
-                className="w-full rounded-xl border border-terminal-border bg-terminal-bg py-2 pl-9 pr-3 text-xs text-terminal-text placeholder:text-terminal-muted/70 focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-md border border-terminal-border bg-terminal-bg py-2 pl-9 pr-3 text-xs text-terminal-text placeholder:text-terminal-muted/70 focus:border-brand focus:outline-none"
               />
             </div>
 
             <button
               type="button"
               onClick={() => setShowAddForm((prev) => !prev)}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-amber-500 px-3 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-amber-400"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-brand px-3 py-2 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95 tl-press"
             >
               <Plus className="h-3.5 w-3.5" aria-hidden="true" />
               Add My Rule
@@ -215,11 +225,12 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                 <button
                   key={item.id}
                   type="button"
+                  aria-pressed={category === item.id}
                   onClick={() => setCategory(item.id)}
-                  className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                  className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors tl-press ${
                     category === item.id
-                      ? 'bg-brand text-brand-fg font-semibold'
-                      : 'border border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
+                      ? 'bg-brand font-semibold text-brand-fg'
+                      : 'border border-terminal-border bg-terminal-bg text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
                   }`}
                 >
                   {item.label}
@@ -229,10 +240,12 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
 
             <div className="flex items-center gap-1.5">
               <select
+                id="mindset-vault-language-filter"
+                name="quoteLanguageFilter"
                 aria-label="Filter quote language"
                 value={language}
                 onChange={(event) => setLanguage(event.target.value as QuoteLanguage | 'all')}
-                className="rounded-lg border border-terminal-border bg-terminal-bg px-2 py-1 text-[11px] text-terminal-text focus:border-amber-500 focus:outline-none"
+                className="rounded-md border border-terminal-border bg-terminal-bg px-2.5 py-1 text-[11px] text-terminal-text focus:border-brand focus:outline-none"
               >
                 {LANGUAGE_FILTERS.map((item) => (
                   <option key={item.id} value={item.id}>
@@ -245,10 +258,10 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                 type="button"
                 onClick={() => setFavoritesOnly((prev) => !prev)}
                 aria-pressed={favoritesOnly}
-                className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                className={`inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[11px] font-medium transition-colors tl-press ${
                   favoritesOnly
-                    ? 'border-rose-500/40 bg-rose-500/15 text-rose-400'
-                    : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
+                    ? 'border-brand/40 bg-brand-soft text-brand-text'
+                    : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
                 }`}
               >
                 <Heart className={`h-3 w-3 ${favoritesOnly ? 'fill-current' : ''}`} aria-hidden="true" />
@@ -261,20 +274,21 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
           {showAddForm && (
             <form
               onSubmit={handleCreateCustom}
-              className="space-y-3 rounded-xl border border-amber-500/35 bg-terminal-bg p-4"
+              className="space-y-3 rounded-lg border border-terminal-border bg-terminal-bg p-4"
             >
-              <p className="text-xs font-semibold text-amber-400">
+              <p className="text-xs font-semibold text-terminal-text">
                 Add My Own Personal Mantra / Trading Rule
               </p>
               <textarea
                 id="custom-quote-text"
+                name="customQuoteText"
                 aria-label="Personal trading mantra or quote text"
                 rows={2}
                 required
                 value={newQuoteText}
                 onChange={(event) => setNewQuoteText(event.target.value)}
                 placeholder="e.g., No candle-body close, no entry. Protecting capital is my #1 job."
-                className="w-full rounded-lg border border-terminal-border bg-terminal-surface px-3 py-2 text-xs text-terminal-text focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-md border border-terminal-border bg-terminal-surface px-3 py-2 text-xs text-terminal-text placeholder:text-terminal-muted/70 focus:border-brand focus:outline-none"
               />
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 <input
@@ -285,23 +299,27 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                   value={newAuthor}
                   onChange={(event) => setNewAuthor(event.target.value)}
                   placeholder="Label / Author"
-                  className="rounded-lg border border-terminal-border bg-terminal-surface px-2.5 py-1.5 text-xs text-terminal-text focus:border-amber-500 focus:outline-none"
+                  className="rounded-md border border-terminal-border bg-terminal-surface px-2.5 py-1.5 text-xs text-terminal-text focus:border-brand focus:outline-none"
                 />
                 <select
+                  id="custom-quote-category"
+                  name="customQuoteCategory"
                   aria-label="Personal rule category"
                   value={newCategory}
                   onChange={(event) => setNewCategory(event.target.value as QuoteCategory)}
-                  className="rounded-lg border border-terminal-border bg-terminal-surface px-2.5 py-1.5 text-xs text-terminal-text focus:border-amber-500 focus:outline-none"
+                  className="rounded-md border border-terminal-border bg-terminal-surface px-2.5 py-1.5 text-xs text-terminal-text focus:border-brand focus:outline-none"
                 >
                   <option value="motivate">Motivate</option>
                   <option value="teach">Teach</option>
                   <option value="inspire">Inspire</option>
                 </select>
                 <select
+                  id="custom-quote-language"
+                  name="customQuoteLanguage"
                   aria-label="Personal rule language"
                   value={newLanguage}
                   onChange={(event) => setNewLanguage(event.target.value as QuoteLanguage)}
-                  className="rounded-lg border border-terminal-border bg-terminal-surface px-2.5 py-1.5 text-xs text-terminal-text focus:border-amber-500 focus:outline-none"
+                  className="rounded-md border border-terminal-border bg-terminal-surface px-2.5 py-1.5 text-xs text-terminal-text focus:border-brand focus:outline-none"
                 >
                   <option value="en">English</option>
                   <option value="taglish">Taglish</option>
@@ -315,20 +333,20 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                 value={newLessonNote}
                 onChange={(event) => setNewLessonNote(event.target.value)}
                 placeholder="Why this rule matters when trading..."
-                className="w-full rounded-lg border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs text-terminal-text focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-md border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs text-terminal-text placeholder:text-terminal-muted/70 focus:border-brand focus:outline-none"
               />
               <div className="flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowAddForm(false)}
-                  className="rounded-lg border border-terminal-border px-3 py-1.5 text-xs text-terminal-muted hover:text-terminal-text"
+                  className="rounded-md border border-terminal-border px-3 py-1.5 text-xs font-medium text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-terminal-text tl-press"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-lg bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-fg hover:brightness-110 disabled:opacity-60"
+                  className="rounded-md bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95 disabled:opacity-60 tl-press"
                 >
                   {submitting ? 'Saving...' : 'Save Personal Rule'}
                 </button>
@@ -344,12 +362,12 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
               {[1, 2, 3].map((item) => (
                 <div
                   key={item}
-                  className="h-28 animate-pulse rounded-xl border border-terminal-border bg-terminal-surface"
+                  className="h-28 animate-pulse rounded-lg border border-terminal-border bg-terminal-surface"
                 />
               ))}
             </div>
           ) : quotes.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-terminal-border bg-terminal-surface/50 p-8 text-center text-xs text-terminal-muted">
+            <div className="rounded-lg border border-dashed border-terminal-border bg-terminal-surface/50 p-8 text-center text-xs text-terminal-muted">
               No quotes match your current filters. Try clearing your search or adding your own
               personal trading rule above.
             </div>
@@ -359,34 +377,34 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
               return (
                 <article
                   key={quote.id}
-                  className={`rounded-xl border p-4 transition-colors ${
+                  className={`rounded-lg border p-4 transition-colors ${
                     quote.isPinned
-                      ? 'border-amber-500/45 bg-amber-500/5'
+                      ? 'border-caution/45 bg-caution/5'
                       : 'border-terminal-border bg-terminal-surface'
                   }`}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="rounded-full border border-terminal-border bg-terminal-bg px-2 py-0.5 font-mono text-[10px] uppercase text-amber-400">
+                      <span className="rounded-md border border-terminal-border bg-terminal-bg px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.04em] text-terminal-muted">
                         {quote.category}
                       </span>
                       {quote.sourceType === 'verified_trader' ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] text-emerald-400">
+                        <span className="inline-flex items-center gap-1 rounded-md border border-bull/35 bg-bull/10 px-2 py-0.5 font-mono text-[10px] text-bull">
                           <ShieldCheck className="h-2.5 w-2.5" aria-hidden="true" />
                           Verified
                         </span>
                       ) : quote.sourceType === 'tradelab_principle' ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] text-amber-400">
+                        <span className="inline-flex items-center gap-1 rounded-md border border-caution/35 bg-caution/10 px-2 py-0.5 font-mono text-[10px] text-amber-600 dark:text-amber-400">
                           <Sparkles className="h-2.5 w-2.5" aria-hidden="true" />
                           TradeLab
                         </span>
                       ) : (
-                        <span className="rounded-full border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 font-mono text-[10px] text-sky-400">
+                        <span className="rounded-md border border-brand/30 bg-brand-soft px-2 py-0.5 font-mono text-[10px] text-brand-text">
                           Custom Rule
                         </span>
                       )}
                       {quote.language === 'taglish' && (
-                        <span className="rounded-full border border-terminal-border bg-terminal-bg px-2 py-0.5 font-mono text-[10px] text-terminal-muted">
+                        <span className="rounded-md border border-terminal-border bg-terminal-bg px-2 py-0.5 font-mono text-[10px] text-terminal-muted">
                           Taglish
                         </span>
                       )}
@@ -397,10 +415,10 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                         type="button"
                         onClick={() => void handleToggleFavorite(quote.id)}
                         aria-label={`Favorite quote by ${quote.author}`}
-                        className={`rounded-md p-1.5 transition-colors ${
+                        className={`rounded-md p-1.5 transition-colors tl-press ${
                           quote.isFavorite
-                            ? 'text-rose-400 bg-rose-500/10'
-                            : 'text-terminal-muted hover:text-rose-400'
+                            ? 'bg-brand-soft text-brand-text'
+                            : 'text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
                         }`}
                       >
                         <Heart
@@ -412,10 +430,10 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                         type="button"
                         onClick={() => void handleTogglePin(quote.id)}
                         aria-label={`Pin quote by ${quote.author}`}
-                        className={`rounded-md p-1.5 transition-colors ${
+                        className={`rounded-md p-1.5 transition-colors tl-press ${
                           quote.isPinned
-                            ? 'text-amber-400 bg-amber-500/15'
-                            : 'text-terminal-muted hover:text-amber-400'
+                            ? 'bg-caution/15 text-amber-600 dark:text-amber-400'
+                            : 'text-terminal-muted hover:bg-terminal-elevated hover:text-amber-600 dark:hover:text-amber-400'
                         }`}
                       >
                         <Pin className="h-3.5 w-3.5" aria-hidden="true" />
@@ -425,7 +443,7 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                           type="button"
                           onClick={() => void handleDeleteCustom(quote.id)}
                           aria-label="Delete custom rule"
-                          className="rounded-md p-1.5 text-terminal-muted transition-colors hover:text-rose-400"
+                          className="rounded-md p-1.5 text-terminal-muted transition-colors hover:bg-bear/10 hover:text-bear tl-press"
                         >
                           <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                         </button>
@@ -437,10 +455,10 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                     “{quote.quoteText}”
                   </p>
                   <p className="mt-1.5 text-xs text-terminal-muted">
-                    — <strong className="text-terminal-text">{quote.author}</strong> ({quote.authorRole})
+                    — <strong className="font-semibold text-terminal-text">{quote.author}</strong> ({quote.authorRole})
                   </p>
-                  <p className="mt-2 rounded-lg bg-terminal-bg/80 px-3 py-2 text-[11px] leading-relaxed text-terminal-muted">
-                    <strong className="text-emerald-400">Lesson Note: </strong>
+                  <p className="mt-2.5 rounded-md border-l-2 border-brand/50 bg-terminal-bg/80 px-3 py-2 text-[11px] leading-relaxed text-terminal-muted">
+                    <strong className="font-semibold text-terminal-text">Lesson Note: </strong>
                     {quote.tradingLessonNote}
                   </p>
 
@@ -456,20 +474,20 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                           value={reflectionDraft}
                           onChange={(event) => setReflectionDraft(event.target.value)}
                           placeholder="How will you apply this before your next trade?"
-                          className="w-full rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-2 text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+                          className="w-full rounded-md border border-terminal-border bg-terminal-bg px-2.5 py-2 text-xs text-terminal-text placeholder:text-terminal-muted/70 focus:border-brand focus:outline-none"
                         />
                         <div className="flex justify-end gap-2">
                           <button
                             type="button"
                             onClick={() => setEditingReflectionId(null)}
-                            className="rounded-md border border-terminal-border px-2.5 py-1 text-[11px] text-terminal-muted"
+                            className="rounded-md border border-terminal-border px-2.5 py-1 text-[11px] font-medium text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-terminal-text tl-press"
                           >
                             Cancel
                           </button>
                           <button
                             type="button"
                             onClick={() => void handleSaveReflection(quote.id)}
-                            className="rounded-md bg-brand px-2.5 py-1 text-[11px] font-semibold text-brand-fg"
+                            className="rounded-md bg-brand px-2.5 py-1 text-[11px] font-semibold text-brand-fg transition-opacity hover:opacity-95 tl-press"
                           >
                             Save Reflection
                           </button>
@@ -480,7 +498,7 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                         <p className="text-[11px] text-terminal-muted">
                           {quote.personalReflection ? (
                             <>
-                              <strong className="text-sky-400">My Reflection: </strong>
+                              <strong className="font-semibold text-brand-text">My Reflection: </strong>
                               {quote.personalReflection}
                             </>
                           ) : (
@@ -493,7 +511,7 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                             setEditingReflectionId(quote.id);
                             setReflectionDraft(quote.personalReflection);
                           }}
-                          className="shrink-0 text-[11px] font-semibold text-sky-400 hover:text-sky-300"
+                          className="shrink-0 text-[11px] font-semibold text-brand-text underline-offset-4 hover:underline"
                         >
                           {quote.personalReflection ? 'Edit' : 'Reflect'}
                         </button>

@@ -25,23 +25,23 @@ const DATE_PRESETS: Array<{ id: DateRangePreset; label: string }> = [
 const SOURCE_LABELS: Record<MarketDataSource, { label: string; tone: string }> = {
   live_binance: {
     label: 'Live Binance',
-    tone: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    tone: 'border-bull/30 bg-bull/10 text-bull',
   },
   live_twelvedata: {
     label: 'Live Twelve Data',
-    tone: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    tone: 'border-bull/30 bg-bull/10 text-bull',
   },
   live_yahoo: {
     label: 'Live Yahoo Finance',
-    tone: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    tone: 'border-bull/30 bg-bull/10 text-bull',
   },
   uploaded_csv: {
     label: 'Uploaded CSV',
-    tone: 'border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400',
+    tone: 'border-brand/30 bg-brand-soft text-brand-text',
   },
   offline_sample: {
     label: 'Offline Historical Sample',
-    tone: 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400',
+    tone: 'border-caution/30 bg-caution/10 text-caution',
   },
 };
 
@@ -122,13 +122,13 @@ export function AssetSelectorBar({
   };
 
   return (
-    <div className="space-y-4 rounded-3xl border border-terminal-border/90 bg-terminal-surface p-4 shadow-sm sm:p-5">
+    <div className="space-y-4 rounded-lg border border-terminal-border bg-terminal-surface p-4 sm:p-5">
       {/* Asset Class Tabs + Data Source & Refresh */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div
           role="tablist"
           aria-label="Asset class"
-          className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5"
+          className="no-scrollbar flex items-center gap-1.5 overflow-x-auto pb-0.5"
         >
           {ASSET_TABS.map((tab) => (
             <button
@@ -137,9 +137,9 @@ export function AssetSelectorBar({
               role="tab"
               aria-selected={assetClass === tab.id}
               onClick={() => onAssetClassChange(tab.id)}
-              className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+              className={`tl-press shrink-0 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
                 assetClass === tab.id
-                  ? 'bg-brand text-brand-fg shadow-sm'
+                  ? 'bg-brand text-brand-fg'
                   : 'border border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
               }`}
             >
@@ -154,14 +154,14 @@ export function AssetSelectorBar({
               role="status"
               className="inline-flex items-center gap-1.5 font-mono text-[11px] text-terminal-muted"
             >
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-500" aria-hidden="true" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-brand-text" aria-hidden="true" />
               Loading…
             </span>
           )}
 
           {sourceMeta && (
             <span
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-[11px] font-medium ${sourceMeta.tone}`}
+              className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-mono text-[11px] font-medium ${sourceMeta.tone}`}
             >
               <Database className="h-3 w-3 shrink-0" aria-hidden="true" />
               {sourceMeta.label}
@@ -178,10 +178,10 @@ export function AssetSelectorBar({
             type="button"
             onClick={onRefresh}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-bg px-3 py-1.5 text-xs font-semibold text-terminal-text transition-colors hover:border-emerald-500/45 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-60 dark:hover:text-emerald-400"
+            className="tl-press inline-flex items-center gap-1.5 rounded-md border border-terminal-border bg-terminal-bg px-3 py-1.5 text-xs font-semibold text-terminal-text transition-colors hover:border-brand/45 hover:text-brand-text disabled:cursor-not-allowed disabled:opacity-60"
           >
             <RefreshCw
-              className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-emerald-500' : ''}`}
+              className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-brand-text' : ''}`}
               aria-hidden="true"
             />
             Refresh Data
@@ -204,7 +204,7 @@ export function AssetSelectorBar({
             aria-label="Market symbol"
             value={symbols.some((item) => item.symbol === symbol) ? symbol : ''}
             onChange={(event) => onSymbolChange(event.target.value)}
-            className="mt-1.5 w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2.5 text-xs font-medium text-terminal-text focus:border-emerald-500 focus:outline-none"
+            className="mt-1.5 w-full rounded-md border border-terminal-border bg-terminal-bg px-3 py-2 text-xs font-medium text-terminal-text focus:border-brand focus:outline-none"
           >
             {symbols.map((item) => (
               <option key={item.symbol} value={item.symbol}>
@@ -219,7 +219,7 @@ export function AssetSelectorBar({
           <div
             role="group"
             aria-label="Timeframe"
-            className="mt-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5"
+            className="no-scrollbar mt-1.5 flex items-center gap-1.5 overflow-x-auto pb-0.5"
           >
             {MARKET_TIMEFRAMES.map((item) => (
               <button
@@ -227,9 +227,9 @@ export function AssetSelectorBar({
                 type="button"
                 aria-pressed={timeframe === item.id}
                 onClick={() => onTimeframeChange(item.id)}
-                className={`shrink-0 rounded-full px-3 py-2 font-mono text-xs font-semibold transition-colors ${
+                className={`tl-press shrink-0 rounded-md px-3 py-2 font-mono text-xs font-semibold transition-colors ${
                   timeframe === item.id
-                    ? 'bg-sky-500 text-slate-950 shadow-sm'
+                    ? 'bg-brand text-brand-fg'
                     : 'border border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
                 }`}
               >
@@ -253,7 +253,7 @@ export function AssetSelectorBar({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-sky-500/35 bg-sky-500/10 px-4 py-2.5 text-xs font-semibold text-sky-600 transition-colors hover:bg-sky-500/20 dark:text-sky-400 lg:w-auto"
+            className="tl-press inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-terminal-border bg-terminal-bg px-3.5 py-2 text-xs font-semibold text-terminal-text transition-colors hover:border-brand/45 hover:text-brand-text lg:w-auto"
           >
             <FileUp className="h-3.5 w-3.5" aria-hidden="true" />
             Upload TradingView CSV
@@ -262,17 +262,17 @@ export function AssetSelectorBar({
       </div>
 
       {/* Date Range Presets & Custom Date Inputs */}
-      <div className="space-y-3 border-t border-terminal-border/70 pt-3.5">
+      <div className="space-y-3 border-t border-terminal-border pt-3.5">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div className="min-w-0">
             <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-terminal-muted">
-              <Calendar className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400" aria-hidden="true" />
+              <Calendar className="h-3.5 w-3.5 text-brand-text" aria-hidden="true" />
               Date Window
             </span>
             <div
               role="group"
               aria-label="Date range presets"
-              className="mt-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5"
+              className="no-scrollbar mt-1.5 flex items-center gap-1.5 overflow-x-auto pb-0.5"
             >
               {DATE_PRESETS.map((preset) => (
                 <button
@@ -280,9 +280,9 @@ export function AssetSelectorBar({
                   type="button"
                   aria-pressed={datePreset === preset.id}
                   onClick={() => onDatePresetChange(preset.id)}
-                  className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  className={`shrink-0 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors ${
                     datePreset === preset.id
-                      ? 'bg-emerald-500/15 text-emerald-600 ring-1 ring-inset ring-emerald-500/35 dark:text-emerald-400'
+                      ? 'border border-brand bg-brand-soft text-brand-text'
                       : 'border border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
                   }`}
                 >
@@ -308,7 +308,7 @@ export function AssetSelectorBar({
                 max={endDate || todayIso}
                 value={startDate}
                 onChange={(event) => onStartDateChange(event.target.value)}
-                className="mt-1 w-full min-w-0 rounded-2xl border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+                className="mt-1 w-full min-w-0 rounded-md border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text focus:border-brand focus:outline-none"
               />
             </div>
 
@@ -328,26 +328,26 @@ export function AssetSelectorBar({
                 max={todayIso}
                 value={endDate}
                 onChange={(event) => onEndDateChange(event.target.value)}
-                className="mt-1 w-full min-w-0 rounded-2xl border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+                className="mt-1 w-full min-w-0 rounded-md border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text focus:border-brand focus:outline-none"
               />
             </div>
           </div>
         </div>
 
         {dateError && (
-          <p role="alert" className="text-xs text-rose-500 dark:text-rose-400">
+          <p role="alert" className="text-xs text-bear">
             {dateError}
           </p>
         )}
       </div>
 
       {dataNote && (
-        <p className="rounded-2xl border border-terminal-border/70 bg-terminal-bg/80 px-4 py-2.5 text-xs leading-relaxed text-terminal-muted">
+        <p className="border-l-2 border-terminal-border pl-3 text-xs leading-relaxed text-terminal-muted">
           {dataNote}
         </p>
       )}
       {csvError && (
-        <p role="alert" className="text-xs text-rose-500 dark:text-rose-400">
+        <p role="alert" className="text-xs text-bear">
           {csvError}
         </p>
       )}

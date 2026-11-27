@@ -36,10 +36,10 @@ export function ReplayControlsBar({
   onReset,
 }: ReplayControlsBarProps) {
   const buttonBase =
-    'inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50';
+    'tl-press inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50';
 
   return (
-    <div className="space-y-3 rounded-xl border border-terminal-border bg-terminal-surface p-3.5">
+    <div className="space-y-3 rounded-lg border border-terminal-border bg-terminal-surface p-3.5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -47,7 +47,7 @@ export function ReplayControlsBar({
             onClick={onTogglePlay}
             disabled={atEnd}
             aria-label={playing ? 'Pause replay' : 'Play replay'}
-            className={`${buttonBase} border-brand/40 bg-brand/15 text-brand hover:bg-brand hover:text-brand-fg`}
+            className={`${buttonBase} border-brand/40 bg-brand-soft text-brand-text hover:bg-brand hover:text-brand-fg`}
           >
             {playing ? (
               <Pause className="h-3.5 w-3.5" aria-hidden="true" />
@@ -60,7 +60,7 @@ export function ReplayControlsBar({
             type="button"
             onClick={() => onStep(1)}
             disabled={atEnd}
-            className={`${buttonBase} border-terminal-border bg-terminal-bg text-terminal-text hover:border-emerald-500/50`}
+            className={`${buttonBase} border-terminal-border bg-terminal-bg text-terminal-text hover:border-brand/45`}
           >
             <StepForward className="h-3.5 w-3.5" aria-hidden="true" />
             Step +1 Bar
@@ -69,7 +69,7 @@ export function ReplayControlsBar({
             type="button"
             onClick={() => onStep(5)}
             disabled={atEnd}
-            className={`${buttonBase} border-terminal-border bg-terminal-bg text-terminal-text hover:border-emerald-500/50`}
+            className={`${buttonBase} border-terminal-border bg-terminal-bg text-terminal-text hover:border-brand/45`}
           >
             <ChevronsRight className="h-3.5 w-3.5" aria-hidden="true" />
             Step +5 Bars
@@ -77,7 +77,7 @@ export function ReplayControlsBar({
           <button
             type="button"
             onClick={onReset}
-            className={`${buttonBase} border-rose-500/35 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20`}
+            className={`${buttonBase} border-bear/35 bg-bear/10 text-bear hover:bg-bear/15`}
           >
             <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
             Reset Session
@@ -94,7 +94,7 @@ export function ReplayControlsBar({
             aria-label="Replay speed"
             value={speed}
             onChange={(event) => onSpeedChange(Number(event.target.value) as ReplaySpeed)}
-            className="rounded-lg border border-terminal-border bg-terminal-bg px-2 py-1 font-mono text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+            className="rounded-md border border-terminal-border bg-terminal-bg px-2 py-1 font-mono text-xs text-terminal-text focus:border-brand focus:outline-none"
           >
             {SPEEDS.map((item) => (
               <option key={item} value={item}>
@@ -102,7 +102,7 @@ export function ReplayControlsBar({
               </option>
             ))}
           </select>
-          <span className="rounded border border-terminal-border bg-terminal-bg px-2 py-1 font-mono text-[11px] tabular-nums text-terminal-text">
+          <span className="rounded-md border border-terminal-border bg-terminal-bg px-2 py-1 font-mono text-[11px] tabular-nums text-terminal-text">
             Bar {replayIndex + 1} / {totalBars}
           </span>
         </div>
@@ -125,7 +125,7 @@ export function ReplayControlsBar({
           value={Math.min(Math.max(replayIndex, minStartIndex), Math.max(minStartIndex, maxStartIndex))}
           disabled={startLocked}
           onChange={(event) => onStartIndexChange(Number(event.target.value))}
-          className="h-1.5 w-full accent-emerald-500 disabled:opacity-50"
+          className="h-1.5 w-full accent-brand disabled:opacity-50"
         />
         <span className="shrink-0 font-mono text-[11px] text-terminal-muted">
           {startLocked ? 'Locked after first trade/step' : 'Future bars stay hidden'}

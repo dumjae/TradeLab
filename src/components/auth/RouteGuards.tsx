@@ -8,14 +8,14 @@ function AuthLoadingScreen() {
     <div
       role="status"
       aria-live="polite"
-      className="flex min-h-screen flex-col items-center justify-center bg-terminal-bg px-4 text-terminal-text"
+      className="flex min-h-[100dvh] flex-col items-center justify-center bg-terminal-bg px-4 text-terminal-text"
     >
-      <div className="flex flex-col items-center gap-3 rounded-2xl border border-terminal-border bg-terminal-surface px-8 py-7 shadow-xl">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-500/40 bg-emerald-500/15 text-emerald-400">
+      <div className="flex flex-col items-center gap-3 rounded-lg border border-terminal-border bg-terminal-surface px-8 py-7">
+        <span className="flex h-10 w-10 items-center justify-center rounded-md border border-brand/35 bg-brand-soft text-brand-text">
           <Activity className="h-5 w-5" aria-hidden="true" />
         </span>
         <div className="flex items-center gap-2 text-xs font-medium text-terminal-muted">
-          <Loader2 className="h-4 w-4 animate-spin text-emerald-400" aria-hidden="true" />
+          <Loader2 className="h-4 w-4 animate-spin text-brand-text" aria-hidden="true" />
           <span>Verifying TradeLab Terminal session…</span>
         </div>
       </div>

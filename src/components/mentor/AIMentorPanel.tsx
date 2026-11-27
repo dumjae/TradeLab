@@ -43,7 +43,7 @@ function renderSourcePill(sourceType: MentorResponseSourceType) {
   }
   if (sourceType === 'verified_source') {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+      <span className="inline-flex items-center gap-1 rounded-md border border-bull/35 bg-bull/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-bull">
         <ShieldCheck className="h-2.5 w-2.5" aria-hidden="true" />
         Verified Source
       </span>
@@ -125,7 +125,7 @@ export function AIMentorPanel({
   return (
     <section
       aria-labelledby="ai-mentor-heading"
-      className="flex flex-col overflow-hidden rounded-2xl border border-terminal-border bg-terminal-surface"
+      className="flex flex-col overflow-hidden rounded-lg border border-terminal-border bg-terminal-surface"
     >
       {/* Compact 1-Line App Header */}
       <div className="flex items-center justify-between gap-2 border-b border-terminal-border bg-terminal-elevated/50 px-3.5 py-2.5">
@@ -244,12 +244,12 @@ export function AIMentorPanel({
                       key={`${citation.resourceId}-${citation.segmentId ?? citation.startSeconds ?? 'top'}`}
                       type="button"
                       onClick={() => onSelectCitation?.(citation)}
-                      className="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-2.5 py-1 text-left text-[11px] font-medium text-emerald-600 transition-colors hover:bg-emerald-500/15 dark:text-emerald-300"
+                      className="inline-flex max-w-full items-center gap-1.5 rounded-md border border-brand/30 bg-brand-soft px-2.5 py-1 text-left text-[11px] font-medium text-brand-text transition-colors hover:bg-brand hover:text-brand-fg"
                     >
-                      <Play className="h-2.5 w-2.5 shrink-0 fill-current text-emerald-400" aria-hidden="true" />
+                      <Play className="h-2.5 w-2.5 shrink-0 fill-current" aria-hidden="true" />
                       <span className="truncate">{citation.segmentTitle ?? citation.title}</span>
                       {citation.startSeconds !== undefined && (
-                        <span className="shrink-0 font-mono text-[10px] text-emerald-500 dark:text-emerald-400 tabular-nums">
+                        <span className="shrink-0 font-mono text-[10px] opacity-85 tabular-nums">
                           {formatTimestamp(citation.startSeconds)}
                         </span>
                       )}

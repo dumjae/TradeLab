@@ -48,11 +48,14 @@ export function LibraryPage({ onOpenVault }: LibraryPageProps) {
   };
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      <header className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-terminal-border bg-terminal-surface p-5">
-        <div className="space-y-1">
-          <h1 className="text-xl font-bold text-terminal-text">Personal Visual Learning Library</h1>
-          <p className="text-xs text-terminal-muted">
+    <div className="mx-auto min-w-0 max-w-6xl space-y-6 tl-page-enter">
+      {/* Unboxed Editorial Masthead */}
+      <header className="flex flex-wrap items-end justify-between gap-4 border-b border-terminal-border pb-5">
+        <div className="min-w-0 space-y-1.5">
+          <h1 className="text-2xl font-semibold leading-tight tracking-[-0.025em] text-terminal-text sm:text-[1.75rem]">
+            Personal Visual Learning Library
+          </h1>
+          <p className="max-w-[65ch] text-sm leading-relaxed text-terminal-muted">
             Your bookmarked videos, timestamp notes, difficult concept review bundles, and favorite
             mindset rules.
           </p>
@@ -61,31 +64,31 @@ export function LibraryPage({ onOpenVault }: LibraryPageProps) {
         <button
           type="button"
           onClick={onOpenVault}
-          className="inline-flex items-center gap-1.5 rounded-xl border border-amber-500/35 bg-amber-500/10 px-3.5 py-2 text-xs font-semibold text-amber-400 hover:bg-amber-500/20"
+          className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border border-terminal-border bg-terminal-surface px-3.5 py-2 text-xs font-semibold text-terminal-text transition-colors hover:border-brand/50 hover:bg-terminal-elevated tl-press"
         >
-          <Flame className="h-4 w-4" aria-hidden="true" />
+          <Flame className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
           Open Mindset Vault
         </button>
       </header>
 
-      {/* Tabs */}
+      {/* Architectural Underline Tabs */}
       <div
         role="tablist"
         aria-label="Personal Library sections"
-        className="flex flex-wrap gap-2 border-b border-terminal-border pb-3"
+        className="no-scrollbar flex flex-nowrap items-center gap-5 overflow-x-auto border-b border-terminal-border sm:gap-7"
       >
         <button
           type="button"
           role="tab"
           aria-selected={activeTab === 'saved'}
           onClick={() => setActiveTab('saved')}
-          className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-colors ${
+          className={`-mb-px inline-flex shrink-0 items-center gap-2 border-b-2 pb-3 text-xs transition-colors ${
             activeTab === 'saved'
-              ? 'bg-brand text-brand-fg'
-              : 'border border-terminal-border bg-terminal-surface text-terminal-muted hover:text-terminal-text'
+              ? 'border-brand font-semibold text-terminal-text'
+              : 'border-transparent font-medium text-terminal-muted hover:text-terminal-text'
           }`}
         >
-          <Bookmark className="h-4 w-4" aria-hidden="true" />
+          <Bookmark className="h-3.5 w-3.5" aria-hidden="true" />
           Saved Videos &amp; History
         </button>
 
@@ -94,13 +97,13 @@ export function LibraryPage({ onOpenVault }: LibraryPageProps) {
           role="tab"
           aria-selected={activeTab === 'difficult'}
           onClick={() => setActiveTab('difficult')}
-          className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-colors ${
+          className={`-mb-px inline-flex shrink-0 items-center gap-2 border-b-2 pb-3 text-xs transition-colors ${
             activeTab === 'difficult'
-              ? 'bg-amber-500 text-slate-950'
-              : 'border border-terminal-border bg-terminal-surface text-terminal-muted hover:text-terminal-text'
+              ? 'border-brand font-semibold text-terminal-text'
+              : 'border-transparent font-medium text-terminal-muted hover:text-terminal-text'
           }`}
         >
-          <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+          <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
           My Difficult Concepts
         </button>
 
@@ -109,61 +112,62 @@ export function LibraryPage({ onOpenVault }: LibraryPageProps) {
           role="tab"
           aria-selected={activeTab === 'quotes'}
           onClick={() => setActiveTab('quotes')}
-          className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-colors ${
+          className={`-mb-px inline-flex shrink-0 items-center gap-2 border-b-2 pb-3 text-xs transition-colors ${
             activeTab === 'quotes'
-              ? 'bg-sky-500 text-slate-950'
-              : 'border border-terminal-border bg-terminal-surface text-terminal-muted hover:text-terminal-text'
+              ? 'border-brand font-semibold text-terminal-text'
+              : 'border-transparent font-medium text-terminal-muted hover:text-terminal-text'
           }`}
         >
-          <Heart className="h-4 w-4" aria-hidden="true" />
+          <Heart className="h-3.5 w-3.5" aria-hidden="true" />
           Favorite Quotes
         </button>
       </div>
 
-      {activeTab === 'saved' && <PersonalVisualLibrary />}
+      {activeTab === 'saved' && (
+        <div className="min-w-0">
+          <PersonalVisualLibrary />
+        </div>
+      )}
 
       {activeTab === 'difficult' && (
-        <div className="space-y-4">
-          <ContextualQuoteStrip
-            category="teach"
-            label="Deliberate Review Mindset"
-          />
+        <div className="min-w-0 space-y-5">
+          <ContextualQuoteStrip category="teach" label="Deliberate Review Mindset" />
           <DifficultConceptsPanel includeMasteredToggle />
         </div>
       )}
 
       {activeTab === 'quotes' && (
-        <section className="space-y-4">
+        <section aria-label="Favorite mindset quotes" className="min-w-0 space-y-4">
           {loadingQuotes ? (
-            <div className="h-28 animate-pulse rounded-2xl border border-terminal-border bg-terminal-surface" />
+            <div className="h-28 animate-pulse rounded-lg border border-terminal-border bg-terminal-surface" />
           ) : favoriteQuotes.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-terminal-border bg-terminal-surface/50 p-8 text-center">
-              <p className="text-sm font-semibold text-terminal-text">
+            <div className="rounded-lg border border-dashed border-terminal-border bg-terminal-surface/50 px-6 py-10 text-center">
+              <h2 className="text-sm font-semibold text-terminal-text">
                 No favorite mindset quotes saved yet
-              </p>
-              <p className="mt-1 text-xs text-terminal-muted">
+              </h2>
+              <p className="mx-auto mt-1.5 max-w-[54ch] text-xs leading-relaxed text-terminal-muted">
                 Open the Mindset Vault anytime (Shift+Q) to favorite verified trader wisdom or write
                 your own personal trading rules.
               </p>
               <button
                 type="button"
                 onClick={onOpenVault}
-                className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-amber-500 px-4 py-2 text-xs font-semibold text-slate-950 hover:bg-amber-400"
+                className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-brand px-4 py-2 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95 tl-press"
               >
-                <Flame className="h-4 w-4" aria-hidden="true" />
+                <Flame className="h-3.5 w-3.5" aria-hidden="true" />
                 Browse Mindset Vault
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-x-10 md:grid-cols-2">
               {favoriteQuotes.map((quote) => (
                 <article
                   key={quote.id}
-                  className="flex flex-col justify-between gap-3 rounded-2xl border border-terminal-border bg-terminal-surface p-5"
+                  className="flex min-w-0 flex-col justify-between gap-3 border-t border-terminal-border py-5"
                 >
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="rounded-full border border-amber-500/35 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] uppercase text-amber-400">
+                      <span className="font-mono text-[11px] font-medium uppercase tracking-[0.04em] text-terminal-muted">
                         {quote.category}
                       </span>
                       <div className="flex items-center gap-1">
@@ -171,10 +175,10 @@ export function LibraryPage({ onOpenVault }: LibraryPageProps) {
                           type="button"
                           onClick={() => void handleTogglePin(quote.id)}
                           aria-label="Toggle pin quote"
-                          className={`rounded-md p-1.5 ${
+                          className={`rounded-md p-1.5 transition-colors tl-press ${
                             quote.isPinned
-                              ? 'bg-amber-500/15 text-amber-400'
-                              : 'text-terminal-muted hover:text-amber-400'
+                              ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                              : 'text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
                           }`}
                         >
                           <Pin className="h-3.5 w-3.5" aria-hidden="true" />
@@ -183,23 +187,23 @@ export function LibraryPage({ onOpenVault }: LibraryPageProps) {
                           type="button"
                           onClick={() => void handleToggleFavorite(quote.id)}
                           aria-label="Remove favorite quote"
-                          className="rounded-md bg-rose-500/10 p-1.5 text-rose-400"
+                          className="rounded-md bg-bear/10 p-1.5 text-bear transition-colors hover:bg-bear/20 tl-press"
                         >
                           <Heart className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
                         </button>
                       </div>
                     </div>
 
-                    <p className="text-sm font-medium leading-relaxed text-terminal-text">
+                    <p className="max-w-[60ch] text-sm font-medium leading-relaxed text-terminal-text">
                       “{quote.quoteText}”
                     </p>
                     <p className="text-xs text-terminal-muted">
-                      — <strong className="text-terminal-text">{quote.author}</strong> (
-                      {quote.authorRole})
+                      — <strong className="font-semibold text-terminal-text">{quote.author}</strong>{' '}
+                      ({quote.authorRole})
                     </p>
                     {quote.personalReflection && (
-                      <p className="rounded-lg border border-sky-500/25 bg-sky-500/5 px-3 py-2 text-xs text-sky-300">
-                        <strong>My Reflection: </strong>
+                      <p className="border-l-2 border-brand/50 pl-3 text-xs leading-relaxed text-terminal-muted">
+                        <strong className="font-semibold text-terminal-text">My Reflection: </strong>
                         {quote.personalReflection}
                       </p>
                     )}

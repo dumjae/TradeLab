@@ -9,9 +9,7 @@ import {
   Compass,
   ExternalLink,
   Flag,
-  HelpCircle,
   Layers,
-  Lightbulb,
   LineChart,
   Play,
   PlayCircle,
@@ -589,14 +587,14 @@ export function VisualExplanationsSection({
   return (
     <section
       aria-label={`Visual explanations for ${lesson.title}`}
-      className="space-y-3.5 rounded-xl border border-terminal-border bg-terminal-surface p-3 sm:p-4"
+      className="space-y-6"
     >
-      {/* Compact Top Bar: 4-Mode Pill Switcher + Flag Difficult */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      {/* Editorial Underline Tab Bar */}
+      <div className="flex items-end justify-between gap-4 border-b border-terminal-border">
         <div
           role="tablist"
           aria-label="Visual explanation modes"
-          className="inline-flex flex-1 flex-wrap items-center gap-1 rounded-lg border border-terminal-border bg-terminal-bg p-1 sm:flex-none"
+          className="no-scrollbar -mb-px flex items-center gap-5 overflow-x-auto sm:gap-7"
         >
           {MODE_TABS.map((tab) => {
             const Icon = tab.icon;
@@ -609,14 +607,17 @@ export function VisualExplanationsSection({
                 aria-selected={active}
                 aria-label={tab.label}
                 onClick={() => setActiveMode(tab.id)}
-                className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-all sm:flex-none ${
+                className={`inline-flex shrink-0 items-center gap-1.5 border-b-2 pb-3 text-xs transition-colors sm:text-[13px] ${
                   active
-                    ? 'bg-brand text-brand-fg shadow-sm'
-                    : 'text-terminal-muted hover:bg-terminal-elevated/70 hover:text-terminal-text'
+                    ? 'border-brand font-semibold text-terminal-text'
+                    : 'border-transparent font-medium text-terminal-muted hover:border-terminal-border hover:text-terminal-text'
                 }`}
               >
-                <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                <span className="truncate">{t(tab.shortEn, tab.shortTaglish)}</span>
+                <Icon
+                  className={`h-3.5 w-3.5 shrink-0 ${active ? 'text-brand-text' : ''}`}
+                  aria-hidden="true"
+                />
+                <span className="whitespace-nowrap">{t(tab.shortEn, tab.shortTaglish)}</span>
               </button>
             );
           })}
@@ -626,7 +627,7 @@ export function VisualExplanationsSection({
           type="button"
           onClick={handleFlagDifficult}
           title={t('Mark this concept as difficult for later review', 'I-mark para balikan mamaya')}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1.5 text-xs font-medium text-terminal-muted transition-colors hover:border-amber-500/40 hover:bg-terminal-elevated hover:text-amber-500 dark:hover:text-amber-400"
+          className="inline-flex shrink-0 items-center gap-1.5 pb-3 text-xs font-medium text-terminal-muted transition-colors hover:text-amber-600 dark:hover:text-amber-400"
         >
           <Flag className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" aria-hidden="true" />
           <span className="hidden sm:inline">
@@ -636,19 +637,19 @@ export function VisualExplanationsSection({
       </div>
 
       {tutorialMode && (
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-sky-500/35 bg-sky-500/10 px-3 py-2 text-xs">
-          <div className="flex items-center gap-2 text-terminal-text">
-            <Compass className="h-3.5 w-3.5 shrink-0 text-sky-400" aria-hidden="true" />
-            <span className="font-mono font-semibold text-sky-500 dark:text-sky-400 tabular-nums">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-r-md border-l-2 border-l-sky-500 bg-sky-500/5 px-4 py-2.5 text-xs">
+          <div className="flex items-center gap-2.5 text-terminal-text">
+            <Compass className="h-3.5 w-3.5 shrink-0 text-sky-500 dark:text-sky-400" aria-hidden="true" />
+            <span className="font-mono font-semibold text-sky-600 dark:text-sky-400 tabular-nums">
               {tutorialStep.step}/4
             </span>
-            <span>{t(tutorialStep.en, tutorialStep.taglish)}</span>
+            <span className="leading-relaxed">{t(tutorialStep.en, tutorialStep.taglish)}</span>
           </div>
           {tutorialStep.nextMode && (
             <button
               type="button"
               onClick={() => setActiveMode(tutorialStep.nextMode!)}
-              className="rounded-lg bg-sky-500 px-2.5 py-1 text-[11px] font-semibold text-slate-950 transition-colors hover:bg-sky-400"
+              className="tl-press rounded-md bg-brand px-3 py-1 text-[11px] font-semibold text-brand-fg transition-opacity hover:opacity-95"
             >
               {t('Next:', 'Sunod:')}{' '}
               {(() => {
@@ -663,67 +664,57 @@ export function VisualExplanationsSection({
       {statusFeedback && (
         <div
           role="status"
-          className="flex items-center gap-2 rounded-lg border border-bull/35 bg-bull/10 px-3 py-1.5 text-xs font-medium text-bull"
+          className="flex items-center gap-2 rounded-r-md border-l-2 border-l-bull bg-bull/5 px-3.5 py-2 text-xs font-medium text-bull"
         >
           <CheckCircle2 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           <span>{statusFeedback}</span>
         </div>
       )}
 
-      {/* MODE 1: TEXT EXPLANATION (COMPACT, VISUAL-FIRST, ZERO WALL OF TEXT) */}
+      {/* MODE 1: TEXT EXPLANATION (EDITORIAL READING FLOW) */}
       {activeMode === 'text' && (
-        <div className="space-y-3.5">
-          {/* 1. Compact "In Plain English / Sa Simpleng Salita" Card */}
+        <div className="space-y-8">
+          {/* 1. In Plain English Lead Note */}
           {plainSummaryDisplay && (
-            <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3.5">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400">
-                  <Lightbulb className="h-3.5 w-3.5" aria-hidden="true" />
-                </span>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">
-                  {t('In Plain English', UI_COPY.lesson.plainSummaryTitle.taglish)}
-                </p>
-              </div>
-              <p className="mt-2 text-xs leading-relaxed text-terminal-text sm:text-[13px]">
+            <div className="space-y-2.5 border-l-2 border-amber-500 pl-4 py-0.5">
+              <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                {t('In Plain English', UI_COPY.lesson.plainSummaryTitle.taglish)}
+              </p>
+              <p className="max-w-[68ch] text-sm leading-relaxed text-terminal-text sm:text-[15px]">
                 {plainSummaryDisplay}
               </p>
               {isTaglish && taglishEntry?.quickTakeaway && (
-                <div className="mt-2.5 rounded-lg border border-brand/25 bg-brand-soft/60 px-3 py-2 text-xs text-terminal-text">
+                <p className="max-w-[68ch] pt-1 text-xs leading-relaxed text-terminal-muted sm:text-sm">
                   <strong className="font-semibold text-brand-text">
                     {UI_COPY.lesson.quickTakeawayTitle.taglish}:{' '}
                   </strong>
                   {taglishEntry.quickTakeaway}
-                </div>
+                </p>
               )}
             </div>
           )}
 
-          {/* 2. Distinct Quick Cheat-Card (Written Rules — separate from Interactive Diagrams tab) */}
-          <div className="space-y-3 rounded-lg border border-terminal-border bg-terminal-bg/60 p-3.5">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-brand/30 bg-brand-soft text-brand-text">
-                  <Layers className="h-3.5 w-3.5" aria-hidden="true" />
-                </span>
-                <div>
-                  <h3 className="text-[11px] font-semibold uppercase tracking-wider text-terminal-text">
-                    {t(
-                      UI_COPY.diagrams.quickBlueprint.en,
-                      UI_COPY.diagrams.quickBlueprint.taglish,
-                    )}
-                  </h3>
-                  <p className="text-[11px] text-terminal-muted">
-                    {t(
-                      'Written Bullish vs. Bearish rules at a glance — open Diagram tab for visual blueprints.',
-                      'Mabilis na Bullish vs. Bearish rules — buksan ang Diagram tab para sa visual drawings.',
-                    )}
-                  </p>
-                </div>
+          {/* 2. Quick Cheat-Card (Hairline Bullish vs. Bearish Ledger) */}
+          <div className="space-y-4 border-t border-terminal-border pt-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="space-y-0.5">
+                <h3 className="text-sm font-semibold tracking-tight text-terminal-text">
+                  {t(
+                    UI_COPY.diagrams.quickBlueprint.en,
+                    UI_COPY.diagrams.quickBlueprint.taglish,
+                  )}
+                </h3>
+                <p className="max-w-[65ch] text-xs text-terminal-muted">
+                  {t(
+                    'Written Bullish vs. Bearish rules at a glance — open Diagram tab for visual blueprints.',
+                    'Mabilis na Bullish vs. Bearish rules — buksan ang Diagram tab para sa visual drawings.',
+                  )}
+                </p>
               </div>
               <button
                 type="button"
                 onClick={() => setActiveMode('diagram')}
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-brand px-3 py-1.5 text-[11px] font-semibold text-brand-fg shadow-sm transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand active:scale-[0.98]"
+                className="tl-press inline-flex shrink-0 items-center gap-1.5 rounded-md bg-brand px-3 py-1.5 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <Layers className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>
@@ -736,18 +727,17 @@ export function VisualExplanationsSection({
               </button>
             </div>
 
-            {/* 2-Column Bullish vs. Bearish At-a-Glance Card */}
-            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+            <div className="grid grid-cols-1 divide-y divide-terminal-border border-y border-terminal-border sm:grid-cols-2 sm:divide-x sm:divide-y-0">
               {/* Bullish Column */}
-              <div className="rounded-lg border border-bull/35 bg-bull/5 p-3">
-                <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-bull">
+              <div className="space-y-2 py-4 sm:pr-6">
+                <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-bull">
                   <TrendingUp className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                   <span>{t('Bullish (Up / Long)', 'Bullish (Pataas / Buy)')}</span>
                 </div>
-                <p className="mt-1.5 text-xs font-medium leading-snug text-terminal-text">
+                <p className="max-w-[68ch] text-xs leading-relaxed text-terminal-text sm:text-sm">
                   {quickCheatCard.bullishCue}
                 </p>
-                <p className="mt-1.5 border-t border-bull/20 pt-1.5 text-[11px] leading-snug text-terminal-muted">
+                <p className="max-w-[68ch] pt-1 text-xs leading-relaxed text-terminal-muted">
                   <strong className="font-semibold text-bull">
                     {t('Key Takeaway:', 'Tandaan:')}{' '}
                   </strong>
@@ -756,15 +746,15 @@ export function VisualExplanationsSection({
               </div>
 
               {/* Bearish Column */}
-              <div className="rounded-lg border border-bear/35 bg-bear/5 p-3">
-                <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-bear">
+              <div className="space-y-2 py-4 sm:pl-6">
+                <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-bear">
                   <TrendingDown className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                   <span>{t('Bearish (Down / Short)', 'Bearish (Pababa / Sell)')}</span>
                 </div>
-                <p className="mt-1.5 text-xs font-medium leading-snug text-terminal-text">
+                <p className="max-w-[68ch] text-xs leading-relaxed text-terminal-text sm:text-sm">
                   {quickCheatCard.bearishCue}
                 </p>
-                <p className="mt-1.5 border-t border-bear/20 pt-1.5 text-[11px] leading-snug text-terminal-muted">
+                <p className="max-w-[68ch] pt-1 text-xs leading-relaxed text-terminal-muted">
                   <strong className="font-semibold text-bear">
                     {t('Caution / Invalidation:', 'Babala / Invalidation:')}{' '}
                   </strong>
@@ -773,16 +763,12 @@ export function VisualExplanationsSection({
               </div>
             </div>
 
-            {/* Concise Terminology Chips (Expanded Acronyms) */}
             {lesson.terminology.length > 0 && (
-              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-terminal-muted">
                 {lesson.terminology.slice(0, 4).map((entry) => (
-                  <span
-                    key={entry.term}
-                    className="inline-flex items-center gap-1 rounded-md border border-terminal-border bg-terminal-surface px-2 py-0.5 text-[11px] text-terminal-muted"
-                  >
+                  <span key={entry.term} className="inline-flex items-baseline gap-1.5">
                     {entry.shortCode && (
-                      <strong className="font-mono font-semibold text-brand-text">
+                      <strong className="font-mono text-[11px] font-semibold text-brand-text">
                         {entry.shortCode}
                       </strong>
                     )}
@@ -793,17 +779,20 @@ export function VisualExplanationsSection({
             )}
           </div>
 
-          {/* 3. Scannable Collapsible Lesson Breakdown (reduces text fatigue) */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-2 px-0.5">
-              <h3 className="text-[11px] font-semibold uppercase tracking-wider text-terminal-muted">
-                {t('Read Full Breakdown', 'Basahin ang Buong Detalye')} ({lesson.sections.length})
+          {/* 3. Editorial Collapsible Lesson Breakdown */}
+          <div className="space-y-3 border-t border-terminal-border pt-6">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-sm font-semibold tracking-tight text-terminal-text">
+                {t('Read Full Breakdown', 'Basahin ang Buong Detalye')}{' '}
+                <span className="font-mono text-xs font-normal text-terminal-muted tabular-nums">
+                  ({lesson.sections.length})
+                </span>
               </h3>
               {lesson.sections.length > 1 && (
                 <button
                   type="button"
                   onClick={() => setExpandAllSections((prev) => !prev)}
-                  className="text-[11px] font-semibold text-brand-text hover:underline"
+                  className="text-xs font-medium text-brand-text underline-offset-4 hover:underline"
                 >
                   {expandAllSections
                     ? t('Collapse', 'Isara')
@@ -812,86 +801,79 @@ export function VisualExplanationsSection({
               )}
             </div>
 
-            {lesson.sections.map((section, index) => (
-              <details
-                key={section.id}
-                open={expandAllSections || index === 0}
-                className="group rounded-lg border border-terminal-border bg-terminal-bg/45"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-2.5 px-3.5 py-2.5">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded border border-brand/30 bg-brand-soft font-mono text-[10px] font-bold text-brand-text tabular-nums">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                    <span className="text-xs font-semibold leading-snug text-terminal-text sm:text-[13px]">
-                      {section.heading}
-                    </span>
+            <div className="divide-y divide-terminal-border border-y border-terminal-border">
+              {lesson.sections.map((section, index) => (
+                <details
+                  key={section.id}
+                  open={expandAllSections || index === 0}
+                  className="group"
+                >
+                  <summary className="tl-row-interactive flex cursor-pointer list-none items-center justify-between gap-3 py-3.5 hover:text-brand-text">
+                    <div className="flex min-w-0 items-baseline gap-3">
+                      <span className="shrink-0 font-mono text-xs font-medium text-terminal-muted tabular-nums">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <span className="text-sm font-semibold leading-snug text-terminal-text">
+                        {section.heading}
+                      </span>
+                    </div>
+                    <ChevronDown
+                      className="h-4 w-4 shrink-0 text-terminal-muted transition-transform group-open:rotate-180"
+                      aria-hidden="true"
+                    />
+                  </summary>
+
+                  <div className="space-y-4 pb-5 pl-7">
+                    <p className="max-w-[68ch] text-sm leading-relaxed text-terminal-muted">
+                      {expandAcronyms(section.body)}
+                    </p>
+
+                    {section.bulletPoints.length > 0 && (
+                      <ul className="max-w-[68ch] space-y-2">
+                        {section.bulletPoints.map((bullet) => (
+                          <li
+                            key={bullet}
+                            className="flex items-start gap-2.5 text-sm leading-relaxed text-terminal-text"
+                          >
+                            <span
+                              className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand"
+                              aria-hidden="true"
+                            />
+                            <span>{expandAcronyms(bullet)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    <div className="max-w-[68ch] border-l-2 border-bull pl-3.5 py-0.5 text-xs leading-relaxed text-terminal-text sm:text-sm">
+                      <strong className="font-semibold text-bull">
+                        {t('Key Rule:', 'Tandaan:')}{' '}
+                      </strong>
+                      {expandAcronyms(section.keyTakeaway)}
+                    </div>
                   </div>
-                  <ChevronDown
-                    className="h-3.5 w-3.5 shrink-0 text-terminal-muted transition-transform group-open:rotate-180"
-                    aria-hidden="true"
-                  />
-                </summary>
-
-                <div className="space-y-2.5 border-t border-terminal-border/70 px-3.5 py-3">
-                  <p className="text-xs leading-relaxed text-terminal-muted">
-                    {expandAcronyms(section.body)}
-                  </p>
-
-                  {section.bulletPoints.length > 0 && (
-                    <ul className="space-y-1">
-                      {section.bulletPoints.map((bullet) => (
-                        <li
-                          key={bullet}
-                          className="flex items-start gap-2 text-xs leading-snug text-terminal-text"
-                        >
-                          <span
-                            className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand"
-                            aria-hidden="true"
-                          />
-                          <span>{expandAcronyms(bullet)}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-
-                  <div className="rounded-lg border border-bull/25 bg-bull/10 px-3 py-2 text-xs text-terminal-text">
-                    <strong className="font-semibold text-bull">
-                      {t('Key Rule:', 'Tandaan:')}{' '}
-                    </strong>
-                    {expandAcronyms(section.keyTakeaway)}
-                  </div>
-                </div>
-              </details>
-            ))}
+                </details>
+              ))}
+            </div>
           </div>
 
-          {/* 4. Compact Collapsible Common Beginner Questions (FAQ) */}
+          {/* 4. Common Beginner Questions (FAQ) */}
           {activeFaqItems.length > 0 && (
-            <div className="space-y-2 rounded-lg border border-terminal-border bg-terminal-bg/60 p-3.5">
-              <div className="flex items-center gap-2">
-                <HelpCircle
-                  className="h-3.5 w-3.5 shrink-0 text-sky-500 dark:text-sky-400"
-                  aria-hidden="true"
-                />
-                <h3 className="text-[11px] font-semibold uppercase tracking-wider text-terminal-text">
-                  {t('Common Beginner Questions (FAQ)', 'Mga Tanong ng Beginner (FAQ)')}
-                </h3>
-              </div>
-              <div className="space-y-1.5">
+            <div className="space-y-3 border-t border-terminal-border pt-6">
+              <h3 className="text-sm font-semibold tracking-tight text-terminal-text">
+                {t('Common Beginner Questions (FAQ)', 'Mga Tanong ng Beginner (FAQ)')}
+              </h3>
+              <div className="divide-y divide-terminal-border border-y border-terminal-border">
                 {activeFaqItems.map((item) => (
-                  <details
-                    key={item.question}
-                    className="group rounded-lg border border-terminal-border/80 bg-terminal-surface"
-                  >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-2.5 px-3 py-2 text-xs font-medium text-terminal-text">
-                      <span>{item.question}</span>
+                  <details key={item.question} className="group">
+                    <summary className="tl-row-interactive flex cursor-pointer list-none items-center justify-between gap-3 py-3 text-sm font-medium text-terminal-text hover:text-brand-text">
+                      <span className="max-w-[68ch]">{item.question}</span>
                       <ChevronDown
-                        className="h-3.5 w-3.5 shrink-0 text-terminal-muted transition-transform group-open:rotate-180"
+                        className="h-4 w-4 shrink-0 text-terminal-muted transition-transform group-open:rotate-180"
                         aria-hidden="true"
                       />
                     </summary>
-                    <p className="border-t border-terminal-border/70 px-3 py-2 text-xs leading-relaxed text-terminal-muted">
+                    <p className="max-w-[68ch] pb-4 text-sm leading-relaxed text-terminal-muted">
                       {item.answer}
                     </p>
                   </details>
@@ -901,15 +883,15 @@ export function VisualExplanationsSection({
           )}
 
           {/* 5. Compact Next-Step Row */}
-          <div className="flex flex-col gap-2 rounded-lg border border-terminal-border bg-terminal-bg/75 p-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs font-medium text-terminal-muted">
+          <div className="flex flex-col gap-3 border-t border-terminal-border pt-5 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs font-medium text-terminal-muted sm:text-sm">
               {t('See this on a real chart next:', 'Tingnan naman ito sa totoong chart:')}
             </p>
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => setActiveMode('chart')}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-fg shadow-sm transition-opacity hover:opacity-95 active:scale-[0.98]"
+                className="tl-press inline-flex items-center gap-1.5 rounded-md bg-brand px-3.5 py-2 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95"
               >
                 <LineChart className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>{t('Open Chart Example', 'Buksan ang Chart')}</span>
@@ -918,9 +900,9 @@ export function VisualExplanationsSection({
               <button
                 type="button"
                 onClick={() => setActiveMode('video')}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-surface px-3.5 py-1.5 text-xs font-semibold text-terminal-text transition-colors hover:border-sky-500/45 hover:bg-terminal-elevated hover:text-sky-600 dark:hover:text-sky-400"
+                className="tl-press inline-flex items-center gap-1.5 rounded-md border border-terminal-border bg-terminal-surface px-3.5 py-2 text-xs font-semibold text-terminal-text transition-colors hover:border-brand/45 hover:bg-terminal-elevated"
               >
-                <PlayCircle className="h-3.5 w-3.5 text-sky-500 dark:text-sky-400" aria-hidden="true" />
+                <PlayCircle className="h-3.5 w-3.5 text-brand-text" aria-hidden="true" />
                 <span>{t('Watch Video', 'Panoorin ang Video')}</span>
               </button>
             </div>
@@ -933,17 +915,17 @@ export function VisualExplanationsSection({
 
       {/* MODE 3: VIDEO EXPLANATION */}
       {activeMode === 'video' && (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {!activeResourceBundle ? (
-            <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-terminal-border bg-terminal-bg/60 px-5 py-7 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-500 dark:text-rose-400">
+            <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-terminal-border bg-terminal-surface/60 px-6 py-10 text-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md border border-bear/30 bg-bear/10 text-bear">
                 <Youtube className="h-5 w-5" aria-hidden="true" />
               </div>
               <div className="max-w-sm space-y-1">
                 <p className="text-sm font-semibold text-terminal-text">
                   {t('No YouTube link added yet', 'Wala pang naka-link na YouTube video')}
                 </p>
-                <p className="text-xs text-terminal-muted">
+                <p className="text-xs leading-relaxed text-terminal-muted">
                   {isAdmin
                     ? 'Paste a YouTube URL with a lesson timestamp — zero downloads, instant redirect.'
                     : t(
@@ -956,7 +938,7 @@ export function VisualExplanationsSection({
                 {isAdmin && (
                   <Link
                     to={`/admin/visual-library?lesson=${lesson.slug}`}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95"
+                    className="tl-press inline-flex items-center gap-1.5 rounded-md bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95"
                   >
                     <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                     Paste YouTube Link
@@ -965,14 +947,14 @@ export function VisualExplanationsSection({
                 <button
                   type="button"
                   onClick={() => setActiveMode('diagram')}
-                  className="rounded-lg border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-brand/45 hover:bg-terminal-elevated"
+                  className="tl-press rounded-md border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-brand/45 hover:bg-terminal-elevated"
                 >
                   {t('Open Diagram', 'Buksan ang Diagram')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveMode('chart')}
-                  className="rounded-lg border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-brand/45 hover:bg-terminal-elevated"
+                  className="tl-press rounded-md border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-brand/45 hover:bg-terminal-elevated"
                 >
                   {t('Open Chart', 'Buksan ang Chart')}
                 </button>
@@ -989,20 +971,20 @@ export function VisualExplanationsSection({
               />
 
               {/* Compact Video Action Strip */}
-              <div className="flex flex-wrap items-center justify-between gap-2 px-0.5">
-                <div className="flex min-w-0 flex-1 items-center gap-2">
-                  <p className="min-w-0 truncate text-xs font-semibold text-terminal-text">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-terminal-border pb-3">
+                <div className="flex min-w-0 flex-1 items-baseline gap-2.5">
+                  <p className="min-w-0 truncate text-sm font-semibold text-terminal-text">
                     {activeResourceBundle.resource.title}
                   </p>
-                  <span className="hidden shrink-0 items-center rounded border border-terminal-border bg-terminal-bg px-2 py-0.5 text-[10px] font-medium text-terminal-muted sm:inline-flex">
-                    {activeResourceBundle.resource.sourceName}
+                  <span className="hidden shrink-0 font-mono text-xs text-terminal-muted sm:inline">
+                    · {activeResourceBundle.resource.sourceName}
                   </span>
                 </div>
                 <div className="flex shrink-0 items-center gap-1.5">
                   {isAdmin && (
                     <Link
                       to={`/admin/visual-library?lesson=${lesson.slug}`}
-                      className="inline-flex items-center gap-1 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1 text-[11px] font-medium text-terminal-muted transition-colors hover:border-brand/45 hover:text-brand-text"
+                      className="inline-flex items-center gap-1 rounded-md border border-terminal-border bg-terminal-surface px-2.5 py-1 text-xs font-medium text-terminal-muted transition-colors hover:border-brand/45 hover:text-brand-text"
                     >
                       <Plus className="h-3 w-3" aria-hidden="true" />
                       Add Link
@@ -1014,7 +996,7 @@ export function VisualExplanationsSection({
                       setBookmarkTargetSegment(null);
                       setBookmarkDialogOpen(true);
                     }}
-                    className="inline-flex items-center gap-1 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1 text-[11px] font-medium text-terminal-text transition-colors hover:border-amber-500/50 hover:text-amber-500 dark:hover:text-amber-400"
+                    className="tl-press inline-flex items-center gap-1 rounded-md border border-terminal-border bg-terminal-surface px-2.5 py-1 text-xs font-medium text-terminal-text transition-colors hover:border-amber-500/50 hover:text-amber-600 dark:hover:text-amber-400"
                   >
                     <Bookmark className="h-3 w-3" aria-hidden="true" />
                     {t('Save', 'I-Save')}
@@ -1022,10 +1004,10 @@ export function VisualExplanationsSection({
                   <button
                     type="button"
                     onClick={handleMarkWatched}
-                    className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+                    className={`tl-press inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs font-semibold transition-colors ${
                       watchedIds[activeResourceBundle.resource.id]
                         ? 'border-bull bg-bull/15 text-bull'
-                        : 'border-brand/40 bg-brand text-brand-fg hover:opacity-95'
+                        : 'border-brand bg-brand text-brand-fg hover:opacity-95'
                     }`}
                   >
                     <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
@@ -1036,25 +1018,19 @@ export function VisualExplanationsSection({
                 </div>
               </div>
 
-              {/* Compact Multi-Video Switcher */}
+              {/* Multi-Video Switcher */}
               {externalVideoResources.length > 1 && (
-                <div className="overflow-hidden rounded-lg border border-terminal-border bg-terminal-surface">
-                  <div className="flex items-center justify-between border-b border-terminal-border bg-terminal-elevated/40 px-3 py-1.5">
-                    <div className="flex items-center gap-1.5">
-                      <PlayCircle
-                        className="h-3.5 w-3.5 text-brand-text"
-                        aria-hidden="true"
-                      />
-                      <h4 className="text-[11px] font-semibold uppercase tracking-wider text-terminal-text">
-                        {t('More Videos', 'Iba Pang Video')}
-                      </h4>
-                    </div>
-                    <span className="font-mono text-[10px] text-terminal-muted tabular-nums">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-semibold text-terminal-text">
+                      {t('More Videos', 'Iba Pang Video')}
+                    </h4>
+                    <span className="font-mono text-[11px] text-terminal-muted tabular-nums">
                       {externalVideoResources.length} videos
                     </span>
                   </div>
 
-                  <ul className="divide-y divide-terminal-border">
+                  <ul className="divide-y divide-terminal-border border-y border-terminal-border">
                     {externalVideoResources.map((item) => {
                       const isSelected = item.resource.id === activeResourceBundle.resource.id;
                       const thumbSrc = resolveVideoThumbnailUrl(item);
@@ -1064,20 +1040,18 @@ export function VisualExplanationsSection({
                       return (
                         <li
                           key={item.resource.id}
-                          className={`flex items-center justify-between gap-2.5 px-3 py-2 transition-colors ${
-                            isSelected
-                              ? 'bg-brand-soft/60'
-                              : 'hover:bg-terminal-elevated/40'
+                          className={`tl-row-interactive flex items-center justify-between gap-3 py-2.5 transition-colors ${
+                            isSelected ? 'bg-brand-soft/40 px-2 -mx-2 rounded-md' : 'hover:bg-terminal-surface/60 px-2 -mx-2 rounded-md'
                           }`}
                         >
                           <button
                             type="button"
                             aria-pressed={isSelected}
                             onClick={() => handleSelectVideoResource(item.resource.id)}
-                            className="group flex min-w-0 flex-1 items-center gap-2.5 rounded-lg text-left transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                            className="group flex min-w-0 flex-1 items-center gap-3 rounded-md text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                           >
                             <div
-                              className={`relative aspect-video w-20 shrink-0 overflow-hidden rounded-lg border bg-[#131722] ${
+                              className={`relative aspect-video w-20 shrink-0 overflow-hidden rounded-md border bg-[#0f131a] ${
                                 isSelected
                                   ? 'border-brand/70'
                                   : 'border-terminal-border group-hover:border-brand/40'
@@ -1107,7 +1081,7 @@ export function VisualExplanationsSection({
                                 aria-hidden="true"
                               >
                                 <span
-                                  className={`flex h-5 w-5 items-center justify-center rounded-full shadow-sm ${
+                                  className={`flex h-5 w-5 items-center justify-center rounded-full ${
                                     isSelected
                                       ? 'bg-brand text-brand-fg'
                                       : 'bg-black/80 text-white'
@@ -1118,7 +1092,7 @@ export function VisualExplanationsSection({
                               </span>
 
                               {item.resource.durationSeconds !== null && (
-                                <span className="absolute bottom-1 right-1 rounded bg-black/85 px-1 py-0.5 font-mono text-[9px] font-medium leading-none text-white tabular-nums">
+                                <span className="absolute bottom-1 right-1 rounded-sm bg-black/85 px-1 py-0.5 font-mono text-[9px] font-medium leading-none text-white tabular-nums">
                                   {formatTimestamp(item.resource.durationSeconds)}
                                 </span>
                               )}
@@ -1126,7 +1100,7 @@ export function VisualExplanationsSection({
 
                             <div className="min-w-0 flex-1 space-y-0.5">
                               <p
-                                className={`truncate text-xs font-semibold transition-colors ${
+                                className={`truncate text-xs font-semibold transition-colors sm:text-[13px] ${
                                   isSelected
                                     ? 'text-brand-text'
                                     : 'text-terminal-text group-hover:text-brand-text'
@@ -1134,13 +1108,11 @@ export function VisualExplanationsSection({
                               >
                                 {item.resource.title}
                               </p>
-                              <div className="flex flex-wrap items-center gap-1.5">
-                                <span className="inline-flex max-w-[160px] items-center truncate rounded border border-terminal-border bg-terminal-bg px-2 py-0.5 text-[10px] font-medium text-terminal-muted">
-                                  {item.resource.sourceName}
-                                </span>
+                              <div className="flex flex-wrap items-center gap-2 text-[11px] text-terminal-muted">
+                                <span className="truncate">{item.resource.sourceName}</span>
                                 {isSelected && (
-                                  <span className="inline-flex items-center rounded bg-brand-soft px-2 py-0.5 font-mono text-[10px] font-semibold text-brand-text">
-                                    {t('Selected', 'Napili')}
+                                  <span className="font-mono text-[10px] font-semibold text-brand-text">
+                                    · {t('Playing', 'Napili')}
                                   </span>
                                 )}
                                 {watchedIds[item.resource.id] && (
@@ -1159,7 +1131,7 @@ export function VisualExplanationsSection({
                               target="_blank"
                               rel="noopener noreferrer"
                               aria-label={`Open ${item.resource.title} on YouTube in a new tab`}
-                              className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-sky-500/35 bg-sky-500/10 px-2.5 py-1 text-[11px] font-semibold text-sky-600 transition-colors hover:bg-sky-500 hover:text-slate-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 dark:text-sky-400 dark:hover:text-slate-950"
+                              className="inline-flex shrink-0 items-center gap-1 rounded-md border border-terminal-border px-2.5 py-1 text-[11px] font-medium text-terminal-muted transition-colors hover:border-brand/45 hover:text-terminal-text focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                             >
                               <span>YouTube</span>
                               <ExternalLink className="h-3 w-3" aria-hidden="true" />
@@ -1186,8 +1158,8 @@ export function VisualExplanationsSection({
 
               {/* Collapsible Before/After Study Notes */}
               {hasStudyNotes && (
-                <details className="group rounded-lg border border-terminal-border bg-terminal-bg/60">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-xs font-medium text-terminal-text">
+                <details className="group border-t border-terminal-border pt-3">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-2 py-1.5 text-xs font-semibold text-terminal-text hover:text-brand-text">
                     <span>
                       {t('Study Notes (Before & After Watching)', 'Gabay Bago at Pagkatapos Manood')}
                     </span>
@@ -1196,30 +1168,30 @@ export function VisualExplanationsSection({
                       aria-hidden="true"
                     />
                   </summary>
-                  <div className="space-y-2.5 border-t border-terminal-border px-3 py-2.5 text-xs">
+                  <div className="space-y-4 pt-3 text-xs sm:text-sm">
                     {activeResourceBundle.mapping.beforeWatchContext && (
-                      <div>
-                        <p className="font-mono text-[10px] font-semibold uppercase tracking-wider text-sky-500 dark:text-sky-400">
+                      <div className="space-y-1">
+                        <p className="font-mono text-xs font-semibold text-sky-600 dark:text-sky-400">
                           Before Watching — What to Look For
                         </p>
-                        <p className="mt-1 leading-relaxed text-terminal-muted">
+                        <p className="max-w-[68ch] leading-relaxed text-terminal-muted">
                           {expandAcronyms(activeResourceBundle.mapping.beforeWatchContext)}
                         </p>
                       </div>
                     )}
                     {activeResourceBundle.mapping.afterWatchTakeaways.length > 0 && (
-                      <div>
-                        <p className="font-mono text-[10px] font-semibold uppercase tracking-wider text-bull">
+                      <div className="space-y-1.5">
+                        <p className="font-mono text-xs font-semibold text-bull">
                           {t('After Watching — Key Takeaways', 'Pagkatapos Manood — Tandaan')}
                         </p>
-                        <ul className="mt-1 space-y-1">
+                        <ul className="max-w-[68ch] space-y-1.5">
                           {activeResourceBundle.mapping.afterWatchTakeaways.map((takeaway) => (
                             <li
                               key={takeaway}
                               className="flex items-start gap-2 leading-relaxed text-terminal-text"
                             >
                               <CheckCircle2
-                                className="mt-0.5 h-3.5 w-3.5 shrink-0 text-bull"
+                                className="mt-1 h-3.5 w-3.5 shrink-0 text-bull"
                                 aria-hidden="true"
                               />
                               <span>{expandAcronyms(takeaway)}</span>
@@ -1247,18 +1219,18 @@ export function VisualExplanationsSection({
 
       {/* MODE 4: HISTORICAL CHART EXAMPLE */}
       {activeMode === 'chart' && (
-        <div className="space-y-2.5">
+        <div className="space-y-4">
           {scenarios.length > 1 && (
-            <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-2">
               {scenarios.map((scenario, index) => (
                 <button
                   key={scenario.id}
                   type="button"
                   onClick={() => setSelectedScenarioIndex(index)}
-                  className={`rounded-lg border px-3 py-1 text-xs font-medium transition-colors ${
+                  className={`tl-press rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
                     index === selectedScenarioIndex
                       ? 'border-brand bg-brand-soft font-semibold text-brand-text'
-                      : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
+                      : 'border-terminal-border bg-terminal-surface text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
                   }`}
                 >
                   {expandAcronyms(scenario.title)}
@@ -1273,7 +1245,7 @@ export function VisualExplanationsSection({
               comparisonScenario={comparisonScenario}
             />
           ) : (
-            <div className="rounded-lg border border-terminal-border bg-terminal-surface p-5 text-center text-xs text-terminal-muted">
+            <div className="rounded-lg border border-terminal-border bg-terminal-surface p-6 text-center text-xs text-terminal-muted">
               {t(
                 'No historical candlestick scenarios linked to this lesson yet.',
                 'Wala pang naka-link na historical chart para sa lesson na ito.',
@@ -1285,8 +1257,8 @@ export function VisualExplanationsSection({
 
       {/* Collapsible Key Terminology (Acronym Glossary) */}
       {lesson.terminology.length > 0 && (
-        <details className="group rounded-lg border border-terminal-border bg-terminal-bg/60">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3.5 py-2 text-xs font-medium text-terminal-text">
+        <details className="group border-t border-terminal-border pt-4">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 py-1 text-xs font-semibold text-terminal-text hover:text-brand-text">
             <span>
               {t(
                 `Key Terms & Acronyms (${lesson.terminology.length})`,
@@ -1298,21 +1270,18 @@ export function VisualExplanationsSection({
               aria-hidden="true"
             />
           </summary>
-          <div className="grid grid-cols-1 gap-2 border-t border-terminal-border p-3 md:grid-cols-3">
+          <div className="mt-3 grid grid-cols-1 gap-x-8 gap-y-4 border-t border-terminal-border pt-4 md:grid-cols-3">
             {lesson.terminology.map((entry) => (
-              <div
-                key={entry.term}
-                className="rounded-lg border border-terminal-border bg-terminal-surface p-2.5"
-              >
-                <div className="flex items-center justify-between gap-1.5">
-                  <span className="text-xs font-semibold text-terminal-text">{entry.term}</span>
+              <div key={entry.term} className="space-y-1">
+                <div className="flex items-baseline gap-2">
                   {entry.shortCode && (
-                    <span className="rounded bg-brand-soft px-1.5 py-0.5 font-mono text-[10px] font-semibold text-brand-text">
+                    <span className="font-mono text-[11px] font-semibold text-brand-text">
                       {entry.shortCode}
                     </span>
                   )}
+                  <span className="text-xs font-semibold text-terminal-text">{entry.term}</span>
                 </div>
-                <p className="mt-1 text-[11px] leading-snug text-terminal-muted">
+                <p className="text-xs leading-relaxed text-terminal-muted">
                   {expandAcronyms(entry.definition)}
                 </p>
               </div>

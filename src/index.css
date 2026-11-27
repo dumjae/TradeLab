@@ -3,36 +3,36 @@
 @tailwind utilities;
 
 :root {
-  --tl-bg: #f0f3fa;
+  --tl-bg: #f8f9fb;
   --tl-surface: #ffffff;
-  --tl-elevated: #f8f9fd;
-  --tl-border: #e0e3eb;
-  --tl-text: #131722;
-  --tl-muted: #5d606b;
+  --tl-elevated: #eef1f6;
+  --tl-border: #dfe4ec;
+  --tl-text: #111621;
+  --tl-muted: #555e6f;
   --tl-brand: #2962ff;
   --tl-brand-text: #1e53e5;
   --tl-brand-rgb: 41 98 255;
-  --tl-brand-soft: rgba(41, 98, 255, 0.10);
+  --tl-brand-soft: rgba(41, 98, 255, 0.09);
   --tl-brand-fg: #ffffff;
-  --tl-scrollbar: rgba(93, 96, 107, 0.28);
-  --tl-scrollbar-hover: rgba(93, 96, 107, 0.48);
+  --tl-scrollbar: rgba(85, 94, 111, 0.24);
+  --tl-scrollbar-hover: rgba(85, 94, 111, 0.44);
   color-scheme: light;
 }
 
 .dark {
-  --tl-bg: #131722;
-  --tl-surface: #1e222d;
-  --tl-elevated: #2a2e39;
-  --tl-border: #2a2e39;
-  --tl-text: #d1d4dc;
-  --tl-muted: #8b909a;
+  --tl-bg: #0f131a;
+  --tl-surface: #161b24;
+  --tl-elevated: #1e2531;
+  --tl-border: #262e3d;
+  --tl-text: #e6e9ef;
+  --tl-muted: #8c94a4;
   --tl-brand: #2962ff;
-  --tl-brand-text: #5b9cf6;
+  --tl-brand-text: #609bff;
   --tl-brand-rgb: 41 98 255;
-  --tl-brand-soft: rgba(41, 98, 255, 0.16);
+  --tl-brand-soft: rgba(41, 98, 255, 0.14);
   --tl-brand-fg: #ffffff;
-  --tl-scrollbar: rgba(139, 144, 154, 0.28);
-  --tl-scrollbar-hover: rgba(139, 144, 154, 0.5);
+  --tl-scrollbar: rgba(140, 148, 164, 0.26);
+  --tl-scrollbar-hover: rgba(140, 148, 164, 0.48);
   color-scheme: dark;
 }
 
@@ -52,17 +52,22 @@
   }
 
   ::selection {
-    background: rgb(var(--tl-brand-rgb) / 0.3);
+    background: rgb(var(--tl-brand-rgb) / 0.24);
     color: var(--tl-text);
   }
 
   body {
-    line-height: 1.55;
+    line-height: 1.6;
     text-rendering: optimizeLegibility;
     transition: background-color 180ms ease, color 180ms ease;
   }
 
-  /* Subtle TradingView-style scrollbars */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--tl-brand);
+    outline-offset: 2px;
+  }
+
+  /* Subtle institutional scrollbars */
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--tl-scrollbar) transparent;
@@ -98,6 +103,80 @@
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Minimalist Editorial Motion Utilities (GPU-accelerated: transform & opacity only) */
+@keyframes tlFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tlSlideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.tl-page-enter {
+  animation: tlFadeUp 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.tl-stagger {
+  animation: tlFadeUp 340ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--stagger, 0) * 55ms);
+}
+
+.tl-drawer-enter {
+  animation: tlSlideInRight 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.tl-press {
+  transition:
+    transform 120ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.tl-press:active {
+  transform: scale(0.985);
+}
+
+.tl-row-interactive {
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.tl-progress-bar {
+  transition: width 480ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tl-hairline-grid {
+  position: relative;
+  isolation: isolate;
+}
+
+.tl-hairline-grid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--tl-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--tl-border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.35;
 }
 
 @media (prefers-reduced-motion: reduce) {

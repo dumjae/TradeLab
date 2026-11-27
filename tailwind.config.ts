@@ -22,10 +22,19 @@ const config: Config = {
         },
         bull: '#089981',
         bear: '#f23645',
+        caution: '#e59400',
         info: '#2196f3',
         amber: {
-          wisdom: '#ff9800',
+          wisdom: '#e59400',
         },
+      },
+      spacing: {
+        15: '3.75rem',
+      },
+      borderRadius: {
+        sm: '6px',
+        md: '8px',
+        lg: '12px',
       },
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],

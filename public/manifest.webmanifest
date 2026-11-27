@@ -4,8 +4,8 @@
   "description": "Minimalist trading education with visual explanations, verified video tutorials, multi-asset backtesting, trade journaling, and AI mentor.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#131722",
-  "theme_color": "#131722",
+  "background_color": "#0f131a",
+  "theme_color": "#0f131a",
   "orientation": "portrait-primary",
   "icons": [
     {

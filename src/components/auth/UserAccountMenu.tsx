@@ -90,43 +90,36 @@ export function UserAccountMenu({ inAdminPortal = false }: UserAccountMenuProps)
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={`Account menu for ${user.displayName}`}
-        className="inline-flex items-center gap-2 rounded-lg border border-terminal-border bg-terminal-bg px-2 py-1 text-left transition-colors hover:border-emerald-500/40"
+        className="inline-flex h-8 items-center gap-2 rounded-md border border-terminal-border bg-terminal-bg px-2 text-left transition-colors hover:bg-terminal-elevated tl-press"
       >
         {user.avatarUrl && !avatarFailed ? (
           <img
             src={user.avatarUrl}
             alt={user.displayName}
             onError={() => setAvatarFailed(true)}
-            className="h-7 w-7 rounded-full object-cover ring-1 ring-terminal-border"
+            className="h-6 w-6 rounded-full object-cover ring-1 ring-terminal-border"
             referrerPolicy="no-referrer"
           />
         ) : (
           <span
-            className={`flex h-7 w-7 items-center justify-center rounded-full font-mono text-[11px] font-bold ${
+            className={`flex h-6 w-6 items-center justify-center rounded-full font-mono text-[10px] font-semibold ${
               isAdmin
-                ? 'border border-amber-500/40 bg-amber-500/15 text-amber-400'
-                : 'border border-emerald-500/40 bg-emerald-500/15 text-emerald-400'
+                ? 'border border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                : 'border border-brand/35 bg-brand-soft text-brand-text'
             }`}
           >
             {initials}
           </span>
         )}
 
-        <div className="hidden max-w-[130px] leading-tight md:block">
-          <span className="block truncate text-xs font-semibold text-terminal-text">
+        <div className="hidden max-w-[120px] leading-tight md:block">
+          <span className="block truncate text-xs font-medium text-terminal-text">
             {user.displayName}
-          </span>
-          <span
-            className={`block font-mono text-[10px] uppercase tracking-wider ${
-              isAdmin ? 'text-amber-400' : 'text-emerald-400'
-            }`}
-          >
-            {isAdmin ? 'Admin' : 'Learner'}
           </span>
         </div>
 
         <ChevronDown
-          className={`h-3.5 w-3.5 text-terminal-muted transition-transform ${
+          className={`h-3.5 w-3.5 text-terminal-muted transition-transform duration-150 ${
             open ? 'rotate-180' : ''
           }`}
           aria-hidden="true"
@@ -137,18 +130,18 @@ export function UserAccountMenu({ inAdminPortal = false }: UserAccountMenuProps)
         <div
           role="menu"
           aria-label="User account actions"
-          className="absolute right-0 z-50 mt-2 w-64 overflow-hidden rounded-xl border border-terminal-border bg-terminal-surface shadow-2xl"
+          className="absolute right-0 z-50 mt-1.5 w-64 overflow-hidden rounded-lg border border-terminal-border bg-terminal-surface shadow-lg"
         >
-          <div className="border-b border-terminal-border bg-terminal-elevated/50 px-3.5 py-3">
+          <div className="border-b border-terminal-border bg-terminal-elevated/40 px-3.5 py-3">
             <div className="flex items-center justify-between gap-2">
               <p className="truncate text-xs font-semibold text-terminal-text">
                 {user.displayName}
               </p>
               <span
-                className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[10px] font-semibold uppercase ${
+                className={`inline-flex shrink-0 items-center gap-1 rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase ${
                   isAdmin
-                    ? 'border-amber-500/40 bg-amber-500/15 text-amber-400'
-                    : 'border-emerald-500/40 bg-emerald-500/15 text-emerald-400'
+                    ? 'border-amber-500/35 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                    : 'border-brand/30 bg-brand-soft text-brand-text'
                 }`}
               >
                 {isAdmin ? (
@@ -162,18 +155,18 @@ export function UserAccountMenu({ inAdminPortal = false }: UserAccountMenuProps)
             <p className="mt-0.5 truncate font-mono text-[11px] text-terminal-muted">
               {user.email}
             </p>
-            <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-sky-400">
+            <p className="mt-1 font-mono text-[10px] text-terminal-muted">
               {getProviderLabel(user.authProvider)}
             </p>
           </div>
 
-          <div className="p-1.5 space-y-1">
+          <div className="space-y-0.5 p-1.5">
             {isAdmin && !inAdminPortal && (
               <Link
                 to="/admin"
                 role="menuitem"
                 onClick={() => setOpen(false)}
-                className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-semibold text-amber-400 transition-colors hover:bg-amber-500/10"
+                className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-xs font-medium text-amber-600 transition-colors hover:bg-terminal-elevated dark:text-amber-400"
               >
                 <Shield className="h-3.5 w-3.5" aria-hidden="true" />
                 Return to Admin Portal
@@ -185,7 +178,7 @@ export function UserAccountMenu({ inAdminPortal = false }: UserAccountMenuProps)
                 to="/"
                 role="menuitem"
                 onClick={() => setOpen(false)}
-                className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-semibold text-emerald-400 transition-colors hover:bg-emerald-500/10"
+                className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-xs font-medium text-brand-text transition-colors hover:bg-terminal-elevated"
               >
                 <ArrowLeftRight className="h-3.5 w-3.5" aria-hidden="true" />
                 Switch to Learner View
@@ -196,7 +189,7 @@ export function UserAccountMenu({ inAdminPortal = false }: UserAccountMenuProps)
               type="button"
               role="menuitem"
               onClick={handleSignOut}
-              className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-semibold text-rose-400 transition-colors hover:bg-rose-500/10"
+              className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-xs font-medium text-bear transition-colors hover:bg-bear/10"
             >
               <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
               Sign Out

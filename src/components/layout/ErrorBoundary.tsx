@@ -45,13 +45,16 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     }
 
     return (
-      <div className="flex min-h-screen items-center justify-center bg-terminal-bg px-4 py-10 text-terminal-text">
+      <main
+        id="main-content"
+        className="flex min-h-[100dvh] items-center justify-center bg-terminal-bg px-4 py-10 text-terminal-text"
+      >
         <div
           role="alert"
-          className="w-full max-w-md rounded-3xl border border-terminal-border bg-terminal-surface p-6 text-center shadow-xl sm:p-8"
+          className="w-full max-w-md rounded-lg border border-terminal-border bg-terminal-surface p-6 text-center sm:p-8 tl-page-enter"
         >
-          <span className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-500 dark:text-rose-400">
-            <AlertTriangle className="h-6 w-6" aria-hidden="true" />
+          <span className="mx-auto inline-flex h-11 w-11 items-center justify-center rounded-md border border-bear/40 bg-bear/10 text-bear">
+            <AlertTriangle className="h-5 w-5" aria-hidden="true" />
           </span>
 
           <h1 className="mt-4 text-lg font-semibold tracking-tight text-terminal-text">
@@ -62,7 +65,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           </p>
 
           {this.state.errorMessage && (
-            <p className="mt-4 truncate rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 font-mono text-[11px] text-terminal-muted">
+            <p className="mt-4 truncate rounded-md border border-terminal-border bg-terminal-bg px-3.5 py-2.5 font-mono text-[11px] text-terminal-muted">
               {this.state.errorMessage}
             </p>
           )}
@@ -71,7 +74,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             <button
               type="button"
               onClick={this.handleReload}
-              className="inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-semibold text-brand-fg transition-colors hover:brightness-110"
+              className="inline-flex items-center gap-1.5 rounded-md bg-brand px-4 py-2 text-xs font-semibold text-brand-fg hover:brightness-110 tl-press"
             >
               <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
               Reload
@@ -80,14 +83,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             <button
               type="button"
               onClick={this.handleGoDashboard}
-              className="inline-flex items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-bg px-4 py-2 text-xs font-semibold text-terminal-text transition-colors hover:border-emerald-500/45 hover:text-emerald-600 dark:hover:text-emerald-400"
+              className="inline-flex items-center gap-1.5 rounded-md border border-terminal-border bg-terminal-bg px-4 py-2 text-xs font-semibold text-terminal-text hover:border-brand/50 hover:bg-terminal-elevated tl-press"
             >
               <Home className="h-3.5 w-3.5" aria-hidden="true" />
               Go to Dashboard
             </button>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 }

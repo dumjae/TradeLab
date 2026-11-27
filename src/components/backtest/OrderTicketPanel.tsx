@@ -104,9 +104,9 @@ export function OrderTicketPanel({
   const formatPrice = (value: number) => value.toFixed(decimals);
 
   return (
-    <div className="space-y-5 rounded-3xl border border-terminal-border/90 bg-terminal-surface p-5 shadow-sm">
+    <div className="space-y-4 rounded-lg border border-terminal-border bg-terminal-surface p-4 sm:p-5">
       <h2 className="flex items-center gap-2 text-sm font-semibold text-terminal-text">
-        <Crosshair className="h-4 w-4 text-emerald-500 dark:text-emerald-400" aria-hidden="true" />
+        <Crosshair className="h-4 w-4 text-brand-text" aria-hidden="true" />
         Order Ticket
       </h2>
 
@@ -128,7 +128,7 @@ export function OrderTicketPanel({
             value={startingBalance}
             disabled={settingsLocked}
             onChange={(event) => onStartingBalanceChange(Number(event.target.value))}
-            className="mt-1.5 w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 font-mono text-xs text-terminal-text focus:border-emerald-500 focus:outline-none disabled:opacity-60"
+            className="mt-1.5 w-full rounded-md border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text focus:border-brand focus:outline-none disabled:opacity-60"
           />
         </div>
         <div className="min-w-0">
@@ -148,7 +148,7 @@ export function OrderTicketPanel({
             step={0.1}
             value={riskPercent}
             onChange={(event) => onRiskPercentChange(Number(event.target.value))}
-            className="mt-1.5 w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 font-mono text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+            className="mt-1.5 w-full rounded-md border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text focus:border-brand focus:outline-none"
           />
           <p className="mt-1 text-[10px] text-terminal-muted">Beginners: stick to 0.5%–1%</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
@@ -157,7 +157,7 @@ export function OrderTicketPanel({
                 key={preset}
                 type="button"
                 onClick={() => onRiskPercentChange(preset)}
-                className={`rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-medium transition-colors ${
+                className={`rounded-md border px-2 py-0.5 font-mono text-[11px] font-medium transition-colors ${
                   riskPercent === preset
                     ? 'border-brand bg-brand text-brand-fg'
                     : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
@@ -170,15 +170,15 @@ export function OrderTicketPanel({
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3.5 border-t border-terminal-border/70 pt-4">
+      <form onSubmit={handleSubmit} className="space-y-3.5 border-t border-terminal-border pt-4">
         <div className="grid grid-cols-2 gap-2" role="group" aria-label="Order direction">
           <button
             type="button"
             aria-pressed={direction === 'long'}
             onClick={() => setDirection('long')}
-            className={`inline-flex items-center justify-center gap-1.5 rounded-2xl border px-3 py-2.5 text-xs font-semibold transition-colors ${
+            className={`tl-press inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-2 text-xs font-semibold transition-colors ${
               direction === 'long'
-                ? 'border-emerald-500 bg-emerald-500 text-slate-950 shadow-sm'
+                ? 'border-bull bg-bull text-white'
                 : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
             }`}
           >
@@ -189,9 +189,9 @@ export function OrderTicketPanel({
             type="button"
             aria-pressed={direction === 'short'}
             onClick={() => setDirection('short')}
-            className={`inline-flex items-center justify-center gap-1.5 rounded-2xl border px-3 py-2.5 text-xs font-semibold transition-colors ${
+            className={`tl-press inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-2 text-xs font-semibold transition-colors ${
               direction === 'short'
-                ? 'border-rose-500 bg-rose-500 text-slate-950 shadow-sm'
+                ? 'border-bear bg-bear text-white'
                 : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
             }`}
           >
@@ -222,7 +222,7 @@ export function OrderTicketPanel({
               value={slText}
               onChange={(event) => setSlText(event.target.value)}
               placeholder={direction === 'long' ? 'Below entry' : 'Above entry'}
-              className="mt-1.5 w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 font-mono text-xs text-terminal-text focus:border-rose-500 focus:outline-none"
+              className="mt-1.5 w-full rounded-md border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text focus:border-bear focus:outline-none"
             />
             <p className="mt-1 text-[10px] text-terminal-muted">
               Safety net — auto-exits to cap loss
@@ -244,7 +244,7 @@ export function OrderTicketPanel({
               value={tpText}
               onChange={(event) => setTpText(event.target.value)}
               placeholder={direction === 'long' ? 'Above entry' : 'Below entry'}
-              className="mt-1.5 w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 font-mono text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+              className="mt-1.5 w-full rounded-md border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text focus:border-bull focus:outline-none"
             />
             <p className="mt-1 text-[10px] text-terminal-muted">Target — auto-locks profit</p>
             <div className="mt-2 flex gap-1.5">
@@ -253,7 +253,7 @@ export function OrderTicketPanel({
                   key={ratio}
                   type="button"
                   onClick={() => applyRiskReward(ratio)}
-                  className="rounded-full border border-terminal-border bg-terminal-bg px-2.5 py-0.5 font-mono text-[11px] text-terminal-muted transition-colors hover:text-terminal-text"
+                  className="rounded-md border border-terminal-border bg-terminal-bg px-2 py-0.5 font-mono text-[11px] text-terminal-muted transition-colors hover:text-terminal-text"
                 >
                   1:{ratio}
                 </button>
@@ -275,7 +275,7 @@ export function OrderTicketPanel({
             aria-label="Setup tag"
             value={setupTag}
             onChange={(event) => setSetupTag(event.target.value)}
-            className="mt-1.5 w-full rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2 text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+            className="mt-1.5 w-full rounded-md border border-terminal-border bg-terminal-bg px-3 py-2 text-xs text-terminal-text focus:border-brand focus:outline-none"
           >
             {SETUP_TAGS.map((tag) => (
               <option key={tag} value={tag}>
@@ -285,10 +285,10 @@ export function OrderTicketPanel({
           </select>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 rounded-2xl border border-terminal-border/80 bg-terminal-bg/80 px-3.5 py-2.5 font-mono text-[11px] tabular-nums">
+        <div className="grid grid-cols-2 gap-2 border-y border-terminal-border py-2.5 font-mono text-[11px] tabular-nums">
           <span className="text-terminal-muted">
             Risk:{' '}
-            <strong className="text-amber-600 dark:text-amber-400">
+            <strong className="text-caution">
               ${sizing ? sizing.riskAmount.toFixed(2) : '—'}
             </strong>
           </span>
@@ -301,27 +301,27 @@ export function OrderTicketPanel({
         </div>
 
         {error && (
-          <p role="alert" className="text-xs text-rose-500 dark:text-rose-400">
+          <p role="alert" className="text-xs text-bear">
             {error}
           </p>
         )}
 
         <button
           type="submit"
-          className="w-full rounded-2xl bg-brand px-4 py-2.5 text-xs font-semibold text-brand-fg shadow-sm transition-all hover:brightness-110 active:scale-[0.99]"
+          className="tl-press w-full rounded-md bg-brand px-4 py-2.5 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95"
         >
           Execute Market Order
         </button>
       </form>
 
-      <div className="space-y-2.5 border-t border-terminal-border/70 pt-4">
+      <div className="space-y-2.5 border-t border-terminal-border pt-4">
         <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-terminal-muted">
           Open Positions ({openPositions.length})
         </h3>
         {openPositions.length === 0 ? (
           <p className="text-xs text-terminal-muted">No open positions.</p>
         ) : (
-          <ul className="space-y-2.5">
+          <ul className="divide-y divide-terminal-border border-y border-terminal-border">
             {openPositions.map((position) => {
               const move =
                 position.direction === 'long'
@@ -331,23 +331,19 @@ export function OrderTicketPanel({
               return (
                 <li
                   key={position.id}
-                  className="space-y-2 rounded-2xl border border-terminal-border/80 bg-terminal-bg/80 p-3 text-[11px]"
+                  className="space-y-2 py-2.5 text-[11px]"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span
                       className={`font-semibold uppercase ${
-                        position.direction === 'long'
-                          ? 'text-emerald-600 dark:text-emerald-400'
-                          : 'text-rose-500 dark:text-rose-400'
+                        position.direction === 'long' ? 'text-bull' : 'text-bear'
                       }`}
                     >
                       {position.direction} · {position.setupTag || 'Untagged'}
                     </span>
                     <span
                       className={`font-mono font-semibold tabular-nums ${
-                        floating >= 0
-                          ? 'text-emerald-600 dark:text-emerald-400'
-                          : 'text-rose-500 dark:text-rose-400'
+                        floating >= 0 ? 'text-bull' : 'text-bear'
                       }`}
                     >
                       {floating >= 0 ? '+' : ''}${floating.toFixed(2)}
@@ -362,14 +358,14 @@ export function OrderTicketPanel({
                       type="button"
                       onClick={() => onBreakeven(position.id)}
                       disabled={position.movedToBreakeven}
-                      className="rounded-full border border-amber-500/35 px-3 py-1 font-semibold text-amber-600 transition-colors hover:bg-amber-500/10 disabled:opacity-50 dark:text-amber-400"
+                      className="rounded-md border border-caution/35 px-2.5 py-1 font-semibold text-caution transition-colors hover:bg-caution/10 disabled:opacity-50"
                     >
                       Move SL to Breakeven
                     </button>
                     <button
                       type="button"
                       onClick={() => onClose(position.id)}
-                      className="inline-flex items-center gap-1 rounded-full border border-terminal-border px-3 py-1 font-semibold text-terminal-text transition-colors hover:border-rose-500/50"
+                      className="inline-flex items-center gap-1 rounded-md border border-terminal-border px-2.5 py-1 font-semibold text-terminal-text transition-colors hover:border-bear/50"
                     >
                       <X className="h-3 w-3" aria-hidden="true" />
                       Close at Market

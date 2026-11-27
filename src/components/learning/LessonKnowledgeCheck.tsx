@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import {
   AlertTriangle,
   CheckCircle2,
-  HelpCircle,
   RotateCcw,
   ShieldAlert,
   XCircle,
@@ -59,32 +58,27 @@ export function LessonKnowledgeCheck({
   return (
     <section
       aria-label={t('Lesson Knowledge Check', 'Pagsusulit sa Aralin')}
-      className={`rounded-xl border border-terminal-border bg-terminal-surface ${
-        compact ? 'p-3.5 sm:p-4' : 'p-4 sm:p-5'
+      className={`rounded-lg border border-terminal-border bg-terminal-surface ${
+        compact ? 'p-4 sm:p-5' : 'p-5 sm:p-6'
       }`}
     >
       {/* Header Row */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-brand/35 bg-brand-soft text-brand-text">
-            <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
-          </span>
-          <div>
-            <p className="text-xs font-bold tracking-tight text-terminal-text sm:text-sm">
-              {t('Knowledge Check', 'Pagsusulit sa Aralin')}
-            </p>
-            <p className="text-[11px] text-terminal-muted">
-              {t(
-                'Select the best answer to confirm your understanding.',
-                'Piliin ang tamang sagot upang masigurong naiintindihan ang aralin.',
-              )}
-            </p>
-          </div>
+      <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-terminal-border pb-3">
+        <div className="space-y-0.5">
+          <p className="text-sm font-semibold tracking-tight text-terminal-text">
+            {t('Knowledge Check', 'Pagsusulit sa Aralin')}
+          </p>
+          <p className="text-xs text-terminal-muted">
+            {t(
+              'Select the best answer to confirm your understanding.',
+              'Piliin ang tamang sagot upang masigurong naiintindihan ang aralin.',
+            )}
+          </p>
         </div>
 
         {hasPassed && (
-          <span className="inline-flex items-center gap-1 rounded border border-bull/40 bg-bull/15 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-bull tabular-nums">
-            <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
+          <span className="inline-flex items-center gap-1.5 rounded-md border border-bull/35 bg-bull/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-bull tabular-nums">
+            <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
             {t('Passed · 100%', 'Pasado · 100%')}
           </span>
         )}
@@ -92,18 +86,18 @@ export function LessonKnowledgeCheck({
 
       {/* Question Prompt */}
       <p
-        className={`mt-3 font-semibold leading-snug text-terminal-text ${
-          compact ? 'text-xs sm:text-[13px]' : 'text-sm'
+        className={`mt-4 max-w-[68ch] font-medium leading-relaxed text-terminal-text ${
+          compact ? 'text-sm' : 'text-[15px]'
         }`}
       >
         {expandAcronyms(question.prompt)}
       </p>
 
-      {/* 4 Options */}
+      {/* 4 Hairline Options */}
       <div
         role="group"
         aria-label={t('Quiz answer options', 'Mga pagpipilian sa pagsusulit')}
-        className="mt-3 grid grid-cols-1 gap-2"
+        className="mt-4 divide-y divide-terminal-border overflow-hidden rounded-md border border-terminal-border bg-terminal-bg"
       >
         {question.options.map((optionText, index) => {
           const letter = OPTION_LETTERS[index] ?? String(index + 1);
@@ -111,18 +105,18 @@ export function LessonKnowledgeCheck({
           const isOptionCorrect = index === question.correctIndex;
 
           let optionClass =
-            'border-terminal-border bg-terminal-bg text-terminal-text hover:border-brand/45 hover:bg-terminal-elevated/70';
+            'bg-transparent text-terminal-text hover:bg-terminal-elevated/60';
           let letterClass =
             'border-terminal-border bg-terminal-surface text-terminal-muted';
 
           if (!submitted && isSelected) {
-            optionClass = 'border-brand bg-brand-soft/60 text-terminal-text';
+            optionClass = 'bg-brand-soft/65 text-terminal-text';
             letterClass = 'border-brand bg-brand text-brand-fg';
           } else if (submitted && isOptionCorrect) {
-            optionClass = 'border-bull bg-bull/15 text-terminal-text';
+            optionClass = 'bg-bull/10 text-terminal-text';
             letterClass = 'border-bull bg-bull text-slate-950';
           } else if (submitted && isSelected && !isOptionCorrect) {
-            optionClass = 'border-bear bg-bear/15 text-terminal-text';
+            optionClass = 'bg-bear/10 text-terminal-text';
             letterClass = 'border-bear bg-bear text-white';
           }
 
@@ -133,14 +127,14 @@ export function LessonKnowledgeCheck({
               disabled={submitted}
               aria-pressed={isSelected}
               onClick={() => setSelectedIndex(index)}
-              className={`flex w-full items-start gap-2.5 rounded-lg border px-3 py-2.5 text-left text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:cursor-default sm:text-[13px] ${optionClass}`}
+              className={`tl-row-interactive flex w-full items-start gap-3 px-3.5 py-3 text-left text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand disabled:cursor-default sm:text-sm ${optionClass}`}
             >
               <span
-                className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded border font-mono text-[11px] font-bold ${letterClass}`}
+                className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border font-mono text-[11px] font-semibold tabular-nums ${letterClass}`}
               >
                 {letter}
               </span>
-              <span className="flex-1 leading-relaxed">
+              <span className="max-w-[64ch] flex-1 leading-relaxed">
                 {expandAcronyms(optionText)}
               </span>
               {submitted && isOptionCorrect && (
@@ -162,20 +156,20 @@ export function LessonKnowledgeCheck({
 
       {/* Action Bar (before submit) */}
       {!submitted && (
-        <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2">
-          <span className="text-[11px] text-terminal-muted">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <span className="font-mono text-[11px] text-terminal-muted">
             {selectedIndex === null
               ? t('Choose one option (A–D) above.', 'Pumili ng isang sagot (A–D) sa itaas.')
               : t(
-                  `Selected option ${OPTION_LETTERS[selectedIndex]}. Ready to check.`,
-                  `Napili ang ${OPTION_LETTERS[selectedIndex]}. Handa nang i-check.`,
+                  `Selected ${OPTION_LETTERS[selectedIndex]} · Ready to check`,
+                  `Napili ang ${OPTION_LETTERS[selectedIndex]} · Handa nang i-check`,
                 )}
           </span>
           <button
             type="button"
             disabled={selectedIndex === null}
             onClick={handleCheckAnswer}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:cursor-not-allowed disabled:opacity-45"
+            className="tl-press inline-flex items-center gap-1.5 rounded-md bg-brand px-4 py-2 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:cursor-not-allowed disabled:opacity-45"
           >
             <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
             {t('Check Answer', 'I-check ang Sagot')}
@@ -183,15 +177,15 @@ export function LessonKnowledgeCheck({
         </div>
       )}
 
-      {/* Result Banner (after submit) */}
+      {/* Result Feedback (after submit) */}
       {submitted && (
         <div
           role="status"
           aria-live="polite"
-          className={`mt-3.5 space-y-2.5 rounded-lg border p-3.5 ${
+          className={`mt-4 space-y-3 rounded-md border-l-2 px-4 py-3 ${
             isCorrect
-              ? 'border-bull/45 bg-bull/10'
-              : 'border-bear/45 bg-bear/10'
+              ? 'border-l-bull bg-bull/5'
+              : 'border-l-bear bg-bear/5'
           }`}
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -202,7 +196,7 @@ export function LessonKnowledgeCheck({
                 <AlertTriangle className="h-4 w-4 shrink-0 text-bear" aria-hidden="true" />
               )}
               <p
-                className={`text-xs font-bold sm:text-[13px] ${
+                className={`text-xs font-semibold sm:text-sm ${
                   isCorrect ? 'text-bull' : 'text-bear'
                 }`}
               >
@@ -219,7 +213,7 @@ export function LessonKnowledgeCheck({
               <button
                 type="button"
                 onClick={handleTryAgain}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-semibold text-terminal-text transition-colors hover:border-brand/50 hover:text-brand-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="tl-press inline-flex items-center gap-1.5 rounded-md border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-semibold text-terminal-text transition-colors hover:border-brand/50 hover:text-brand-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <RotateCcw className="h-3 w-3" aria-hidden="true" />
                 {t('Try Again', 'Subukan Ulit')}
@@ -227,22 +221,22 @@ export function LessonKnowledgeCheck({
             )}
           </div>
 
-          <p className="text-xs leading-relaxed text-terminal-text">
+          <p className="max-w-[68ch] text-xs leading-relaxed text-terminal-text sm:text-sm">
             {expandAcronyms(question.rationale)}
           </p>
 
           {question.commonTrap && (
-            <div className="flex items-start gap-2 rounded-md border border-amber-500/35 bg-amber-500/10 px-2.5 py-2 text-[11px] leading-relaxed text-terminal-text">
+            <div className="flex items-start gap-2 border-t border-terminal-border/80 pt-2.5 text-xs leading-relaxed text-terminal-text">
               <ShieldAlert
                 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500"
                 aria-hidden="true"
               />
-              <div>
+              <p className="max-w-[65ch]">
                 <span className="font-semibold text-amber-600 dark:text-amber-400">
                   {t('Common Trap: ', 'Karaniwang Pagkakamali: ')}
                 </span>
                 <span>{expandAcronyms(question.commonTrap)}</span>
-              </div>
+              </p>
             </div>
           )}
         </div>

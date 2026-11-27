@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import {
   Award,
   BookMarked,
   BookOpen,
   Bookmark,
   CandlestickChart,
-  Clock,
+  ChevronDown,
   Flame,
   GraduationCap,
   HelpCircle,
@@ -23,15 +23,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
-import {
-  CURRICULUM_LESSONS,
-  LESSON_MARKET_CATEGORIES,
-} from '../../data/curriculum';
-import { UI_COPY } from '../../data/taglishTranslations';
-import { expandAcronyms } from '../../lib/acronymHelper';
 import { PH_TIME_ZONE } from '../../lib/marketTime';
-import { getStorageMode } from '../../lib/supabase';
-import type { LessonMarketCategory } from '../../types/academy';
 import { UserAccountMenu } from '../auth/UserAccountMenu';
 import { AppWalkthroughModal } from '../learning/AppWalkthroughModal';
 import { MindsetVaultDrawer } from '../quotes/MindsetVaultDrawer';
@@ -46,8 +38,6 @@ export interface AppShellProps {
   onCloseTour?: () => void;
 }
 
-type SidebarMarketFilter = 'all' | LessonMarketCategory;
-
 const THEME_STORAGE_KEY = 'tradelab_theme_v1';
 
 const PH_TOPBAR_CLOCK_FORMATTER = new Intl.DateTimeFormat('en-PH', {
@@ -61,7 +51,15 @@ function formatPhTopBarClock(date: Date): string {
   return `${PH_TOPBAR_CLOCK_FORMATTER.format(date).toUpperCase()} PH`;
 }
 
-interface NavItemConfig {
+interface TopNavItem {
+  to: string;
+  en: string;
+  taglish: string;
+  srLabel?: string;
+  end: boolean;
+}
+
+interface DrawerNavItem {
   to: string;
   en: string;
   taglish: string;
@@ -69,21 +67,21 @@ interface NavItemConfig {
   end: boolean;
 }
 
-const NAV_ITEMS: NavItemConfig[] = [
+const PRIMARY_TOP_NAV: TopNavItem[] = [
+  { to: '/', en: 'Overview', taglish: 'Overview', end: true },
+  { to: '/academy', en: 'Academy', taglish: 'Academy', end: false },
+  { to: '/paper-trading', en: 'Simulator', taglish: 'Simulator', end: false },
   {
-    to: '/',
-    en: UI_COPY.nav.dashboard.en,
-    taglish: UI_COPY.nav.dashboard.taglish,
-    icon: LayoutDashboard,
-    end: true,
-  },
-  {
-    to: '/academy',
-    en: 'Trading Academy',
-    taglish: UI_COPY.nav.academy.taglish,
-    icon: BookOpen,
+    to: '/backtest',
+    en: 'Backtest',
+    taglish: 'Backtest',
+    srLabel: 'Market Backtester',
     end: false,
   },
+  { to: '/journal', en: 'Journal', taglish: 'Journal', end: false },
+];
+
+const MORE_NAV_ITEMS: DrawerNavItem[] = [
   {
     to: '/glossary',
     en: 'Glossary & Cards',
@@ -101,29 +99,8 @@ const NAV_ITEMS: NavItemConfig[] = [
   {
     to: '/practice',
     en: 'Practice Exercises',
-    taglish: 'Practice (Quiz)',
+    taglish: 'Practice Exercises',
     icon: GraduationCap,
-    end: false,
-  },
-  {
-    to: '/backtest',
-    en: 'Market Backtester',
-    taglish: 'Market Backtester',
-    icon: LineChart,
-    end: false,
-  },
-  {
-    to: '/paper-trading',
-    en: UI_COPY.nav.paperTrading.en,
-    taglish: UI_COPY.nav.paperTrading.taglish,
-    icon: Wallet,
-    end: false,
-  },
-  {
-    to: '/journal',
-    en: 'Trade Journal',
-    taglish: UI_COPY.nav.riskJournal.taglish,
-    icon: NotebookPen,
     end: false,
   },
   {
@@ -142,34 +119,65 @@ const NAV_ITEMS: NavItemConfig[] = [
   },
 ];
 
-const MOBILE_BOTTOM_NAV: NavItemConfig[] = [
+const DRAWER_LEARN_ITEMS: DrawerNavItem[] = [
+  { to: '/', en: 'Overview', taglish: 'Overview', icon: LayoutDashboard, end: true },
+  { to: '/academy', en: 'Academy', taglish: 'Academy', icon: BookOpen, end: false },
+  {
+    to: '/glossary',
+    en: 'Glossary & Cards',
+    taglish: 'Glossary at Cards',
+    icon: BookMarked,
+    end: false,
+  },
+  { to: '/evaluation', en: 'Evaluation', taglish: 'Ebalwasyon', icon: Award, end: false },
+  { to: '/library', en: 'My Library', taglish: 'My Library', icon: Bookmark, end: false },
+];
+
+const DRAWER_PRACTICE_ITEMS: DrawerNavItem[] = [
+  {
+    to: '/paper-trading',
+    en: 'Paper Simulator',
+    taglish: 'Paper Simulator',
+    icon: Wallet,
+    end: false,
+  },
+  {
+    to: '/backtest',
+    en: 'Market Backtester',
+    taglish: 'Market Backtester',
+    icon: LineChart,
+    end: false,
+  },
+  {
+    to: '/journal',
+    en: 'Trade Journal',
+    taglish: 'Trade Journal',
+    icon: NotebookPen,
+    end: false,
+  },
+  {
+    to: '/practice',
+    en: 'Practice Exercises',
+    taglish: 'Practice Exercises',
+    icon: GraduationCap,
+    end: false,
+  },
+  {
+    to: '/lab',
+    en: 'Trading Lab',
+    taglish: 'Trading Lab',
+    icon: CandlestickChart,
+    end: false,
+  },
+];
+
+const MOBILE_BOTTOM_NAV: DrawerNavItem[] = [
   { to: '/', en: 'Home', taglish: 'Home', icon: Home, end: true },
   { to: '/academy', en: 'Academy', taglish: 'Aralin', icon: BookOpen, end: false },
   { to: '/paper-trading', en: 'Paper', taglish: 'Demo', icon: Wallet, end: false },
   { to: '/backtest', en: 'Backtest', taglish: 'Replay', icon: LineChart, end: false },
   { to: '/journal', en: 'Journal', taglish: 'Journal', icon: NotebookPen, end: false },
 ];
-
-const MARKET_TAG_STYLES: Record<LessonMarketCategory, string> = {
-  general: 'border-brand/35 bg-brand-soft text-brand-text',
-  forex: 'border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400',
-  indices: 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400',
-  crypto: 'border-teal-500/30 bg-teal-500/10 text-teal-600 dark:text-teal-400',
-  stocks: 'border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400',
-};
-
-const SIDEBAR_PILL_ACTIVE: Record<SidebarMarketFilter, string> = {
-  all: 'bg-brand text-brand-fg font-semibold',
-  general: 'bg-brand text-brand-fg font-semibold',
-  forex: 'bg-sky-500 text-slate-950 font-semibold',
-  indices: 'bg-amber-500 text-slate-950 font-semibold',
-  crypto: 'bg-teal-500 text-slate-950 font-semibold',
-  stocks: 'bg-rose-500 text-slate-950 font-semibold',
-};
-
-function formatModuleOrder(order: number): string {
-  return String(order).padStart(2, '0');
-}
 
 function isTypingTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) {
@@ -195,9 +203,12 @@ export function AppShell({
 }: AppShellProps) {
   const { user } = useAuth();
   const { isTaglish, toggleLang, t } = useLanguage();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [moreMenuOpen, setMoreMenuOpen] = useState<boolean>(false);
   const [internalTourOpen, setInternalTourOpen] = useState<boolean>(false);
-  const [sidebarMarketFilter, setSidebarMarketFilter] = useState<SidebarMarketFilter>('all');
+  const moreMenuRef = useRef<HTMLDivElement | null>(null);
+
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     if (typeof window === 'undefined') {
       return 'dark';
@@ -205,6 +216,7 @@ export function AppShell({
     const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
     return stored === 'light' ? 'light' : 'dark';
   });
+
   const [phClockLabel, setPhClockLabel] = useState<string>(() =>
     formatPhTopBarClock(new Date()),
   );
@@ -218,6 +230,51 @@ export function AppShell({
       window.clearInterval(timerId);
     };
   }, []);
+
+  useEffect(() => {
+    setMoreMenuOpen(false);
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!moreMenuOpen) {
+      return undefined;
+    }
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
+        setMoreMenuOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMoreMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [moreMenuOpen]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) {
+      return undefined;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileMenuOpen]);
 
   const resolvedTourOpen = tourOpen ?? internalTourOpen;
   const handleOpenTour = () => {
@@ -235,32 +292,9 @@ export function AppShell({
     }
   };
 
-  const storageMode = getStorageMode();
   const isAdmin = user?.role === 'admin';
-
-  const marketShortCodeMap = useMemo(
-    () =>
-      Object.fromEntries(
-        LESSON_MARKET_CATEGORIES.map((category) => [category.id, category.shortCode]),
-      ) as Record<LessonMarketCategory, string>,
-    [],
-  );
-
-  const sidebarLessons = useMemo(() => {
-    if (sidebarMarketFilter === 'all') {
-      return CURRICULUM_LESSONS;
-    }
-    return CURRICULUM_LESSONS.filter((lesson) => lesson.marketCategory === sidebarMarketFilter);
-  }, [sidebarMarketFilter]);
-
-  const universalSidebarLessons = useMemo(
-    () => CURRICULUM_LESSONS.filter((lesson) => lesson.marketCategory === 'general'),
-    [],
-  );
-
-  const marketTrackSidebarLessons = useMemo(
-    () => CURRICULUM_LESSONS.filter((lesson) => lesson.marketCategory !== 'general'),
-    [],
+  const isMoreRouteActive = MORE_NAV_ITEMS.some((item) =>
+    location.pathname.startsWith(item.to),
   );
 
   useEffect(() => {
@@ -307,15 +341,17 @@ export function AppShell({
 
   return (
     <div className="min-h-screen bg-terminal-bg text-terminal-text">
-      {/* Crisp TradingView Supercharts Top Toolbar */}
-      <header className="sticky top-0 z-30 border-b border-terminal-border bg-terminal-surface/95 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-[1600px] items-center justify-between gap-2.5 px-3.5 sm:px-5">
-          <div className="flex min-w-0 items-center gap-2">
+      {/* Architectural 60px Sticky Editorial Top Bar */}
+      <header className="sticky top-0 z-30 h-[60px] border-b border-terminal-border bg-terminal-surface/95">
+        <div className="mx-auto flex h-full max-w-[1360px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+          {/* Left: Mobile drawer button + Brand wordmark */}
+          <div className="flex min-w-0 items-center gap-2.5">
             <button
               type="button"
               onClick={() => setMobileMenuOpen((prev) => !prev)}
-              aria-label="Toggle navigation sidebar"
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-terminal-border bg-terminal-bg text-terminal-muted transition-colors hover:border-brand/45 hover:bg-terminal-elevated hover:text-terminal-text lg:hidden"
+              aria-label="Toggle navigation menu"
+              aria-expanded={mobileMenuOpen}
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-terminal-text lg:hidden tl-press"
             >
               {mobileMenuOpen ? (
                 <X className="h-4 w-4" aria-hidden="true" />
@@ -324,388 +360,251 @@ export function AppShell({
               )}
             </button>
 
-            <Link to="/" className="flex min-w-0 items-center gap-2">
+            <Link
+              to="/"
+              className="flex min-w-0 items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
+            >
               <img
                 src="/favicon.svg"
                 alt=""
                 aria-hidden="true"
-                className="h-7 w-7 shrink-0 rounded-lg shadow-sm"
+                className="h-6 w-6 shrink-0 rounded-md"
               />
-              <div className="min-w-0 leading-tight">
-                <span className="block truncate text-sm font-semibold tracking-tight text-terminal-text">
-                  TradeLab <span className="text-brand-text">Academy</span>
-                </span>
-                <span className="hidden text-[10px] text-terminal-muted sm:block">
-                  {t('Visual Trading Desk', 'Visual na Pag-aaral')}
-                </span>
-              </div>
+              <span className="truncate text-[15px] font-semibold tracking-tight text-terminal-text">
+                TradeLab
+              </span>
             </Link>
           </div>
 
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-            {/* Return to Admin Portal pill — rendered ONLY for authenticated admin accounts */}
-            {isAdmin && (
-              <Link
-                to="/admin"
-                className="hidden items-center gap-1.5 rounded-lg border border-amber-500/35 bg-amber-500/10 px-2.5 py-1 text-[11px] font-medium text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400 sm:inline-flex"
+          {/* Center: Single-line text-first primary navigation */}
+          <nav
+            aria-label="Primary navigation"
+            className="hidden h-full items-center gap-1 lg:flex"
+          >
+            {PRIMARY_TOP_NAV.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                className={({ isActive }) =>
+                  `relative inline-flex h-full items-center whitespace-nowrap px-3 text-[13px] transition-colors ${
+                    isActive
+                      ? 'font-semibold text-terminal-text after:absolute after:inset-x-2 after:bottom-0 after:h-[2px] after:bg-brand'
+                      : 'font-medium text-terminal-muted hover:text-terminal-text'
+                  }`
+                }
               >
-                <Shield className="h-3.5 w-3.5" aria-hidden="true" />
-                Return to Admin Portal
-              </Link>
-            )}
+                {item.srLabel ? (
+                  <>
+                    <span aria-hidden="true">{t(item.en, item.taglish)}</span>
+                    <span className="sr-only">{item.srLabel}</span>
+                  </>
+                ) : (
+                  <span>{t(item.en, item.taglish)}</span>
+                )}
+              </NavLink>
+            ))}
 
-            {/* Quiet live PH clock badge on tablet+ screens */}
+            {/* More Dropdown */}
+            <div ref={moreMenuRef} className="relative flex h-full items-center">
+              <button
+                type="button"
+                onClick={() => setMoreMenuOpen((prev) => !prev)}
+                aria-expanded={moreMenuOpen}
+                aria-haspopup="menu"
+                className={`relative inline-flex h-full items-center gap-1 whitespace-nowrap px-3 text-[13px] transition-colors ${
+                  isMoreRouteActive || moreMenuOpen
+                    ? 'font-semibold text-terminal-text after:absolute after:inset-x-2 after:bottom-0 after:h-[2px] after:bg-brand'
+                    : 'font-medium text-terminal-muted hover:text-terminal-text'
+                }`}
+              >
+                <span>{t('More', 'Iba Pa')}</span>
+                <ChevronDown
+                  className={`h-3.5 w-3.5 transition-transform duration-150 ${
+                    moreMenuOpen ? 'rotate-180' : ''
+                  }`}
+                  aria-hidden="true"
+                />
+              </button>
+
+              {moreMenuOpen && (
+                <div
+                  role="menu"
+                  aria-label="Additional tools and resources"
+                  className="absolute left-0 top-full z-50 mt-1.5 w-56 overflow-hidden rounded-lg border border-terminal-border bg-terminal-surface p-1.5 shadow-lg"
+                >
+                  {MORE_NAV_ITEMS.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <NavLink
+                        key={item.to}
+                        to={item.to}
+                        end={item.end}
+                        role="menuitem"
+                        onClick={() => setMoreMenuOpen(false)}
+                        className={({ isActive }) =>
+                          `flex items-center gap-2.5 rounded-md px-2.5 py-2 text-xs transition-colors ${
+                            isActive
+                              ? 'bg-brand-soft font-semibold text-brand-text'
+                              : 'font-medium text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
+                          }`
+                        }
+                      >
+                        <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                        <span className="truncate">{t(item.en, item.taglish)}</span>
+                      </NavLink>
+                    );
+                  })}
+
+                  <div className="my-1.5 border-t border-terminal-border" />
+
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setMoreMenuOpen(false);
+                      handleOpenTour();
+                    }}
+                    className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-xs font-medium text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-terminal-text"
+                  >
+                    <HelpCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                    <span>{t('How to Use (App Tour)', 'Paano Gamitin (App Tour)')}</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </nav>
+
+          {/* Right: Quiet utility controls */}
+          <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
             <span
-              className="hidden h-8 items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 font-mono text-[10px] font-medium tabular-nums text-terminal-muted md:inline-flex"
+              className="hidden pr-1.5 font-mono text-xs tabular-nums text-terminal-muted xl:inline"
               title="Philippine Time (Asia/Manila)"
             >
-              <Clock className="h-3 w-3 text-brand-text" aria-hidden="true" />
               {phClockLabel}
             </span>
 
-            {/* Quiet persistence indicator on wide screens */}
-            <span
-              className="hidden h-8 items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 text-[10px] font-medium text-terminal-muted xl:inline-flex"
-              title="Current persistence mode"
-            >
-              <span
-                aria-hidden="true"
-                className={`h-1.5 w-1.5 rounded-full ${
-                  storageMode === 'supabase' ? 'bg-bull' : 'bg-sky-400'
-                }`}
-              />
-              {storageMode === 'supabase' ? 'Cloud Sync' : 'Local Preview'}
-            </span>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="hidden items-center gap-1.5 whitespace-nowrap rounded-md border border-amber-500/35 bg-amber-500/10 px-2.5 py-1.5 text-xs font-medium text-amber-600 transition-colors hover:bg-amber-500/15 dark:text-amber-400 sm:inline-flex"
+              >
+                <Shield className="h-3.5 w-3.5" aria-hidden="true" />
+                <span>Return to Admin Portal</span>
+              </Link>
+            )}
 
-            {/* Sleek Compact EN | Taglish Language Toggle */}
             <button
               type="button"
               onClick={toggleLang}
               aria-label="Switch language between English and Taglish"
               aria-pressed={isTaglish}
-              className={`inline-flex h-8 items-center gap-1 rounded-lg border px-2.5 text-[11px] font-semibold transition-colors ${
-                isTaglish
-                  ? 'border-brand/45 bg-brand-soft text-brand-text'
-                  : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-brand/40 hover:bg-terminal-elevated hover:text-terminal-text'
-              }`}
+              className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs font-medium text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-terminal-text tl-press"
             >
-              <span className={!isTaglish ? 'text-terminal-text' : 'opacity-65'}>
-                {UI_COPY.nav.enShort.en}
+              <span className={!isTaglish ? 'font-semibold text-terminal-text' : 'opacity-60'}>
+                EN
               </span>
               <span aria-hidden="true" className="opacity-35">
-                |
+                /
               </span>
-              <span className={isTaglish ? 'text-brand-text' : 'opacity-70'}>
-                {UI_COPY.nav.taglishShort.taglish}
+              <span className={isTaglish ? 'font-semibold text-brand-text' : 'opacity-60'}>
+                TL
               </span>
             </button>
 
-            {/* Always-accessible How to Use App Walkthrough Trigger */}
-            <button
-              type="button"
-              onClick={handleOpenTour}
-              aria-label="Open step-by-step app tutorial"
-              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-sky-500/30 bg-sky-500/10 px-2.5 text-[11px] font-medium text-sky-600 transition-colors hover:bg-sky-500/20 dark:text-sky-400"
-            >
-              <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
-              <span className="hidden md:inline">{t('How to Use', 'Paano Gamitin')}</span>
-            </button>
-
-            {/* Always-accessible Mindset Vault Trigger */}
             <button
               type="button"
               onClick={onOpenVault}
               aria-label="Open Mindset Vault"
-              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 text-[11px] font-medium text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
+              title="Mindset Vault (Shift+Q)"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-amber-500 dark:hover:text-amber-400 tl-press"
             >
-              <Flame className="h-3.5 w-3.5" aria-hidden="true" />
-              <span className="hidden sm:inline">{t('Mindset', 'Mindset')}</span>
+              <Flame className="h-4 w-4" aria-hidden="true" />
             </button>
 
-            {/* Dark / Light Theme Toggle */}
+            <button
+              type="button"
+              onClick={handleOpenTour}
+              aria-label="Open step-by-step app tutorial"
+              title={t('How to Use (App Tour)', 'Paano Gamitin (Gabay)')}
+              className="hidden h-8 w-8 items-center justify-center rounded-md text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-terminal-text sm:inline-flex tl-press"
+            >
+              <HelpCircle className="h-4 w-4" aria-hidden="true" />
+            </button>
+
             <button
               type="button"
               onClick={toggleTheme}
               aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-terminal-border bg-terminal-bg text-terminal-muted transition-colors hover:border-brand/45 hover:bg-terminal-elevated hover:text-terminal-text"
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-terminal-text tl-press"
             >
               {theme === 'dark' ? (
-                <Sun className="h-3.5 w-3.5 text-amber-400" aria-hidden="true" />
+                <Sun className="h-4 w-4" aria-hidden="true" />
               ) : (
-                <Moon className="h-3.5 w-3.5 text-terminal-muted" aria-hidden="true" />
+                <Moon className="h-4 w-4" aria-hidden="true" />
               )}
             </button>
 
-            {/* User Account Menu */}
             <UserAccountMenu />
           </div>
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-[1600px]">
-        {/* Desktop Learner Sidebar (Zero Admin links) */}
-        <aside
-          aria-label="Primary navigation"
-          className="hidden w-60 shrink-0 border-r border-terminal-border bg-terminal-surface/70 lg:block"
+      {/* Mobile Slide-Over Navigation Drawer */}
+      {mobileMenuOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile navigation drawer"
+          className="fixed inset-0 z-40 flex lg:hidden"
         >
-          <div className="sticky top-14 flex h-[calc(100vh-3.5rem)] flex-col justify-between p-3">
-            <div className="flex min-h-0 flex-1 flex-col gap-3.5 overflow-hidden">
-              <nav className="shrink-0 space-y-0.5">
-                {NAV_ITEMS.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <NavLink
-                      key={item.to}
-                      to={item.to}
-                      end={item.end}
-                      className={({ isActive }) =>
-                        `flex items-center gap-2.5 rounded-lg border-l-2 px-2.5 py-2 text-[13px] font-medium transition-all ${
-                          isActive
-                            ? 'border-brand bg-brand-soft font-semibold text-brand-text'
-                            : 'border-transparent text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
-                        }`
-                      }
-                    >
-                      <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-                      <span className="truncate">{t(item.en, item.taglish)}</span>
-                    </NavLink>
-                  );
-                })}
-              </nav>
-
-              <div className="flex min-h-0 flex-1 flex-col border-t border-terminal-border pt-3">
-                <div className="flex items-center justify-between px-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-terminal-muted/85">
-                    {t('Lessons', 'Mga Aralin')}
-                  </p>
-                  <Link
-                    to="/academy"
-                    className="font-mono text-[10px] font-semibold text-brand-text hover:underline tabular-nums"
-                  >
-                    {sidebarLessons.length}/{CURRICULUM_LESSONS.length}
-                  </Link>
-                </div>
-
-                {/* Tiny Compact Market Filter */}
-                <div
-                  role="group"
-                  aria-label="Filter sidebar curriculum by market"
-                  className="no-scrollbar mt-1.5 flex flex-nowrap items-center gap-1 overflow-x-auto px-1 pb-1"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setSidebarMarketFilter('all')}
-                    aria-pressed={sidebarMarketFilter === 'all'}
-                    className={`shrink-0 rounded-md px-2 py-0.5 font-mono text-[10px] transition-colors ${
-                      sidebarMarketFilter === 'all'
-                        ? SIDEBAR_PILL_ACTIVE.all
-                        : 'bg-terminal-bg text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
-                    }`}
-                  >
-                    ALL
-                  </button>
-                  {LESSON_MARKET_CATEGORIES.map((category) => {
-                    const isActive = sidebarMarketFilter === category.id;
-                    return (
-                      <button
-                        key={category.id}
-                        type="button"
-                        onClick={() => setSidebarMarketFilter(category.id)}
-                        aria-pressed={isActive}
-                        title={category.label}
-                        className={`shrink-0 rounded-md px-2 py-0.5 font-mono text-[10px] transition-colors ${
-                          isActive
-                            ? SIDEBAR_PILL_ACTIVE[category.id]
-                            : 'bg-terminal-bg text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
-                        }`}
-                      >
-                        {category.shortCode}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div className="mt-1.5 flex-1 overflow-y-auto pr-1">
-                  {sidebarMarketFilter === 'all' ? (
-                    <div className="space-y-3">
-                      <div>
-                        <div className="flex items-center justify-between px-2 pb-1">
-                          <p className="text-[9px] font-semibold uppercase tracking-wider text-brand-text">
-                            {t('Universal Core (All Markets)', 'Universal Core (Lahat)')}
-                          </p>
-                          <span className="font-mono text-[9px] text-terminal-muted tabular-nums">
-                            01–{formatModuleOrder(universalSidebarLessons.length)}
-                          </span>
-                        </div>
-                        <ul className="space-y-0.5">
-                          {universalSidebarLessons.map((lesson) => {
-                            const cleanShortTitle = expandAcronyms(lesson.title.split('(')[0].trim());
-                            return (
-                              <li key={lesson.id}>
-                                <NavLink
-                                  to={`/academy/${lesson.slug}`}
-                                  title={expandAcronyms(lesson.title)}
-                                  className={({ isActive }) =>
-                                    `flex items-center justify-between gap-1.5 rounded-lg border-l-2 px-2 py-1.5 text-xs transition-colors ${
-                                      isActive
-                                        ? 'border-brand bg-brand-soft font-semibold text-brand-text'
-                                        : 'border-transparent text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
-                                    }`
-                                  }
-                                >
-                                  <span className="truncate">
-                                    <span className="mr-1.5 font-mono text-[10px] opacity-65 tabular-nums">
-                                      {formatModuleOrder(lesson.moduleOrder)}
-                                    </span>
-                                    {cleanShortTitle}
-                                  </span>
-                                  <span
-                                    className={`shrink-0 rounded border px-1 py-0.5 font-mono text-[9px] font-semibold leading-none ${MARKET_TAG_STYLES[lesson.marketCategory]}`}
-                                  >
-                                    {marketShortCodeMap[lesson.marketCategory] ?? 'CORE'}
-                                  </span>
-                                </NavLink>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-
-                      <div className="border-t border-terminal-border pt-2">
-                        <div className="flex items-center justify-between px-2 pb-1">
-                          <p className="text-[9px] font-semibold uppercase tracking-wider text-sky-600 dark:text-sky-400">
-                            {t('Market Tracks', 'Hiwalay na Markets')}
-                          </p>
-                          <span className="font-mono text-[9px] text-terminal-muted tabular-nums">
-                            {formatModuleOrder(universalSidebarLessons.length + 1)}–
-                            {formatModuleOrder(CURRICULUM_LESSONS.length)}
-                          </span>
-                        </div>
-                        <ul className="space-y-0.5">
-                          {marketTrackSidebarLessons.map((lesson) => {
-                            const cleanShortTitle = expandAcronyms(lesson.title.split('(')[0].trim());
-                            return (
-                              <li key={lesson.id}>
-                                <NavLink
-                                  to={`/academy/${lesson.slug}`}
-                                  title={expandAcronyms(lesson.title)}
-                                  className={({ isActive }) =>
-                                    `flex items-center justify-between gap-1.5 rounded-lg border-l-2 px-2 py-1.5 text-xs transition-colors ${
-                                      isActive
-                                        ? 'border-brand bg-brand-soft font-semibold text-brand-text'
-                                        : 'border-transparent text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
-                                    }`
-                                  }
-                                >
-                                  <span className="truncate">
-                                    <span className="mr-1.5 font-mono text-[10px] opacity-65 tabular-nums">
-                                      {formatModuleOrder(lesson.moduleOrder)}
-                                    </span>
-                                    {cleanShortTitle}
-                                  </span>
-                                  <span
-                                    className={`shrink-0 rounded border px-1 py-0.5 font-mono text-[9px] font-semibold leading-none ${MARKET_TAG_STYLES[lesson.marketCategory]}`}
-                                  >
-                                    {marketShortCodeMap[lesson.marketCategory] ?? 'CORE'}
-                                  </span>
-                                </NavLink>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    </div>
-                  ) : (
-                    <ul className="space-y-0.5">
-                      {sidebarLessons.map((lesson) => {
-                        const cleanShortTitle = expandAcronyms(lesson.title.split('(')[0].trim());
-                        return (
-                          <li key={lesson.id}>
-                            <NavLink
-                              to={`/academy/${lesson.slug}`}
-                              title={expandAcronyms(lesson.title)}
-                              className={({ isActive }) =>
-                                `flex items-center justify-between gap-1.5 rounded-lg border-l-2 px-2 py-1.5 text-xs transition-colors ${
-                                  isActive
-                                    ? 'border-brand bg-brand-soft font-semibold text-brand-text'
-                                    : 'border-transparent text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
-                                }`
-                              }
-                            >
-                              <span className="truncate">
-                                <span className="mr-1.5 font-mono text-[10px] opacity-65 tabular-nums">
-                                  {formatModuleOrder(lesson.moduleOrder)}
-                                </span>
-                                {cleanShortTitle}
-                              </span>
-                              <span
-                                className={`shrink-0 rounded border px-1 py-0.5 font-mono text-[9px] font-semibold leading-none ${MARKET_TAG_STYLES[lesson.marketCategory]}`}
-                              >
-                                {marketShortCodeMap[lesson.marketCategory] ?? 'CORE'}
-                              </span>
-                            </NavLink>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-2.5 shrink-0 rounded-lg border border-terminal-border bg-terminal-bg/80 px-3 py-2.5 text-[11px] text-terminal-muted">
-              <p className="font-semibold text-terminal-text">
-                {t('Process Over Impulse', 'Plano Bago Click')}
-              </p>
-              <p className="mt-0.5 leading-snug">
-                {t(
-                  'Check trend, liquidity, and 1% risk before every trade.',
-                  'I-check muna ang trend, liquidity, at 1% risk bago mag-entry.',
-                )}
-              </p>
-            </div>
-          </div>
-        </aside>
-
-        {/* Mobile Drawer Navigation */}
-        {mobileMenuOpen && (
-          <div className="fixed inset-0 z-40 flex lg:hidden">
-            <div className="flex w-72 max-w-[82vw] flex-col overflow-y-auto rounded-r-xl border-r border-terminal-border bg-terminal-surface p-4 shadow-2xl">
-              <div className="flex items-center justify-between border-b border-terminal-border pb-3">
-                <div className="flex items-center gap-2">
-                  <img
-                    src="/favicon.svg"
-                    alt=""
-                    aria-hidden="true"
-                    className="h-7 w-7 rounded-lg"
-                  />
-                  <span className="text-sm font-semibold text-terminal-text">
-                    TradeLab <span className="text-brand-text">Academy</span>
+          <div className="flex h-full w-72 max-w-[85vw] flex-col overflow-y-auto border-r border-terminal-border bg-terminal-surface p-4">
+            <div className="flex items-center justify-between border-b border-terminal-border pb-3.5">
+              <div className="flex items-center gap-2.5">
+                <img
+                  src="/favicon.svg"
+                  alt=""
+                  aria-hidden="true"
+                  className="h-6 w-6 rounded-md"
+                />
+                <div className="leading-tight">
+                  <span className="block text-[15px] font-semibold tracking-tight text-terminal-text">
+                    TradeLab
+                  </span>
+                  <span className="block font-mono text-[11px] tabular-nums text-terminal-muted">
+                    {phClockLabel}
                   </span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setMobileMenuOpen(false)}
-                  aria-label="Close mobile menu"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-terminal-elevated text-terminal-muted transition-colors hover:text-terminal-text"
-                >
-                  <X className="h-4 w-4" aria-hidden="true" />
-                </button>
               </div>
 
-              {isAdmin && (
-                <Link
-                  to="/admin"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="mt-3 flex items-center gap-2 rounded-lg border border-amber-500/35 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-600 dark:text-amber-400"
-                >
-                  <Shield className="h-4 w-4" aria-hidden="true" />
-                  Return to Admin Portal
-                </Link>
-              )}
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Close navigation menu"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-terminal-text"
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
 
-              <nav className="mt-3 space-y-0.5">
-                {NAV_ITEMS.map((item) => {
+            {isAdmin && (
+              <Link
+                to="/admin"
+                onClick={() => setMobileMenuOpen(false)}
+                className="mt-3 flex items-center gap-2 rounded-md border border-amber-500/35 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-600 dark:text-amber-400"
+              >
+                <Shield className="h-4 w-4" aria-hidden="true" />
+                <span>Return to Admin Portal</span>
+              </Link>
+            )}
+
+            <nav aria-label="Learn routes" className="mt-4">
+              <p className="px-2.5 pb-1.5 text-xs font-medium text-terminal-muted">
+                {t('Learn', 'Pag-aaral')}
+              </p>
+              <div className="space-y-0.5">
+                {DRAWER_LEARN_ITEMS.map((item) => {
                   const Icon = item.icon;
                   return (
                     <NavLink
@@ -714,94 +613,91 @@ export function AppShell({
                       end={item.end}
                       onClick={() => setMobileMenuOpen(false)}
                       className={({ isActive }) =>
-                        `flex items-center gap-2.5 rounded-lg border-l-2 px-3 py-2 text-sm font-medium transition-colors ${
+                        `flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors ${
                           isActive
-                            ? 'border-brand bg-brand-soft font-semibold text-brand-text'
-                            : 'border-transparent text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
+                            ? 'bg-brand-soft font-semibold text-brand-text'
+                            : 'font-medium text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
                         }`
                       }
                     >
-                      <Icon className="h-4 w-4" aria-hidden="true" />
-                      {t(item.en, item.taglish)}
+                      <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                      <span className="truncate">{t(item.en, item.taglish)}</span>
                     </NavLink>
                   );
                 })}
-              </nav>
+              </div>
+            </nav>
 
+            <nav
+              aria-label="Practice and tools routes"
+              className="mt-5 border-t border-terminal-border pt-4"
+            >
+              <p className="px-2.5 pb-1.5 text-xs font-medium text-terminal-muted">
+                {t('Practice & Tools', 'Practice at Tools')}
+              </p>
+              <div className="space-y-0.5">
+                {DRAWER_PRACTICE_ITEMS.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      end={item.end}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={({ isActive }) =>
+                        `flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors ${
+                          isActive
+                            ? 'bg-brand-soft font-semibold text-brand-text'
+                            : 'font-medium text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
+                        }`
+                      }
+                    >
+                      <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                      <span className="truncate">{t(item.en, item.taglish)}</span>
+                    </NavLink>
+                  );
+                })}
+              </div>
+            </nav>
+
+            <div className="mt-auto border-t border-terminal-border pt-4">
               <button
                 type="button"
                 onClick={() => {
                   setMobileMenuOpen(false);
                   handleOpenTour();
                 }}
-                className="mt-3 flex items-center gap-2 rounded-lg border border-sky-500/30 bg-sky-500/10 px-3 py-2 text-xs font-semibold text-sky-600 transition-colors hover:bg-sky-500/20 dark:text-sky-400"
+                className="flex w-full items-center gap-2.5 rounded-md border border-terminal-border px-3 py-2 text-xs font-medium text-terminal-text transition-colors hover:bg-terminal-elevated"
               >
-                <HelpCircle className="h-4 w-4" aria-hidden="true" />
-                {t('How to Use App (6-Step Tour)', 'Paano Gamitin ang App (Gabay)')}
+                <HelpCircle className="h-4 w-4 text-terminal-muted" aria-hidden="true" />
+                <span>{t('How to Use (App Tour)', 'Paano Gamitin (App Tour)')}</span>
               </button>
-
-              <div className="mt-5 border-t border-terminal-border pt-4">
-                <div className="flex items-center justify-between px-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-terminal-muted">
-                    {t('Lessons', 'Mga Aralin')}
-                  </p>
-                  <Link
-                    to="/academy"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-[11px] font-semibold text-brand-text"
-                  >
-                    {t(`All ${CURRICULUM_LESSONS.length} →`, `Lahat (${CURRICULUM_LESSONS.length}) →`)}
-                  </Link>
-                </div>
-                <ul className="mt-2 space-y-0.5">
-                  {CURRICULUM_LESSONS.map((lesson) => (
-                    <li key={lesson.id}>
-                      <NavLink
-                        to={`/academy/${lesson.slug}`}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-xs text-terminal-muted transition-colors hover:bg-terminal-elevated hover:text-terminal-text"
-                      >
-                        <span className="truncate">
-                          <span className="mr-1.5 font-mono text-[10px] opacity-65 tabular-nums">
-                            {formatModuleOrder(lesson.moduleOrder)}
-                          </span>
-                          {expandAcronyms(lesson.title.split('(')[0].trim())}
-                        </span>
-                        <span
-                          className={`shrink-0 rounded border px-1 py-0.5 font-mono text-[9px] font-semibold leading-none ${MARKET_TAG_STYLES[lesson.marketCategory]}`}
-                        >
-                          {marketShortCodeMap[lesson.marketCategory] ?? 'GEN'}
-                        </span>
-                      </NavLink>
-                    </li>
-                  ))}
-                </ul>
-              </div>
             </div>
-            <button
-              type="button"
-              aria-label="Close navigation backdrop"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex-1 bg-black/55 backdrop-blur-sm"
-            />
           </div>
-        )}
 
-        {/* Main Workspace */}
-        <main
-          id="main-content"
-          className="min-w-0 flex-1 px-3.5 py-4 pb-24 sm:px-5 lg:px-7 lg:py-6 lg:pb-10"
-        >
-          {children}
-        </main>
-      </div>
+          <button
+            type="button"
+            aria-label="Close navigation backdrop"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex-1 bg-black/50"
+          />
+        </div>
+      )}
 
-      {/* Mobile Bottom Navigation Bar (5 clean slots: Home, Academy, Paper, Backtest, Journal) */}
+      {/* Main Content Area */}
+      <main
+        id="main-content"
+        className="mx-auto min-w-0 max-w-[1360px] px-4 py-6 pb-24 sm:px-6 lg:px-8 lg:py-9 lg:pb-14 tl-page-enter"
+      >
+        {children}
+      </main>
+
+      {/* Mobile Bottom Navigation Bar (5 clean touch-friendly tabs) */}
       <nav
         aria-label="Mobile navigation"
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-terminal-border bg-terminal-surface/95 px-2 pb-[max(0.4rem,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-md lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 border-t border-terminal-border bg-terminal-surface/95 pb-[env(safe-area-inset-bottom)] lg:hidden"
       >
-        <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
+        <div className="mx-auto grid h-14 max-w-md grid-cols-5">
           {MOBILE_BOTTOM_NAV.map((item) => {
             const Icon = item.icon;
             return (
@@ -810,15 +706,15 @@ export function AppShell({
                 to={item.to}
                 end={item.end}
                 className={({ isActive }) =>
-                  `flex flex-col items-center justify-center gap-0.5 rounded-lg py-1.5 text-[10px] font-medium transition-colors ${
+                  `relative flex min-w-0 flex-col items-center justify-center gap-0.5 px-1 text-[10px] transition-colors ${
                     isActive
-                      ? 'bg-brand-soft font-semibold text-brand-text'
-                      : 'text-terminal-muted hover:text-terminal-text'
+                      ? 'font-semibold text-brand-text after:absolute after:inset-x-3 after:top-0 after:h-[2px] after:bg-brand'
+                      : 'font-medium text-terminal-muted hover:text-terminal-text'
                   }`
                 }
               >
-                <Icon className="h-4 w-4" aria-hidden="true" />
-                <span className="truncate">{t(item.en, item.taglish)}</span>
+                <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                <span className="max-w-full truncate">{t(item.en, item.taglish)}</span>
               </NavLink>
             );
           })}
