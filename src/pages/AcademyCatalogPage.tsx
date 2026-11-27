@@ -2,21 +2,39 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
+  Award,
   BarChart3,
+  BookMarked,
   BookOpen,
   Building2,
   CheckCircle2,
+  ChevronDown,
+  Circle,
   Clock,
   Coins,
   Compass,
+  FlaskConical,
   Globe,
   GraduationCap,
   Layers,
+  Lock,
   RotateCcw,
   Search,
+  ShieldAlert,
+  Sparkles,
+  Unlock,
   X,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import {
+  ACADEMY_MODULES,
+  ACADEMY_PATHS,
+  ACADEMY_PILLARS,
+  ALL_SYLLABUS_LESSONS,
+  MASTERY_LEVELS,
+  getModulesForPath,
+  getTopicsForModule,
+} from '../data/academyRoadmap';
 import {
   CURRICULUM_LESSONS,
   LESSON_MARKET_CATEGORIES,
@@ -24,6 +42,14 @@ import {
 } from '../data/curriculum';
 import { LESSON_TAGLISH_SUMMARIES, UI_COPY } from '../data/taglishTranslations';
 import { TRADING_ACRONYMS, expandAcronyms } from '../lib/acronymHelper';
+import {
+  computeMasterySummary,
+  isFreeBrowseEnabled,
+  isTopicUnlocked,
+  listLevelAssessments,
+  listTopicProgress,
+  setFreeBrowseEnabled,
+} from '../services/academyProgressService';
 import { listLessonProgress } from '../services/progressService';
 import type {
   CurriculumLevel,
@@ -31,6 +57,12 @@ import type {
   LessonMarketCategory,
   LessonStage,
 } from '../types/academy';
+import type {
+  AcademyPathId,
+  AcademyPillarId,
+  LevelAssessmentResult,
+  TopicProgressRecord,
+} from '../types/curriculum-tree';
 
 type MarketFilter = 'all' | LessonMarketCategory;
 type SpecificMarketId = Exclude<LessonMarketCategory, 'general'>;
@@ -172,6 +204,66 @@ const LEVEL_FILTERS: Array<{ id: LevelFilter; en: string; taglish: string }> = [
   { id: 'advanced', en: 'Advanced', taglish: 'Advanced' },
 ];
 
+const SYLLABUS_PATH_TABS: Array<{
+  id: AcademyPathId;
+  labelEn: string;
+  labelTaglish: string;
+}> = [
+  { id: 'master_foundations', labelEn: 'Foundations (M1–M6)', labelTaglish: 'Foundations (M1–M6)' },
+  { id: 'forex', labelEn: 'Forex (F1–F5)', labelTaglish: 'Forex (F1–F5)' },
+  { id: 'indices', labelEn: 'Indices (I1–I5)', labelTaglish: 'Indices (I1–I5)' },
+  { id: 'stocks', labelEn: 'Stocks (S1–S6)', labelTaglish: 'Stocks (S1–S6)' },
+  { id: 'crypto', labelEn: 'Crypto (C1–C6)', labelTaglish: 'Crypto (C1–C6)' },
+  {
+    id: 'advanced_price_action',
+    labelEn: 'Advanced & SMC (M7–M9)',
+    labelTaglish: 'Advanced & SMC (M7–M9)',
+  },
+  { id: 'strategy_pro', labelEn: 'Strategy & Pro (7–8)', labelTaglish: 'Strategy & Pro (7–8)' },
+  { id: 'philippines_pse', labelEn: 'PH / PSE (Optional)', labelTaglish: 'PH / PSE (Opsyonal)' },
+];
+
+const PILLAR_ACCENT_STYLES: Record<
+  'brand' | 'bull' | 'amber' | 'info' | 'bear',
+  { badge: string; borderHover: string }
+> = {
+  brand: {
+    badge: 'border-brand/35 bg-brand-soft text-brand-text',
+    borderHover: 'hover:border-brand/50',
+  },
+  info: {
+    badge: 'border-sky-500/35 bg-sky-500/10 text-sky-600 dark:text-sky-400',
+    borderHover: 'hover:border-sky-500/50',
+  },
+  bull: {
+    badge: 'border-bull/40 bg-bull/15 text-bull',
+    borderHover: 'hover:border-bull/50',
+  },
+  amber: {
+    badge: 'border-amber-500/35 bg-amber-500/10 text-amber-600 dark:text-amber-400',
+    borderHover: 'hover:border-amber-500/50',
+  },
+  bear: {
+    badge: 'border-bear/35 bg-bear/10 text-bear',
+    borderHover: 'hover:border-bear/50',
+  },
+};
+
+function parseInitialPathFromPillar(pillarParam: string | null): AcademyPathId {
+  if (pillarParam === 'specializations') {
+    return 'forex';
+  }
+  if (pillarParam === 'advanced') {
+    return 'advanced_price_action';
+  }
+  return 'master_foundations';
+}
+
+function getDefaultExpandedModules(pathId: AcademyPathId): Set<string> {
+  const mods = getModulesForPath(pathId);
+  return mods.length > 0 ? new Set([mods[0].id]) : new Set();
+}
+
 function formatModuleOrder(order: number): string {
   return String(order).padStart(2, '0');
 }
@@ -212,25 +304,99 @@ export function AcademyCatalogPage() {
   const [levelFilter, setLevelFilter] = useState<LevelFilter>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [completedSlugs, setCompletedSlugs] = useState<Set<string>>(() => new Set());
+  const [topicProgressList, setTopicProgressList] = useState<TopicProgressRecord[]>([]);
+  const [levelAssessments, setLevelAssessments] = useState<LevelAssessmentResult[]>([]);
+  const [freeBrowse, setFreeBrowse] = useState<boolean>(() => isFreeBrowseEnabled());
+  const [activePath, setActivePath] = useState<AcademyPathId>(() =>
+    parseInitialPathFromPillar(searchParams.get('pillar')),
+  );
+  const [expandedModuleIds, setExpandedModuleIds] = useState<Set<string>>(() =>
+    getDefaultExpandedModules(parseInitialPathFromPillar(searchParams.get('pillar'))),
+  );
 
   useEffect(() => {
     let active = true;
-    void listLessonProgress().then((records) => {
+    setFreeBrowse(isFreeBrowseEnabled());
+    void Promise.all([
+      listLessonProgress(),
+      listTopicProgress(),
+      listLevelAssessments(),
+    ]).then(([lessonRecords, topicRecords, assessmentRecords]) => {
       if (!active) {
         return;
       }
       const next = new Set<string>();
-      for (const record of records) {
+      for (const record of lessonRecords) {
         if (record.completed && record.lessonSlug) {
           next.add(record.lessonSlug);
         }
       }
       setCompletedSlugs(next);
+      setTopicProgressList(topicRecords);
+      setLevelAssessments(assessmentRecords);
     });
     return () => {
       active = false;
     };
   }, []);
+
+  const topicProgressMap = useMemo(() => {
+    const map: Record<string, TopicProgressRecord> = {};
+    for (const record of topicProgressList) {
+      map[record.topicCode] = record;
+    }
+    return map;
+  }, [topicProgressList]);
+
+  const masterySummary = useMemo(
+    () => computeMasterySummary(topicProgressList, levelAssessments),
+    [topicProgressList, levelAssessments],
+  );
+
+  const activePathMeta = useMemo(
+    () => ACADEMY_PATHS.find((p) => p.id === activePath) ?? ACADEMY_PATHS[0],
+    [activePath],
+  );
+
+  const activePathModules = useMemo(() => getModulesForPath(activePath), [activePath]);
+
+  const handleToggleFreeBrowse = () => {
+    const nextValue = !freeBrowse;
+    setFreeBrowseEnabled(nextValue);
+    setFreeBrowse(nextValue);
+  };
+
+  const handleSelectSyllabusPath = (nextPath: AcademyPathId) => {
+    setActivePath(nextPath);
+    setExpandedModuleIds(getDefaultExpandedModules(nextPath));
+  };
+
+  const handlePillarJump = (pillarId: AcademyPillarId) => {
+    if (pillarId === 'foundations') {
+      handleSelectSyllabusPath('master_foundations');
+    } else if (pillarId === 'specializations') {
+      handleSelectSyllabusPath('forex');
+    } else if (pillarId === 'advanced') {
+      handleSelectSyllabusPath('advanced_price_action');
+    }
+    if (typeof document !== 'undefined') {
+      document
+        .getElementById('master-syllabus-explorer')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleToggleModuleAccordion = (moduleId: string) => {
+    setExpandedModuleIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(moduleId)) {
+        next.delete(moduleId);
+      } else {
+        next.add(moduleId);
+      }
+      return next;
+    });
+  };
 
   const marketLabelMap = useMemo(
     () =>
@@ -418,6 +584,516 @@ export function AcademyCatalogPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-5">
+      {/* 5-Pillar Master Learning Structure Strip */}
+      <section
+        aria-labelledby="five-pillar-heading"
+        className="rounded-xl border border-terminal-border bg-terminal-surface p-4 sm:p-5"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-brand/35 bg-brand-soft text-brand-text">
+              <Compass className="h-4 w-4" aria-hidden="true" />
+            </span>
+            <div>
+              <h2
+                id="five-pillar-heading"
+                className="text-sm font-bold tracking-tight text-terminal-text sm:text-base"
+              >
+                {t(
+                  '5-Pillar Master Trading Academy',
+                  '5-Pillar Master Trading Academy',
+                )}
+              </h2>
+              <p className="text-[11px] text-terminal-muted">
+                {t(
+                  `${ACADEMY_MODULES.length} structured modules · ${ALL_SYLLABUS_LESSONS.length} decoupled lessons · ${CURRICULUM_LESSONS.length} deep interactive video & chart labs`,
+                  `${ACADEMY_MODULES.length} module · ${ALL_SYLLABUS_LESSONS.length} aralin · ${CURRICULUM_LESSONS.length} deep video at chart labs`,
+                )}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Link
+              to="/glossary"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1.5 text-[11px] font-semibold text-terminal-text transition-colors hover:border-brand/45 hover:text-brand-text"
+            >
+              <BookMarked className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
+              {t('Glossary & Flashcards', 'Glossary at Flashcards')}
+            </Link>
+            <Link
+              to="/evaluation"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-bull/40 bg-bull/10 px-2.5 py-1.5 text-[11px] font-semibold text-bull transition-colors hover:bg-bull/20"
+            >
+              <Award className="h-3.5 w-3.5" aria-hidden="true" />
+              {t('Level Evaluation', 'Level Evaluation')}
+            </Link>
+          </div>
+        </div>
+
+        <div className="mt-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-5">
+          {ACADEMY_PILLARS.map((pillar) => {
+            const accent = PILLAR_ACCENT_STYLES[pillar.accentToken];
+            const isSyllabusPillar =
+              pillar.id === 'foundations' ||
+              pillar.id === 'specializations' ||
+              pillar.id === 'advanced';
+
+            if (isSyllabusPillar) {
+              return (
+                <article
+                  key={pillar.id}
+                  className={`flex flex-col justify-between rounded-lg border border-terminal-border bg-terminal-bg p-3 transition-colors ${accent.borderHover}`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-1.5">
+                      <span
+                        className={`rounded border px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums ${accent.badge}`}
+                      >
+                        {pillar.step}
+                      </span>
+                      <span className="font-mono text-[10px] text-terminal-muted">
+                        {pillar.levelRange}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-xs font-bold leading-snug text-terminal-text">
+                      {t(pillar.titleEn, pillar.titleTaglish)}
+                    </p>
+                    <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-terminal-muted">
+                      {t(pillar.subtitleEn, pillar.subtitleTaglish)}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handlePillarJump(pillar.id)}
+                    className="mt-2.5 inline-flex w-fit items-center gap-1 rounded border border-brand/35 bg-brand-soft px-2 py-0.5 text-[10px] font-semibold text-brand-text transition-colors hover:bg-brand hover:text-brand-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                  >
+                    <span>{t('Explore Syllabus', 'Tingnan ang Syllabus')}</span>
+                    <ArrowRight className="h-3 w-3" aria-hidden="true" />
+                  </button>
+                </article>
+              );
+            }
+
+            if (pillar.id === 'practical_lab') {
+              return (
+                <div
+                  key={pillar.id}
+                  className={`flex flex-col justify-between rounded-lg border border-terminal-border bg-terminal-bg p-3 transition-colors ${accent.borderHover}`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-1.5">
+                      <span
+                        className={`rounded border px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums ${accent.badge}`}
+                      >
+                        {pillar.step}
+                      </span>
+                      <FlaskConical
+                        className="h-3.5 w-3.5 text-amber-500"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <p className="mt-2 text-xs font-bold leading-snug text-terminal-text">
+                      {t(pillar.titleEn, pillar.titleTaglish)}
+                    </p>
+                    <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-terminal-muted">
+                      {t(pillar.subtitleEn, pillar.subtitleTaglish)}
+                    </p>
+                  </div>
+                  <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                    <Link
+                      to="/paper-trading"
+                      className="inline-flex items-center gap-1 rounded border border-amber-500/35 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
+                    >
+                      {t('Paper Lab', 'Paper Lab')}
+                    </Link>
+                    <Link
+                      to="/backtest"
+                      className="inline-flex items-center gap-1 rounded border border-terminal-border bg-terminal-surface px-2 py-0.5 text-[10px] font-semibold text-terminal-text transition-colors hover:border-brand/50 hover:text-brand-text"
+                    >
+                      {t('Backtester', 'Backtester')}
+                    </Link>
+                  </div>
+                </div>
+              );
+            }
+
+            return (
+              <div
+                key={pillar.id}
+                className={`flex flex-col justify-between rounded-lg border border-terminal-border bg-terminal-bg p-3 transition-colors ${accent.borderHover}`}
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-1.5">
+                    <span
+                      className={`rounded border px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums ${accent.badge}`}
+                    >
+                      {pillar.step}
+                    </span>
+                    <Award className="h-3.5 w-3.5 text-bear" aria-hidden="true" />
+                  </div>
+                  <p className="mt-2 text-xs font-bold leading-snug text-terminal-text">
+                    {t(pillar.titleEn, pillar.titleTaglish)}
+                  </p>
+                  <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-terminal-muted">
+                    {t(pillar.subtitleEn, pillar.subtitleTaglish)}
+                  </p>
+                </div>
+                <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                  <Link
+                    to="/evaluation"
+                    className="inline-flex items-center gap-1 rounded border border-bull/40 bg-bull/10 px-2 py-0.5 text-[10px] font-semibold text-bull transition-colors hover:bg-bull/20"
+                  >
+                    {t('Assessments', 'Pagsusulit')}
+                  </Link>
+                  <Link
+                    to="/glossary"
+                    className="inline-flex items-center gap-1 rounded border border-terminal-border bg-terminal-surface px-2 py-0.5 text-[10px] font-semibold text-terminal-text transition-colors hover:border-brand/50 hover:text-brand-text"
+                  >
+                    {t('Glossary', 'Glossary')}
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* 5-Level Mastery Progression Strip + Guided/Free Browse Toggle */}
+        <div className="mt-4 space-y-3 border-t border-terminal-border pt-3.5">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-terminal-text">
+                {t('5-Level Mastery Progression', '5-Level Mastery Progression')}
+              </span>
+              <span className="rounded border border-brand/35 bg-brand-soft px-2 py-0.5 font-mono text-[10px] font-semibold text-brand-text tabular-nums">
+                {masterySummary.completedTopics}/{masterySummary.totalTopics}{' '}
+                {t('topics', 'paksa')} ({masterySummary.overallPercent}%)
+              </span>
+              {masterySummary.nextRecommendedTopic && (
+                <Link
+                  to={`/academy/topic/${masterySummary.nextRecommendedTopic.slug}`}
+                  className="inline-flex items-center gap-1 rounded border border-bull/40 bg-bull/10 px-2 py-0.5 text-[10px] font-semibold text-bull transition-colors hover:bg-bull/20"
+                >
+                  <span>
+                    {t('Next:', 'Sunod:')} {masterySummary.nextRecommendedTopic.code}
+                  </span>
+                  <ArrowRight className="h-2.5 w-2.5" aria-hidden="true" />
+                </Link>
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={handleToggleFreeBrowse}
+              aria-pressed={freeBrowse}
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+                freeBrowse
+                  ? 'border-amber-500/45 bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                  : 'border-brand/40 bg-brand-soft text-brand-text'
+              }`}
+            >
+              {freeBrowse ? (
+                <>
+                  <Unlock className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>
+                    {t(
+                      'Free Browse (All Unlocked)',
+                      'Free Browse (Bukas Lahat)',
+                    )}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>
+                    {t(
+                      'Guided Progression (Prerequisites ON)',
+                      'Guided Progression (May Prerequisites)',
+                    )}
+                  </span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+            {MASTERY_LEVELS.map((lvl) => {
+              const stats = masterySummary.byLevel[lvl.level];
+              const isCurrent = masterySummary.currentLevel === lvl.level;
+              return (
+                <div
+                  key={lvl.level}
+                  className={`rounded-lg border px-3 py-2 ${
+                    isCurrent
+                      ? 'border-brand/50 bg-brand-soft/35'
+                      : 'border-terminal-border bg-terminal-bg'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="font-mono text-[10px] font-bold text-brand-text">
+                      Level {lvl.level}
+                    </span>
+                    <span className="font-mono text-[10px] font-semibold text-terminal-muted tabular-nums">
+                      {stats.percent}%
+                    </span>
+                  </div>
+                  <p className="mt-0.5 truncate text-xs font-bold text-terminal-text">
+                    {t(lvl.labelEn, lvl.labelTaglish)}
+                  </p>
+                  <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-terminal-elevated">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        stats.passedAssessment ? 'bg-bull' : 'bg-brand'
+                      }`}
+                      style={{ width: `${stats.percent}%` }}
+                    />
+                  </div>
+                  <div className="mt-1 flex items-center justify-between text-[10px] text-terminal-muted tabular-nums">
+                    <span>
+                      {stats.completed}/{stats.total}
+                    </span>
+                    {stats.passedAssessment && (
+                      <span className="inline-flex items-center gap-0.5 font-semibold text-bull">
+                        <CheckCircle2 className="h-2.5 w-2.5" aria-hidden="true" />
+                        {t('Cert', 'Cert')}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Master Syllabus Explorer (34 Modules · 358 Decoupled Topics) */}
+      <section
+        id="master-syllabus-explorer"
+        aria-labelledby="master-syllabus-heading"
+        className="rounded-xl border border-terminal-border bg-terminal-surface p-4 sm:p-5"
+      >
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-2.5">
+            <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-bull/35 bg-bull/10 text-bull">
+              <Layers className="h-4 w-4" aria-hidden="true" />
+            </span>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2
+                  id="master-syllabus-heading"
+                  className="text-sm font-bold tracking-tight text-terminal-text sm:text-base"
+                >
+                  {t('Interactive Master Syllabus Explorer', 'Interactive Master Syllabus Explorer')}
+                </h2>
+                <span className="rounded border border-terminal-border bg-terminal-bg px-2 py-0.5 font-mono text-[10px] font-semibold text-terminal-muted tabular-nums">
+                  {ACADEMY_MODULES.length} {t('Modules', 'Modules')} · {ALL_SYLLABUS_LESSONS.length}{' '}
+                  {t('Topics', 'Paksa')}
+                </span>
+              </div>
+              <p className="text-xs text-terminal-muted">
+                {activePathMeta.subtitle}
+              </p>
+            </div>
+          </div>
+
+          <span className="inline-flex shrink-0 items-center rounded border border-brand/35 bg-brand-soft px-2.5 py-1 font-mono text-[10px] font-semibold text-brand-text tabular-nums">
+            {masterySummary.byPath[activePath]?.completed ?? 0}/
+            {masterySummary.byPath[activePath]?.total ?? 0}{' '}
+            {t('completed in track', 'tapos sa track')}
+          </span>
+        </div>
+
+        {/* 8 Path Selector Tabs */}
+        <div
+          role="tablist"
+          aria-label="Select Master Syllabus curriculum path"
+          className="no-scrollbar mt-3.5 flex flex-nowrap items-center gap-1.5 overflow-x-auto pb-1"
+        >
+          {SYLLABUS_PATH_TABS.map((tab) => {
+            const isSelected = activePath === tab.id;
+            const pathStats = masterySummary.byPath[tab.id];
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={isSelected}
+                onClick={() => handleSelectSyllabusPath(tab.id)}
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+                  isSelected
+                    ? 'border-brand bg-brand font-semibold text-brand-fg shadow-sm'
+                    : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-brand/45 hover:bg-terminal-elevated hover:text-terminal-text'
+                }`}
+              >
+                <span>{t(tab.labelEn, tab.labelTaglish)}</span>
+                <span className="font-mono text-[10px] opacity-80 tabular-nums">
+                  {pathStats?.total ?? 0}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Expandable Module Accordions */}
+        <div
+          role="tabpanel"
+          aria-label={activePathMeta.title}
+          className="mt-3.5 space-y-2"
+        >
+          {activePathModules.map((mod) => {
+            const topics = getTopicsForModule(mod.id);
+            const isExpanded = expandedModuleIds.has(mod.id);
+            const doneInModule = topics.filter(
+              (topic) => topicProgressMap[topic.code]?.completed,
+            ).length;
+
+            return (
+              <div
+                key={mod.id}
+                className="overflow-hidden rounded-lg border border-terminal-border bg-terminal-bg"
+              >
+                <button
+                  type="button"
+                  aria-expanded={isExpanded}
+                  onClick={() => handleToggleModuleAccordion(mod.id)}
+                  className="flex w-full items-center justify-between gap-3 px-3.5 py-2.5 text-left transition-colors hover:bg-terminal-elevated/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand"
+                >
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <span className="inline-flex shrink-0 items-center justify-center rounded border border-brand/35 bg-brand-soft px-2 py-0.5 font-mono text-[11px] font-bold text-brand-text tabular-nums">
+                      {mod.code}
+                    </span>
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="truncate text-xs font-bold text-terminal-text sm:text-[13px]">
+                          {mod.title}
+                        </span>
+                        <span className="rounded border border-terminal-border bg-terminal-surface px-1.5 py-0.5 font-mono text-[10px] font-semibold text-terminal-muted">
+                          L{mod.level}
+                        </span>
+                        {mod.optional && (
+                          <span className="rounded border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                            {t('Optional', 'Opsyonal')}
+                          </span>
+                        )}
+                      </div>
+                      <p className="line-clamp-1 text-[11px] text-terminal-muted">
+                        {mod.subtitle}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span
+                      className={`rounded border px-2 py-0.5 font-mono text-[10px] font-semibold tabular-nums ${
+                        doneInModule === topics.length && topics.length > 0
+                          ? 'border-bull/40 bg-bull/15 text-bull'
+                          : 'border-terminal-border bg-terminal-surface text-terminal-muted'
+                      }`}
+                    >
+                      {doneInModule}/{topics.length}
+                    </span>
+                    <ChevronDown
+                      className={`h-4 w-4 text-terminal-muted transition-transform ${
+                        isExpanded ? 'rotate-180' : ''
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </div>
+                </button>
+
+                {isExpanded && (
+                  <div className="border-t border-terminal-border bg-terminal-surface/60 px-3 py-2.5">
+                    {mod.disclaimer && (
+                      <div className="mb-2.5 flex items-start gap-2 rounded-md border border-amber-500/35 bg-amber-500/10 px-3 py-2 text-[11px] leading-relaxed text-terminal-text">
+                        <ShieldAlert
+                          className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500"
+                          aria-hidden="true"
+                        />
+                        <span>{mod.disclaimer}</span>
+                      </div>
+                    )}
+
+                    <ul className="grid grid-cols-1 gap-1.5 md:grid-cols-2">
+                      {topics.map((topic) => {
+                        const isDone = Boolean(topicProgressMap[topic.code]?.completed);
+                        const unlockInfo = isTopicUnlocked(
+                          topic,
+                          topicProgressMap,
+                          freeBrowse,
+                        );
+                        const isLocked = !unlockInfo.unlocked;
+
+                        return (
+                          <li key={topic.id}>
+                            <Link
+                              to={`/academy/topic/${topic.slug}`}
+                              className={`group flex items-center justify-between gap-2 rounded-lg border px-3 py-2 transition-colors hover:border-brand/50 hover:bg-terminal-bg ${
+                                isDone
+                                  ? 'border-bull/35 bg-bull/5'
+                                  : 'border-terminal-border bg-terminal-bg/60'
+                              }`}
+                            >
+                              <div className="flex min-w-0 items-center gap-2">
+                                {isDone ? (
+                                  <CheckCircle2
+                                    className="h-3.5 w-3.5 shrink-0 text-bull"
+                                    aria-label="Completed"
+                                  />
+                                ) : isLocked ? (
+                                  <Lock
+                                    className="h-3.5 w-3.5 shrink-0 text-amber-500"
+                                    aria-label="Prerequisite recommended"
+                                  />
+                                ) : (
+                                  <Circle
+                                    className="h-3.5 w-3.5 shrink-0 text-terminal-muted"
+                                    aria-hidden="true"
+                                  />
+                                )}
+                                <span className="shrink-0 font-mono text-[11px] font-bold text-brand-text tabular-nums">
+                                  {topic.code}
+                                </span>
+                                <span className="truncate text-xs font-medium text-terminal-text group-hover:text-brand-text">
+                                  {topic.title}
+                                </span>
+                              </div>
+
+                              <div className="flex shrink-0 items-center gap-1">
+                                {topic.optional && (
+                                  <span className="rounded border border-amber-500/35 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-amber-600 dark:text-amber-400">
+                                    {t('Opt', 'Opt')}
+                                  </span>
+                                )}
+                                {topic.linkedDeepLessonSlug && (
+                                  <span
+                                    title={t('Includes Deep Video & Chart Lab', 'May Deep Video at Chart Lab')}
+                                    className="inline-flex items-center rounded border border-sky-500/35 bg-sky-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-sky-600 dark:text-sky-400"
+                                  >
+                                    <Sparkles className="h-2.5 w-2.5" aria-hidden="true" />
+                                  </span>
+                                )}
+                                <span className="rounded border border-terminal-border bg-terminal-surface px-1.5 py-0.5 font-mono text-[9px] font-semibold text-terminal-muted">
+                                  L{topic.level}
+                                </span>
+                                <ArrowRight
+                                  className="h-3 w-3 text-terminal-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand-text"
+                                  aria-hidden="true"
+                                />
+                              </div>
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Deep Visual Lessons (27 Interactive Video + Chart Modules) */}
       {/* Crisp TradingView Catalog Header */}
       <header className="rounded-xl border border-terminal-border bg-terminal-surface p-4 sm:p-5">
         <div className="flex flex-col gap-3.5 lg:flex-row lg:items-center lg:justify-between">

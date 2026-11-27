@@ -2,10 +2,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
+  Award,
+  BookMarked,
   BookOpen,
   CandlestickChart,
   CheckCircle2,
   Clock,
+  Compass,
   Flame,
   GraduationCap,
   HelpCircle,
@@ -19,6 +22,7 @@ import { OnboardingModal } from '../components/learning/OnboardingModal';
 import { DifficultConceptsPanel } from '../components/library/DifficultConceptsPanel';
 import { DailyQuoteCard } from '../components/quotes/DailyQuoteCard';
 import { useLanguage } from '../context/LanguageContext';
+import { MASTERY_LEVELS } from '../data/academyRoadmap';
 import { CHART_SCENARIOS } from '../data/chartScenarios';
 import {
   CURRICULUM_LESSONS,
@@ -27,12 +31,18 @@ import {
 import { LESSON_TAGLISH_SUMMARIES, UI_COPY } from '../data/taglishTranslations';
 import { expandAcronyms } from '../lib/acronymHelper';
 import {
+  computeMasterySummary,
+  listLevelAssessments,
+  listTopicProgress,
+} from '../services/academyProgressService';
+import {
   computeStudyProgressSummary,
   getOnboardingPreferences,
   getRecommendedNextLesson,
   listLessonProgress,
 } from '../services/progressService';
 import type { LessonMarketCategory } from '../types/academy';
+import type { LevelAssessmentResult, TopicProgressRecord } from '../types/curriculum-tree';
 import type { LessonProgressRecord, OnboardingPreferences } from '../types/learning-loop';
 
 export interface DashboardPageProps {
@@ -74,28 +84,35 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
   const { isTaglish, t } = useLanguage();
   const [marketFilter, setMarketFilter] = useState<MarketFilter>('all');
   const [progressRecords, setProgressRecords] = useState<LessonProgressRecord[]>([]);
+  const [topicProgress, setTopicProgress] = useState<TopicProgressRecord[]>([]);
+  const [levelAssessments, setLevelAssessments] = useState<LevelAssessmentResult[]>([]);
   const [preferences, setPreferences] = useState<OnboardingPreferences>(DEFAULT_PREFERENCES);
   const [onboardingOpen, setOnboardingOpen] = useState<boolean>(false);
   const autoPromptHandledRef = useRef<boolean>(false);
 
   useEffect(() => {
     let active = true;
-    void Promise.all([listLessonProgress(), getOnboardingPreferences()]).then(
-      ([records, prefs]) => {
-        if (!active) {
-          return;
-        }
-        setProgressRecords(records);
-        setPreferences(prefs);
-        if (prefs.preferredMarket !== 'all') {
-          setMarketFilter(prefs.preferredMarket);
-        }
-        if (!prefs.onboardingCompleted && !autoPromptHandledRef.current) {
-          autoPromptHandledRef.current = true;
-          setOnboardingOpen(true);
-        }
-      },
-    );
+    void Promise.all([
+      listLessonProgress(),
+      getOnboardingPreferences(),
+      listTopicProgress().catch(() => []),
+      listLevelAssessments().catch(() => []),
+    ]).then(([records, prefs, topics, assessments]) => {
+      if (!active) {
+        return;
+      }
+      setProgressRecords(records);
+      setPreferences(prefs);
+      setTopicProgress(topics);
+      setLevelAssessments(assessments);
+      if (prefs.preferredMarket !== 'all') {
+        setMarketFilter(prefs.preferredMarket);
+      }
+      if (!prefs.onboardingCompleted && !autoPromptHandledRef.current) {
+        autoPromptHandledRef.current = true;
+        setOnboardingOpen(true);
+      }
+    });
     return () => {
       active = false;
     };
@@ -104,6 +121,18 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
   const progressSummary = useMemo(
     () => computeStudyProgressSummary(progressRecords, CURRICULUM_LESSONS.length),
     [progressRecords],
+  );
+
+  const masterySummary = useMemo(
+    () => computeMasterySummary(topicProgress, levelAssessments),
+    [topicProgress, levelAssessments],
+  );
+
+  const currentMasteryMeta = useMemo(
+    () =>
+      MASTERY_LEVELS.find((item) => item.level === masterySummary.currentLevel) ??
+      MASTERY_LEVELS[0],
+    [masterySummary.currentLevel],
   );
 
   const completedSlugs = useMemo(
@@ -273,6 +302,69 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
             <SlidersHorizontal className="h-3 w-3" aria-hidden="true" />
             {t('Customize Path', 'Ayusin ang Path')}
           </button>
+        </div>
+      </section>
+
+      {/* Master Academy Progress & Tools Strip */}
+      <section
+        aria-label={t('Master Academy Progress and Tools', 'Progreso at Tools ng Master Academy')}
+        className="flex flex-col gap-3 rounded-xl border border-terminal-border bg-terminal-surface px-4 py-3.5 lg:flex-row lg:items-center lg:justify-between"
+      >
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-brand/35 bg-brand-soft font-mono text-xs font-bold text-brand-text">
+            {currentMasteryMeta.badge}
+          </span>
+          <div className="min-w-0 flex-1 space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold text-terminal-text">
+                {t(
+                  `Level ${masterySummary.currentLevel} • ${currentMasteryMeta.labelEn}`,
+                  `Level ${masterySummary.currentLevel} • ${currentMasteryMeta.labelTaglish}`,
+                )}
+              </span>
+              <span className="font-mono text-[11px] font-semibold text-brand-text tabular-nums">
+                {masterySummary.completedTopics} / {masterySummary.totalTopics}{' '}
+                {t('Syllabus Topics', 'Syllabus Topics')} ({masterySummary.overallPercent}%)
+              </span>
+            </div>
+            <div
+              role="progressbar"
+              aria-label="Master Academy syllabus completion"
+              aria-valuenow={masterySummary.overallPercent}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              className="h-1.5 w-full max-w-md overflow-hidden rounded-full bg-terminal-elevated"
+            >
+              <div
+                className="h-full rounded-full bg-bull transition-all duration-300"
+                style={{ width: `${masterySummary.overallPercent}%` }}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Link
+            to="/academy"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-brand/35 bg-brand-soft px-3 py-1.5 text-xs font-semibold text-brand-text transition-colors hover:bg-brand hover:text-brand-fg"
+          >
+            <Compass className="h-3.5 w-3.5" aria-hidden="true" />
+            <span>{t('Master Roadmap', 'Master Roadmap')}</span>
+          </Link>
+          <Link
+            to="/glossary"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-sky-500/35 bg-sky-500/10 px-3 py-1.5 text-xs font-semibold text-sky-600 transition-colors hover:bg-sky-500/20 dark:text-sky-400"
+          >
+            <BookMarked className="h-3.5 w-3.5" aria-hidden="true" />
+            <span>{t('Glossary & Flashcards', 'Glossary at Flashcards')}</span>
+          </Link>
+          <Link
+            to="/evaluation"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-amber-500/35 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
+          >
+            <Award className="h-3.5 w-3.5" aria-hidden="true" />
+            <span>{t('Level Evaluation', 'Level Evaluation')}</span>
+          </Link>
         </div>
       </section>
 

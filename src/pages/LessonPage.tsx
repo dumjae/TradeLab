@@ -13,11 +13,13 @@ import {
   GraduationCap,
   HelpCircle,
 } from 'lucide-react';
+import { LessonKnowledgeCheck } from '../components/learning/LessonKnowledgeCheck';
 import { AIMentorPanel } from '../components/mentor/AIMentorPanel';
 import { ExplainDifferentlyPanel } from '../components/visual-learning/ExplainDifferentlyPanel';
 import { VisualExplanationsSection } from '../components/visual-learning/VisualExplanationsSection';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { getTopicsLinkedToDeepLesson } from '../data/academyRoadmap';
 import {
   CURRICULUM_LESSONS,
   LESSON_MARKET_CATEGORIES,
@@ -31,7 +33,12 @@ import {
   toggleLessonCompleted,
 } from '../services/progressService';
 import { getPublishedLessonResources } from '../services/visualResourcesService';
-import type { LearningViewMode, LessonMarketCategory } from '../types/academy';
+import type {
+  LearningViewMode,
+  LessonMarketCategory,
+  PracticeQuestion,
+} from '../types/academy';
+import type { SyllabusQuizQuestion } from '../types/curriculum-tree';
 import type { LessonResourceWithDetails, MentorCitation } from '../types/visual-learning';
 
 type MobileWorkspaceTab = 'study' | 'explain' | 'mentor';
@@ -54,6 +61,26 @@ function parseModeParam(raw: string | null): LearningViewMode {
     return raw;
   }
   return 'text';
+}
+
+function toSyllabusQuizQuestion(question: PracticeQuestion): SyllabusQuizQuestion {
+  const optionLabels = question.options.map((opt) => opt.label);
+  const paddedOptions: [string, string, string, string] = [
+    optionLabels[0] ?? 'Option A',
+    optionLabels[1] ?? 'Option B',
+    optionLabels[2] ?? 'Option C',
+    optionLabels[3] ?? 'Option D',
+  ];
+  const foundIdx = question.options.findIndex((opt) => opt.id === question.correctOptionId);
+  const correctIndex = (foundIdx >= 0 && foundIdx <= 3 ? foundIdx : 0) as 0 | 1 | 2 | 3;
+
+  return {
+    prompt: question.prompt,
+    options: paddedOptions,
+    correctIndex,
+    rationale: question.postSubmissionRationale,
+    commonTrap: question.commonTrapNote,
+  };
 }
 
 export function LessonPage() {
@@ -164,6 +191,19 @@ export function LessonPage() {
       LESSON_TAGLISH_SUMMARIES[lesson.slug]?.plainSummary ??
       expandAcronyms(lesson.plainEnglishSummary ?? ''))
     : expandAcronyms(lesson.plainEnglishSummary ?? '');
+
+  const inlineQuizQuestion = useMemo(
+    () =>
+      lesson.practiceQuestions.length > 0
+        ? toSyllabusQuizQuestion(lesson.practiceQuestions[0])
+        : null,
+    [lesson.practiceQuestions],
+  );
+
+  const linkedSyllabusTopics = useMemo(
+    () => getTopicsLinkedToDeepLesson(lesson.slug),
+    [lesson.slug],
+  );
 
   return (
     <div className="mx-auto max-w-7xl space-y-3.5">
@@ -360,7 +400,7 @@ export function LessonPage() {
       {/* Main 2-Column App Layout */}
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
         <div
-          className={`${mobileTab === 'study' ? 'block' : 'hidden'} xl:col-span-8 xl:block`}
+          className={`${mobileTab === 'study' ? 'block' : 'hidden'} space-y-4 xl:col-span-8 xl:block`}
         >
           <VisualExplanationsSection
             lesson={lesson}
@@ -371,6 +411,62 @@ export function LessonPage() {
             initialResourceId={initialResourceId}
             initialTimestampSeconds={initialTimestampSeconds}
           />
+
+          {/* 5. Inline Knowledge Check */}
+          {inlineQuizQuestion && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 px-0.5">
+                <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded border border-brand/35 bg-brand-soft font-mono text-[10px] font-bold text-brand-text tabular-nums">
+                  5
+                </span>
+                <h2 className="text-xs font-bold tracking-tight text-terminal-text sm:text-sm">
+                  {t('5. Knowledge Check', '5. Pagsusulit sa Aralin')}
+                </h2>
+              </div>
+              <LessonKnowledgeCheck question={inlineQuizQuestion} compact />
+            </div>
+          )}
+
+          {/* Linked Master Syllabus Topics */}
+          {linkedSyllabusTopics.length > 0 && (
+            <section
+              aria-label={t('Linked Master Syllabus Topics', 'Kaugnay na Master Syllabus Topics')}
+              className="rounded-xl border border-terminal-border bg-terminal-surface p-3.5 sm:p-4"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="h-3.5 w-3.5 text-brand-text" aria-hidden="true" />
+                  <p className="text-xs font-bold text-terminal-text">
+                    {t(
+                      'Master Syllabus Topics Linked to This Deep Lesson',
+                      'Mga Master Syllabus Topic na Nakakonekta Dito',
+                    )}
+                  </p>
+                </div>
+                <span className="rounded border border-terminal-border bg-terminal-bg px-2 py-0.5 font-mono text-[10px] font-semibold text-terminal-muted tabular-nums">
+                  {linkedSyllabusTopics.length}{' '}
+                  {t(
+                    linkedSyllabusTopics.length === 1 ? 'topic' : 'topics',
+                    'paksa',
+                  )}
+                </span>
+              </div>
+
+              <div className="mt-2.5 flex flex-wrap gap-1.5">
+                {linkedSyllabusTopics.map((topic) => (
+                  <Link
+                    key={topic.code}
+                    to={`/academy/topic/${topic.slug}`}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1.5 text-[11px] font-medium text-terminal-text transition-colors hover:border-brand/50 hover:bg-terminal-elevated hover:text-brand-text"
+                  >
+                    <span className="font-mono font-bold text-brand-text">{topic.code}</span>
+                    <span className="max-w-[240px] truncate">{topic.title}</span>
+                    <ArrowRight className="h-3 w-3 shrink-0 opacity-70" aria-hidden="true" />
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
 
         <aside className="xl:col-span-4">

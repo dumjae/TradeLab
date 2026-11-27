@@ -13,6 +13,15 @@ import { LoginPage } from './pages/LoginPage';
 const AcademyCatalogPage = lazy(() =>
   import('./pages/AcademyCatalogPage').then((m) => ({ default: m.AcademyCatalogPage })),
 );
+const AcademyTopicPage = lazy(() =>
+  import('./pages/AcademyTopicPage').then((m) => ({ default: m.AcademyTopicPage })),
+);
+const GlossaryFlashcardsPage = lazy(() =>
+  import('./pages/GlossaryFlashcardsPage').then((m) => ({ default: m.GlossaryFlashcardsPage })),
+);
+const EvaluationPage = lazy(() =>
+  import('./pages/EvaluationPage').then((m) => ({ default: m.EvaluationPage })),
+);
 const LessonPage = lazy(() =>
   import('./pages/LessonPage').then((m) => ({ default: m.LessonPage })),
 );
@@ -125,7 +134,10 @@ export function App() {
                     element={<DashboardPage onOpenVault={openVault} onOpenTour={openTour} />}
                   />
                   <Route path="/academy" element={<AcademyCatalogPage />} />
+                  <Route path="/academy/topic/:slug" element={<AcademyTopicPage />} />
                   <Route path="/academy/:slug" element={<LessonPage />} />
+                  <Route path="/glossary" element={<GlossaryFlashcardsPage />} />
+                  <Route path="/evaluation" element={<EvaluationPage />} />
                   <Route path="/practice" element={<PracticePage />} />
                   <Route path="/practice/:slug" element={<PracticePage />} />
                   <Route path="/backtest" element={<BacktestPage />} />

@@ -58,6 +58,32 @@ export default defineConfig({
             return 'data-curriculum';
           }
 
+          if (
+            normalized.includes('/src/data/syllabus/foundationsSyllabus') ||
+            normalized.includes('/src/data/syllabus/advancedSyllabus') ||
+            normalized.includes('/src/data/syllabus/strategyProPhSyllabus')
+          ) {
+            return 'data-syllabus-core';
+          }
+
+          if (
+            normalized.includes('/src/data/syllabus/forexSyllabus') ||
+            normalized.includes('/src/data/syllabus/indicesSyllabus')
+          ) {
+            return 'data-syllabus-fx-idx';
+          }
+
+          if (
+            normalized.includes('/src/data/syllabus/stocksSyllabus') ||
+            normalized.includes('/src/data/syllabus/cryptoSyllabus')
+          ) {
+            return 'data-syllabus-eq-cry';
+          }
+
+          if (normalized.includes('/src/data/glossaryTerms')) {
+            return 'data-glossary';
+          }
+
           return undefined;
         },
       },

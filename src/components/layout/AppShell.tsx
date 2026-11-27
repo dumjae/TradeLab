@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import {
+  Award,
+  BookMarked,
   BookOpen,
   Bookmark,
   CandlestickChart,
@@ -80,6 +82,20 @@ const NAV_ITEMS: NavItemConfig[] = [
     en: 'Trading Academy',
     taglish: UI_COPY.nav.academy.taglish,
     icon: BookOpen,
+    end: false,
+  },
+  {
+    to: '/glossary',
+    en: 'Glossary & Cards',
+    taglish: 'Glossary at Cards',
+    icon: BookMarked,
+    end: false,
+  },
+  {
+    to: '/evaluation',
+    en: 'Evaluation',
+    taglish: 'Ebalwasyon',
+    icon: Award,
     end: false,
   },
   {
