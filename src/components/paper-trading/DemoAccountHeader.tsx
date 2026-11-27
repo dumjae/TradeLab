@@ -185,7 +185,7 @@ export function CreateWalletModal({
         onClick={onClose}
         className="fixed inset-0 bg-black/60 backdrop-blur-sm"
       />
-      <div className="relative z-10 w-full max-w-md rounded-2xl border border-terminal-border bg-terminal-surface p-5 shadow-xl">
+      <div className="relative z-10 w-full max-w-md rounded-xl border border-terminal-border bg-terminal-surface p-5 shadow-xl">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2
@@ -488,13 +488,13 @@ export function DemoAccountHeader({
   return (
     <section
       aria-label="Demo wallets and account overview"
-      className="space-y-3.5 rounded-2xl border border-terminal-border bg-terminal-surface p-4 shadow-sm"
+      className="space-y-3.5 rounded-xl border border-terminal-border bg-terminal-surface p-4"
     >
       {/* Top Row: Virtual Demo Pill + Wallet Controls */}
       <div className="flex flex-col gap-2.5 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-wrap items-center gap-2.5">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/35 bg-amber-500/10 px-2.5 py-1 font-mono text-[11px] font-semibold tracking-wide text-amber-700 dark:text-amber-300">
-            <ShieldCheck className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          <span className="inline-flex items-center gap-1.5 rounded-md border border-amber-wisdom/40 bg-amber-wisdom/10 px-2.5 py-1 font-mono text-[11px] font-semibold tracking-wide text-amber-700 dark:text-amber-300">
+            <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-amber-wisdom" aria-hidden="true" />
             VIRTUAL DEMO — NOT REAL MONEY
           </span>
           <h1 className="text-base font-bold tracking-tight text-terminal-text sm:text-lg">
@@ -502,7 +502,7 @@ export function DemoAccountHeader({
           </h1>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
           <button
             type="button"
             disabled={isDisabled}
@@ -513,7 +513,7 @@ export function DemoAccountHeader({
                 ? t(copy.feesSpreadOnNote.en, copy.feesSpreadOnNote.taglish)
                 : t(copy.feesSpreadOffNote.en, copy.feesSpreadOffNote.taglish)
             }
-            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60 ${
+            className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60 ${
               activeAccount.simulateFeesSpread
                 ? 'border-bull/40 bg-bull/10 text-bull'
                 : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
@@ -530,7 +530,7 @@ export function DemoAccountHeader({
             type="button"
             disabled={isDisabled}
             onClick={() => setResetConfirmOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-bg px-3 py-1.5 text-xs font-semibold text-terminal-muted transition-colors hover:border-brand/50 hover:text-terminal-text disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1.5 text-xs font-semibold text-terminal-muted transition-colors hover:border-brand/50 hover:text-terminal-text disabled:opacity-60"
           >
             <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
             {t(copy.resetWallet.en, copy.resetWallet.taglish)}
@@ -540,7 +540,7 @@ export function DemoAccountHeader({
             type="button"
             disabled={isDisabled}
             onClick={() => setDeleteConfirmOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-full border border-bear/30 bg-bear/10 px-3 py-1.5 text-xs font-semibold text-bear transition-colors hover:bg-bear/15 disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-bear/35 bg-bear/10 px-2.5 py-1.5 text-xs font-semibold text-bear transition-colors hover:bg-bear/15 disabled:opacity-60"
           >
             <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
             {t(copy.deleteWallet.en, copy.deleteWallet.taglish)}
@@ -553,7 +553,7 @@ export function DemoAccountHeader({
         <div
           role="tablist"
           aria-label="Demo wallets"
-          className="flex items-center gap-2"
+          className="flex items-center gap-1.5"
         >
           {accounts.map((wallet) => {
             const isActive = wallet.id === activeAccount.id;
@@ -565,20 +565,20 @@ export function DemoAccountHeader({
                 role="tab"
                 aria-selected={isActive}
                 onClick={() => onSelectAccount(wallet.id)}
-                className={`group inline-flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-left transition-colors ${
+                className={`group inline-flex shrink-0 items-center gap-2 rounded-lg border px-3 py-1.5 text-left transition-colors ${
                   isActive
-                    ? 'border-brand bg-brand-soft text-terminal-text shadow-sm'
+                    ? 'border-brand bg-brand-soft text-terminal-text'
                     : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-brand/40 hover:text-terminal-text'
                 }`}
               >
                 <Wallet
                   className={`h-3.5 w-3.5 shrink-0 ${
-                    isActive ? 'text-brand' : 'text-terminal-muted'
+                    isActive ? 'text-brand-text' : 'text-terminal-muted'
                   }`}
                   aria-hidden="true"
                 />
                 <span className="text-xs font-semibold">{wallet.accountName}</span>
-                <span className="rounded-md border border-terminal-border/80 bg-terminal-surface px-1.5 py-0.5 text-[10px] font-medium text-terminal-muted">
+                <span className="rounded border border-terminal-border bg-terminal-surface px-1.5 py-0.5 text-[10px] font-medium text-terminal-muted">
                   {formatMarketFocusLabel(wallet.marketFocus)}
                 </span>
                 <span className="font-mono text-xs font-semibold text-terminal-text tabular-nums">
@@ -593,7 +593,7 @@ export function DemoAccountHeader({
           type="button"
           onClick={() => setCreateOpen(true)}
           disabled={isDisabled}
-          className="inline-flex shrink-0 items-center gap-1 rounded-xl border border-dashed border-brand/50 bg-terminal-bg px-3 py-2 text-xs font-semibold text-brand transition-colors hover:bg-brand-soft disabled:opacity-60"
+          className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-dashed border-brand/50 bg-terminal-bg px-3 py-1.5 text-xs font-semibold text-brand-text transition-colors hover:bg-brand-soft disabled:opacity-60"
         >
           <Plus className="h-3.5 w-3.5" aria-hidden="true" />
           {t(copy.newWallet.en, copy.newWallet.taglish)}
@@ -602,7 +602,7 @@ export function DemoAccountHeader({
 
       {/* Compact 4-Tile KPI Strip */}
       <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
-        <div className="rounded-xl border border-terminal-border/80 bg-terminal-bg/80 px-3 py-2.5">
+        <div className="rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2.5">
           <p className="text-[11px] font-medium text-terminal-muted">
             {t('Equity', 'Kabuuang Equity')}
           </p>
@@ -611,8 +611,10 @@ export function DemoAccountHeader({
               {formatMoney(metrics.equity)}
             </span>
             <span
-              className={`font-mono text-[11px] font-semibold tabular-nums ${
-                metrics.totalReturnPct >= 0 ? 'text-bull' : 'text-bear'
+              className={`rounded px-1.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums ${
+                metrics.totalReturnPct >= 0
+                  ? 'bg-bull/15 text-bull'
+                  : 'bg-bear/15 text-bear'
               }`}
             >
               {metrics.totalReturnPct >= 0 ? '+' : ''}
@@ -621,7 +623,7 @@ export function DemoAccountHeader({
           </div>
         </div>
 
-        <div className="rounded-xl border border-terminal-border/80 bg-terminal-bg/80 px-3 py-2.5">
+        <div className="rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2.5">
           <p className="text-[11px] font-medium text-terminal-muted">
             {t('Cash Balance', 'Cash Balance')}
           </p>
@@ -635,7 +637,7 @@ export function DemoAccountHeader({
           </div>
         </div>
 
-        <div className="rounded-xl border border-terminal-border/80 bg-terminal-bg/80 px-3 py-2.5">
+        <div className="rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2.5">
           <p className="text-[11px] font-medium text-terminal-muted">
             {t('Floating P&L (Profit & Loss)', 'Floating P&L (Profit & Loss)')}
           </p>
@@ -660,10 +662,10 @@ export function DemoAccountHeader({
         </div>
 
         <div
-          className={`rounded-xl border px-3 py-2.5 ${
+          className={`rounded-lg border px-3 py-2.5 ${
             metrics.dailyLossLimitReached
-              ? 'border-amber-500/45 bg-amber-500/10'
-              : 'border-terminal-border/80 bg-terminal-bg/80'
+              ? 'border-amber-wisdom/45 bg-amber-wisdom/10'
+              : 'border-terminal-border bg-terminal-bg'
           }`}
         >
           <div className="flex items-center justify-between gap-2">
@@ -680,11 +682,11 @@ export function DemoAccountHeader({
               {metrics.todayLossPct.toFixed(1)}% / {activeAccount.dailyLossLimitPct}%
             </span>
           </div>
-          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-terminal-border/70">
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-terminal-border">
             <div
               className={`h-full rounded-full transition-all ${
                 metrics.dailyLossLimitReached
-                  ? 'bg-amber-500'
+                  ? 'bg-amber-wisdom'
                   : dailyLimitProgress >= 65
                     ? 'bg-amber-wisdom'
                     : 'bg-bull'
@@ -698,9 +700,9 @@ export function DemoAccountHeader({
       {metrics.dailyLossLimitReached && (
         <div
           role="status"
-          className="flex items-center gap-2 rounded-xl border border-amber-500/35 bg-amber-500/10 px-3 py-2 text-xs text-amber-800 dark:text-amber-200"
+          className="flex items-center gap-2 rounded-lg border border-amber-wisdom/40 bg-amber-wisdom/10 px-3 py-2 text-xs text-amber-800 dark:text-amber-200"
         >
-          <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+          <AlertTriangle className="h-4 w-4 shrink-0 text-amber-wisdom" aria-hidden="true" />
           <span>{t(copy.dailyLossWarning.en, copy.dailyLossWarning.taglish)}</span>
         </div>
       )}
@@ -735,7 +737,7 @@ export function DemoAccountHeader({
             onClick={() => setResetConfirmOpen(false)}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm"
           />
-          <div className="relative z-10 w-full max-w-sm rounded-2xl border border-terminal-border bg-terminal-surface p-5 shadow-xl">
+          <div className="relative z-10 w-full max-w-sm rounded-xl border border-terminal-border bg-terminal-surface p-5 shadow-xl">
             <h2 id="reset-wallet-title" className="text-base font-semibold text-terminal-text">
               {t(`Reset ${activeAccount.accountName}?`, `I-reset ang ${activeAccount.accountName}?`)}
             </h2>
@@ -785,7 +787,7 @@ export function DemoAccountHeader({
             onClick={() => setDeleteConfirmOpen(false)}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm"
           />
-          <div className="relative z-10 w-full max-w-sm rounded-2xl border border-bear/35 bg-terminal-surface p-5 shadow-xl">
+          <div className="relative z-10 w-full max-w-sm rounded-xl border border-bear/35 bg-terminal-surface p-5 shadow-xl">
             <h2 id="delete-wallet-title" className="text-base font-semibold text-terminal-text">
               {t(
                 `Delete ${activeAccount.accountName}?`,

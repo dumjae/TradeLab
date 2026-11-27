@@ -54,7 +54,7 @@ function EquityCurve({ metrics }: { metrics: BacktestMetrics }) {
       aria-label="Equity curve"
       preserveAspectRatio="none"
     >
-      <path d={path} fill="none" stroke={positive ? '#3ecf9a' : '#f2677a'} strokeWidth={2} />
+      <path d={path} fill="none" stroke={positive ? '#089981' : '#f23645'} strokeWidth={2} />
     </svg>
   );
 }
@@ -70,7 +70,7 @@ export function BacktestMetricsPanel({
   onDeleteSession,
 }: BacktestMetricsPanelProps) {
   const [notes, setNotes] = useState<string>('');
-  const pnlTone = metrics.netPnlAmount >= 0 ? 'text-emerald-400' : 'text-rose-400';
+  const pnlTone = metrics.netPnlAmount >= 0 ? 'text-bull' : 'text-bear';
 
   const stats: Array<{ label: string; value: string; tone?: string }> = [
     {
@@ -82,7 +82,7 @@ export function BacktestMetricsPanel({
     { label: 'Win Rate', value: `${metrics.winRate.toFixed(1)}%` },
     { label: 'Profit Factor', value: metrics.profitFactor.toFixed(2) },
     { label: 'Avg R', value: `${metrics.avgRMultiple.toFixed(2)}R` },
-    { label: 'Max Drawdown', value: `${metrics.maxDrawdownPct.toFixed(2)}%`, tone: 'text-amber-400' },
+    { label: 'Max Drawdown', value: `${metrics.maxDrawdownPct.toFixed(2)}%`, tone: 'text-amber-wisdom' },
     { label: 'Trades', value: `${metrics.totalTrades} (${metrics.wins}W/${metrics.losses}L/${metrics.breakevens}BE)` },
   ];
 
@@ -131,7 +131,7 @@ export function BacktestMetricsPanel({
                   <tr key={trade.id} className="border-t border-terminal-border text-terminal-text">
                     <td
                       className={`py-1 pr-3 uppercase ${
-                        trade.direction === 'long' ? 'text-emerald-400' : 'text-rose-400'
+                        trade.direction === 'long' ? 'text-bull' : 'text-bear'
                       }`}
                     >
                       {trade.direction}
@@ -141,7 +141,7 @@ export function BacktestMetricsPanel({
                     <td className="py-1 pr-3">{trade.rMultiple.toFixed(2)}</td>
                     <td
                       className={`py-1 pr-3 ${
-                        trade.pnlAmount >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                        trade.pnlAmount >= 0 ? 'text-bull' : 'text-bear'
                       }`}
                     >
                       {formatMoney(trade.pnlAmount)}
@@ -168,7 +168,7 @@ export function BacktestMetricsPanel({
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
           placeholder="What did you learn from this session?"
-          className="w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 text-xs text-terminal-text focus:border-emerald-500 focus:outline-none"
+          className="w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 text-xs text-terminal-text focus:border-brand focus:outline-none"
         />
         <div className="flex flex-wrap items-center gap-3">
           <button
@@ -185,7 +185,7 @@ export function BacktestMetricsPanel({
           </span>
         </div>
         {saveMessage && (
-          <p role="status" className="text-[11px] text-emerald-400">
+          <p role="status" className="text-[11px] text-bull">
             {saveMessage}
           </p>
         )}
@@ -213,7 +213,7 @@ export function BacktestMetricsPanel({
                     {new Date(session.createdAt).toLocaleString()} · {session.metrics.totalTrades} trades ·{' '}
                     <span
                       className={
-                        session.metrics.netPnlAmount >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                        session.metrics.netPnlAmount >= 0 ? 'text-bull' : 'text-bear'
                       }
                     >
                       {formatMoney(session.metrics.netPnlAmount)}
@@ -225,7 +225,7 @@ export function BacktestMetricsPanel({
                   type="button"
                   onClick={() => onDeleteSession(session.id)}
                   aria-label={`Delete saved session ${session.symbol}`}
-                  className="rounded p-1 text-terminal-muted hover:text-rose-400"
+                  className="rounded p-1 text-terminal-muted hover:text-bear"
                 >
                   <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>

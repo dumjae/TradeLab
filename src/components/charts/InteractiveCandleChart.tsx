@@ -3,13 +3,16 @@ import {
   ColorType,
   CrosshairMode,
   LineStyle,
+  TickMarkType,
   createChart,
+  type CandlestickData,
   type IChartApi,
   type SeriesMarker,
   type Time,
   type UTCTimestamp,
 } from 'lightweight-charts';
-import { BarChart3, Layers } from 'lucide-react';
+import { Clock, Layers } from 'lucide-react';
+import { PH_TIME_ZONE, formatPhTimestamp } from '../../lib/marketTime';
 import type {
   CandlePoint,
   ChartMarkerSpec,
@@ -35,6 +38,54 @@ const STAGE_ORDER: Record<ChartReplayStage, number> = {
   trigger: 1,
   after: 2,
 };
+
+const PH_TICK_YEAR = new Intl.DateTimeFormat('en-US', {
+  timeZone: PH_TIME_ZONE,
+  year: 'numeric',
+});
+const PH_TICK_MONTH = new Intl.DateTimeFormat('en-US', {
+  timeZone: PH_TIME_ZONE,
+  month: 'short',
+  year: '2-digit',
+});
+const PH_TICK_DAY = new Intl.DateTimeFormat('en-US', {
+  timeZone: PH_TIME_ZONE,
+  day: 'numeric',
+  month: 'short',
+});
+const PH_TICK_TIME = new Intl.DateTimeFormat('en-US', {
+  timeZone: PH_TIME_ZONE,
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+});
+const PH_TICK_TIME_SEC = new Intl.DateTimeFormat('en-US', {
+  timeZone: PH_TIME_ZONE,
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: false,
+});
+
+function formatPhTickMark(time: Time, tickMarkType: TickMarkType): string {
+  if (typeof time !== 'number') {
+    return String(time);
+  }
+  const date = new Date(time * 1000);
+  switch (tickMarkType) {
+    case TickMarkType.Year:
+      return PH_TICK_YEAR.format(date);
+    case TickMarkType.Month:
+      return PH_TICK_MONTH.format(date);
+    case TickMarkType.DayOfMonth:
+      return PH_TICK_DAY.format(date);
+    case TickMarkType.TimeWithSeconds:
+      return PH_TICK_TIME_SEC.format(date);
+    case TickMarkType.Time:
+    default:
+      return PH_TICK_TIME.format(date);
+  }
+}
 
 function mapLineStyle(style: ChartPriceLine['lineStyle']): LineStyle {
   switch (style) {
@@ -84,6 +135,10 @@ export function InteractiveCandleChart({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isDark, setIsDark] = useState<boolean>(detectDarkMode);
   const [chartFailed, setChartFailed] = useState<boolean>(() => !canRenderCanvasChart());
+  const [hoveredState, setHoveredState] = useState<{
+    seriesKey: string;
+    ohlc: Pick<CandlePoint, 'open' | 'high' | 'low' | 'close'>;
+  } | null>(null);
 
   const visibleCandles = useMemo(() => {
     if (visibleCount !== undefined && visibleCount > 0) {
@@ -91,6 +146,8 @@ export function InteractiveCandleChart({
     }
     return candles;
   }, [candles, visibleCount]);
+
+  const seriesKey = `${symbol}|${timeframe}|${visibleCandles.length}`;
 
   const visibleMarkers = useMemo(() => {
     if (visibleCandles.length === 0) {
@@ -109,10 +166,14 @@ export function InteractiveCandleChart({
   }, [markers, visibleCandles, activeStage]);
 
   const latestCandle = visibleCandles[visibleCandles.length - 1];
-  const firstCandle = visibleCandles[0];
-  const priceDelta =
-    latestCandle && firstCandle ? latestCandle.close - firstCandle.open : 0;
-  const isPositive = priceDelta >= 0;
+  const displayCandle =
+    hoveredState && hoveredState.seriesKey === seriesKey ? hoveredState.ohlc : latestCandle;
+  const isCandleBull = displayCandle ? displayCandle.close >= displayCandle.open : true;
+  const pctChange =
+    displayCandle && displayCandle.open > 0
+      ? ((displayCandle.close - displayCandle.open) / displayCandle.open) * 100
+      : 0;
+  const ohlcTone = isCandleBull ? 'text-bull' : 'text-bear';
 
   useEffect(() => {
     if (typeof MutationObserver === 'undefined' || typeof document === 'undefined') {
@@ -141,14 +202,14 @@ export function InteractiveCandleChart({
     let resizeObserver: ResizeObserver | null = null;
 
     try {
-      const bg = isDark ? '#132426' : '#fbf7ef';
-      const textColor = isDark ? '#8fa7a3' : '#4f6465';
-      const gridColor = isDark ? 'rgba(143, 167, 163, 0.09)' : 'rgba(79, 100, 101, 0.1)';
-      const borderColor = isDark ? '#26413f' : '#d9cdb8';
-      const bullCandle = isDark ? '#3ecf9a' : '#14805e';
-      const bearCandle = isDark ? '#f2677a' : '#c23a55';
-      const crosshairColor = isDark ? '#4a6664' : '#6f8785';
-      const crosshairLabelBg = isDark ? '#1b3033' : '#14282a';
+      const bg = isDark ? '#131722' : '#ffffff';
+      const textColor = isDark ? '#8b909a' : '#5d606b';
+      const gridColor = isDark ? 'rgba(42, 46, 57, 0.55)' : 'rgba(224, 227, 235, 0.75)';
+      const borderColor = isDark ? '#2a2e39' : '#e0e3eb';
+      const bullCandle = '#089981';
+      const bearCandle = '#f23645';
+      const crosshairColor = isDark ? '#758696' : '#787b86';
+      const crosshairLabelBg = isDark ? '#2a2e39' : '#131722';
 
       chart = createChart(container, {
         width: Math.max(container.clientWidth || 640, 280),
@@ -158,6 +219,10 @@ export function InteractiveCandleChart({
           textColor,
           fontFamily: '"IBM Plex Mono", ui-monospace, SFMono-Regular, monospace',
           fontSize: 11,
+        },
+        localization: {
+          timeFormatter: (time: Time) =>
+            typeof time === 'number' ? formatPhTimestamp(time) : String(time),
         },
         grid: {
           vertLines: { color: gridColor },
@@ -187,6 +252,7 @@ export function InteractiveCandleChart({
           timeVisible: true,
           secondsVisible: false,
           rightOffset: 4,
+          tickMarkFormatter: formatPhTickMark,
         },
       });
 
@@ -233,6 +299,27 @@ export function InteractiveCandleChart({
         candleSeries.setMarkers(formattedMarkers);
       }
 
+      chart.subscribeCrosshairMove((param) => {
+        if (!param.time) {
+          setHoveredState(null);
+          return;
+        }
+        const point = param.seriesData.get(candleSeries) as CandlestickData<Time> | undefined;
+        if (point && typeof point.open === 'number') {
+          setHoveredState({
+            seriesKey,
+            ohlc: {
+              open: point.open,
+              high: point.high,
+              low: point.low,
+              close: point.close,
+            },
+          });
+        } else {
+          setHoveredState(null);
+        }
+      });
+
       chart.timeScale().fitContent();
 
       resizeObserver = new ResizeObserver((entries) => {
@@ -257,69 +344,88 @@ export function InteractiveCandleChart({
         chart.remove();
       }
     };
-  }, [visibleCandles, priceLines, visibleMarkers, height, isDark, chartFailed]);
+  }, [visibleCandles, priceLines, visibleMarkers, height, isDark, chartFailed, seriesKey]);
 
   return (
     <div
-      className={`overflow-hidden rounded-xl border border-terminal-border bg-terminal-surface ${className}`}
+      className={`overflow-hidden rounded-lg border border-terminal-border bg-terminal-surface ${className}`}
     >
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-terminal-border bg-terminal-elevated/60 px-3.5 py-2">
-        <div className="flex items-center gap-2.5">
-          <span className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold tracking-wide text-terminal-text">
-            <BarChart3 className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
-            {symbol}
-          </span>
-          <span className="rounded bg-terminal-bg px-1.5 py-0.5 font-mono text-[11px] font-medium text-terminal-muted border border-terminal-border">
-            {timeframe}
-          </span>
-          <span className="font-mono text-[11px] text-terminal-muted tabular-nums">
-            {visibleCandles.length} bars
-          </span>
+      {/* TradingView Supercharts OHLC Legend Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-b border-terminal-border bg-terminal-surface px-3 py-2">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <div className="flex items-center gap-1.5">
+            <span className="font-sans text-xs font-bold tracking-tight text-terminal-text">
+              {symbol}
+            </span>
+            <span className="text-xs text-terminal-muted" aria-hidden="true">
+              ·
+            </span>
+            <span className="rounded border border-terminal-border bg-terminal-elevated px-1.5 py-0.5 font-mono text-[11px] font-semibold text-terminal-text">
+              {timeframe}
+            </span>
+            <span
+              className="ml-0.5 inline-flex h-2 w-2 rounded-full bg-bull"
+              title="Chart feed active"
+              aria-hidden="true"
+            />
+          </div>
+
+          {displayCandle && (
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 font-mono text-[11px] tabular-nums">
+              <span className="text-terminal-muted">
+                O <strong className={`font-semibold ${ohlcTone}`}>{displayCandle.open}</strong>
+              </span>
+              <span className="text-terminal-muted">
+                H <strong className={`font-semibold ${ohlcTone}`}>{displayCandle.high}</strong>
+              </span>
+              <span className="text-terminal-muted">
+                L <strong className={`font-semibold ${ohlcTone}`}>{displayCandle.low}</strong>
+              </span>
+              <span className="text-terminal-muted">
+                C <strong className={`font-semibold ${ohlcTone}`}>{displayCandle.close}</strong>
+              </span>
+              <span
+                className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold tabular-nums ${
+                  isCandleBull ? 'bg-bull/15 text-bull' : 'bg-bear/15 text-bear'
+                }`}
+              >
+                {pctChange >= 0 ? '+' : ''}
+                {pctChange.toFixed(2)}%
+              </span>
+            </div>
+          )}
         </div>
 
-        {latestCandle && (
-          <div className="flex items-center gap-3 font-mono text-xs tabular-nums">
-            <span className="text-terminal-muted">
-              O <strong className="text-terminal-text">{latestCandle.open}</strong>
-            </span>
-            <span className="text-terminal-muted">
-              H <strong className="text-[#14805e] dark:text-bull">{latestCandle.high}</strong>
-            </span>
-            <span className="text-terminal-muted">
-              L <strong className="text-[#c23a55] dark:text-bear">{latestCandle.low}</strong>
-            </span>
-            <span className="text-terminal-muted">
-              C{' '}
-              <strong
-                className={
-                  isPositive
-                    ? 'text-[#14805e] dark:text-bull'
-                    : 'text-[#c23a55] dark:text-bear'
-                }
-              >
-                {latestCandle.close}
-              </strong>
-            </span>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[10px] text-terminal-muted tabular-nums">
+            {visibleCandles.length} bars
+          </span>
+          <span
+            className="inline-flex items-center gap-1 rounded border border-terminal-border bg-terminal-elevated px-2 py-0.5 font-mono text-[10px] font-medium text-terminal-muted"
+            title="Philippine Time (Asia/Manila, UTC+8)"
+          >
+            <Clock className="h-3 w-3 text-brand-text" aria-hidden="true" />
+            PH Time
+          </span>
+        </div>
       </div>
 
       {chartFailed ? (
         <div
           style={{ minHeight: `${height}px` }}
-          className="flex flex-col justify-between bg-terminal-bg/60 p-4"
+          className="flex flex-col justify-between bg-terminal-bg p-4"
           role="img"
           aria-label={`${symbol} ${timeframe} candlestick scenario preview`}
         >
           <div className="flex items-center justify-between text-xs text-terminal-muted">
             <span className="inline-flex items-center gap-1.5 font-medium text-terminal-text">
-              <Layers className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
+              <Layers className="h-3.5 w-3.5 text-brand-text" aria-hidden="true" />
               Structured OHLC Data Preview ({symbol} · {timeframe})
             </span>
             <span className="font-mono tabular-nums">{visibleCandles.length} candles</span>
           </div>
 
-          <div className="my-4 grid grid-cols-12 items-end gap-1 rounded-lg border border-terminal-border bg-terminal-surface/80 p-3 h-40">
+          <div className="my-4 grid h-40 grid-cols-12 items-end gap-1 rounded-lg border border-terminal-border bg-terminal-surface p-3">
             {visibleCandles.slice(-12).map((bar) => {
               const bullish = bar.close >= bar.open;
               const range = Math.max(bar.high - bar.low, 0.0001);
@@ -327,7 +433,7 @@ export function InteractiveCandleChart({
               return (
                 <div key={bar.time} className="flex h-full flex-col items-center justify-end gap-1">
                   <div
-                    className={`w-2.5 rounded-sm ${bullish ? 'bg-[#14805e] dark:bg-bull' : 'bg-[#c23a55] dark:bg-bear'}`}
+                    className={`w-2.5 rounded-sm ${bullish ? 'bg-bull' : 'bg-bear'}`}
                     style={{ height: `${Math.round(bodyRatio * 100)}%` }}
                     title={`O:${bar.open} H:${bar.high} L:${bar.low} C:${bar.close}`}
                   />
@@ -361,7 +467,7 @@ export function InteractiveCandleChart({
       )}
 
       {showLegend && priceLines.length > 0 && (
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-terminal-border bg-terminal-elevated/40 px-3.5 py-2">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-terminal-border bg-terminal-elevated/60 px-3 py-2">
           {priceLines.map((line) => (
             <div
               key={line.id}

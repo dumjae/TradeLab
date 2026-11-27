@@ -11,6 +11,7 @@ export interface BacktestChartCanvasProps {
   openPositions: BacktestPosition[];
   trades: BacktestTrade[];
   decimals: number;
+  extraPriceLines?: ChartPriceLine[];
 }
 
 function roundPrice(value: number, decimals: number): number {
@@ -26,45 +27,46 @@ export function BacktestChartCanvas({
   openPositions,
   trades,
   decimals,
+  extraPriceLines = [],
 }: BacktestChartCanvasProps) {
   const visibleCount = Math.min(replayIndex + 1, candles.length);
 
-  const priceLines = useMemo<ChartPriceLine[]>(
-    () =>
-      openPositions.flatMap((position, index) => {
-        const tag = `#${index + 1} ${position.direction === 'long' ? 'LONG' : 'SHORT'}`;
-        const lines: ChartPriceLine[] = [
-          {
-            id: `${position.id}-entry`,
-            price: roundPrice(position.entryPrice, decimals),
-            title: `${tag} Entry`,
-            color: '#6cc4d6',
-            lineStyle: 'solid',
-            role: 'entry',
-          },
-          {
-            id: `${position.id}-sl`,
-            price: roundPrice(position.stopLoss, decimals),
-            title: `${tag} SL`,
-            color: '#f2677a',
-            lineStyle: 'dashed',
-            role: 'stop_loss',
-          },
-        ];
-        if (position.takeProfit !== null) {
-          lines.push({
-            id: `${position.id}-tp`,
-            price: roundPrice(position.takeProfit, decimals),
-            title: `${tag} TP`,
-            color: '#3ecf9a',
-            lineStyle: 'dashed',
-            role: 'take_profit',
-          });
-        }
-        return lines;
-      }),
-    [openPositions, decimals],
-  );
+  const priceLines = useMemo<ChartPriceLine[]>(() => {
+    const positionLines = openPositions.flatMap((position, index) => {
+      const tag = `#${index + 1} ${position.direction === 'long' ? 'LONG' : 'SHORT'}`;
+      const lines: ChartPriceLine[] = [
+        {
+          id: `${position.id}-entry`,
+          price: roundPrice(position.entryPrice, decimals),
+          title: `${tag} Entry`,
+          color: '#2962ff',
+          lineStyle: 'solid',
+          role: 'entry',
+        },
+        {
+          id: `${position.id}-sl`,
+          price: roundPrice(position.stopLoss, decimals),
+          title: `${tag} SL`,
+          color: '#f23645',
+          lineStyle: 'dashed',
+          role: 'stop_loss',
+        },
+      ];
+      if (position.takeProfit !== null) {
+        lines.push({
+          id: `${position.id}-tp`,
+          price: roundPrice(position.takeProfit, decimals),
+          title: `${tag} TP`,
+          color: '#089981',
+          lineStyle: 'dashed',
+          role: 'take_profit',
+        });
+      }
+      return lines;
+    });
+
+    return extraPriceLines.length > 0 ? [...positionLines, ...extraPriceLines] : positionLines;
+  }, [openPositions, decimals, extraPriceLines]);
 
   const markers = useMemo<ChartMarkerSpec[]>(() => {
     const maxTime = candles[visibleCount - 1]?.time ?? 0;
@@ -77,7 +79,7 @@ export function BacktestChartCanvas({
           id: `${trade.id}-in`,
           time: trade.entryTime,
           position: isLong ? 'belowBar' : 'aboveBar',
-          color: isLong ? '#3ecf9a' : '#f2677a',
+          color: isLong ? '#089981' : '#f23645',
           shape: isLong ? 'arrowUp' : 'arrowDown',
           text: isLong ? 'Long' : 'Short',
           stage: 'before',
@@ -88,7 +90,7 @@ export function BacktestChartCanvas({
           id: `${trade.id}-out`,
           time: trade.exitTime,
           position: isLong ? 'aboveBar' : 'belowBar',
-          color: trade.outcome === 'win' ? '#3ecf9a' : trade.outcome === 'loss' ? '#f2677a' : '#e5b567',
+          color: trade.outcome === 'win' ? '#089981' : trade.outcome === 'loss' ? '#f23645' : '#ff9800',
           shape: 'circle',
           text: `${trade.rMultiple >= 0 ? '+' : ''}${trade.rMultiple}R`,
           stage: 'before',
@@ -102,7 +104,7 @@ export function BacktestChartCanvas({
         id: `${position.id}-open`,
         time: position.entryTime,
         position: isLong ? 'belowBar' : 'aboveBar',
-        color: isLong ? '#3ecf9a' : '#f2677a',
+        color: isLong ? '#089981' : '#f23645',
         shape: isLong ? 'arrowUp' : 'arrowDown',
         text: isLong ? 'Long' : 'Short',
         stage: 'before',

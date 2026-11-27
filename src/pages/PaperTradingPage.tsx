@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   CheckCircle2,
+  List,
   Loader2,
   Plus,
   Radio,
@@ -15,15 +16,26 @@ import {
   type SelectableAssetClass,
 } from '../components/backtest/AssetSelectorBar';
 import { InteractiveCandleChart } from '../components/charts/InteractiveCandleChart';
+import { TradingViewDrawingRail } from '../components/charts/TradingViewDrawingRail';
 import {
   CreateWalletModal,
   DemoAccountHeader,
 } from '../components/paper-trading/DemoAccountHeader';
 import { PaperOrderTicket } from '../components/paper-trading/PaperOrderTicket';
 import { PaperPositionsPanel } from '../components/paper-trading/PaperPositionsPanel';
+import { TradingViewWatchlist } from '../components/paper-trading/TradingViewWatchlist';
 import { useLanguage } from '../context/LanguageContext';
 import { MARKET_SYMBOLS, getMarketSymbol } from '../data/marketCatalog';
 import { UI_COPY } from '../data/taglishTranslations';
+import {
+  buildHorizontalPriceLine,
+  computeQuickPositionSetup,
+  computeSessionHighLowLines,
+  roundChartPrice,
+  type DrawingToolMode,
+  type QuickPositionSetup,
+  type UserHorizontalLine,
+} from '../lib/drawingTools';
 import { computePaperPortfolioMetrics } from '../lib/paperTradingEngine';
 import { fetchMarketCandles } from '../services/marketDataService';
 import {
@@ -170,6 +182,18 @@ export function PaperTradingPage() {
   const [busyPositionId, setBusyPositionId] = useState<string | null>(null);
   const [syncingTradeId, setSyncingTradeId] = useState<string | null>(null);
   const [toast, setToast] = useState<ToastMessage | null>(null);
+
+  // TradingView Drawing Rail & Watchlist state (per symbol)
+  const [activeDrawingTool, setActiveDrawingTool] = useState<DrawingToolMode>('crosshair');
+  const [userLinesBySymbol, setUserLinesBySymbol] = useState<
+    Record<string, UserHorizontalLine[]>
+  >({});
+  const [showSessionHLBySymbol, setShowSessionHLBySymbol] = useState<
+    Record<string, boolean>
+  >({});
+  const [quickSetup, setQuickSetup] = useState<QuickPositionSetup | null>(null);
+  const [quickSetupNonce, setQuickSetupNonce] = useState<number>(0);
+  const [watchlistOpen, setWatchlistOpen] = useState<boolean>(false);
 
   const lastFocusedAccountIdRef = useRef<string>('');
   const latestCandleCloseRef = useRef<number | null>(null);
@@ -483,7 +507,13 @@ export function PaperTradingPage() {
     return map;
   }, [accounts, activeAccount, metrics.equity]);
 
-  // Horizontal price lines for current symbol's open/pending positions
+  const currentUserLines = useMemo(
+    () => userLinesBySymbol[symbolOption.symbol] ?? [],
+    [userLinesBySymbol, symbolOption.symbol],
+  );
+  const showSessionHL = Boolean(showSessionHLBySymbol[symbolOption.symbol]);
+
+  // Horizontal price lines for positions, user H-lines & optional Session H/L
   const chartPriceLines = useMemo<ChartPriceLine[]>(() => {
     const lines: ChartPriceLine[] = [];
     const matching = positions.filter((pos) => pos.symbol === symbolOption.symbol);
@@ -494,7 +524,7 @@ export function PaperTradingPage() {
         id: `${pos.id}-entry`,
         price: pos.entryPrice,
         title: `${prefix}Entry (${pos.direction === 'long' ? 'Long' : 'Short'})`,
-        color: '#6cc4d6',
+        color: '#2962ff',
         lineStyle: pos.status === 'pending' ? 'dotted' : 'solid',
         role: 'entry',
       });
@@ -502,7 +532,7 @@ export function PaperTradingPage() {
         id: `${pos.id}-sl`,
         price: pos.stopLoss,
         title: pos.movedToBreakeven ? 'BE (Breakeven)' : 'SL (Stop Loss)',
-        color: '#f2677a',
+        color: '#f23645',
         lineStyle: 'dashed',
         role: 'stop_loss',
       });
@@ -511,15 +541,30 @@ export function PaperTradingPage() {
           id: `${pos.id}-tp`,
           price: pos.takeProfit,
           title: 'TP (Take Profit)',
-          color: '#3ecf9a',
+          color: '#089981',
           lineStyle: 'dashed',
           role: 'take_profit',
         });
       }
     }
 
+    for (const userLine of currentUserLines) {
+      lines.push(buildHorizontalPriceLine(userLine, symbolOption.decimals));
+    }
+
+    if (showSessionHL && liveCandles.length > 0) {
+      lines.push(...computeSessionHighLowLines(liveCandles, symbolOption.decimals));
+    }
+
     return lines;
-  }, [positions, symbolOption.symbol]);
+  }, [
+    positions,
+    symbolOption.symbol,
+    symbolOption.decimals,
+    currentUserLines,
+    showSessionHL,
+    liveCandles,
+  ]);
 
   // Wallet CRUD handlers
   const handleCreateWallet = async (input: CreatePaperAccountInput) => {
@@ -730,6 +775,91 @@ export function PaperTradingPage() {
     void pollLiveQuote(true);
   };
 
+  // TradingView Drawing Rail handlers
+  const handleAddHorizontalLine = () => {
+    if (!Number.isFinite(currentMarketPrice) || currentMarketPrice <= 0) {
+      return;
+    }
+    const sym = symbolOption.symbol;
+    const roundedPrice = roundChartPrice(currentMarketPrice, symbolOption.decimals);
+    setUserLinesBySymbol((prev) => {
+      const existing = prev[sym] ?? [];
+      const nextLine: UserHorizontalLine = {
+        id: `hline-${sym}-${Date.now()}-${existing.length + 1}`,
+        price: roundedPrice,
+        label: `H-Line ${existing.length + 1}`,
+      };
+      return {
+        ...prev,
+        [sym]: [...existing, nextLine],
+      };
+    });
+    setActiveDrawingTool('hline');
+    showToast(
+      'info',
+      t(
+        `Added H-Line at ${roundedPrice.toFixed(symbolOption.decimals)} on ${sym}.`,
+        `Naglagay ng H-Line sa ${roundedPrice.toFixed(symbolOption.decimals)} sa ${sym}.`,
+      ),
+    );
+  };
+
+  const handleToggleSessionHL = () => {
+    const sym = symbolOption.symbol;
+    const nextEnabled = !showSessionHL;
+    setShowSessionHLBySymbol((prev) => ({
+      ...prev,
+      [sym]: nextEnabled,
+    }));
+    setActiveDrawingTool(nextEnabled ? 'session_hl' : 'crosshair');
+  };
+
+  const handleApplyQuickSetup = (direction: 'long' | 'short') => {
+    if (!Number.isFinite(currentMarketPrice) || currentMarketPrice <= 0) {
+      return;
+    }
+    const setup = computeQuickPositionSetup(
+      direction,
+      currentMarketPrice,
+      liveCandles,
+      symbolOption.decimals,
+    );
+    setQuickSetup(setup);
+    setQuickSetupNonce((prev) => prev + 1);
+    setActiveDrawingTool(direction === 'long' ? 'long_tool' : 'short_tool');
+    showToast(
+      direction === 'long' ? 'bull' : 'bear',
+      t(
+        `Pre-filled ${direction === 'long' ? 'Long' : 'Short'} 1:2 RR setup (SL ${setup.stopLoss.toFixed(symbolOption.decimals)} / TP ${setup.takeProfit.toFixed(symbolOption.decimals)}).`,
+        `Na-fill na ang ${direction === 'long' ? 'Long' : 'Short'} 1:2 RR setup sa Order Ticket.`,
+      ),
+    );
+  };
+
+  const handleClearDrawings = () => {
+    const sym = symbolOption.symbol;
+    setUserLinesBySymbol((prev) => {
+      const next = { ...prev };
+      delete next[sym];
+      return next;
+    });
+    setShowSessionHLBySymbol((prev) => ({
+      ...prev,
+      [sym]: false,
+    }));
+    setActiveDrawingTool('crosshair');
+    showToast(
+      'info',
+      t(`Cleared drawings on ${sym}.`, `Nabura na ang mga linya sa ${sym}.`),
+    );
+  };
+
+  const handleWatchlistSelect = (nextOption: MarketSymbolOption) => {
+    setAssetClass(nextOption.assetClass);
+    setSymbol(nextOption.symbol);
+    setCsvNote(null);
+  };
+
   const feedMeta = formatFeedBadge(liveQuote?.source ?? null);
 
   // Loading state
@@ -910,14 +1040,14 @@ export function PaperTradingPage() {
         }}
       />
 
-      {/* 3. Main Desk Grid: Chart (left) + Order Ticket (right) */}
+      {/* 3. Main Desk Grid: Chart + Drawing Rail + Optional Watchlist (left) + Order Ticket (right) */}
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-12">
         <div className="space-y-2.5 lg:col-span-8">
-          {/* Compact Live Feed Ticker Strip */}
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-terminal-border bg-terminal-surface px-3.5 py-2">
+          {/* Compact Live Feed Ticker Strip + Watchlist Toggle */}
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-terminal-border bg-terminal-surface px-3 py-2">
             <div className="flex flex-wrap items-center gap-2.5">
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-semibold ${feedMeta.pillClass}`}
+                className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 font-mono text-[11px] font-semibold ${feedMeta.pillClass}`}
               >
                 <span
                   className={`h-1.5 w-1.5 rounded-full ${feedMeta.dotClass}`}
@@ -929,32 +1059,82 @@ export function PaperTradingPage() {
                 {symbolOption.symbol} · {currentMarketPrice.toFixed(symbolOption.decimals)}
               </span>
               <span className="inline-flex items-center gap-1 text-[11px] text-terminal-muted">
-                <Radio className="h-3 w-3 text-brand" aria-hidden="true" />
+                <Radio className="h-3 w-3 text-brand-text" aria-hidden="true" />
                 {symbolOption.assetClass === 'crypto' ? '5s auto-sync' : '15s auto-sync'}
               </span>
             </div>
 
-            <button
-              type="button"
-              disabled={refreshingQuote}
-              onClick={handleManualRefresh}
-              className="inline-flex items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-bg px-2.5 py-1 text-[11px] font-semibold text-terminal-text transition-colors hover:border-brand/50 hover:text-brand disabled:opacity-60"
-            >
-              <RefreshCw
-                className={`h-3 w-3 ${refreshingQuote ? 'animate-spin text-brand' : ''}`}
-                aria-hidden="true"
-              />
-              {t('Refresh', 'I-Refresh')}
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                aria-pressed={watchlistOpen}
+                onClick={() => setWatchlistOpen((prev) => !prev)}
+                className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+                  watchlistOpen
+                    ? 'border-brand bg-brand-soft text-brand-text'
+                    : 'border-terminal-border bg-terminal-bg text-terminal-text hover:border-brand/50 hover:text-brand-text'
+                }`}
+              >
+                <List className="h-3.5 w-3.5" aria-hidden="true" />
+                {t('Watchlist', 'Watchlist')}
+              </button>
+
+              <button
+                type="button"
+                disabled={refreshingQuote}
+                onClick={handleManualRefresh}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1 text-[11px] font-semibold text-terminal-text transition-colors hover:border-brand/50 hover:text-brand-text disabled:opacity-60"
+              >
+                <RefreshCw
+                  className={`h-3 w-3 ${refreshingQuote ? 'animate-spin text-brand' : ''}`}
+                  aria-hidden="true"
+                />
+                {t('Refresh', 'I-Refresh')}
+              </button>
+            </div>
           </div>
 
-          <InteractiveCandleChart
-            candles={liveCandles}
-            priceLines={chartPriceLines}
-            symbol={symbolOption.symbol}
-            timeframe={timeframe.toUpperCase()}
-            height={380}
-          />
+          {/* Chart Workspace: Left Drawing Rail + Interactive Chart + Collapsible Watchlist */}
+          <div
+            className={
+              watchlistOpen
+                ? 'grid grid-cols-1 items-start gap-2.5 xl:grid-cols-[minmax(0,1fr)_235px]'
+                : ''
+            }
+          >
+            <div className="flex min-w-0 flex-col gap-2 lg:flex-row lg:items-stretch">
+              <TradingViewDrawingRail
+                activeTool={activeDrawingTool}
+                onSelectTool={setActiveDrawingTool}
+                onAddHorizontalLine={handleAddHorizontalLine}
+                showSessionHL={showSessionHL}
+                onToggleSessionHL={handleToggleSessionHL}
+                drawingCount={currentUserLines.length}
+                onClearDrawings={handleClearDrawings}
+                onApplyQuickSetup={handleApplyQuickSetup}
+                disabled={loadingChart || liveCandles.length === 0}
+              />
+
+              <div className="min-w-0 flex-1">
+                <InteractiveCandleChart
+                  candles={liveCandles}
+                  priceLines={chartPriceLines}
+                  symbol={symbolOption.symbol}
+                  timeframe={timeframe.toUpperCase()}
+                  height={380}
+                />
+              </div>
+            </div>
+
+            {watchlistOpen && (
+              <TradingViewWatchlist
+                activeSymbol={symbolOption.symbol}
+                priceMap={priceMap}
+                onSelectSymbol={handleWatchlistSelect}
+                onClose={() => setWatchlistOpen(false)}
+              />
+            )}
+          </div>
         </div>
 
         <div className="lg:col-span-4">
@@ -964,6 +1144,8 @@ export function PaperTradingPage() {
             currentPrice={currentMarketPrice}
             dailyLossLimitReached={metrics.dailyLossLimitReached}
             submitting={orderSubmitting}
+            quickSetup={quickSetup}
+            quickSetupNonce={quickSetupNonce}
             onPlaceOrder={handlePlaceOrder}
           />
         </div>

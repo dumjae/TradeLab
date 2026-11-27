@@ -118,19 +118,19 @@ export function PaperPositionsPanel({
   return (
     <section
       aria-label="Positions and closed trade history"
-      className="rounded-2xl border border-terminal-border bg-terminal-surface p-4 shadow-sm"
+      className="rounded-xl border border-terminal-border bg-terminal-surface p-4"
     >
       {/* 3-Tab Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-terminal-border/80 pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-terminal-border pb-3">
         <div role="tablist" aria-label="Position views" className="flex flex-wrap items-center gap-1.5">
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === 'open'}
             onClick={() => setActiveTab('open')}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
               activeTab === 'open'
-                ? 'bg-brand text-brand-fg shadow-sm'
+                ? 'bg-brand text-brand-fg'
                 : 'border border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
             }`}
           >
@@ -142,9 +142,9 @@ export function PaperPositionsPanel({
             role="tab"
             aria-selected={activeTab === 'pending'}
             onClick={() => setActiveTab('pending')}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
               activeTab === 'pending'
-                ? 'bg-brand text-brand-fg shadow-sm'
+                ? 'bg-brand text-brand-fg'
                 : 'border border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
             }`}
           >
@@ -156,9 +156,9 @@ export function PaperPositionsPanel({
             role="tab"
             aria-selected={activeTab === 'closed'}
             onClick={() => setActiveTab('closed')}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
               activeTab === 'closed'
-                ? 'bg-brand text-brand-fg shadow-sm'
+                ? 'bg-brand text-brand-fg'
                 : 'border border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
             }`}
           >
@@ -174,7 +174,13 @@ export function PaperPositionsPanel({
             </span>
             <span>
               {t('Net P&L (Profit & Loss)', 'Net P&L')}:{' '}
-              <strong className={historySummary.netPnl >= 0 ? 'text-bull' : 'text-bear'}>
+              <strong
+                className={`rounded px-1.5 py-0.5 ${
+                  historySummary.netPnl >= 0
+                    ? 'bg-bull/15 text-bull'
+                    : 'bg-bear/15 text-bear'
+                }`}
+              >
                 {formatSignedMoney(historySummary.netPnl)}
               </strong>
             </span>
@@ -190,9 +196,9 @@ export function PaperPositionsPanel({
 
       {/* Tab 1: Open Positions */}
       {activeTab === 'open' && (
-        <div className="mt-3 space-y-2.5">
+        <div className="mt-3 space-y-2">
           {openPositions.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-terminal-border bg-terminal-bg/60 px-4 py-6 text-center text-xs text-terminal-muted">
+            <p className="rounded-lg border border-dashed border-terminal-border bg-terminal-bg px-4 py-6 text-center text-xs text-terminal-muted">
               {t(
                 'No open positions in this demo wallet yet. Place a Market or Limit order on the right.',
                 'Wala pang bukas na trade sa demo wallet na ito. Maglagay ng Market o Limit order sa kanan.',
@@ -208,7 +214,7 @@ export function PaperPositionsPanel({
               return (
                 <div
                   key={position.id}
-                  className="flex flex-col gap-3 rounded-xl border border-terminal-border/90 bg-terminal-bg/75 p-3 lg:flex-row lg:items-center lg:justify-between"
+                  className="flex flex-col gap-3 rounded-lg border border-terminal-border bg-terminal-bg p-3 lg:flex-row lg:items-center lg:justify-between"
                 >
                   <div className="min-w-0 space-y-1.5">
                     <div className="flex flex-wrap items-center gap-2">
@@ -216,7 +222,7 @@ export function PaperPositionsPanel({
                         {position.symbol}
                       </span>
                       <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                        className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-bold ${
                           isLong ? 'bg-bull/15 text-bull' : 'bg-bear/15 text-bear'
                         }`}
                       >
@@ -228,12 +234,12 @@ export function PaperPositionsPanel({
                         {isLong ? 'Long' : 'Short'}
                       </span>
                       {position.movedToBreakeven && (
-                        <span className="rounded-full border border-sky-500/35 bg-sky-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-sky-600 dark:text-sky-400">
+                        <span className="rounded border border-info/35 bg-info/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-info">
                           BE (Breakeven)
                         </span>
                       )}
                       {position.setupTag && (
-                        <span className="rounded-full border border-terminal-border bg-terminal-surface px-2 py-0.5 text-[10px] text-terminal-muted">
+                        <span className="rounded border border-terminal-border bg-terminal-surface px-2 py-0.5 text-[10px] text-terminal-muted">
                           {position.setupTag}
                         </span>
                       )}
@@ -305,7 +311,7 @@ export function PaperPositionsPanel({
                         disabled={isBusy || position.movedToBreakeven}
                         onClick={() => onMoveToBreakeven(position.id)}
                         title={t(copy.moveToBe.en, copy.moveToBe.taglish)}
-                        className="inline-flex items-center gap-1 rounded-xl border border-terminal-border bg-terminal-surface px-2.5 py-1.5 text-xs font-semibold text-terminal-text transition-colors hover:border-sky-500/50 hover:text-sky-600 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:text-sky-400"
+                        className="inline-flex items-center gap-1 rounded-lg border border-terminal-border bg-terminal-surface px-2.5 py-1.5 text-xs font-semibold text-terminal-text transition-colors hover:border-info/50 hover:text-info disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <Shield className="h-3.5 w-3.5" aria-hidden="true" />
                         BE (Breakeven)
@@ -315,7 +321,7 @@ export function PaperPositionsPanel({
                         type="button"
                         disabled={isBusy}
                         onClick={() => onClosePosition(position.id, markPrice)}
-                        className="inline-flex items-center gap-1 rounded-xl border border-bear/35 bg-bear/10 px-2.5 py-1.5 text-xs font-semibold text-bear transition-colors hover:bg-bear hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                        className="inline-flex items-center gap-1 rounded-lg border border-bear/35 bg-bear/10 px-2.5 py-1.5 text-xs font-semibold text-bear transition-colors hover:bg-bear hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <XCircle className="h-3.5 w-3.5" aria-hidden="true" />
                         {t(copy.closeNow.en, copy.closeNow.taglish)}
@@ -331,9 +337,9 @@ export function PaperPositionsPanel({
 
       {/* Tab 2: Pending Limit Orders */}
       {activeTab === 'pending' && (
-        <div className="mt-3 space-y-2.5">
+        <div className="mt-3 space-y-2">
           {pendingOrders.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-terminal-border bg-terminal-bg/60 px-4 py-6 text-center text-xs text-terminal-muted">
+            <p className="rounded-lg border border-dashed border-terminal-border bg-terminal-bg px-4 py-6 text-center text-xs text-terminal-muted">
               {t(
                 'No pending limit orders waiting for price.',
                 'Walang naghihintay na limit order sa ngayon.',
@@ -347,16 +353,16 @@ export function PaperPositionsPanel({
               return (
                 <div
                   key={order.id}
-                  className="flex flex-col gap-2.5 rounded-xl border border-terminal-border/90 bg-terminal-bg/75 p-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2.5 rounded-lg border border-terminal-border bg-terminal-bg p-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <Clock className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+                      <Clock className="h-3.5 w-3.5 text-amber-wisdom" aria-hidden="true" />
                       <span className="font-mono text-sm font-bold text-terminal-text">
                         {order.symbol}
                       </span>
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                        className={`rounded px-2 py-0.5 text-[11px] font-bold ${
                           isLong ? 'bg-bull/15 text-bull' : 'bg-bear/15 text-bear'
                         }`}
                       >
@@ -396,7 +402,7 @@ export function PaperPositionsPanel({
                     type="button"
                     disabled={isBusy}
                     onClick={() => onCancelPending(order.id)}
-                    className="inline-flex shrink-0 items-center justify-center gap-1 rounded-xl border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-semibold text-terminal-muted transition-colors hover:border-bear/50 hover:text-bear disabled:opacity-50"
+                    className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-semibold text-terminal-muted transition-colors hover:border-bear/50 hover:text-bear disabled:opacity-50"
                   >
                     <XCircle className="h-3.5 w-3.5" aria-hidden="true" />
                     {t(copy.cancelOrder.en, copy.cancelOrder.taglish)}
@@ -410,9 +416,9 @@ export function PaperPositionsPanel({
 
       {/* Tab 3: Closed History */}
       {activeTab === 'closed' && (
-        <div className="mt-3 space-y-2.5">
+        <div className="mt-3 space-y-2">
           {trades.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-terminal-border bg-terminal-bg/60 px-4 py-6 text-center text-xs text-terminal-muted">
+            <p className="rounded-lg border border-dashed border-terminal-border bg-terminal-bg px-4 py-6 text-center text-xs text-terminal-muted">
               {t(
                 'No closed demo trades yet. Closed trades appear here with Gross P&L, Fee + Spread, and 1-click Journal logging.',
                 'Wala pang saradong demo trade. Lalabas dito ang Gross P&L, Fee + Spread, at 1-click Journal save.',
@@ -427,7 +433,7 @@ export function PaperPositionsPanel({
               return (
                 <div
                   key={trade.id}
-                  className="flex flex-col gap-3 rounded-xl border border-terminal-border/90 bg-terminal-bg/75 p-3 lg:flex-row lg:items-center lg:justify-between"
+                  className="flex flex-col gap-3 rounded-lg border border-terminal-border bg-terminal-bg p-3 lg:flex-row lg:items-center lg:justify-between"
                 >
                   <div className="min-w-0 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -435,13 +441,13 @@ export function PaperPositionsPanel({
                         {trade.symbol}
                       </span>
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                        className={`rounded px-2 py-0.5 text-[11px] font-bold ${
                           isLong ? 'bg-bull/15 text-bull' : 'bg-bear/15 text-bear'
                         }`}
                       >
                         {isLong ? 'Long' : 'Short'}
                       </span>
-                      <span className="rounded-full border border-terminal-border bg-terminal-surface px-2 py-0.5 font-mono text-[10px] font-medium text-terminal-muted">
+                      <span className="rounded border border-terminal-border bg-terminal-surface px-2 py-0.5 font-mono text-[10px] font-medium text-terminal-muted">
                         {formatExitReason(trade.exitReason)}
                       </span>
                     </div>
@@ -474,15 +480,15 @@ export function PaperPositionsPanel({
                         {t('Net P&L (Profit & Loss)', 'Net P&L')}
                       </p>
                       <p
-                        className={`font-mono text-sm font-bold tabular-nums ${
+                        className={`inline-flex items-baseline gap-1 rounded px-1.5 py-0.5 font-mono text-sm font-bold tabular-nums ${
                           trade.pnlAmount > 0
-                            ? 'text-bull'
+                            ? 'bg-bull/10 text-bull'
                             : trade.pnlAmount < 0
-                              ? 'text-bear'
+                              ? 'bg-bear/10 text-bear'
                               : 'text-terminal-text'
                         }`}
                       >
-                        {formatSignedMoney(trade.pnlAmount)}{' '}
+                        {formatSignedMoney(trade.pnlAmount)}
                         <span className="text-xs font-semibold">
                           ({formatR(trade.rMultiple)})
                         </span>
@@ -490,7 +496,7 @@ export function PaperPositionsPanel({
                     </div>
 
                     {trade.syncedToJournal ? (
-                      <span className="inline-flex items-center gap-1 rounded-xl border border-bull/35 bg-bull/10 px-3 py-1.5 text-xs font-semibold text-bull">
+                      <span className="inline-flex items-center gap-1 rounded-lg border border-bull/35 bg-bull/10 px-3 py-1.5 text-xs font-semibold text-bull">
                         <Check className="h-3.5 w-3.5" aria-hidden="true" />
                         {t('Logged', copy.loggedBadge.taglish)}
                       </span>
@@ -499,7 +505,7 @@ export function PaperPositionsPanel({
                         type="button"
                         disabled={isSyncing}
                         onClick={() => onSyncToJournal(trade.id)}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-brand/40 bg-brand-soft px-3 py-1.5 text-xs font-semibold text-brand transition-colors hover:bg-brand hover:text-brand-fg disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-brand/40 bg-brand-soft px-3 py-1.5 text-xs font-semibold text-brand-text transition-colors hover:bg-brand hover:text-brand-fg disabled:opacity-50"
                       >
                         <BookMarked className="h-3.5 w-3.5" aria-hidden="true" />
                         {isSyncing

@@ -50,7 +50,7 @@ const DEFAULT_PREFERENCES: OnboardingPreferences = {
 };
 
 const MARKET_BADGE_STYLES: Record<LessonMarketCategory, string> = {
-  general: 'border-brand/30 bg-brand-soft text-brand',
+  general: 'border-brand/35 bg-brand-soft text-brand-text',
   forex: 'border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400',
   indices: 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400',
   crypto: 'border-teal-500/30 bg-teal-500/10 text-teal-600 dark:text-teal-400',
@@ -153,11 +153,11 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
 
   return (
     <div className="mx-auto max-w-6xl space-y-4">
-      {/* Compact Warm Editorial Hero */}
-      <section className="rounded-2xl border border-terminal-border/90 bg-terminal-surface p-4 shadow-sm sm:p-5">
+      {/* Crisp TradingView Supercharts Desk Hero */}
+      <section className="rounded-xl border border-terminal-border bg-terminal-surface p-4 sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-xl space-y-2">
-            <span className="inline-flex items-center rounded-full border border-brand/30 bg-brand-soft px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand">
+            <span className="inline-flex items-center rounded-md border border-brand/35 bg-brand-soft px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-text">
               {t(UI_COPY.dashboard.heroEyebrow.en, UI_COPY.dashboard.heroEyebrow.taglish)}
             </span>
             <h1 className="text-lg font-semibold tracking-tight text-terminal-text sm:text-xl">
@@ -170,7 +170,7 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
             <div className="flex flex-wrap items-center gap-2 pt-1">
               <Link
                 to={`/academy/${recommendedLesson.slug}`}
-                className="inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-semibold text-brand-fg shadow-sm transition-all hover:opacity-95 active:scale-[0.98]"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-xs font-semibold text-brand-fg shadow-sm transition-all hover:opacity-95 active:scale-[0.98]"
               >
                 <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>
@@ -182,7 +182,7 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
 
               <Link
                 to="/paper-trading"
-                className="inline-flex items-center gap-1.5 rounded-full border border-brand/35 bg-brand-soft px-3.5 py-2 text-xs font-semibold text-brand transition-colors hover:bg-brand hover:text-brand-fg"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-brand/35 bg-brand-soft px-3.5 py-2 text-xs font-semibold text-brand-text transition-colors hover:bg-brand hover:text-brand-fg"
               >
                 <Wallet className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>
@@ -194,7 +194,7 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
                 <button
                   type="button"
                   onClick={onOpenTour}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-sky-500/35 bg-sky-500/10 px-3.5 py-2 text-xs font-semibold text-sky-600 transition-colors hover:bg-sky-500/20 dark:text-sky-400"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-sky-500/35 bg-sky-500/10 px-3.5 py-2 text-xs font-semibold text-sky-600 transition-colors hover:bg-sky-500/20 dark:text-sky-400"
                 >
                   <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
                   <span>
@@ -206,15 +206,15 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
           </div>
 
           <div className="grid shrink-0 grid-cols-3 gap-2 lg:w-60">
-            <div className="rounded-xl border border-terminal-border/80 bg-terminal-bg/80 p-2.5 text-center">
-              <p className="font-mono text-lg font-semibold text-brand tabular-nums">
+            <div className="rounded-lg border border-terminal-border bg-terminal-bg p-2.5 text-center">
+              <p className="font-mono text-lg font-semibold text-brand-text tabular-nums">
                 {CURRICULUM_LESSONS.length}
               </p>
               <p className="text-[10px] font-medium text-terminal-muted">
                 {t('Lessons', 'Aralin')}
               </p>
             </div>
-            <div className="rounded-xl border border-terminal-border/80 bg-terminal-bg/80 p-2.5 text-center">
+            <div className="rounded-lg border border-terminal-border bg-terminal-bg p-2.5 text-center">
               <p className="font-mono text-lg font-semibold text-sky-500 dark:text-sky-400 tabular-nums">
                 {CHART_SCENARIOS.length}
               </p>
@@ -222,7 +222,7 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
                 {t('Replays', 'Charts')}
               </p>
             </div>
-            <div className="rounded-xl border border-terminal-border/80 bg-terminal-bg/80 p-2.5 text-center">
+            <div className="rounded-lg border border-terminal-border bg-terminal-bg p-2.5 text-center">
               <p className="font-mono text-lg font-semibold text-bull tabular-nums">
                 $0
               </p>
@@ -234,17 +234,17 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
         </div>
 
         {/* Compact Progress & Streak Strip */}
-        <div className="mt-4 flex flex-col gap-2.5 rounded-xl border border-terminal-border/80 bg-terminal-bg/75 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-4 flex flex-col gap-2.5 rounded-lg border border-terminal-border bg-terminal-bg px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0 flex-1 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-mono text-xs font-semibold text-terminal-text tabular-nums">
                 {progressSummary.completedCount} / {progressSummary.totalLessons}{' '}
                 {t('Lessons', 'Aralin')}
               </span>
-              <span className="font-mono text-[11px] font-semibold text-brand tabular-nums">
+              <span className="font-mono text-[11px] font-semibold text-brand-text tabular-nums">
                 {progressSummary.percentComplete}%
               </span>
-              <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-amber-600 dark:text-amber-400 tabular-nums">
+              <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-amber-600 dark:text-amber-400 tabular-nums">
                 <Flame className="h-3 w-3" aria-hidden="true" />
                 {progressSummary.currentStreakDays}-{t('day streak', 'araw sunod')}
               </span>
@@ -268,7 +268,7 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
           <button
             type="button"
             onClick={() => setOnboardingOpen(true)}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-surface px-3 py-1.5 text-[11px] font-medium text-terminal-muted transition-colors hover:border-brand/45 hover:text-terminal-text"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-surface px-3 py-1.5 text-[11px] font-medium text-terminal-muted transition-colors hover:border-brand/45 hover:bg-terminal-elevated hover:text-terminal-text"
           >
             <SlidersHorizontal className="h-3 w-3" aria-hidden="true" />
             {t('Customize Path', 'Ayusin ang Path')}
@@ -280,11 +280,11 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
       {progressSummary.completedCount === 0 && (
         <section
           aria-labelledby="beginner-start-heading"
-          className="rounded-2xl border border-brand/35 bg-brand-soft/45 p-4 shadow-sm"
+          className="rounded-xl border border-brand/35 bg-brand-soft/45 p-4"
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">
-              <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-brand/30 bg-brand-soft text-brand">
+              <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-brand/30 bg-brand-soft text-brand-text">
                 <CandlestickChart className="h-4 w-4" aria-hidden="true" />
               </span>
               <div className="space-y-0.5">
@@ -308,7 +308,7 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
 
             <Link
               to="/academy/chart-reading-fundamentals"
-              className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-semibold text-brand-fg shadow-sm transition-all hover:opacity-95 active:scale-[0.98]"
+              className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-xs font-semibold text-brand-fg shadow-sm transition-all hover:opacity-95 active:scale-[0.98]"
             >
               <span>{t('Start Lesson 01', 'Simulan Lesson 01')}</span>
               <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -324,9 +324,9 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
       <section aria-label="Quick workspace launchers" className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
         <Link
           to="/paper-trading"
-          className="group flex items-center gap-2.5 rounded-2xl border border-brand/35 bg-terminal-surface p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand"
+          className="group flex items-center gap-2.5 rounded-xl border border-brand/35 bg-terminal-surface p-3 transition-all hover:-translate-y-0.5 hover:border-brand"
         >
-          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand-text">
             <Wallet className="h-4 w-4" aria-hidden="true" />
           </span>
           <div className="min-w-0">
@@ -341,9 +341,9 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
 
         <Link
           to="/academy"
-          className="group flex items-center gap-2.5 rounded-2xl border border-terminal-border/90 bg-terminal-surface p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand/45"
+          className="group flex items-center gap-2.5 rounded-xl border border-terminal-border bg-terminal-surface p-3 transition-all hover:-translate-y-0.5 hover:border-brand/45"
         >
-          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-bull/15 text-bull">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-bull/15 text-bull">
             <BookOpen className="h-4 w-4" aria-hidden="true" />
           </span>
           <div className="min-w-0">
@@ -361,9 +361,9 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
 
         <Link
           to="/backtest"
-          className="group flex items-center gap-2.5 rounded-2xl border border-terminal-border/90 bg-terminal-surface p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-sky-500/45"
+          className="group flex items-center gap-2.5 rounded-xl border border-terminal-border bg-terminal-surface p-3 transition-all hover:-translate-y-0.5 hover:border-sky-500/45"
         >
-          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sky-500/10 text-sky-500 dark:text-sky-400">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 text-sky-500 dark:text-sky-400">
             <LineChart className="h-4 w-4" aria-hidden="true" />
           </span>
           <div className="min-w-0">
@@ -378,9 +378,9 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
 
         <Link
           to="/journal"
-          className="group flex items-center gap-2.5 rounded-2xl border border-terminal-border/90 bg-terminal-surface p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-amber-500/45"
+          className="group flex items-center gap-2.5 rounded-xl border border-terminal-border bg-terminal-surface p-3 transition-all hover:-translate-y-0.5 hover:border-amber-500/45"
         >
-          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500 dark:text-amber-400">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-500 dark:text-amber-400">
             <NotebookPen className="h-4 w-4" aria-hidden="true" />
           </span>
           <div className="min-w-0">
@@ -395,9 +395,9 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
       </section>
 
       {/* Featured Paper Trading Demo Desk Card */}
-      <section className="flex flex-col gap-3 rounded-2xl border border-terminal-border/90 bg-terminal-surface px-4 py-3.5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <section className="flex flex-col gap-3 rounded-xl border border-terminal-border bg-terminal-surface px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
-          <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand">
+          <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand-text">
             <Wallet className="h-4 w-4" aria-hidden="true" />
           </span>
           <div className="min-w-0 space-y-0.5">
@@ -411,7 +411,7 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
         </div>
         <Link
           to="/paper-trading"
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-brand/40 bg-brand-soft px-3.5 py-1.5 text-xs font-semibold text-brand transition-colors hover:bg-brand hover:text-brand-fg"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-brand/40 bg-brand-soft px-3.5 py-1.5 text-xs font-semibold text-brand-text transition-colors hover:bg-brand hover:text-brand-fg"
         >
           <span>{t('Launch Demo Desk', 'Buksan ang Demo')}</span>
           <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -434,7 +434,7 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
           <div className="flex flex-wrap items-center gap-1.5">
             <Link
               to="/academy"
-              className="inline-flex items-center gap-1 rounded-full border border-brand/35 bg-brand-soft px-3 py-1 text-[11px] font-semibold text-brand transition-colors hover:bg-brand hover:text-brand-fg"
+              className="inline-flex items-center gap-1 rounded-lg border border-brand/35 bg-brand-soft px-3 py-1 text-[11px] font-semibold text-brand-text transition-colors hover:bg-brand hover:text-brand-fg"
             >
               {t(
                 `All ${CURRICULUM_LESSONS.length} Lessons →`,
@@ -443,7 +443,7 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
             </Link>
             <Link
               to="/practice"
-              className="inline-flex items-center gap-1 rounded-full border border-terminal-border bg-terminal-surface px-3 py-1 text-[11px] font-medium text-terminal-text transition-colors hover:border-sky-500/45 hover:text-sky-600 dark:hover:text-sky-400"
+              className="inline-flex items-center gap-1 rounded-lg border border-terminal-border bg-terminal-surface px-3 py-1 text-[11px] font-medium text-terminal-text transition-colors hover:border-sky-500/45 hover:text-sky-600 dark:hover:text-sky-400"
             >
               <GraduationCap className="h-3 w-3 text-sky-500 dark:text-sky-400" aria-hidden="true" />
               {t('Quizzes', 'Quiz')}
@@ -461,10 +461,10 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
             type="button"
             onClick={() => setMarketFilter('all')}
             aria-pressed={marketFilter === 'all'}
-            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-all ${
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-1 text-xs transition-all ${
               marketFilter === 'all'
                 ? MARKET_ACTIVE_PILL_STYLES.all
-                : 'border-terminal-border bg-terminal-surface text-terminal-muted hover:border-brand/40 hover:text-terminal-text'
+                : 'border-terminal-border bg-terminal-surface text-terminal-muted hover:border-brand/40 hover:bg-terminal-elevated hover:text-terminal-text'
             }`}
           >
             <span>{t('All', 'Lahat')}</span>
@@ -481,10 +481,10 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
                 type="button"
                 onClick={() => setMarketFilter(category.id)}
                 aria-pressed={isActive}
-                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-all ${
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-1 text-xs transition-all ${
                   isActive
                     ? MARKET_ACTIVE_PILL_STYLES[category.id]
-                    : 'border-terminal-border bg-terminal-surface text-terminal-muted hover:border-brand/40 hover:text-terminal-text'
+                    : 'border-terminal-border bg-terminal-surface text-terminal-muted hover:border-brand/40 hover:bg-terminal-elevated hover:text-terminal-text'
                 }`}
               >
                 <span>{category.label}</span>
@@ -510,7 +510,7 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
               <Link
                 key={lesson.id}
                 to={`/academy/${lesson.slug}`}
-                className="group flex items-center justify-between gap-3 rounded-xl border border-terminal-border/90 bg-terminal-surface px-3.5 py-2.5 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:border-brand/45"
+                className="group flex items-center justify-between gap-3 rounded-lg border border-terminal-border bg-terminal-surface px-3.5 py-2.5 transition-all duration-150 hover:-translate-y-0.5 hover:border-brand/50"
               >
                 <div className="flex min-w-0 items-start gap-2.5">
                   {isDone ? (
@@ -524,7 +524,7 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
                     </span>
                   )}
                   <div className="min-w-0">
-                    <h3 className="truncate text-xs font-semibold text-terminal-text transition-colors group-hover:text-brand sm:text-[13px]">
+                    <h3 className="truncate text-xs font-semibold text-terminal-text transition-colors group-hover:text-brand-text sm:text-[13px]">
                       {displayTitle}
                     </h3>
                     {shortSummary && (
@@ -537,7 +537,7 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
 
                 <div className="flex shrink-0 items-center gap-1.5">
                   <span
-                    className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${MARKET_BADGE_STYLES[lesson.marketCategory]}`}
+                    className={`rounded border px-2 py-0.5 text-[10px] font-semibold ${MARKET_BADGE_STYLES[lesson.marketCategory]}`}
                   >
                     {marketLabelMap[lesson.marketCategory] ?? lesson.marketCategory}
                   </span>
@@ -546,7 +546,7 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
                     {lesson.estimatedMinutes}m
                   </span>
                   <ArrowRight
-                    className="h-3.5 w-3.5 text-terminal-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand"
+                    className="h-3.5 w-3.5 text-terminal-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand-text"
                     aria-hidden="true"
                   />
                 </div>

@@ -135,7 +135,7 @@ const MOBILE_BOTTOM_NAV: NavItemConfig[] = [
 ];
 
 const MARKET_TAG_STYLES: Record<LessonMarketCategory, string> = {
-  general: 'border-brand/30 bg-brand-soft text-brand',
+  general: 'border-brand/35 bg-brand-soft text-brand-text',
   forex: 'border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400',
   indices: 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400',
   crypto: 'border-teal-500/30 bg-teal-500/10 text-teal-600 dark:text-teal-400',
@@ -291,15 +291,15 @@ export function AppShell({
 
   return (
     <div className="min-h-screen bg-terminal-bg text-terminal-text">
-      {/* Compact Minimalist Top Bar */}
-      <header className="sticky top-0 z-30 border-b border-terminal-border/80 bg-terminal-surface/90 backdrop-blur-md">
+      {/* Crisp TradingView Supercharts Top Toolbar */}
+      <header className="sticky top-0 z-30 border-b border-terminal-border bg-terminal-surface/95 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-[1600px] items-center justify-between gap-2.5 px-3.5 sm:px-5">
           <div className="flex min-w-0 items-center gap-2">
             <button
               type="button"
               onClick={() => setMobileMenuOpen((prev) => !prev)}
               aria-label="Toggle navigation sidebar"
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-terminal-border bg-terminal-bg text-terminal-muted transition-colors hover:border-brand/45 hover:text-terminal-text lg:hidden"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-terminal-border bg-terminal-bg text-terminal-muted transition-colors hover:border-brand/45 hover:bg-terminal-elevated hover:text-terminal-text lg:hidden"
             >
               {mobileMenuOpen ? (
                 <X className="h-4 w-4" aria-hidden="true" />
@@ -317,7 +317,7 @@ export function AppShell({
               />
               <div className="min-w-0 leading-tight">
                 <span className="block truncate text-sm font-semibold tracking-tight text-terminal-text">
-                  TradeLab <span className="text-brand">Academy</span>
+                  TradeLab <span className="text-brand-text">Academy</span>
                 </span>
                 <span className="hidden text-[10px] text-terminal-muted sm:block">
                   {t('Visual Trading Desk', 'Visual na Pag-aaral')}
@@ -331,7 +331,7 @@ export function AppShell({
             {isAdmin && (
               <Link
                 to="/admin"
-                className="hidden items-center gap-1.5 rounded-full border border-amber-500/35 bg-amber-500/10 px-2.5 py-1 text-[11px] font-medium text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400 sm:inline-flex"
+                className="hidden items-center gap-1.5 rounded-lg border border-amber-500/35 bg-amber-500/10 px-2.5 py-1 text-[11px] font-medium text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400 sm:inline-flex"
               >
                 <Shield className="h-3.5 w-3.5" aria-hidden="true" />
                 Return to Admin Portal
@@ -340,16 +340,16 @@ export function AppShell({
 
             {/* Quiet live PH clock badge on tablet+ screens */}
             <span
-              className="hidden items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-bg/80 px-2.5 py-1 font-mono text-[10px] font-medium tabular-nums text-terminal-muted md:inline-flex"
+              className="hidden h-8 items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 font-mono text-[10px] font-medium tabular-nums text-terminal-muted md:inline-flex"
               title="Philippine Time (Asia/Manila)"
             >
-              <Clock className="h-3 w-3 text-brand" aria-hidden="true" />
+              <Clock className="h-3 w-3 text-brand-text" aria-hidden="true" />
               {phClockLabel}
             </span>
 
             {/* Quiet persistence indicator on wide screens */}
             <span
-              className="hidden items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-bg/80 px-2.5 py-1 text-[10px] font-medium text-terminal-muted xl:inline-flex"
+              className="hidden h-8 items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 text-[10px] font-medium text-terminal-muted xl:inline-flex"
               title="Current persistence mode"
             >
               <span
@@ -367,10 +367,10 @@ export function AppShell({
               onClick={toggleLang}
               aria-label="Switch language between English and Taglish"
               aria-pressed={isTaglish}
-              className={`inline-flex h-8 items-center gap-1 rounded-full border px-2.5 text-[11px] font-semibold transition-colors ${
+              className={`inline-flex h-8 items-center gap-1 rounded-lg border px-2.5 text-[11px] font-semibold transition-colors ${
                 isTaglish
-                  ? 'border-brand/40 bg-brand-soft text-brand'
-                  : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-brand/40 hover:text-terminal-text'
+                  ? 'border-brand/45 bg-brand-soft text-brand-text'
+                  : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-brand/40 hover:bg-terminal-elevated hover:text-terminal-text'
               }`}
             >
               <span className={!isTaglish ? 'text-terminal-text' : 'opacity-65'}>
@@ -379,7 +379,7 @@ export function AppShell({
               <span aria-hidden="true" className="opacity-35">
                 |
               </span>
-              <span className={isTaglish ? 'text-brand' : 'opacity-70'}>
+              <span className={isTaglish ? 'text-brand-text' : 'opacity-70'}>
                 {UI_COPY.nav.taglishShort.taglish}
               </span>
             </button>
@@ -389,7 +389,7 @@ export function AppShell({
               type="button"
               onClick={handleOpenTour}
               aria-label="Open step-by-step app tutorial"
-              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-sky-500/30 bg-sky-500/10 px-2.5 text-[11px] font-medium text-sky-600 transition-colors hover:bg-sky-500/20 dark:text-sky-400"
+              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-sky-500/30 bg-sky-500/10 px-2.5 text-[11px] font-medium text-sky-600 transition-colors hover:bg-sky-500/20 dark:text-sky-400"
             >
               <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
               <span className="hidden md:inline">{t('How to Use', 'Paano Gamitin')}</span>
@@ -400,7 +400,7 @@ export function AppShell({
               type="button"
               onClick={onOpenVault}
               aria-label="Open Mindset Vault"
-              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 text-[11px] font-medium text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
+              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 text-[11px] font-medium text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
             >
               <Flame className="h-3.5 w-3.5" aria-hidden="true" />
               <span className="hidden sm:inline">{t('Mindset', 'Mindset')}</span>
@@ -411,7 +411,7 @@ export function AppShell({
               type="button"
               onClick={toggleTheme}
               aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-terminal-border bg-terminal-bg text-terminal-muted transition-colors hover:border-brand/45 hover:text-terminal-text"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-terminal-border bg-terminal-bg text-terminal-muted transition-colors hover:border-brand/45 hover:bg-terminal-elevated hover:text-terminal-text"
             >
               {theme === 'dark' ? (
                 <Sun className="h-3.5 w-3.5 text-amber-400" aria-hidden="true" />
@@ -430,7 +430,7 @@ export function AppShell({
         {/* Desktop Learner Sidebar (Zero Admin links) */}
         <aside
           aria-label="Primary navigation"
-          className="hidden w-60 shrink-0 border-r border-terminal-border/70 bg-terminal-surface/40 lg:block"
+          className="hidden w-60 shrink-0 border-r border-terminal-border bg-terminal-surface/70 lg:block"
         >
           <div className="sticky top-14 flex h-[calc(100vh-3.5rem)] flex-col justify-between p-3">
             <div className="flex min-h-0 flex-1 flex-col gap-3.5 overflow-hidden">
@@ -443,10 +443,10 @@ export function AppShell({
                       to={item.to}
                       end={item.end}
                       className={({ isActive }) =>
-                        `flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] font-medium transition-all ${
+                        `flex items-center gap-2.5 rounded-lg border-l-2 px-2.5 py-2 text-[13px] font-medium transition-all ${
                           isActive
-                            ? 'bg-brand-soft font-semibold text-brand shadow-sm'
-                            : 'text-terminal-muted hover:bg-terminal-elevated/70 hover:text-terminal-text'
+                            ? 'border-brand bg-brand-soft font-semibold text-brand-text'
+                            : 'border-transparent text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
                         }`
                       }
                     >
@@ -457,14 +457,14 @@ export function AppShell({
                 })}
               </nav>
 
-              <div className="flex min-h-0 flex-1 flex-col border-t border-terminal-border/70 pt-3">
+              <div className="flex min-h-0 flex-1 flex-col border-t border-terminal-border pt-3">
                 <div className="flex items-center justify-between px-2">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-terminal-muted/85">
                     {t('Lessons', 'Mga Aralin')}
                   </p>
                   <Link
                     to="/academy"
-                    className="font-mono text-[10px] font-semibold text-brand hover:underline tabular-nums"
+                    className="font-mono text-[10px] font-semibold text-brand-text hover:underline tabular-nums"
                   >
                     {sidebarLessons.length}/{CURRICULUM_LESSONS.length}
                   </Link>
@@ -480,10 +480,10 @@ export function AppShell({
                     type="button"
                     onClick={() => setSidebarMarketFilter('all')}
                     aria-pressed={sidebarMarketFilter === 'all'}
-                    className={`shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] transition-colors ${
+                    className={`shrink-0 rounded-md px-2 py-0.5 font-mono text-[10px] transition-colors ${
                       sidebarMarketFilter === 'all'
                         ? SIDEBAR_PILL_ACTIVE.all
-                        : 'bg-terminal-bg text-terminal-muted hover:text-terminal-text'
+                        : 'bg-terminal-bg text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
                     }`}
                   >
                     ALL
@@ -497,10 +497,10 @@ export function AppShell({
                         onClick={() => setSidebarMarketFilter(category.id)}
                         aria-pressed={isActive}
                         title={category.label}
-                        className={`shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] transition-colors ${
+                        className={`shrink-0 rounded-md px-2 py-0.5 font-mono text-[10px] transition-colors ${
                           isActive
                             ? SIDEBAR_PILL_ACTIVE[category.id]
-                            : 'bg-terminal-bg text-terminal-muted hover:text-terminal-text'
+                            : 'bg-terminal-bg text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
                         }`}
                       >
                         {category.shortCode}
@@ -514,7 +514,7 @@ export function AppShell({
                     <div className="space-y-3">
                       <div>
                         <div className="flex items-center justify-between px-2 pb-1">
-                          <p className="text-[9px] font-semibold uppercase tracking-wider text-brand">
+                          <p className="text-[9px] font-semibold uppercase tracking-wider text-brand-text">
                             {t('Universal Core (All Markets)', 'Universal Core (Lahat)')}
                           </p>
                           <span className="font-mono text-[9px] text-terminal-muted tabular-nums">
@@ -530,10 +530,10 @@ export function AppShell({
                                   to={`/academy/${lesson.slug}`}
                                   title={expandAcronyms(lesson.title)}
                                   className={({ isActive }) =>
-                                    `flex items-center justify-between gap-1.5 rounded-lg px-2 py-1.5 text-xs transition-colors ${
+                                    `flex items-center justify-between gap-1.5 rounded-lg border-l-2 px-2 py-1.5 text-xs transition-colors ${
                                       isActive
-                                        ? 'bg-brand-soft font-semibold text-brand'
-                                        : 'text-terminal-muted hover:bg-terminal-elevated/60 hover:text-terminal-text'
+                                        ? 'border-brand bg-brand-soft font-semibold text-brand-text'
+                                        : 'border-transparent text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
                                     }`
                                   }
                                 >
@@ -555,7 +555,7 @@ export function AppShell({
                         </ul>
                       </div>
 
-                      <div className="border-t border-terminal-border/70 pt-2">
+                      <div className="border-t border-terminal-border pt-2">
                         <div className="flex items-center justify-between px-2 pb-1">
                           <p className="text-[9px] font-semibold uppercase tracking-wider text-sky-600 dark:text-sky-400">
                             {t('Market Tracks', 'Hiwalay na Markets')}
@@ -574,10 +574,10 @@ export function AppShell({
                                   to={`/academy/${lesson.slug}`}
                                   title={expandAcronyms(lesson.title)}
                                   className={({ isActive }) =>
-                                    `flex items-center justify-between gap-1.5 rounded-lg px-2 py-1.5 text-xs transition-colors ${
+                                    `flex items-center justify-between gap-1.5 rounded-lg border-l-2 px-2 py-1.5 text-xs transition-colors ${
                                       isActive
-                                        ? 'bg-brand-soft font-semibold text-brand'
-                                        : 'text-terminal-muted hover:bg-terminal-elevated/60 hover:text-terminal-text'
+                                        ? 'border-brand bg-brand-soft font-semibold text-brand-text'
+                                        : 'border-transparent text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
                                     }`
                                   }
                                 >
@@ -609,10 +609,10 @@ export function AppShell({
                               to={`/academy/${lesson.slug}`}
                               title={expandAcronyms(lesson.title)}
                               className={({ isActive }) =>
-                                `flex items-center justify-between gap-1.5 rounded-lg px-2 py-1.5 text-xs transition-colors ${
+                                `flex items-center justify-between gap-1.5 rounded-lg border-l-2 px-2 py-1.5 text-xs transition-colors ${
                                   isActive
-                                    ? 'bg-brand-soft font-semibold text-brand'
-                                    : 'text-terminal-muted hover:bg-terminal-elevated/60 hover:text-terminal-text'
+                                    ? 'border-brand bg-brand-soft font-semibold text-brand-text'
+                                    : 'border-transparent text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
                                 }`
                               }
                             >
@@ -637,7 +637,7 @@ export function AppShell({
               </div>
             </div>
 
-            <div className="mt-2.5 shrink-0 rounded-xl border border-terminal-border/70 bg-terminal-bg/70 px-3 py-2.5 text-[11px] text-terminal-muted">
+            <div className="mt-2.5 shrink-0 rounded-lg border border-terminal-border bg-terminal-bg/80 px-3 py-2.5 text-[11px] text-terminal-muted">
               <p className="font-semibold text-terminal-text">
                 {t('Process Over Impulse', 'Plano Bago Click')}
               </p>
@@ -654,8 +654,8 @@ export function AppShell({
         {/* Mobile Drawer Navigation */}
         {mobileMenuOpen && (
           <div className="fixed inset-0 z-40 flex lg:hidden">
-            <div className="flex w-72 max-w-[82vw] flex-col overflow-y-auto rounded-r-3xl border-r border-terminal-border bg-terminal-surface p-4 shadow-2xl">
-              <div className="flex items-center justify-between border-b border-terminal-border/80 pb-3">
+            <div className="flex w-72 max-w-[82vw] flex-col overflow-y-auto rounded-r-xl border-r border-terminal-border bg-terminal-surface p-4 shadow-2xl">
+              <div className="flex items-center justify-between border-b border-terminal-border pb-3">
                 <div className="flex items-center gap-2">
                   <img
                     src="/favicon.svg"
@@ -664,14 +664,14 @@ export function AppShell({
                     className="h-7 w-7 rounded-lg"
                   />
                   <span className="text-sm font-semibold text-terminal-text">
-                    TradeLab <span className="text-brand">Academy</span>
+                    TradeLab <span className="text-brand-text">Academy</span>
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setMobileMenuOpen(false)}
                   aria-label="Close mobile menu"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-terminal-elevated text-terminal-muted transition-colors hover:text-terminal-text"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-terminal-elevated text-terminal-muted transition-colors hover:text-terminal-text"
                 >
                   <X className="h-4 w-4" aria-hidden="true" />
                 </button>
@@ -681,7 +681,7 @@ export function AppShell({
                 <Link
                   to="/admin"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="mt-3 flex items-center gap-2 rounded-xl border border-amber-500/35 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-600 dark:text-amber-400"
+                  className="mt-3 flex items-center gap-2 rounded-lg border border-amber-500/35 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-600 dark:text-amber-400"
                 >
                   <Shield className="h-4 w-4" aria-hidden="true" />
                   Return to Admin Portal
@@ -698,10 +698,10 @@ export function AppShell({
                       end={item.end}
                       onClick={() => setMobileMenuOpen(false)}
                       className={({ isActive }) =>
-                        `flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+                        `flex items-center gap-2.5 rounded-lg border-l-2 px-3 py-2 text-sm font-medium transition-colors ${
                           isActive
-                            ? 'bg-brand-soft font-semibold text-brand'
-                            : 'text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
+                            ? 'border-brand bg-brand-soft font-semibold text-brand-text'
+                            : 'border-transparent text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
                         }`
                       }
                     >
@@ -718,13 +718,13 @@ export function AppShell({
                   setMobileMenuOpen(false);
                   handleOpenTour();
                 }}
-                className="mt-3 flex items-center gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 px-3 py-2 text-xs font-semibold text-sky-600 transition-colors hover:bg-sky-500/20 dark:text-sky-400"
+                className="mt-3 flex items-center gap-2 rounded-lg border border-sky-500/30 bg-sky-500/10 px-3 py-2 text-xs font-semibold text-sky-600 transition-colors hover:bg-sky-500/20 dark:text-sky-400"
               >
                 <HelpCircle className="h-4 w-4" aria-hidden="true" />
                 {t('How to Use App (6-Step Tour)', 'Paano Gamitin ang App (Gabay)')}
               </button>
 
-              <div className="mt-5 border-t border-terminal-border/80 pt-4">
+              <div className="mt-5 border-t border-terminal-border pt-4">
                 <div className="flex items-center justify-between px-2">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-terminal-muted">
                     {t('Lessons', 'Mga Aralin')}
@@ -732,7 +732,7 @@ export function AppShell({
                   <Link
                     to="/academy"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-[11px] font-semibold text-brand"
+                    className="text-[11px] font-semibold text-brand-text"
                   >
                     {t(`All ${CURRICULUM_LESSONS.length} →`, `Lahat (${CURRICULUM_LESSONS.length}) →`)}
                   </Link>
@@ -783,7 +783,7 @@ export function AppShell({
       {/* Mobile Bottom Navigation Bar (5 clean slots: Home, Academy, Paper, Backtest, Journal) */}
       <nav
         aria-label="Mobile navigation"
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-terminal-border/80 bg-terminal-surface/95 px-2 pb-[max(0.4rem,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-md lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 border-t border-terminal-border bg-terminal-surface/95 px-2 pb-[max(0.4rem,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-md lg:hidden"
       >
         <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
           {MOBILE_BOTTOM_NAV.map((item) => {
@@ -794,9 +794,9 @@ export function AppShell({
                 to={item.to}
                 end={item.end}
                 className={({ isActive }) =>
-                  `flex flex-col items-center justify-center gap-0.5 rounded-xl py-1.5 text-[10px] font-medium transition-colors ${
+                  `flex flex-col items-center justify-center gap-0.5 rounded-lg py-1.5 text-[10px] font-medium transition-colors ${
                     isActive
-                      ? 'bg-brand-soft font-semibold text-brand'
+                      ? 'bg-brand-soft font-semibold text-brand-text'
                       : 'text-terminal-muted hover:text-terminal-text'
                   }`
                 }

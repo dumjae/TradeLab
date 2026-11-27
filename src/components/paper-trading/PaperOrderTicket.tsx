@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import {
   AlertTriangle,
-  ArrowDownRight,
-  ArrowUpRight,
   CheckSquare,
   ChevronDown,
   ChevronUp,
@@ -12,7 +10,11 @@ import {
 import { useLanguage } from '../../context/LanguageContext';
 import { UI_COPY } from '../../data/taglishTranslations';
 import { expandAcronyms } from '../../lib/acronymHelper';
-import { calculateOrderPreview } from '../../lib/paperTradingEngine';
+import type { QuickPositionSetup } from '../../lib/drawingTools';
+import {
+  calculateOrderPreview,
+  getEffectiveFeeSpread,
+} from '../../lib/paperTradingEngine';
 import type { MarketSymbolOption } from '../../types/backtest';
 import type {
   PaperAccount,
@@ -94,6 +96,8 @@ export interface PaperOrderTicketProps {
   currentPrice: number;
   dailyLossLimitReached: boolean;
   submitting: boolean;
+  quickSetup?: QuickPositionSetup | null;
+  quickSetupNonce?: number;
   onPlaceOrder: (input: Omit<PlacePaperOrderInput, 'accountId'>) => Promise<void>;
 }
 
@@ -103,6 +107,8 @@ export function PaperOrderTicket({
   currentPrice,
   dailyLossLimitReached,
   submitting,
+  quickSetup = null,
+  quickSetupNonce = 0,
   onPlaceOrder,
 }: PaperOrderTicketProps) {
   const { t } = useLanguage();
@@ -124,12 +130,31 @@ export function PaperOrderTicket({
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const lastSeedKeyRef = useRef<string>('');
+  const lastQuickSetupNonceRef = useRef<number>(0);
 
   // Keep risk % synced when switching demo wallets
   useEffect(() => {
     setRiskPctInput(String(account.maxRiskPerTradePct || 1));
     setDailyLimitAcknowledged(false);
   }, [account.id, account.maxRiskPerTradePct]);
+
+  // Apply 1:2 RR quick position setup from the TradingView Drawing Rail
+  useEffect(() => {
+    if (!quickSetup || quickSetupNonce <= 0) {
+      return;
+    }
+    if (lastQuickSetupNonceRef.current === quickSetupNonce) {
+      return;
+    }
+    lastQuickSetupNonceRef.current = quickSetupNonce;
+    lastSeedKeyRef.current = `${symbolOption.symbol}:${quickSetup.direction}`;
+
+    setDirection(quickSetup.direction);
+    setOrderType('market');
+    setStopLossInput(formatPriceValue(quickSetup.stopLoss, decimals));
+    setTakeProfitInput(formatPriceValue(quickSetup.takeProfit, decimals));
+    setSubmitError(null);
+  }, [quickSetup, quickSetupNonce, symbolOption.symbol, decimals]);
 
   // Seed clean default SL (1%) & TP (2x RR) whenever symbol or direction changes
   useEffect(() => {
@@ -151,6 +176,24 @@ export function PaperOrderTicket({
     setTakeProfitInput(formatPriceValue(currentPrice * tpFactor, decimals));
     setSubmitError(null);
   }, [symbolOption.symbol, direction, currentPrice, decimals]);
+
+  const bidAskQuote = useMemo(() => {
+    if (!Number.isFinite(currentPrice) || currentPrice <= 0) {
+      return { bid: 0, ask: 0, spreadValue: 0 };
+    }
+    const { spreadBps } = getEffectiveFeeSpread(account, symbolOption.assetClass);
+    const halfSpread =
+      account.simulateFeesSpread && spreadBps > 0
+        ? currentPrice * (spreadBps / 10_000) * 0.5
+        : 0;
+    const bid = Math.max(0, currentPrice - halfSpread);
+    const ask = currentPrice + halfSpread;
+    return {
+      bid,
+      ask,
+      spreadValue: Math.max(0, ask - bid),
+    };
+  }, [account, symbolOption.assetClass, currentPrice]);
 
   const referenceEntryPrice = useMemo(() => {
     if (orderType === 'limit') {
@@ -256,25 +299,79 @@ export function PaperOrderTicket({
   return (
     <aside
       aria-label="Paper trading order ticket"
-      className="rounded-2xl border border-terminal-border bg-terminal-surface p-4 shadow-sm"
+      className="rounded-lg border border-terminal-border bg-terminal-surface p-3.5"
     >
-      {/* Header + Live Price Badge */}
-      <div className="flex items-center justify-between gap-2 pb-3 border-b border-terminal-border/80">
-        <div>
-          <h2 className="text-sm font-bold text-terminal-text">
+      {/* Header + Symbol Tag */}
+      <div className="flex items-center justify-between gap-2 border-b border-terminal-border pb-2.5">
+        <div className="min-w-0">
+          <h2 className="text-sm font-bold tracking-tight text-terminal-text">
             {t('Order Ticket', 'Demo Order Ticket')}
           </h2>
-          <p className="text-[11px] text-terminal-muted">{symbolOption.symbol}</p>
+          <p className="truncate font-mono text-[11px] font-medium text-terminal-muted">
+            {symbolOption.symbol} · {symbolOption.displayName}
+          </p>
         </div>
 
-        <div className="rounded-xl border border-terminal-border bg-terminal-bg px-2.5 py-1 text-right">
-          <span className="block text-[10px] font-medium uppercase tracking-wide text-terminal-muted">
-            {t('Live Price', 'Presyo Ngayon')}
+        <span className="shrink-0 rounded-md border border-terminal-border bg-terminal-bg px-2 py-0.5 font-mono text-[11px] font-semibold text-terminal-text tabular-nums">
+          {currentPrice > 0 ? formatPriceValue(currentPrice, decimals) : '—'}
+        </span>
+      </div>
+
+      {/* TradingView Classic Bid / Spread / Ask Buy-Sell Header */}
+      <div
+        role="group"
+        aria-label={t('Trade direction — Sell Bid or Buy Ask', 'Direksyon ng trade — Sell o Buy')}
+        className="mt-3 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-stretch gap-1.5"
+      >
+        <button
+          type="button"
+          aria-pressed={direction === 'short'}
+          onClick={() => setDirection('short')}
+          className={`flex flex-col items-start justify-center rounded-lg border px-2.5 py-2 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bear ${
+            direction === 'short'
+              ? 'border-bear bg-bear text-white ring-2 ring-bear/35'
+              : 'border-bear/35 bg-bear/10 text-bear hover:bg-bear/15'
+          }`}
+        >
+          <span className="text-[10px] font-bold uppercase tracking-wider opacity-90">
+            SELL · {t('Short', 'Benta')}
           </span>
-          <span className="font-mono text-sm font-bold text-terminal-text tabular-nums">
-            {currentPrice > 0 ? formatPriceValue(currentPrice, decimals) : '—'}
+          <span className="mt-0.5 font-mono text-xs font-bold tabular-nums">
+            {bidAskQuote.bid > 0 ? formatPriceValue(bidAskQuote.bid, decimals) : '—'}
+          </span>
+        </button>
+
+        <div
+          aria-label={t('Bid-Ask Spread', 'Spread ng Bid at Ask')}
+          className="flex flex-col items-center justify-center rounded-lg border border-terminal-border bg-terminal-bg px-2 py-1 text-center"
+        >
+          <span className="text-[9px] font-semibold uppercase tracking-wider text-terminal-muted">
+            SPREAD
+          </span>
+          <span className="mt-0.5 font-mono text-[10px] font-semibold text-terminal-text tabular-nums">
+            {bidAskQuote.spreadValue > 0
+              ? bidAskQuote.spreadValue.toFixed(decimals)
+              : '0'}
           </span>
         </div>
+
+        <button
+          type="button"
+          aria-pressed={direction === 'long'}
+          onClick={() => setDirection('long')}
+          className={`flex flex-col items-end justify-center rounded-lg border px-2.5 py-2 text-right transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+            direction === 'long'
+              ? 'border-brand bg-brand text-brand-fg ring-2 ring-brand/35'
+              : 'border-brand/35 bg-brand-soft text-brand-text hover:bg-brand/20'
+          }`}
+        >
+          <span className="text-[10px] font-bold uppercase tracking-wider opacity-90">
+            BUY · {t('Long', 'Bili')}
+          </span>
+          <span className="mt-0.5 font-mono text-xs font-bold tabular-nums">
+            {bidAskQuote.ask > 0 ? formatPriceValue(bidAskQuote.ask, decimals) : '—'}
+          </span>
+        </button>
       </div>
 
       <form onSubmit={handleSubmit} className="mt-3 space-y-3">
@@ -282,15 +379,15 @@ export function PaperOrderTicket({
         <div
           role="group"
           aria-label="Order execution type"
-          className="grid grid-cols-2 gap-1 rounded-xl border border-terminal-border bg-terminal-bg p-1"
+          className="grid grid-cols-2 gap-1 rounded-lg border border-terminal-border bg-terminal-bg p-0.5"
         >
           <button
             type="button"
             aria-pressed={orderType === 'market'}
             onClick={() => setOrderType('market')}
-            className={`rounded-lg py-1.5 text-xs font-semibold transition-colors ${
+            className={`rounded-md py-1.5 text-xs font-semibold transition-colors ${
               orderType === 'market'
-                ? 'bg-terminal-surface text-terminal-text shadow-sm'
+                ? 'bg-terminal-elevated text-terminal-text'
                 : 'text-terminal-muted hover:text-terminal-text'
             }`}
           >
@@ -300,44 +397,13 @@ export function PaperOrderTicket({
             type="button"
             aria-pressed={orderType === 'limit'}
             onClick={() => setOrderType('limit')}
-            className={`rounded-lg py-1.5 text-xs font-semibold transition-colors ${
+            className={`rounded-md py-1.5 text-xs font-semibold transition-colors ${
               orderType === 'limit'
-                ? 'bg-terminal-surface text-terminal-text shadow-sm'
+                ? 'bg-terminal-elevated text-terminal-text'
                 : 'text-terminal-muted hover:text-terminal-text'
             }`}
           >
             {t('Limit (Wait)', copy.limitOrder.taglish)}
-          </button>
-        </div>
-
-        {/* Buy / Long vs Sell / Short Toggle */}
-        <div role="group" aria-label="Trade direction" className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            aria-pressed={direction === 'long'}
-            onClick={() => setDirection('long')}
-            className={`inline-flex items-center justify-center gap-1.5 rounded-xl border py-2 text-xs font-bold transition-colors ${
-              direction === 'long'
-                ? 'border-bull bg-bull text-white shadow-sm'
-                : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-bull/50 hover:text-bull'
-            }`}
-          >
-            <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
-            {t(copy.buyLong.en, copy.buyLong.taglish)}
-          </button>
-
-          <button
-            type="button"
-            aria-pressed={direction === 'short'}
-            onClick={() => setDirection('short')}
-            className={`inline-flex items-center justify-center gap-1.5 rounded-xl border py-2 text-xs font-bold transition-colors ${
-              direction === 'short'
-                ? 'border-bear bg-bear text-white shadow-sm'
-                : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-bear/50 hover:text-bear'
-            }`}
-          >
-            <ArrowDownRight className="h-3.5 w-3.5" aria-hidden="true" />
-            {t(copy.sellShort.en, copy.sellShort.taglish)}
           </button>
         </div>
 
@@ -358,7 +424,7 @@ export function PaperOrderTicket({
               step="any"
               value={limitPriceInput}
               onChange={(event) => setLimitPriceInput(event.target.value)}
-              className="mt-1 w-full rounded-xl border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text tabular-nums focus:border-brand focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text tabular-nums focus:border-brand focus:outline-none"
             />
           </div>
         )}
@@ -378,7 +444,7 @@ export function PaperOrderTicket({
                   key={pct}
                   type="button"
                   onClick={() => applyStopLossPercent(pct)}
-                  className="rounded-md border border-terminal-border bg-terminal-bg px-1.5 py-0.5 font-mono text-[10px] font-semibold text-terminal-muted transition-colors hover:border-bear/50 hover:text-bear"
+                  className="rounded border border-terminal-border bg-terminal-bg px-1.5 py-0.5 font-mono text-[10px] font-semibold text-terminal-muted transition-colors hover:border-bear/50 hover:text-bear"
                 >
                   {direction === 'long' ? '-' : '+'}
                   {pct}%
@@ -395,7 +461,7 @@ export function PaperOrderTicket({
             required
             value={stopLossInput}
             onChange={(event) => setStopLossInput(event.target.value)}
-            className="mt-1 w-full rounded-xl border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text tabular-nums focus:border-bear focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text tabular-nums focus:border-bear focus:outline-none"
           />
         </div>
 
@@ -413,7 +479,7 @@ export function PaperOrderTicket({
                 type="button"
                 onClick={() => applyRewardRatio(2)}
                 title="Set TP to 1:2 RR (Risk-to-Reward Ratio)"
-                className="rounded-md border border-terminal-border bg-terminal-bg px-1.5 py-0.5 font-mono text-[10px] font-semibold text-bull transition-colors hover:border-bull/60 hover:bg-bull/10"
+                className="rounded border border-terminal-border bg-terminal-bg px-1.5 py-0.5 font-mono text-[10px] font-semibold text-bull transition-colors hover:border-bull/60 hover:bg-bull/10"
               >
                 1:2 RR
               </button>
@@ -421,7 +487,7 @@ export function PaperOrderTicket({
                 type="button"
                 onClick={() => applyRewardRatio(3)}
                 title="Set TP to 1:3 RR (Risk-to-Reward Ratio)"
-                className="rounded-md border border-terminal-border bg-terminal-bg px-1.5 py-0.5 font-mono text-[10px] font-semibold text-bull transition-colors hover:border-bull/60 hover:bg-bull/10"
+                className="rounded border border-terminal-border bg-terminal-bg px-1.5 py-0.5 font-mono text-[10px] font-semibold text-bull transition-colors hover:border-bull/60 hover:bg-bull/10"
               >
                 1:3 RR
               </button>
@@ -436,7 +502,7 @@ export function PaperOrderTicket({
             value={takeProfitInput}
             onChange={(event) => setTakeProfitInput(event.target.value)}
             placeholder={t('Optional target price', 'Opsyonal na target')}
-            className="mt-1 w-full rounded-xl border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text tabular-nums placeholder:text-terminal-muted focus:border-bull focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-2 font-mono text-xs text-terminal-text tabular-nums placeholder:text-terminal-muted focus:border-bull focus:outline-none"
           />
         </div>
 
@@ -456,7 +522,7 @@ export function PaperOrderTicket({
                     key={pct}
                     type="button"
                     onClick={() => setRiskPctInput(String(pct))}
-                    className={`rounded-md px-1.5 py-0.5 font-mono text-[10px] font-semibold transition-colors ${
+                    className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold transition-colors ${
                       parsedRisk === pct
                         ? 'bg-brand text-brand-fg'
                         : 'border border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
@@ -477,7 +543,7 @@ export function PaperOrderTicket({
               step="0.1"
               value={riskPctInput}
               onChange={(event) => setRiskPctInput(event.target.value)}
-              className="mt-1 w-full rounded-xl border border-terminal-border bg-terminal-bg px-3 py-1.5 font-mono text-xs text-terminal-text tabular-nums focus:border-brand focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-3 py-1.5 font-mono text-xs text-terminal-text tabular-nums focus:border-brand focus:outline-none"
             />
           </div>
 
@@ -494,7 +560,7 @@ export function PaperOrderTicket({
               aria-label="Setup tag"
               value={setupTag}
               onChange={(event) => setSetupTag(event.target.value)}
-              className="mt-1 w-full rounded-xl border border-terminal-border bg-terminal-bg px-2.5 py-1.5 text-xs text-terminal-text focus:border-brand focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1.5 text-xs text-terminal-text focus:border-brand focus:outline-none"
             >
               {SETUP_TAG_OPTIONS.map((option) => (
                 <option key={option.value || 'none'} value={option.value}>
@@ -506,7 +572,7 @@ export function PaperOrderTicket({
         </div>
 
         {/* Compact Live Preview Box */}
-        <div className="rounded-xl border border-terminal-border bg-terminal-bg/85 p-3">
+        <div className="rounded-lg border border-terminal-border bg-terminal-bg p-3">
           {preview.valid ? (
             <div className="space-y-1.5 text-xs">
               <div className="flex items-center justify-between gap-2">
@@ -538,7 +604,7 @@ export function PaperOrderTicket({
                 </span>
               </div>
 
-              <div className="flex items-center justify-between gap-2 border-t border-terminal-border/70 pt-1.5">
+              <div className="flex items-center justify-between gap-2 border-t border-terminal-border pt-1.5">
                 <span className="inline-flex items-center gap-1 text-terminal-muted">
                   <Info className="h-3 w-3 shrink-0" aria-hidden="true" />
                   {t('Est. Fee & Spread', 'Fee at Spread')}
@@ -567,15 +633,15 @@ export function PaperOrderTicket({
         </div>
 
         {/* Collapsible 5-Rule Pre-Trade Check (collapsed by default) */}
-        <div className="rounded-xl border border-terminal-border/80 bg-terminal-bg/60">
+        <div className="rounded-lg border border-terminal-border bg-terminal-bg/70">
           <button
             type="button"
             aria-expanded={checklistOpen}
             onClick={() => setChecklistOpen((prev) => !prev)}
-            className="flex w-full items-center justify-between px-3 py-2 text-xs font-semibold text-terminal-text transition-colors hover:text-brand"
+            className="flex w-full items-center justify-between px-3 py-2 text-xs font-semibold text-terminal-text transition-colors hover:text-brand-text"
           >
             <span className="inline-flex items-center gap-1.5">
-              <CheckSquare className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
+              <CheckSquare className="h-3.5 w-3.5 text-brand-text" aria-hidden="true" />
               {t('5-Rule Pre-Trade Check', '5-Rule Checklist Bago Pumasok')} ({checkedCount}/5)
             </span>
             {checklistOpen ? (
@@ -586,7 +652,7 @@ export function PaperOrderTicket({
           </button>
 
           {checklistOpen && (
-            <div className="space-y-1.5 border-t border-terminal-border/70 px-3 py-2.5">
+            <div className="space-y-1.5 border-t border-terminal-border px-3 py-2.5">
               {PRE_TRADE_RULES.map((rule) => (
                 <label
                   key={rule.id}
@@ -616,10 +682,10 @@ export function PaperOrderTicket({
 
         {/* Calm Amber Daily Loss Limit Guardrail */}
         {dailyLossLimitReached && (
-          <div className="space-y-2 rounded-xl border border-amber-500/40 bg-amber-500/10 p-2.5 text-xs text-amber-800 dark:text-amber-200">
+          <div className="space-y-2 rounded-lg border border-amber-wisdom/40 bg-amber-wisdom/10 p-2.5 text-xs text-amber-800 dark:text-amber-200">
             <div className="flex items-start gap-2">
               <AlertTriangle
-                className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400"
+                className="mt-0.5 h-4 w-4 shrink-0 text-amber-wisdom"
                 aria-hidden="true"
               />
               <span>{t(copy.dailyLossWarning.en, copy.dailyLossWarning.taglish)}</span>
@@ -635,7 +701,7 @@ export function PaperOrderTicket({
                 type="checkbox"
                 checked={dailyLimitAcknowledged}
                 onChange={(event) => setDailyLimitAcknowledged(event.target.checked)}
-                className="h-3.5 w-3.5 rounded border-amber-500/50 accent-brand"
+                className="h-3.5 w-3.5 rounded border-amber-wisdom/50 accent-brand"
               />
               <span>
                 {t(
@@ -657,8 +723,10 @@ export function PaperOrderTicket({
         <button
           type="submit"
           disabled={!canSubmit}
-          className={`w-full rounded-xl py-2.5 text-xs font-bold text-white shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 ${
-            direction === 'long' ? 'bg-bull' : 'bg-bear'
+          className={`w-full rounded-lg py-2.5 text-xs font-bold shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 ${
+            direction === 'long'
+              ? 'bg-brand text-brand-fg'
+              : 'bg-bear text-white'
           }`}
         >
           {submitting

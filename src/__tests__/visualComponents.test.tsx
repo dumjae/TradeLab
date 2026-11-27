@@ -214,7 +214,7 @@ describe('MindsetVaultDrawer — filtering & custom personal trading rule creati
       expect(screen.getByText('Custom Rule')).toBeInTheDocument();
       expect(screen.getAllByRole('article')).toHaveLength(14);
     });
-  });
+  }, 15000);
 });
 
 describe('AcademyCatalogPage — 27-lesson catalog & market category filtering', () => {

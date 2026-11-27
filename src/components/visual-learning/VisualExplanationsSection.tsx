@@ -589,14 +589,14 @@ export function VisualExplanationsSection({
   return (
     <section
       aria-label={`Visual explanations for ${lesson.title}`}
-      className="space-y-3.5 rounded-2xl border border-terminal-border bg-terminal-surface/75 p-3 sm:p-4"
+      className="space-y-3.5 rounded-xl border border-terminal-border bg-terminal-surface p-3 sm:p-4"
     >
       {/* Compact Top Bar: 4-Mode Pill Switcher + Flag Difficult */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div
           role="tablist"
           aria-label="Visual explanation modes"
-          className="inline-flex flex-1 flex-wrap items-center gap-1 rounded-xl border border-terminal-border bg-terminal-bg p-1 sm:flex-none"
+          className="inline-flex flex-1 flex-wrap items-center gap-1 rounded-lg border border-terminal-border bg-terminal-bg p-1 sm:flex-none"
         >
           {MODE_TABS.map((tab) => {
             const Icon = tab.icon;
@@ -609,10 +609,10 @@ export function VisualExplanationsSection({
                 aria-selected={active}
                 aria-label={tab.label}
                 onClick={() => setActiveMode(tab.id)}
-                className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all sm:flex-none ${
+                className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-all sm:flex-none ${
                   active
                     ? 'bg-brand text-brand-fg shadow-sm'
-                    : 'text-terminal-muted hover:text-terminal-text'
+                    : 'text-terminal-muted hover:bg-terminal-elevated/70 hover:text-terminal-text'
                 }`}
               >
                 <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
@@ -626,7 +626,7 @@ export function VisualExplanationsSection({
           type="button"
           onClick={handleFlagDifficult}
           title={t('Mark this concept as difficult for later review', 'I-mark para balikan mamaya')}
-          className="inline-flex items-center gap-1.5 rounded-xl border border-terminal-border bg-terminal-bg px-2.5 py-1.5 text-xs font-medium text-terminal-muted transition-colors hover:border-amber-500/40 hover:text-amber-500 dark:hover:text-amber-400"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1.5 text-xs font-medium text-terminal-muted transition-colors hover:border-amber-500/40 hover:bg-terminal-elevated hover:text-amber-500 dark:hover:text-amber-400"
         >
           <Flag className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" aria-hidden="true" />
           <span className="hidden sm:inline">
@@ -636,7 +636,7 @@ export function VisualExplanationsSection({
       </div>
 
       {tutorialMode && (
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-sky-500/35 bg-sky-500/10 px-3 py-2 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-sky-500/35 bg-sky-500/10 px-3 py-2 text-xs">
           <div className="flex items-center gap-2 text-terminal-text">
             <Compass className="h-3.5 w-3.5 shrink-0 text-sky-400" aria-hidden="true" />
             <span className="font-mono font-semibold text-sky-500 dark:text-sky-400 tabular-nums">
@@ -663,7 +663,7 @@ export function VisualExplanationsSection({
       {statusFeedback && (
         <div
           role="status"
-          className="flex items-center gap-2 rounded-xl border border-bull/35 bg-bull/10 px-3 py-1.5 text-xs font-medium text-bull"
+          className="flex items-center gap-2 rounded-lg border border-bull/35 bg-bull/10 px-3 py-1.5 text-xs font-medium text-bull"
         >
           <CheckCircle2 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           <span>{statusFeedback}</span>
@@ -675,9 +675,9 @@ export function VisualExplanationsSection({
         <div className="space-y-3.5">
           {/* 1. Compact "In Plain English / Sa Simpleng Salita" Card */}
           {plainSummaryDisplay && (
-            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3.5">
+            <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3.5">
               <div className="flex items-center gap-2">
-                <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400">
                   <Lightbulb className="h-3.5 w-3.5" aria-hidden="true" />
                 </span>
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">
@@ -689,7 +689,7 @@ export function VisualExplanationsSection({
               </p>
               {isTaglish && taglishEntry?.quickTakeaway && (
                 <div className="mt-2.5 rounded-lg border border-brand/25 bg-brand-soft/60 px-3 py-2 text-xs text-terminal-text">
-                  <strong className="font-semibold text-brand">
+                  <strong className="font-semibold text-brand-text">
                     {UI_COPY.lesson.quickTakeawayTitle.taglish}:{' '}
                   </strong>
                   {taglishEntry.quickTakeaway}
@@ -699,10 +699,10 @@ export function VisualExplanationsSection({
           )}
 
           {/* 2. Distinct Quick Cheat-Card (Written Rules — separate from Interactive Diagrams tab) */}
-          <div className="space-y-3 rounded-xl border border-terminal-border bg-terminal-surface p-3.5">
+          <div className="space-y-3 rounded-lg border border-terminal-border bg-terminal-bg/60 p-3.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-brand/30 bg-brand-soft text-brand">
+                <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-brand/30 bg-brand-soft text-brand-text">
                   <Layers className="h-3.5 w-3.5" aria-hidden="true" />
                 </span>
                 <div>
@@ -723,7 +723,7 @@ export function VisualExplanationsSection({
               <button
                 type="button"
                 onClick={() => setActiveMode('diagram')}
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-brand px-3 py-1.5 text-[11px] font-semibold text-brand-fg shadow-sm transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand active:scale-[0.98]"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-brand px-3 py-1.5 text-[11px] font-semibold text-brand-fg shadow-sm transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand active:scale-[0.98]"
               >
                 <Layers className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>
@@ -739,7 +739,7 @@ export function VisualExplanationsSection({
             {/* 2-Column Bullish vs. Bearish At-a-Glance Card */}
             <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
               {/* Bullish Column */}
-              <div className="rounded-xl border border-bull/35 bg-bull/5 p-3">
+              <div className="rounded-lg border border-bull/35 bg-bull/5 p-3">
                 <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-bull">
                   <TrendingUp className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                   <span>{t('Bullish (Up / Long)', 'Bullish (Pataas / Buy)')}</span>
@@ -756,7 +756,7 @@ export function VisualExplanationsSection({
               </div>
 
               {/* Bearish Column */}
-              <div className="rounded-xl border border-bear/35 bg-bear/5 p-3">
+              <div className="rounded-lg border border-bear/35 bg-bear/5 p-3">
                 <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-bear">
                   <TrendingDown className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                   <span>{t('Bearish (Down / Short)', 'Bearish (Pababa / Sell)')}</span>
@@ -779,10 +779,10 @@ export function VisualExplanationsSection({
                 {lesson.terminology.slice(0, 4).map((entry) => (
                   <span
                     key={entry.term}
-                    className="inline-flex items-center gap-1 rounded-full border border-terminal-border bg-terminal-bg px-2.5 py-0.5 text-[11px] text-terminal-muted"
+                    className="inline-flex items-center gap-1 rounded-md border border-terminal-border bg-terminal-surface px-2 py-0.5 text-[11px] text-terminal-muted"
                   >
                     {entry.shortCode && (
-                      <strong className="font-mono font-semibold text-brand">
+                      <strong className="font-mono font-semibold text-brand-text">
                         {entry.shortCode}
                       </strong>
                     )}
@@ -803,7 +803,7 @@ export function VisualExplanationsSection({
                 <button
                   type="button"
                   onClick={() => setExpandAllSections((prev) => !prev)}
-                  className="text-[11px] font-semibold text-brand hover:underline"
+                  className="text-[11px] font-semibold text-brand-text hover:underline"
                 >
                   {expandAllSections
                     ? t('Collapse', 'Isara')
@@ -816,11 +816,11 @@ export function VisualExplanationsSection({
               <details
                 key={section.id}
                 open={expandAllSections || index === 0}
-                className="group rounded-xl border border-terminal-border bg-terminal-surface"
+                className="group rounded-lg border border-terminal-border bg-terminal-bg/45"
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-2.5 px-3.5 py-2.5">
                   <div className="flex min-w-0 items-center gap-2">
-                    <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-brand/30 bg-brand-soft font-mono text-[10px] font-bold text-brand tabular-nums">
+                    <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded border border-brand/30 bg-brand-soft font-mono text-[10px] font-bold text-brand-text tabular-nums">
                       {String(index + 1).padStart(2, '0')}
                     </span>
                     <span className="text-xs font-semibold leading-snug text-terminal-text sm:text-[13px]">
@@ -868,7 +868,7 @@ export function VisualExplanationsSection({
 
           {/* 4. Compact Collapsible Common Beginner Questions (FAQ) */}
           {activeFaqItems.length > 0 && (
-            <div className="space-y-2 rounded-xl border border-terminal-border bg-terminal-bg/60 p-3.5">
+            <div className="space-y-2 rounded-lg border border-terminal-border bg-terminal-bg/60 p-3.5">
               <div className="flex items-center gap-2">
                 <HelpCircle
                   className="h-3.5 w-3.5 shrink-0 text-sky-500 dark:text-sky-400"
@@ -901,7 +901,7 @@ export function VisualExplanationsSection({
           )}
 
           {/* 5. Compact Next-Step Row */}
-          <div className="flex flex-col gap-2 rounded-xl border border-terminal-border bg-terminal-bg/75 p-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2 rounded-lg border border-terminal-border bg-terminal-bg/75 p-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs font-medium text-terminal-muted">
               {t('See this on a real chart next:', 'Tingnan naman ito sa totoong chart:')}
             </p>
@@ -909,7 +909,7 @@ export function VisualExplanationsSection({
               <button
                 type="button"
                 onClick={() => setActiveMode('chart')}
-                className="inline-flex items-center gap-1.5 rounded-full bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-fg shadow-sm transition-opacity hover:opacity-95 active:scale-[0.98]"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-fg shadow-sm transition-opacity hover:opacity-95 active:scale-[0.98]"
               >
                 <LineChart className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>{t('Open Chart Example', 'Buksan ang Chart')}</span>
@@ -918,7 +918,7 @@ export function VisualExplanationsSection({
               <button
                 type="button"
                 onClick={() => setActiveMode('video')}
-                className="inline-flex items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-surface px-3.5 py-1.5 text-xs font-semibold text-terminal-text transition-colors hover:border-sky-500/45 hover:text-sky-600 dark:hover:text-sky-400"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-terminal-border bg-terminal-surface px-3.5 py-1.5 text-xs font-semibold text-terminal-text transition-colors hover:border-sky-500/45 hover:bg-terminal-elevated hover:text-sky-600 dark:hover:text-sky-400"
               >
                 <PlayCircle className="h-3.5 w-3.5 text-sky-500 dark:text-sky-400" aria-hidden="true" />
                 <span>{t('Watch Video', 'Panoorin ang Video')}</span>
@@ -935,8 +935,8 @@ export function VisualExplanationsSection({
       {activeMode === 'video' && (
         <div className="space-y-3">
           {!activeResourceBundle ? (
-            <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-terminal-border bg-terminal-bg/60 px-5 py-7 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-500 dark:text-rose-400">
+            <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-terminal-border bg-terminal-bg/60 px-5 py-7 text-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-500 dark:text-rose-400">
                 <Youtube className="h-5 w-5" aria-hidden="true" />
               </div>
               <div className="max-w-sm space-y-1">
@@ -956,7 +956,7 @@ export function VisualExplanationsSection({
                 {isAdmin && (
                   <Link
                     to={`/admin/visual-library?lesson=${lesson.slug}`}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95"
                   >
                     <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                     Paste YouTube Link
@@ -965,14 +965,14 @@ export function VisualExplanationsSection({
                 <button
                   type="button"
                   onClick={() => setActiveMode('diagram')}
-                  className="rounded-full border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-brand/45"
+                  className="rounded-lg border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-brand/45 hover:bg-terminal-elevated"
                 >
                   {t('Open Diagram', 'Buksan ang Diagram')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveMode('chart')}
-                  className="rounded-full border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-brand/45"
+                  className="rounded-lg border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-brand/45 hover:bg-terminal-elevated"
                 >
                   {t('Open Chart', 'Buksan ang Chart')}
                 </button>
@@ -994,7 +994,7 @@ export function VisualExplanationsSection({
                   <p className="min-w-0 truncate text-xs font-semibold text-terminal-text">
                     {activeResourceBundle.resource.title}
                   </p>
-                  <span className="hidden shrink-0 items-center rounded-full border border-terminal-border bg-terminal-bg px-2 py-0.5 text-[10px] font-medium text-terminal-muted sm:inline-flex">
+                  <span className="hidden shrink-0 items-center rounded border border-terminal-border bg-terminal-bg px-2 py-0.5 text-[10px] font-medium text-terminal-muted sm:inline-flex">
                     {activeResourceBundle.resource.sourceName}
                   </span>
                 </div>
@@ -1002,7 +1002,7 @@ export function VisualExplanationsSection({
                   {isAdmin && (
                     <Link
                       to={`/admin/visual-library?lesson=${lesson.slug}`}
-                      className="inline-flex items-center gap-1 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1 text-[11px] font-medium text-terminal-muted transition-colors hover:border-brand/45 hover:text-brand"
+                      className="inline-flex items-center gap-1 rounded-lg border border-terminal-border bg-terminal-bg px-2.5 py-1 text-[11px] font-medium text-terminal-muted transition-colors hover:border-brand/45 hover:text-brand-text"
                     >
                       <Plus className="h-3 w-3" aria-hidden="true" />
                       Add Link
@@ -1038,11 +1038,11 @@ export function VisualExplanationsSection({
 
               {/* Compact Multi-Video Switcher */}
               {externalVideoResources.length > 1 && (
-                <div className="overflow-hidden rounded-xl border border-terminal-border bg-terminal-surface">
+                <div className="overflow-hidden rounded-lg border border-terminal-border bg-terminal-surface">
                   <div className="flex items-center justify-between border-b border-terminal-border bg-terminal-elevated/40 px-3 py-1.5">
                     <div className="flex items-center gap-1.5">
                       <PlayCircle
-                        className="h-3.5 w-3.5 text-brand"
+                        className="h-3.5 w-3.5 text-brand-text"
                         aria-hidden="true"
                       />
                       <h4 className="text-[11px] font-semibold uppercase tracking-wider text-terminal-text">
@@ -1077,7 +1077,7 @@ export function VisualExplanationsSection({
                             className="group flex min-w-0 flex-1 items-center gap-2.5 rounded-lg text-left transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                           >
                             <div
-                              className={`relative aspect-video w-20 shrink-0 overflow-hidden rounded-lg border bg-[#0d1a1c] ${
+                              className={`relative aspect-video w-20 shrink-0 overflow-hidden rounded-lg border bg-[#131722] ${
                                 isSelected
                                   ? 'border-brand/70'
                                   : 'border-terminal-border group-hover:border-brand/40'
@@ -1128,18 +1128,18 @@ export function VisualExplanationsSection({
                               <p
                                 className={`truncate text-xs font-semibold transition-colors ${
                                   isSelected
-                                    ? 'text-brand'
-                                    : 'text-terminal-text group-hover:text-brand'
+                                    ? 'text-brand-text'
+                                    : 'text-terminal-text group-hover:text-brand-text'
                                 }`}
                               >
                                 {item.resource.title}
                               </p>
                               <div className="flex flex-wrap items-center gap-1.5">
-                                <span className="inline-flex max-w-[160px] items-center truncate rounded-full border border-terminal-border bg-terminal-bg px-2 py-0.5 text-[10px] font-medium text-terminal-muted">
+                                <span className="inline-flex max-w-[160px] items-center truncate rounded border border-terminal-border bg-terminal-bg px-2 py-0.5 text-[10px] font-medium text-terminal-muted">
                                   {item.resource.sourceName}
                                 </span>
                                 {isSelected && (
-                                  <span className="inline-flex items-center rounded-full bg-brand-soft px-2 py-0.5 font-mono text-[10px] font-semibold text-brand">
+                                  <span className="inline-flex items-center rounded bg-brand-soft px-2 py-0.5 font-mono text-[10px] font-semibold text-brand-text">
                                     {t('Selected', 'Napili')}
                                   </span>
                                 )}
@@ -1186,7 +1186,7 @@ export function VisualExplanationsSection({
 
               {/* Collapsible Before/After Study Notes */}
               {hasStudyNotes && (
-                <details className="group rounded-xl border border-terminal-border bg-terminal-bg/60">
+                <details className="group rounded-lg border border-terminal-border bg-terminal-bg/60">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-xs font-medium text-terminal-text">
                     <span>
                       {t('Study Notes (Before & After Watching)', 'Gabay Bago at Pagkatapos Manood')}
@@ -1255,10 +1255,10 @@ export function VisualExplanationsSection({
                   key={scenario.id}
                   type="button"
                   onClick={() => setSelectedScenarioIndex(index)}
-                  className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                  className={`rounded-lg border px-3 py-1 text-xs font-medium transition-colors ${
                     index === selectedScenarioIndex
-                      ? 'border-brand bg-brand-soft font-semibold text-brand'
-                      : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
+                      ? 'border-brand bg-brand-soft font-semibold text-brand-text'
+                      : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:bg-terminal-elevated hover:text-terminal-text'
                   }`}
                 >
                   {expandAcronyms(scenario.title)}
@@ -1273,7 +1273,7 @@ export function VisualExplanationsSection({
               comparisonScenario={comparisonScenario}
             />
           ) : (
-            <div className="rounded-xl border border-terminal-border bg-terminal-surface p-5 text-center text-xs text-terminal-muted">
+            <div className="rounded-lg border border-terminal-border bg-terminal-surface p-5 text-center text-xs text-terminal-muted">
               {t(
                 'No historical candlestick scenarios linked to this lesson yet.',
                 'Wala pang naka-link na historical chart para sa lesson na ito.',
@@ -1285,7 +1285,7 @@ export function VisualExplanationsSection({
 
       {/* Collapsible Key Terminology (Acronym Glossary) */}
       {lesson.terminology.length > 0 && (
-        <details className="group rounded-xl border border-terminal-border bg-terminal-bg/60">
+        <details className="group rounded-lg border border-terminal-border bg-terminal-bg/60">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3.5 py-2 text-xs font-medium text-terminal-text">
             <span>
               {t(
@@ -1307,7 +1307,7 @@ export function VisualExplanationsSection({
                 <div className="flex items-center justify-between gap-1.5">
                   <span className="text-xs font-semibold text-terminal-text">{entry.term}</span>
                   {entry.shortCode && (
-                    <span className="rounded bg-brand-soft px-1.5 py-0.5 font-mono text-[10px] font-semibold text-brand">
+                    <span className="rounded bg-brand-soft px-1.5 py-0.5 font-mono text-[10px] font-semibold text-brand-text">
                       {entry.shortCode}
                     </span>
                   )}

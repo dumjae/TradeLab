@@ -133,8 +133,8 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Green candle: opens at the bottom of the body and closes at the top. Red candle: opens at the top of the body and closes at the bottom. Thin wicks mark the highest and lowest prices reached before the timer ended.',
       legend: [
-        { label: 'Green Body (Buyers Won: Close > Open)', colorToken: '#3ecf9a' },
-        { label: 'Red Body (Sellers Won: Close < Open)', colorToken: '#f2677a' },
+        { label: 'Green Body (Buyers Won: Close > Open)', colorToken: '#089981' },
+        { label: 'Red Body (Sellers Won: Close < Open)', colorToken: '#f23645' },
         { label: 'Upper & Lower Wicks (Highest / Lowest Touched)', colorToken: '#94a3b8' },
       ],
       annotations: [
@@ -437,9 +437,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Strong green candles launching out of a compact base create a fresh Demand Zone; breaking cleanly above Resistance flips that former ceiling into a new Support floor.',
       legend: [
-        { label: 'Supply / Resistance Ceiling (Sellers)', colorToken: '#f2677a' },
-        { label: 'Demand / Support Floor (Buyers)', colorToken: '#3ecf9a' },
-        { label: 'Role Reversal (Broken Ceiling → New Floor)', colorToken: '#6cc4d6' },
+        { label: 'Supply / Resistance Ceiling (Sellers)', colorToken: '#f23645' },
+        { label: 'Demand / Support Floor (Buyers)', colorToken: '#089981' },
+        { label: 'Role Reversal (Broken Ceiling → New Floor)', colorToken: '#2962ff' },
       ],
       annotations: [
         { id: 'sr1', label: 'Demand Base', sublabel: 'Small Pause Before Fast Rally', tone: 'bullish' },
@@ -743,9 +743,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'After a final down candle sweeps lows (Order Block), fast green candles close above the last Lower High (Change of Character). Waiting for the gentle pullback into the Order Block gives a low-risk entry.',
       legend: [
-        { label: 'Bullish Order Block (Last Red Launchpad Candle)', colorToken: '#3ecf9a' },
-        { label: 'Change of Character (First U-Turn Close)', colorToken: '#6cc4d6' },
-        { label: 'Stop-Grab Sweep Before Launch', colorToken: '#e5b567' },
+        { label: 'Bullish Order Block (Last Red Launchpad Candle)', colorToken: '#089981' },
+        { label: 'Change of Character (First U-Turn Close)', colorToken: '#2962ff' },
+        { label: 'Stop-Grab Sweep Before Launch', colorToken: '#ff9800' },
       ],
       annotations: [
         { id: 'ob1', label: 'Order Block', sublabel: 'Last Red Candle Sweeping Low', tone: 'bullish' },
@@ -1047,9 +1047,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Left panel: 4-Hour uptrend pulls back below the 50% halfway line into a fresh Demand floor. Right panel: Zooming into the 5-Minute chart inside that floor reveals the exact U-turn (Change of Character) for a tight-stop entry.',
       legend: [
-        { label: '4-Hour Big-Picture Uptrend', colorToken: '#3ecf9a' },
+        { label: '4-Hour Big-Picture Uptrend', colorToken: '#089981' },
         { label: '5-Minute Pullback Into Discount Zone', colorToken: '#94a3b8' },
-        { label: '5-Minute U-Turn Entry Trigger', colorToken: '#6cc4d6' },
+        { label: '5-Minute U-Turn Entry Trigger', colorToken: '#2962ff' },
       ],
       annotations: [
         { id: 'mtf1', label: '4H Trend', sublabel: 'Overall Direction = UP', tone: 'bullish' },
@@ -1351,8 +1351,8 @@ export const EXPANDED_LESSONS: Lesson[] = [
         'Asian session builds a tight overnight box; London or New York Killzone sweeps stops just outside one edge (Manipulation) before delivering a smooth directional move to the opposite edge.',
       legend: [
         { label: 'Asian Quiet Box (Accumulation)', colorToken: '#94a3b8' },
-        { label: 'London / NY Fake Sweep (Manipulation)', colorToken: '#e5b567' },
-        { label: 'Real Rush-Hour Trend (Distribution)', colorToken: '#3ecf9a' },
+        { label: 'London / NY Fake Sweep (Manipulation)', colorToken: '#ff9800' },
+        { label: 'Real Rush-Hour Trend (Distribution)', colorToken: '#089981' },
       ],
       annotations: [
         { id: 'fx1', label: 'Asian Box', sublabel: '8 PM–12 AM NY Quiet Range', tone: 'neutral' },
@@ -1655,8 +1655,8 @@ export const EXPANDED_LESSONS: Lesson[] = [
         'Mark Pre-Market High/Low before 9:30 AM ET, stay hands-off during the opening 5-minute spike, trade the confirmed 9:35–11:00 AM ET trend or reversal, and step away during NY lunch chop.',
       legend: [
         { label: 'Pre-Market Range (4:00–9:30 AM NY)', colorToken: '#94a3b8' },
-        { label: '9:30 AM ET Opening Sweep Spike', colorToken: '#e5b567' },
-        { label: '9:35–11:00 AM ET Real Morning Move', colorToken: '#3ecf9a' },
+        { label: '9:30 AM ET Opening Sweep Spike', colorToken: '#ff9800' },
+        { label: '9:35–11:00 AM ET Real Morning Move', colorToken: '#089981' },
       ],
       annotations: [
         { id: 'idx1', label: 'PMH / PML', sublabel: 'Pre-Market Stop Targets', tone: 'liquidity' },
@@ -1958,9 +1958,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Left: High positive funding at resistance signals overcrowded leveraged buyers vulnerable to a sharp liquidation flush wick. Right: Calm neutral funding with clean Bitcoin leadership fuels sustainable spot breakouts.',
       legend: [
-        { label: 'Crowded Leverage / High Funding Zone', colorToken: '#e5b567' },
-        { label: 'Liquidation Flush Wick', colorToken: '#f2677a' },
-        { label: 'Healthy Spot-Led Breakout & Hold', colorToken: '#3ecf9a' },
+        { label: 'Crowded Leverage / High Funding Zone', colorToken: '#ff9800' },
+        { label: 'Liquidation Flush Wick', colorToken: '#f23645' },
+        { label: 'Healthy Spot-Led Breakout & Hold', colorToken: '#089981' },
       ],
       annotations: [
         { id: 'cry1', label: 'BTC + BTC.D', sublabel: 'Check Bitcoin Tide First', tone: 'neutral' },
@@ -2262,9 +2262,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'A high-RVOL stock gaps up overnight, forms a crisp 5-minute Opening Range above rising VWAP, breaks out with expanded volume, and holds the Opening Range High as new support.',
       legend: [
-        { label: 'Pre-Market Gap & Opening Range Box', colorToken: '#e5b567' },
-        { label: 'Rising VWAP (Buyer Control Line)', colorToken: '#6cc4d6' },
-        { label: 'Confirmed Volume Breakout & Retest', colorToken: '#3ecf9a' },
+        { label: 'Pre-Market Gap & Opening Range Box', colorToken: '#ff9800' },
+        { label: 'Rising VWAP (Buyer Control Line)', colorToken: '#2962ff' },
+        { label: 'Confirmed Volume Breakout & Retest', colorToken: '#089981' },
       ],
       annotations: [
         { id: 'stk1', label: 'Overnight Gap', sublabel: 'Fresh News + RVOL ≥ 2.0', tone: 'neutral' },
@@ -2569,9 +2569,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Only click buy or sell when all five checklist layers agree — Left shows the confirmed Stop-Sweep + U-Turn A+ reversal; Right shows the confirmed Full-Body Breakout + Retest A+ continuation.',
       legend: [
-        { label: 'Key Level & Big-Picture Direction', colorToken: '#e5b567' },
-        { label: 'A+ Sweep + U-Turn Reversal Model', colorToken: '#f2677a' },
-        { label: 'A+ Breakout + Retest Continuation Model', colorToken: '#3ecf9a' },
+        { label: 'Key Level & Big-Picture Direction', colorToken: '#ff9800' },
+        { label: 'A+ Sweep + U-Turn Reversal Model', colorToken: '#f23645' },
+        { label: 'A+ Breakout + Retest Continuation Model', colorToken: '#089981' },
       ],
       annotations: [
         { id: 'ap1', label: '1. Big Map', sublabel: 'Clear 4H/1H Trend + Target', tone: 'liquidity' },
@@ -2874,9 +2874,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Stage 1 stays hands-off through normal pullbacks; Stage 2 banks 50% profit at +2R (+1.0R locked) and shifts stop to Breakeven; Stage 3 trails the remaining 50% behind Higher Lows to +4R (+3.0R total).',
       legend: [
-        { label: 'Stage 1: Hands-Off Breathing Room (-1R Stop)', colorToken: '#f2677a' },
-        { label: 'Stage 2: +2R Partial (50% Banked) + Breakeven', colorToken: '#6cc4d6' },
-        { label: 'Stage 3: Trailing Runner to +4R Target', colorToken: '#3ecf9a' },
+        { label: 'Stage 1: Hands-Off Breathing Room (-1R Stop)', colorToken: '#f23645' },
+        { label: 'Stage 2: +2R Partial (50% Banked) + Breakeven', colorToken: '#2962ff' },
+        { label: 'Stage 3: Trailing Runner to +4R Target', colorToken: '#089981' },
       ],
       annotations: [
         { id: 'tm1', label: 'Hands Off', sublabel: 'Let Normal Retest Breathe', tone: 'neutral' },
@@ -3180,9 +3180,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Logging Planned R vs. Actual R, Rule Adherence, and Mistake Tags reveals how removing just your worst C-grade habits lifts Expectancy into steady positive territory.',
       legend: [
-        { label: 'Clean A+ Rule-Following Curve (+Expectancy)', colorToken: '#3ecf9a' },
-        { label: 'Planned vs. MFE Target Benchmark', colorToken: '#6cc4d6' },
-        { label: 'Mistake-Tagged Leak Trades (Cut These!)', colorToken: '#f2677a' },
+        { label: 'Clean A+ Rule-Following Curve (+Expectancy)', colorToken: '#089981' },
+        { label: 'Planned vs. MFE Target Benchmark', colorToken: '#2962ff' },
+        { label: 'Mistake-Tagged Leak Trades (Cut These!)', colorToken: '#f23645' },
       ],
       annotations: [
         { id: 'tj1', label: 'Win % + Payoff', sublabel: '42% × 2.6R = +0.51R EV', tone: 'bullish' },
@@ -3486,9 +3486,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Left/Top curve: Cutting risk in half at -4% drawdown flattens the dip so just two clean +3R winners recover equity calmly. Bottom dashed curve: Doubling risk on Tilt triggers deep unrecoverable holes.',
       legend: [
-        { label: 'Disciplined Curve (0.5x Throttle + Steady Scaling)', colorToken: '#3ecf9a' },
-        { label: 'Half-Risk Protection Zone (-4% Trigger)', colorToken: '#6cc4d6' },
-        { label: 'Revenge-Tilt Spiral (Doubling Risk)', colorToken: '#f2677a' },
+        { label: 'Disciplined Curve (0.5x Throttle + Steady Scaling)', colorToken: '#089981' },
+        { label: 'Half-Risk Protection Zone (-4% Trigger)', colorToken: '#2962ff' },
+        { label: 'Revenge-Tilt Spiral (Doubling Risk)', colorToken: '#f23645' },
       ],
       annotations: [
         { id: 'dd1', label: '-2R / -4R Caps', sublabel: 'Stop Spiral Days Cold', tone: 'bearish' },

@@ -9,6 +9,7 @@ import { BacktestChartCanvas } from '../components/backtest/BacktestChartCanvas'
 import { BacktestMetricsPanel } from '../components/backtest/BacktestMetricsPanel';
 import { OrderTicketPanel } from '../components/backtest/OrderTicketPanel';
 import { ReplayControlsBar, type ReplaySpeed } from '../components/backtest/ReplayControlsBar';
+import { TradingViewDrawingRail } from '../components/charts/TradingViewDrawingRail';
 import { MARKET_SYMBOLS, getMarketSymbol } from '../data/marketCatalog';
 import {
   closePositionManually,
@@ -19,12 +20,19 @@ import {
   parseOhlcvCsv,
 } from '../lib/backtestEngine';
 import {
+  buildHorizontalPriceLine,
+  computeSessionHighLowLines,
+  roundChartPrice,
+  type DrawingToolMode,
+  type UserHorizontalLine,
+} from '../lib/drawingTools';
+import {
   deleteBacktestSession,
   listBacktestSessions,
   saveBacktestSession,
 } from '../services/backtestService';
 import { fetchMarketCandles } from '../services/marketDataService';
-import type { CandlePoint } from '../types/academy';
+import type { CandlePoint, ChartPriceLine } from '../types/academy';
 import type {
   BacktestDirection,
   BacktestPosition,
@@ -165,6 +173,13 @@ export function BacktestPage() {
   const [sessions, setSessions] = useState<BacktestSession[]>([]);
   const [saving, setSaving] = useState<boolean>(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [activeDrawingTool, setActiveDrawingTool] = useState<DrawingToolMode>('crosshair');
+  const [userLinesBySymbol, setUserLinesBySymbol] = useState<
+    Record<string, UserHorizontalLine[]>
+  >({});
+  const [showSessionHLBySymbol, setShowSessionHLBySymbol] = useState<
+    Record<string, boolean>
+  >({});
   const [state, dispatch] = useReducer(replayReducer, {
     replayIndex: 0,
     openPositions: [],
@@ -237,10 +252,70 @@ export function BacktestPage() {
 
   const currentCandle = candles[state.replayIndex];
   const lastPrice = currentCandle?.close ?? 0;
+  const activeSymbol = active?.symbol ?? symbol;
   const meta = active ? getMarketSymbol(active.symbol) : undefined;
   const decimals = meta?.decimals ?? priceDecimals(lastPrice);
   const settingsLocked =
     state.stepped || state.openPositions.length > 0 || state.trades.length > 0;
+
+  const currentUserLines = useMemo(
+    () => userLinesBySymbol[activeSymbol] ?? [],
+    [userLinesBySymbol, activeSymbol],
+  );
+  const showSessionHL = Boolean(showSessionHLBySymbol[activeSymbol]);
+
+  const extraPriceLines = useMemo<ChartPriceLine[]>(() => {
+    const lines: ChartPriceLine[] = currentUserLines.map((line) =>
+      buildHorizontalPriceLine(line, decimals),
+    );
+    if (showSessionHL && candles.length > 0) {
+      const visibleCandles = candles.slice(0, Math.min(state.replayIndex + 1, candles.length));
+      lines.push(...computeSessionHighLowLines(visibleCandles, decimals));
+    }
+    return lines;
+  }, [currentUserLines, decimals, showSessionHL, candles, state.replayIndex]);
+
+  const handleAddHorizontalLine = () => {
+    if (!Number.isFinite(lastPrice) || lastPrice <= 0) {
+      return;
+    }
+    const roundedPrice = roundChartPrice(lastPrice, decimals);
+    setUserLinesBySymbol((prev) => {
+      const existing = prev[activeSymbol] ?? [];
+      const nextLine: UserHorizontalLine = {
+        id: `bt-hline-${activeSymbol}-${Date.now()}-${existing.length + 1}`,
+        price: roundedPrice,
+        label: `H-Line ${existing.length + 1}`,
+      };
+      return {
+        ...prev,
+        [activeSymbol]: [...existing, nextLine],
+      };
+    });
+    setActiveDrawingTool('hline');
+  };
+
+  const handleToggleSessionHL = () => {
+    const nextEnabled = !showSessionHL;
+    setShowSessionHLBySymbol((prev) => ({
+      ...prev,
+      [activeSymbol]: nextEnabled,
+    }));
+    setActiveDrawingTool(nextEnabled ? 'session_hl' : 'crosshair');
+  };
+
+  const handleClearDrawings = () => {
+    setUserLinesBySymbol((prev) => {
+      const next = { ...prev };
+      delete next[activeSymbol];
+      return next;
+    });
+    setShowSessionHLBySymbol((prev) => ({
+      ...prev,
+      [activeSymbol]: false,
+    }));
+    setActiveDrawingTool('crosshair');
+  };
 
   const clearForceFlag = () => {
     setRefreshTrigger((prev) => (prev.force ? { count: prev.count, force: false } : prev));
@@ -397,7 +472,7 @@ export function BacktestPage() {
   return (
     <div className="mx-auto max-w-[1400px] space-y-5">
       <header className="flex items-center gap-3 px-1">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-500 dark:text-emerald-400">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-brand/30 bg-brand-soft text-brand-text">
           <LineChart className="h-4.5 w-4.5" aria-hidden="true" />
         </span>
         <div className="min-w-0">
@@ -436,24 +511,40 @@ export function BacktestPage() {
       {candles.length === 0 ? (
         <div
           role="status"
-          className="rounded-3xl border border-dashed border-terminal-border bg-terminal-surface p-10 text-center text-xs text-terminal-muted"
+          className="rounded-xl border border-dashed border-terminal-border bg-terminal-surface p-10 text-center text-xs text-terminal-muted"
         >
           {loading
             ? 'Loading market candles…'
             : 'No candles available for this window. Try another date range, symbol, or upload a CSV.'}
         </div>
       ) : (
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_350px]">
-          <div className="min-w-0 space-y-5">
-            <BacktestChartCanvas
-              candles={candles}
-              replayIndex={state.replayIndex}
-              symbol={active?.symbol ?? symbol}
-              timeframe={timeframe}
-              openPositions={state.openPositions}
-              trades={state.trades}
-              decimals={decimals}
-            />
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_350px]">
+          <div className="min-w-0 space-y-4">
+            <div className="flex min-w-0 flex-col gap-2 lg:flex-row lg:items-stretch">
+              <TradingViewDrawingRail
+                activeTool={activeDrawingTool}
+                onSelectTool={setActiveDrawingTool}
+                onAddHorizontalLine={handleAddHorizontalLine}
+                showSessionHL={showSessionHL}
+                onToggleSessionHL={handleToggleSessionHL}
+                drawingCount={currentUserLines.length}
+                onClearDrawings={handleClearDrawings}
+                disabled={loading || candles.length === 0}
+              />
+
+              <div className="min-w-0 flex-1">
+                <BacktestChartCanvas
+                  candles={candles}
+                  replayIndex={state.replayIndex}
+                  symbol={activeSymbol}
+                  timeframe={timeframe}
+                  openPositions={state.openPositions}
+                  trades={state.trades}
+                  decimals={decimals}
+                  extraPriceLines={extraPriceLines}
+                />
+              </div>
+            </div>
             <ReplayControlsBar
               totalBars={candles.length}
               replayIndex={state.replayIndex}

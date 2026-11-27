@@ -16,14 +16,15 @@ const config: Config = {
         },
         brand: {
           DEFAULT: 'rgb(var(--tl-brand-rgb) / <alpha-value>)',
+          text: 'var(--tl-brand-text)',
           soft: 'var(--tl-brand-soft)',
           fg: 'var(--tl-brand-fg)',
         },
-        bull: '#3ecf9a',
-        bear: '#f2677a',
-        info: '#6cc4d6',
+        bull: '#089981',
+        bear: '#f23645',
+        info: '#2196f3',
         amber: {
-          wisdom: '#e5b567',
+          wisdom: '#ff9800',
         },
       },
       fontFamily: {

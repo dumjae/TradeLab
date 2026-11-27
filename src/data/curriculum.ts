@@ -236,9 +236,9 @@ const CORE_LESSONS: Lesson[] = [
       caption:
         'Each Higher Low launches an impulsive leg that closes above the prior Swing High (BOS), advancing the bullish trend.',
       legend: [
-        { label: 'Impulsive Expansion Leg', colorToken: '#3ecf9a' },
+        { label: 'Impulsive Expansion Leg', colorToken: '#089981' },
         { label: 'Controlled Retracement', colorToken: '#64748b' },
-        { label: 'Confirmed BOS Level', colorToken: '#6cc4d6' },
+        { label: 'Confirmed BOS Level', colorToken: '#2962ff' },
       ],
       annotations: [
         { id: 'a1', label: 'SH1', sublabel: 'Initial Swing High', tone: 'neutral' },
@@ -562,9 +562,9 @@ const CORE_LESSONS: Lesson[] = [
       caption:
         'Institutional supply pairs with Buy-Side Liquidity above the range ceiling before driving price toward Sell-Side Liquidity below the floor.',
       legend: [
-        { label: 'Buy-Side Liquidity (BSL)', colorToken: '#e5b567' },
-        { label: 'Sell-Side Liquidity (SSL)', colorToken: '#6cc4d6' },
-        { label: 'Order-Flow Rotation', colorToken: '#f2677a' },
+        { label: 'Buy-Side Liquidity (BSL)', colorToken: '#ff9800' },
+        { label: 'Sell-Side Liquidity (SSL)', colorToken: '#2962ff' },
+        { label: 'Order-Flow Rotation', colorToken: '#f23645' },
       ],
       annotations: [
         { id: 'l1', label: 'BSL Pool', sublabel: 'Short Stops + Breakout Buys', tone: 'liquidity' },
@@ -878,9 +878,9 @@ const CORE_LESSONS: Lesson[] = [
       caption:
         'Three closely aligned peaks build stacked stop-losses above EQH; a sharp sweep wick absorbs them before bearish displacement breaks structure.',
       legend: [
-        { label: 'Equal Highs (EQH) Zone', colorToken: '#e5b567' },
-        { label: 'Sweep Wick Above EQH', colorToken: '#f2677a' },
-        { label: 'Bearish Displacement', colorToken: '#f2677a' },
+        { label: 'Equal Highs (EQH) Zone', colorToken: '#ff9800' },
+        { label: 'Sweep Wick Above EQH', colorToken: '#f23645' },
+        { label: 'Bearish Displacement', colorToken: '#f23645' },
       ],
       annotations: [
         { id: 'e1', label: 'EQH 1 & 2', sublabel: 'Retail Resistance Perception', tone: 'liquidity' },
@@ -1217,9 +1217,9 @@ const CORE_LESSONS: Lesson[] = [
       caption:
         'Left: Price wicks above Equal Highs, closes back below, and displaces downward (Sweep). Right: Price closes full-bodied above resistance, holds retest, and expands higher (True Breakout).',
       legend: [
-        { label: 'Liquidity / Resistance Line', colorToken: '#e5b567' },
-        { label: 'Sweep Rejection & Bearish Shift', colorToken: '#f2677a' },
-        { label: 'Breakout Body Close & Retest Hold', colorToken: '#3ecf9a' },
+        { label: 'Liquidity / Resistance Line', colorToken: '#ff9800' },
+        { label: 'Sweep Rejection & Bearish Shift', colorToken: '#f23645' },
+        { label: 'Breakout Body Close & Retest Hold', colorToken: '#089981' },
       ],
       annotations: [
         { id: 'ls1', label: 'Sweep Wick', sublabel: 'Grabs Stops & Closes Back Inside', tone: 'bearish' },
@@ -1567,9 +1567,9 @@ const CORE_LESSONS: Lesson[] = [
       caption:
         'Strong bullish displacement leaves an unmitigated gap between Candle 1 High and Candle 3 Low; price revisits the 50% midpoint before expanding higher.',
       legend: [
-        { label: 'FVG Imbalance Zone', colorToken: '#3ecf9a' },
-        { label: '50% Equilibrium Midpoint', colorToken: '#e5b567' },
-        { label: 'Mitigation & Expansion', colorToken: '#6cc4d6' },
+        { label: 'FVG Imbalance Zone', colorToken: '#089981' },
+        { label: '50% Equilibrium Midpoint', colorToken: '#ff9800' },
+        { label: 'Mitigation & Expansion', colorToken: '#2962ff' },
       ],
       annotations: [
         { id: 'f1', label: 'Candle 1 High', sublabel: 'Lower Boundary of Bullish FVG', tone: 'neutral' },
@@ -1893,9 +1893,9 @@ const CORE_LESSONS: Lesson[] = [
       caption:
         'Position size (Shares, Coins, Contracts, or Lots) scales directly to your structural SL (Stop Loss = 1R) so normal noise stays harmless while opposing liquidity delivers +3R.',
       legend: [
-        { label: 'TP (Take Profit Zone, +3R)', colorToken: '#3ecf9a' },
-        { label: 'Planned Entry Level', colorToken: '#6cc4d6' },
-        { label: 'Structural SL (Stop Loss, -1R)', colorToken: '#f2677a' },
+        { label: 'TP (Take Profit Zone, +3R)', colorToken: '#089981' },
+        { label: 'Planned Entry Level', colorToken: '#2962ff' },
+        { label: 'Structural SL (Stop Loss, -1R)', colorToken: '#f23645' },
       ],
       annotations: [
         { id: 'r1', label: 'TP (Take Profit, +3R)', sublabel: 'Opposing Liquidity Target (3× Stop Width)', tone: 'bullish' },
