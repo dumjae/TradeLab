@@ -11,22 +11,26 @@ import {
   Search,
   X,
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 import {
   CURRICULUM_LESSONS,
   LESSON_MARKET_CATEGORIES,
   LESSON_STAGES,
 } from '../data/curriculum';
+import { LESSON_TAGLISH_SUMMARIES, UI_COPY } from '../data/taglishTranslations';
+import { TRADING_ACRONYMS, expandAcronyms } from '../lib/acronymHelper';
 import { listLessonProgress } from '../services/progressService';
 import type {
   CurriculumLevel,
   LessonMarketCategory,
+  LessonStage,
 } from '../types/academy';
 
 type MarketFilter = 'all' | LessonMarketCategory;
 type LevelFilter = 'all' | CurriculumLevel;
 
 const MARKET_BADGE_STYLES: Record<LessonMarketCategory, string> = {
-  general: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+  general: 'border-brand/30 bg-brand-soft text-brand',
   forex: 'border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400',
   indices: 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400',
   crypto: 'border-teal-500/30 bg-teal-500/10 text-teal-600 dark:text-teal-400',
@@ -34,8 +38,8 @@ const MARKET_BADGE_STYLES: Record<LessonMarketCategory, string> = {
 };
 
 const MARKET_ACTIVE_PILL_STYLES: Record<MarketFilter, string> = {
-  all: 'border-emerald-500 bg-emerald-500 text-slate-950 font-semibold shadow-sm',
-  general: 'border-emerald-500 bg-emerald-500 text-slate-950 font-semibold shadow-sm',
+  all: 'border-brand bg-brand text-brand-fg font-semibold shadow-sm',
+  general: 'border-brand bg-brand text-brand-fg font-semibold shadow-sm',
   forex: 'border-sky-500 bg-sky-500 text-slate-950 font-semibold shadow-sm',
   indices: 'border-amber-500 bg-amber-500 text-slate-950 font-semibold shadow-sm',
   crypto: 'border-teal-500 bg-teal-500 text-slate-950 font-semibold shadow-sm',
@@ -43,22 +47,45 @@ const MARKET_ACTIVE_PILL_STYLES: Record<MarketFilter, string> = {
 };
 
 const LEVEL_BADGE_STYLES: Record<CurriculumLevel, string> = {
-  beginner: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+  beginner: 'bg-bull/15 text-bull',
   intermediate: 'bg-sky-500/10 text-sky-600 dark:text-sky-400',
   advanced: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
 };
 
-const LEVEL_LABELS: Record<CurriculumLevel, string> = {
-  beginner: 'Total Beginner',
-  intermediate: 'Intermediate',
-  advanced: 'Advanced',
+const LEVEL_LABELS: Record<CurriculumLevel, { en: string; taglish: string }> = {
+  beginner: { en: 'Beginner', taglish: 'Baguhan' },
+  intermediate: { en: 'Intermediate', taglish: 'Mid-Level' },
+  advanced: { en: 'Advanced', taglish: 'Advanced' },
 };
 
-const LEVEL_FILTERS: Array<{ id: LevelFilter; label: string }> = [
-  { id: 'all', label: 'All Levels' },
-  { id: 'beginner', label: 'Total Beginner' },
-  { id: 'intermediate', label: 'Intermediate' },
-  { id: 'advanced', label: 'Advanced' },
+const STAGE_TAGLISH_COPY: Record<LessonStage, { label: string; tagline: string }> = {
+  foundations: {
+    label: 'Simula at Price Action Basics',
+    tagline: 'Basahin ang candles, trend structure, at support/resistance nang malinaw.',
+  },
+  price_action_smc: {
+    label: 'Liquidity at SMC (Smart Money Concepts)',
+    tagline: 'Alamin kung saan nakatago ang stop losses, fakeouts, at FVG (Fair Value Gap).',
+  },
+  market_playbooks: {
+    label: 'Playbooks Bawat Market',
+    tagline: 'Tamang timing para sa Forex, Indices, Crypto, at Stocks.',
+  },
+  execution_edge: {
+    label: 'Malinis na Entry at Trade Management',
+    tagline: 'Pumili lang ng A+ setups at protektahan ang kita sa tamang exit.',
+  },
+  steady_profitability: {
+    label: 'Risk Management at Consistency',
+    tagline: 'Ingatan ang account gamit ang 1% risk rule, journal, at drawdown control.',
+  },
+};
+
+const LEVEL_FILTERS: Array<{ id: LevelFilter; en: string; taglish: string }> = [
+  { id: 'all', en: 'All Levels', taglish: 'Lahat' },
+  { id: 'beginner', en: 'Beginner', taglish: 'Baguhan' },
+  { id: 'intermediate', en: 'Intermediate', taglish: 'Mid-Level' },
+  { id: 'advanced', en: 'Advanced', taglish: 'Advanced' },
 ];
 
 function formatModuleOrder(order: number): string {
@@ -78,7 +105,22 @@ function parseInitialMarket(raw: string | null): MarketFilter {
   return 'all';
 }
 
+function getTitleAcronymHint(title: string): string | null {
+  const expanded = expandAcronyms(title);
+  if (expanded === title) {
+    return null;
+  }
+  const pairs: string[] = [];
+  for (const [code, meaning] of Object.entries(TRADING_ACRONYMS)) {
+    if (expanded.includes(`${code} (${meaning})`)) {
+      pairs.push(`${code} (${meaning})`);
+    }
+  }
+  return pairs.length > 0 ? pairs.slice(0, 3).join(' · ') : null;
+}
+
 export function AcademyCatalogPage() {
+  const { isTaglish, t } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const [marketFilter, setMarketFilter] = useState<MarketFilter>(() =>
     parseInitialMarket(searchParams.get('market')),
@@ -141,8 +183,9 @@ export function AcademyCatalogPage() {
       }
       if (normalizedQuery.length > 0) {
         const marketLabel = (marketLabelMap[lesson.marketCategory] ?? '').toLowerCase();
+        const expandedTitle = expandAcronyms(lesson.title);
         const haystack =
-          `${lesson.title} ${lesson.conceptKey} ${lesson.level} ${LEVEL_LABELS[lesson.level]} ${marketLabel} ${formatModuleOrder(lesson.moduleOrder)}`.toLowerCase();
+          `${lesson.title} ${expandedTitle} ${lesson.conceptKey} ${lesson.level} ${LEVEL_LABELS[lesson.level].en} ${marketLabel} ${formatModuleOrder(lesson.moduleOrder)}`.toLowerCase();
         if (!haystack.includes(normalizedQuery)) {
           return false;
         }
@@ -179,34 +222,35 @@ export function AcademyCatalogPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="mx-auto max-w-6xl space-y-5">
       {/* Compact Catalog Header */}
-      <header className="rounded-3xl border border-terminal-border/90 bg-terminal-surface p-5 shadow-sm sm:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400">
-              <BookOpen className="h-5 w-5" aria-hidden="true" />
+      <header className="rounded-2xl border border-terminal-border/90 bg-terminal-surface p-4 shadow-sm sm:p-5">
+        <div className="flex flex-col gap-3.5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-brand/30 bg-brand-soft text-brand">
+              <BookOpen className="h-4 w-4" aria-hidden="true" />
             </span>
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl font-bold tracking-tight text-terminal-text sm:text-2xl">
-                  Trading Academy
+                <h1 className="text-lg font-bold tracking-tight text-terminal-text sm:text-xl">
+                  {t(UI_COPY.academy.title.en, UI_COPY.academy.title.taglish)}
                 </h1>
-                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">
-                  {CURRICULUM_LESSONS.length} Lessons · {LESSON_STAGES.length} Stages
+                <span className="inline-flex items-center rounded-full border border-brand/30 bg-brand-soft px-2 py-0.5 font-mono text-[10px] font-semibold text-brand tabular-nums">
+                  {CURRICULUM_LESSONS.length} {t('Lessons', 'Aralin')} · {LESSON_STAGES.length}{' '}
+                  {t('Stages', 'Stage')}
                 </span>
               </div>
               <p className="text-xs text-terminal-muted">
-                Filter by market playbook or follow the 5-stage path from foundation to steady execution.
+                {t(UI_COPY.academy.subtitle.en, UI_COPY.academy.subtitle.taglish)}
               </p>
             </div>
           </div>
 
-          {/* Search Input */}
+          {/* Compact Search Input + Practice CTA */}
           <div className="flex w-full items-center gap-2 lg:w-auto">
-            <div className="relative flex-1 lg:w-72">
+            <div className="relative flex-1 lg:w-64">
               <Search
-                className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-terminal-muted"
+                className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-terminal-muted"
                 aria-hidden="true"
               />
               <input
@@ -215,16 +259,16 @@ export function AcademyCatalogPage() {
                 name="academySearch"
                 aria-label="Search lessons"
                 value={searchQuery}
+                placeholder={t('Search lessons or terms...', 'Maghanap ng lesson o term...')}
                 onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder="Search 18 lessons..."
-                className="w-full rounded-2xl border border-terminal-border bg-terminal-bg py-2.5 pl-10 pr-9 text-xs text-terminal-text placeholder:text-terminal-muted focus:border-emerald-500 focus:outline-none"
+                className="w-full rounded-xl border border-terminal-border bg-terminal-bg py-2 pl-9 pr-8 text-xs text-terminal-text placeholder:text-terminal-muted focus:border-brand focus:outline-none"
               />
               {searchQuery.length > 0 && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
                   aria-label="Clear lesson search"
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-terminal-muted transition-colors hover:text-terminal-text"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-terminal-muted transition-colors hover:text-terminal-text"
                 >
                   <X className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
@@ -233,38 +277,33 @@ export function AcademyCatalogPage() {
 
             <Link
               to="/practice"
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-2xl border border-terminal-border bg-terminal-bg px-3.5 py-2.5 text-xs font-semibold text-terminal-text transition-colors hover:border-sky-500/45 hover:text-sky-600 dark:hover:text-sky-400"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-terminal-border bg-terminal-bg px-3 py-2 text-xs font-semibold text-terminal-text transition-colors hover:border-brand/45 hover:text-brand"
             >
-              <GraduationCap className="h-4 w-4 text-sky-500 dark:text-sky-400" aria-hidden="true" />
-              <span className="hidden sm:inline">Practice</span>
+              <GraduationCap className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
+              <span className="hidden sm:inline">{t('Practice', 'Quiz')}</span>
             </Link>
           </div>
         </div>
 
         {/* Filter Bar: Market Pills + Level Segmented Pills */}
-        <div className="mt-5 flex flex-col gap-3 border-t border-terminal-border/70 pt-4 md:flex-row md:items-center md:justify-between">
-          {/* Horizontal Scrollable Market Category Filter Pills */}
+        <div className="mt-4 flex flex-col gap-2.5 border-t border-terminal-border/70 pt-3.5 md:flex-row md:items-center md:justify-between">
           <div
             role="group"
             aria-label="Filter lessons by market category"
-            className="no-scrollbar flex flex-nowrap items-center gap-2 overflow-x-auto pb-0.5"
+            className="no-scrollbar flex flex-nowrap items-center gap-1.5 overflow-x-auto pb-0.5"
           >
             <button
               type="button"
               onClick={() => handleSelectMarket('all')}
               aria-pressed={marketFilter === 'all'}
-              className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs transition-all ${
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-all ${
                 marketFilter === 'all'
                   ? MARKET_ACTIVE_PILL_STYLES.all
-                  : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-emerald-500/40 hover:text-terminal-text'
+                  : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-brand/40 hover:text-terminal-text'
               }`}
             >
-              <span>All</span>
-              <span
-                className={`font-mono text-[10px] tabular-nums ${
-                  marketFilter === 'all' ? 'text-slate-900/80' : 'opacity-70'
-                }`}
-              >
+              <span>{t('All', 'Lahat')}</span>
+              <span className="font-mono text-[10px] opacity-80 tabular-nums">
                 {marketCounts.all}
               </span>
             </button>
@@ -277,18 +316,14 @@ export function AcademyCatalogPage() {
                   type="button"
                   onClick={() => handleSelectMarket(category.id)}
                   aria-pressed={isActive}
-                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs transition-all ${
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-all ${
                     isActive
                       ? MARKET_ACTIVE_PILL_STYLES[category.id]
-                      : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-emerald-500/40 hover:text-terminal-text'
+                      : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-brand/40 hover:text-terminal-text'
                   }`}
                 >
                   <span>{category.label}</span>
-                  <span
-                    className={`font-mono text-[10px] tabular-nums ${
-                      isActive ? 'text-slate-900/80' : 'opacity-70'
-                    }`}
-                  >
+                  <span className="font-mono text-[10px] opacity-80 tabular-nums">
                     {marketCounts[category.id]}
                   </span>
                 </button>
@@ -296,11 +331,10 @@ export function AcademyCatalogPage() {
             })}
           </div>
 
-          {/* Optional Level Filter */}
           <div
             role="group"
             aria-label="Filter lessons by difficulty level"
-            className="no-scrollbar flex shrink-0 flex-nowrap items-center gap-1 overflow-x-auto rounded-full border border-terminal-border bg-terminal-bg p-1"
+            className="no-scrollbar flex shrink-0 flex-nowrap items-center gap-1 overflow-x-auto rounded-full border border-terminal-border bg-terminal-bg p-0.5"
           >
             {LEVEL_FILTERS.map((level) => {
               const isActive = levelFilter === level.id;
@@ -310,13 +344,13 @@ export function AcademyCatalogPage() {
                   type="button"
                   onClick={() => setLevelFilter(level.id)}
                   aria-pressed={isActive}
-                  className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-medium transition-colors ${
+                  className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors ${
                     isActive
-                      ? 'bg-terminal-surface font-semibold text-terminal-text shadow-sm'
+                      ? 'bg-brand-soft font-semibold text-brand'
                       : 'text-terminal-muted hover:text-terminal-text'
                   }`}
                 >
-                  {level.label}
+                  {t(level.en, level.taglish)}
                 </button>
               );
             })}
@@ -328,102 +362,111 @@ export function AcademyCatalogPage() {
       {hasActiveFilters && (
         <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-terminal-muted">
           <span className="font-mono tabular-nums">
-            Showing <strong className="text-terminal-text">{filteredLessons.length}</strong> of{' '}
-            {CURRICULUM_LESSONS.length} lessons
+            {t('Showing', 'Ipinapakita')}{' '}
+            <strong className="text-terminal-text">{filteredLessons.length}</strong> /{' '}
+            {CURRICULUM_LESSONS.length} {t('lessons', 'aralin')}
           </span>
           <button
             type="button"
             onClick={resetFilters}
-            className="inline-flex items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-surface px-3 py-1 text-xs font-medium text-terminal-text transition-colors hover:border-emerald-500/45 hover:text-emerald-600 dark:hover:text-emerald-400"
+            className="inline-flex items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-surface px-3 py-1 text-xs font-medium text-terminal-text transition-colors hover:border-brand/45 hover:text-brand"
           >
             <RotateCcw className="h-3 w-3" aria-hidden="true" />
-            Reset filters
+            {t('Reset filters', 'I-reset')}
           </button>
         </div>
       )}
 
-      {/* 5-Stage Roadmap */}
+      {/* 5-Stage Compact Roadmap */}
       {groupedStages.length === 0 ? (
-        <section className="flex flex-col items-center justify-center rounded-3xl border border-terminal-border bg-terminal-surface px-6 py-14 text-center">
-          <Layers className="h-8 w-8 text-terminal-muted" aria-hidden="true" />
-          <h2 className="mt-3 text-sm font-semibold text-terminal-text">
-            No lessons match those filters
+        <section className="flex flex-col items-center justify-center rounded-2xl border border-terminal-border bg-terminal-surface px-6 py-12 text-center">
+          <Layers className="h-7 w-7 text-terminal-muted" aria-hidden="true" />
+          <h2 className="mt-2.5 text-sm font-semibold text-terminal-text">
+            {t('No lessons match those filters', 'Walang lesson na tugma sa filter')}
           </h2>
           <p className="mt-1 text-xs text-terminal-muted">
-            Try switching markets, clearing your search query, or viewing all levels.
+            {t(
+              'Try switching markets or clearing your search.',
+              'Subukang magpalit ng market o burahin ang search.',
+            )}
           </p>
           <button
             type="button"
             onClick={resetFilters}
-            className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400"
+            className="mt-3.5 inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95"
           >
             <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
-            Show All {CURRICULUM_LESSONS.length} Lessons
+            {t(`Show All ${CURRICULUM_LESSONS.length} Lessons`, `Ipakita Lahat (${CURRICULUM_LESSONS.length})`)}
           </button>
         </section>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-5">
           {groupedStages.map(({ stage, lessons }) => {
             const stageDoneCount = lessons.filter((lesson) =>
               completedSlugs.has(lesson.slug),
             ).length;
+            const stageTaglish = STAGE_TAGLISH_COPY[stage.id];
+
             return (
               <section
                 key={stage.id}
                 aria-labelledby={`stage-heading-${stage.id}`}
-                className="space-y-3"
+                className="space-y-2.5"
               >
                 {/* Compact Stage Header */}
-                <div className="flex flex-col gap-2 px-1 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex min-w-0 items-start gap-2.5">
-                    <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                <div className="flex flex-wrap items-center justify-between gap-2 px-0.5">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-brand/30 bg-brand-soft font-mono text-[11px] font-bold text-brand tabular-nums">
                       {stage.step}
                     </span>
-                    <div className="min-w-0 space-y-0.5">
+                    <div className="min-w-0">
                       <h2
                         id={`stage-heading-${stage.id}`}
-                        className="text-sm font-bold tracking-tight text-terminal-text sm:text-base"
+                        className="text-sm font-bold tracking-tight text-terminal-text"
                       >
-                        Stage {stage.step}: {stage.label}
+                        Stage {stage.step}: {t(stage.label, stageTaglish.label)}
                       </h2>
-                      <p className="text-xs leading-relaxed text-terminal-muted">{stage.tagline}</p>
+                      <p className="line-clamp-1 text-[11px] text-terminal-muted">
+                        {t(expandAcronyms(stage.tagline), stageTaglish.tagline)}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="flex shrink-0 items-center gap-1.5 sm:pt-0.5">
-                    <span
-                      className={`rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums ${
-                        stageDoneCount === lessons.length && lessons.length > 0
-                          ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                          : 'border-terminal-border bg-terminal-surface text-terminal-muted'
-                      }`}
-                    >
-                      {stageDoneCount}/{lessons.length} done
-                    </span>
-                    <span className="rounded-full border border-terminal-border bg-terminal-surface px-2.5 py-0.5 font-mono text-[11px] text-terminal-muted tabular-nums">
-                      {lessons.length} {lessons.length === 1 ? 'lesson' : 'lessons'}
-                    </span>
-                  </div>
+                  <span
+                    className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-semibold tabular-nums ${
+                      stageDoneCount === lessons.length && lessons.length > 0
+                        ? 'border-bull/40 bg-bull/15 text-bull'
+                        : 'border-terminal-border bg-terminal-surface text-terminal-muted'
+                    }`}
+                  >
+                    {stageDoneCount}/{lessons.length} {t('done', 'tapos')}
+                  </span>
                 </div>
 
-                {/* Compact Tappable Lesson Cards */}
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {/* Compact Scannable Lesson Cards */}
+                <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
                   {lessons.map((lesson) => {
                     const isCompleted = completedSlugs.has(lesson.slug);
+                    const acronymHint = getTitleAcronymHint(lesson.title);
+                    const summaryText = isTaglish
+                      ? (LESSON_TAGLISH_SUMMARIES[lesson.slug]?.plainSummary ??
+                        expandAcronyms(lesson.plainEnglishSummary ?? ''))
+                      : expandAcronyms(lesson.plainEnglishSummary ?? '');
+
                     return (
                       <Link
                         key={lesson.id}
                         to={`/academy/${lesson.slug}`}
-                        className={`group flex flex-col justify-between rounded-2xl border bg-terminal-surface p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/45 ${
+                        className={`group flex flex-col justify-between rounded-xl border bg-terminal-surface p-3.5 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:border-brand/50 ${
                           isCompleted
-                            ? 'border-emerald-500/35'
+                            ? 'border-bull/40'
                             : 'border-terminal-border/90'
                         }`}
                       >
-                        <div className="space-y-2.5">
+                        <div className="space-y-1.5">
                           <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono text-xs font-semibold text-terminal-muted tabular-nums">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-mono text-[11px] font-semibold text-terminal-muted tabular-nums">
                                 {formatModuleOrder(lesson.moduleOrder)}
                               </span>
                               <span
@@ -433,36 +476,50 @@ export function AcademyCatalogPage() {
                               </span>
                             </div>
 
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1">
                               {isCompleted && (
                                 <span
                                   aria-label="Lesson completed"
-                                  className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400"
+                                  className="inline-flex items-center gap-0.5 rounded-full border border-bull/40 bg-bull/15 px-1.5 py-0.5 text-[10px] font-semibold text-bull"
                                 >
-                                  <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
-                                  Done
+                                  <CheckCircle2 className="h-2.5 w-2.5" aria-hidden="true" />
+                                  {t('Done', 'Tapos')}
                                 </span>
                               )}
                               <span
                                 className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${LEVEL_BADGE_STYLES[lesson.level]}`}
                               >
-                                {LEVEL_LABELS[lesson.level]}
+                                {t(LEVEL_LABELS[lesson.level].en, LEVEL_LABELS[lesson.level].taglish)}
                               </span>
                             </div>
                           </div>
 
-                          <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-terminal-text transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                          <h3 className="line-clamp-2 text-[13px] font-semibold leading-snug text-terminal-text transition-colors group-hover:text-brand">
                             {lesson.title}
                           </h3>
+
+                          {acronymHint && (
+                            <p className="truncate font-mono text-[10px] text-brand/90">
+                              {acronymHint}
+                            </p>
+                          )}
+
+                          {summaryText && (
+                            <p className="line-clamp-2 text-[11px] leading-relaxed text-terminal-muted">
+                              {summaryText}
+                            </p>
+                          )}
                         </div>
 
-                        <div className="mt-3.5 flex items-center justify-between border-t border-terminal-border/60 pt-2.5 text-xs text-terminal-muted">
-                          <span className="inline-flex items-center gap-1 font-mono text-[11px] tabular-nums">
+                        <div className="mt-3 flex items-center justify-between border-t border-terminal-border/60 pt-2 text-[11px] text-terminal-muted">
+                          <span className="inline-flex items-center gap-1 font-mono tabular-nums">
                             <Clock className="h-3 w-3 text-sky-500 dark:text-sky-400" aria-hidden="true" />
-                            {lesson.estimatedMinutes}m
+                            {lesson.estimatedMinutes} {UI_COPY.academy.minutesShort.en}
                           </span>
-                          <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                            {isCompleted ? 'Review' : 'Study'}
+                          <span className="inline-flex items-center gap-1 font-semibold text-brand">
+                            {isCompleted
+                              ? t('Review', 'Balikan')
+                              : t(UI_COPY.academy.startLesson.en, UI_COPY.academy.startLesson.taglish)}
                             <ArrowRight
                               className="h-3 w-3 transition-transform group-hover:translate-x-0.5"
                               aria-hidden="true"

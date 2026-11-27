@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import {
   ArrowRight,
   BookOpen,
-  Bookmark,
   CandlestickChart,
   CheckCircle2,
   Clock,
@@ -12,15 +11,19 @@ import {
   LineChart,
   NotebookPen,
   SlidersHorizontal,
+  Wallet,
 } from 'lucide-react';
 import { OnboardingModal } from '../components/learning/OnboardingModal';
 import { DifficultConceptsPanel } from '../components/library/DifficultConceptsPanel';
 import { DailyQuoteCard } from '../components/quotes/DailyQuoteCard';
+import { useLanguage } from '../context/LanguageContext';
 import { CHART_SCENARIOS } from '../data/chartScenarios';
 import {
   CURRICULUM_LESSONS,
   LESSON_MARKET_CATEGORIES,
 } from '../data/curriculum';
+import { LESSON_TAGLISH_SUMMARIES, UI_COPY } from '../data/taglishTranslations';
+import { expandAcronyms } from '../lib/acronymHelper';
 import {
   computeStudyProgressSummary,
   getOnboardingPreferences,
@@ -44,7 +47,7 @@ const DEFAULT_PREFERENCES: OnboardingPreferences = {
 };
 
 const MARKET_BADGE_STYLES: Record<LessonMarketCategory, string> = {
-  general: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+  general: 'border-brand/30 bg-brand-soft text-brand',
   forex: 'border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400',
   indices: 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400',
   crypto: 'border-teal-500/30 bg-teal-500/10 text-teal-600 dark:text-teal-400',
@@ -52,8 +55,8 @@ const MARKET_BADGE_STYLES: Record<LessonMarketCategory, string> = {
 };
 
 const MARKET_ACTIVE_PILL_STYLES: Record<MarketFilter, string> = {
-  all: 'border-emerald-500 bg-emerald-500 text-slate-950 font-semibold shadow-sm',
-  general: 'border-emerald-500 bg-emerald-500 text-slate-950 font-semibold shadow-sm',
+  all: 'border-brand bg-brand text-brand-fg font-semibold shadow-sm',
+  general: 'border-brand bg-brand text-brand-fg font-semibold shadow-sm',
   forex: 'border-sky-500 bg-sky-500 text-slate-950 font-semibold shadow-sm',
   indices: 'border-amber-500 bg-amber-500 text-slate-950 font-semibold shadow-sm',
   crypto: 'border-teal-500 bg-teal-500 text-slate-950 font-semibold shadow-sm',
@@ -65,6 +68,7 @@ function formatModuleOrder(order: number): string {
 }
 
 export function DashboardPage({ onOpenVault }: DashboardPageProps) {
+  const { isTaglish, t } = useLanguage();
   const [marketFilter, setMarketFilter] = useState<MarketFilter>('all');
   const [progressRecords, setProgressRecords] = useState<LessonProgressRecord[]>([]);
   const [preferences, setPreferences] = useState<OnboardingPreferences>(DEFAULT_PREFERENCES);
@@ -145,93 +149,88 @@ export function DashboardPage({ onOpenVault }: DashboardPageProps) {
   };
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      {/* Compact App Hero Surface */}
-      <section className="rounded-3xl border border-terminal-border/90 bg-terminal-surface p-5 shadow-sm sm:p-7">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-xl space-y-3">
-            <h1 className="text-xl font-semibold tracking-tight text-terminal-text sm:text-2xl">
-              Master Price Action Visually
+    <div className="mx-auto max-w-6xl space-y-4">
+      {/* Compact Warm Editorial Hero */}
+      <section className="rounded-2xl border border-terminal-border/90 bg-terminal-surface p-4 shadow-sm sm:p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-xl space-y-2">
+            <span className="inline-flex items-center rounded-full border border-brand/30 bg-brand-soft px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand">
+              {t(UI_COPY.dashboard.heroEyebrow.en, UI_COPY.dashboard.heroEyebrow.taglish)}
+            </span>
+            <h1 className="text-lg font-semibold tracking-tight text-terminal-text sm:text-xl">
+              {t(UI_COPY.dashboard.heroTitle.en, UI_COPY.dashboard.heroTitle.taglish)}
             </h1>
-            <p className="text-xs text-terminal-muted sm:text-sm">
-              Structured lessons, verified YouTube timestamps, and live bar-by-bar replay.
+            <p className="text-xs text-terminal-muted">
+              {t(UI_COPY.dashboard.heroSubtitle.en, UI_COPY.dashboard.heroSubtitle.taglish)}
             </p>
 
             <div className="flex flex-wrap items-center gap-2 pt-1">
               <Link
                 to={`/academy/${recommendedLesson.slug}`}
-                className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 shadow-sm transition-all hover:bg-emerald-400 active:scale-[0.98]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-semibold text-brand-fg shadow-sm transition-all hover:opacity-95 active:scale-[0.98]"
               >
                 <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
-                Start Module {formatModuleOrder(recommendedLesson.moduleOrder)}
+                <span>
+                  {t(UI_COPY.dashboard.continueLesson.en, UI_COPY.dashboard.continueLesson.taglish)}{' '}
+                  {formatModuleOrder(recommendedLesson.moduleOrder)}
+                </span>
                 <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
+
               <Link
-                to="/backtest"
-                className="inline-flex items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-bg px-3.5 py-2 text-xs font-semibold text-terminal-text transition-colors hover:border-emerald-500/45 hover:text-emerald-600 dark:hover:text-emerald-400"
+                to="/paper-trading"
+                className="inline-flex items-center gap-1.5 rounded-full border border-brand/35 bg-brand-soft px-3.5 py-2 text-xs font-semibold text-brand transition-colors hover:bg-brand hover:text-brand-fg"
               >
-                <LineChart className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400" aria-hidden="true" />
-                Backtester
-              </Link>
-              <Link
-                to="/journal"
-                className="inline-flex items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-bg px-3.5 py-2 text-xs font-semibold text-terminal-text transition-colors hover:border-teal-500/45 hover:text-teal-600 dark:hover:text-teal-400"
-              >
-                <NotebookPen className="h-3.5 w-3.5 text-teal-500 dark:text-teal-400" aria-hidden="true" />
-                Journal
-              </Link>
-              <Link
-                to="/lab"
-                className="inline-flex items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-bg px-3.5 py-2 text-xs font-semibold text-terminal-text transition-colors hover:border-sky-500/45 hover:text-sky-600 dark:hover:text-sky-400"
-              >
-                <CandlestickChart className="h-3.5 w-3.5 text-sky-500 dark:text-sky-400" aria-hidden="true" />
-                Trading Lab
-              </Link>
-              <Link
-                to="/library"
-                className="inline-flex items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-bg px-3.5 py-2 text-xs font-semibold text-terminal-text transition-colors hover:border-amber-500/45 hover:text-amber-600 dark:hover:text-amber-400"
-              >
-                <Bookmark className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" aria-hidden="true" />
-                Library
+                <Wallet className="h-3.5 w-3.5" aria-hidden="true" />
+                <span>
+                  {t(UI_COPY.dashboard.openPaperTrading.en, UI_COPY.dashboard.openPaperTrading.taglish)}
+                </span>
               </Link>
             </div>
           </div>
 
-          <div className="grid shrink-0 grid-cols-3 gap-2.5 lg:w-64">
-            <div className="rounded-2xl border border-terminal-border/80 bg-terminal-bg/80 p-3 text-center">
-              <p className="font-mono text-xl font-semibold text-emerald-500 dark:text-emerald-400 tabular-nums">
+          <div className="grid shrink-0 grid-cols-3 gap-2 lg:w-60">
+            <div className="rounded-xl border border-terminal-border/80 bg-terminal-bg/80 p-2.5 text-center">
+              <p className="font-mono text-lg font-semibold text-brand tabular-nums">
                 {CURRICULUM_LESSONS.length}
               </p>
-              <p className="mt-0.5 text-[11px] font-medium text-terminal-muted">Modules</p>
+              <p className="text-[10px] font-medium text-terminal-muted">
+                {t('Lessons', 'Aralin')}
+              </p>
             </div>
-            <div className="rounded-2xl border border-terminal-border/80 bg-terminal-bg/80 p-3 text-center">
-              <p className="font-mono text-xl font-semibold text-sky-500 dark:text-sky-400 tabular-nums">
+            <div className="rounded-xl border border-terminal-border/80 bg-terminal-bg/80 p-2.5 text-center">
+              <p className="font-mono text-lg font-semibold text-sky-500 dark:text-sky-400 tabular-nums">
                 {CHART_SCENARIOS.length}
               </p>
-              <p className="mt-0.5 text-[11px] font-medium text-terminal-muted">Replays</p>
-            </div>
-            <div className="rounded-2xl border border-terminal-border/80 bg-terminal-bg/80 p-3 text-center">
-              <p className="font-mono text-xl font-semibold text-amber-500 dark:text-amber-400 tabular-nums">
-                4
+              <p className="text-[10px] font-medium text-terminal-muted">
+                {t('Replays', 'Charts')}
               </p>
-              <p className="mt-0.5 text-[11px] font-medium text-terminal-muted">Modes</p>
+            </div>
+            <div className="rounded-xl border border-terminal-border/80 bg-terminal-bg/80 p-2.5 text-center">
+              <p className="font-mono text-lg font-semibold text-bull tabular-nums">
+                $0
+              </p>
+              <p className="text-[10px] font-medium text-terminal-muted">
+                {t('Real Risk', 'Totoong Risk')}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Sleek Compact Progress & Streak Strip */}
-        <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-terminal-border/80 bg-terminal-bg/75 p-3.5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0 flex-1 space-y-1.5">
+        {/* Compact Progress & Streak Strip */}
+        <div className="mt-4 flex flex-col gap-2.5 rounded-xl border border-terminal-border/80 bg-terminal-bg/75 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 flex-1 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-mono text-xs font-semibold text-terminal-text tabular-nums">
-                {progressSummary.completedCount} / {progressSummary.totalLessons} Lessons
+                {progressSummary.completedCount} / {progressSummary.totalLessons}{' '}
+                {t('Lessons', 'Aralin')}
               </span>
-              <span className="font-mono text-[11px] text-emerald-600 dark:text-emerald-400 tabular-nums">
+              <span className="font-mono text-[11px] font-semibold text-brand tabular-nums">
                 {progressSummary.percentComplete}%
               </span>
-              <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-amber-600 dark:text-amber-400 tabular-nums">
+              <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-amber-600 dark:text-amber-400 tabular-nums">
                 <Flame className="h-3 w-3" aria-hidden="true" />
-                {progressSummary.currentStreakDays}-day streak
+                {progressSummary.currentStreakDays}-{t('day streak', 'araw sunod')}
               </span>
             </div>
 
@@ -241,124 +240,156 @@ export function DashboardPage({ onOpenVault }: DashboardPageProps) {
               aria-valuenow={progressSummary.percentComplete}
               aria-valuemin={0}
               aria-valuemax={100}
-              className="h-2 w-full overflow-hidden rounded-full bg-terminal-elevated"
+              className="h-1.5 w-full overflow-hidden rounded-full bg-terminal-elevated"
             >
               <div
-                className="h-full rounded-full bg-emerald-500 transition-all duration-300"
+                className="h-full rounded-full bg-brand transition-all duration-300"
                 style={{ width: `${progressSummary.percentComplete}%` }}
               />
             </div>
           </div>
 
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
-            <Link
-              to={`/academy/${recommendedLesson.slug}`}
-              className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3.5 py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-500/25 dark:text-emerald-300"
-            >
-              <span>Continue Recommended Lesson</span>
-              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-            </Link>
-
-            <button
-              type="button"
-              onClick={() => setOnboardingOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-medium text-terminal-muted transition-colors hover:border-emerald-500/40 hover:text-terminal-text"
-            >
-              <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
-              Customize Track
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setOnboardingOpen(true)}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-surface px-3 py-1.5 text-[11px] font-medium text-terminal-muted transition-colors hover:border-brand/45 hover:text-terminal-text"
+          >
+            <SlidersHorizontal className="h-3 w-3" aria-hidden="true" />
+            {t('Customize Path', 'Ayusin ang Path')}
+          </button>
         </div>
       </section>
 
-      {/* Friendly Total-Beginner Callout (shown when no lessons completed yet) */}
+      {/* Friendly Beginner Callout (shown when 0 lessons done) */}
       {progressSummary.completedCount === 0 && (
         <section
           aria-labelledby="beginner-start-heading"
-          className="rounded-3xl border border-emerald-500/35 bg-emerald-500/5 p-5 shadow-sm sm:p-6"
+          className="rounded-2xl border border-brand/35 bg-brand-soft/45 p-4 shadow-sm"
         >
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-3.5">
-              <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-                <CandlestickChart className="h-5 w-5" aria-hidden="true" />
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-brand/30 bg-brand-soft text-brand">
+                <CandlestickChart className="h-4 w-4" aria-hidden="true" />
               </span>
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 <h2
                   id="beginner-start-heading"
-                  className="text-sm font-semibold tracking-tight text-terminal-text sm:text-base"
+                  className="text-sm font-semibold tracking-tight text-terminal-text"
                 >
-                  Brand New to Trading? Start Lesson 01
+                  {t('New to Trading? Start Lesson 01', 'Baguhan sa Trading? Simulan sa Lesson 01')}
                 </h2>
-                <p className="max-w-xl text-xs leading-relaxed text-terminal-muted sm:text-sm">
-                  No experience needed — learn what green &amp; red candles mean, where they open
-                  &amp; close, and how to read wicks in 10 minutes.
+                <p className="text-xs text-terminal-muted">
+                  {t(
+                    'Learn green & red candles, OHLC (Open, High, Low, Close), and wicks in 10 minutes.',
+                    'Alamin ang green at red candles, OHLC (Open, High, Low, Close), at wicks sa loob ng 10 minutes.',
+                  )}
                 </p>
               </div>
             </div>
 
             <Link
               to="/academy/candlestick-anatomy"
-              className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2.5 text-xs font-semibold text-slate-950 shadow-sm transition-all hover:bg-emerald-400 active:scale-[0.98]"
+              className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-semibold text-brand-fg shadow-sm transition-all hover:opacity-95 active:scale-[0.98]"
             >
-              <span>Start Lesson 01</span>
+              <span>{t('Start Lesson 01', 'Simulan Lesson 01')}</span>
               <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
             </Link>
           </div>
         </section>
       )}
 
-      {/* Compact 4-Tile Quick Launchers */}
+      {/* Compact 4-Tile Quick Launchers (Featuring Paper Trading Demo Wallets) */}
       <section aria-label="Quick workspace launchers" className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
         <Link
-          to="/academy"
-          className="group flex items-center gap-3 rounded-2xl border border-terminal-border/90 bg-terminal-surface p-3.5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-emerald-500/45"
+          to="/paper-trading"
+          className="group flex items-center gap-2.5 rounded-2xl border border-brand/35 bg-terminal-surface p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand"
         >
-          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 dark:text-emerald-400">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand">
+            <Wallet className="h-4 w-4" aria-hidden="true" />
+          </span>
+          <div className="min-w-0">
+            <p className="truncate text-xs font-semibold text-terminal-text">
+              {t('Paper Trading', 'Paper Trading')}
+            </p>
+            <p className="truncate text-[11px] text-terminal-muted">
+              {t('Demo wallets & live prices', 'Demo wallets, walang risk')}
+            </p>
+          </div>
+        </Link>
+
+        <Link
+          to="/academy"
+          className="group flex items-center gap-2.5 rounded-2xl border border-terminal-border/90 bg-terminal-surface p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand/45"
+        >
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-bull/15 text-bull">
             <BookOpen className="h-4 w-4" aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <p className="truncate text-xs font-semibold text-terminal-text">Academy</p>
-            <p className="truncate text-[11px] text-terminal-muted">Step-by-step from zero</p>
+            <p className="truncate text-xs font-semibold text-terminal-text">
+              {t('Academy', 'Academy')}
+            </p>
+            <p className="truncate text-[11px] text-terminal-muted">
+              {t('18 bite-sized lessons', '18 maiikling aralin')}
+            </p>
           </div>
         </Link>
 
         <Link
           to="/backtest"
-          className="group flex items-center gap-3 rounded-2xl border border-terminal-border/90 bg-terminal-surface p-3.5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-sky-500/45"
+          className="group flex items-center gap-2.5 rounded-2xl border border-terminal-border/90 bg-terminal-surface p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-sky-500/45"
         >
           <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sky-500/10 text-sky-500 dark:text-sky-400">
             <LineChart className="h-4 w-4" aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <p className="truncate text-xs font-semibold text-terminal-text">Backtester</p>
-            <p className="truncate text-[11px] text-terminal-muted">Practice on past charts</p>
+            <p className="truncate text-xs font-semibold text-terminal-text">
+              {t('Backtester', 'Backtester')}
+            </p>
+            <p className="truncate text-[11px] text-terminal-muted">
+              {t('Replay past charts', 'Mag-practice sa replay')}
+            </p>
           </div>
         </Link>
 
         <Link
           to="/journal"
-          className="group flex items-center gap-3 rounded-2xl border border-terminal-border/90 bg-terminal-surface p-3.5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal-500/45"
+          className="group flex items-center gap-2.5 rounded-2xl border border-terminal-border/90 bg-terminal-surface p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-amber-500/45"
         >
-          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-500 dark:text-teal-400">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500 dark:text-amber-400">
             <NotebookPen className="h-4 w-4" aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <p className="truncate text-xs font-semibold text-terminal-text">Trade Journal</p>
-            <p className="truncate text-[11px] text-terminal-muted">Track wins &amp; emotions</p>
+            <p className="truncate text-xs font-semibold text-terminal-text">
+              {t('Trade Journal', 'Trade Journal')}
+            </p>
+            <p className="truncate text-[11px] text-terminal-muted">
+              {t('Track wins & habits', 'I-log ang trades mo')}
+            </p>
           </div>
         </Link>
+      </section>
 
-        <Link
-          to="/practice"
-          className="group flex items-center gap-3 rounded-2xl border border-terminal-border/90 bg-terminal-surface p-3.5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-amber-500/45"
-        >
-          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500 dark:text-amber-400">
-            <GraduationCap className="h-4 w-4" aria-hidden="true" />
+      {/* Featured Paper Trading Demo Desk Card */}
+      <section className="flex flex-col gap-3 rounded-2xl border border-terminal-border/90 bg-terminal-surface px-4 py-3.5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand">
+            <Wallet className="h-4 w-4" aria-hidden="true" />
           </span>
-          <div className="min-w-0">
-            <p className="truncate text-xs font-semibold text-terminal-text">Practice</p>
-            <p className="truncate text-[11px] text-terminal-muted">Quick chart quizzes</p>
+          <div className="min-w-0 space-y-0.5">
+            <h2 className="text-xs font-semibold text-terminal-text sm:text-sm">
+              {t(UI_COPY.dashboard.paperCardTitle.en, UI_COPY.dashboard.paperCardTitle.taglish)}
+            </h2>
+            <p className="text-[11px] text-terminal-muted sm:text-xs">
+              {t(UI_COPY.dashboard.paperCardSubtitle.en, UI_COPY.dashboard.paperCardSubtitle.taglish)}
+            </p>
           </div>
+        </div>
+        <Link
+          to="/paper-trading"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-brand/40 bg-brand-soft px-3.5 py-1.5 text-xs font-semibold text-brand transition-colors hover:bg-brand hover:text-brand-fg"
+        >
+          <span>{t('Launch Demo Desk', 'Buksan ang Demo')}</span>
+          <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
         </Link>
       </section>
 
@@ -366,29 +397,31 @@ export function DashboardPage({ onOpenVault }: DashboardPageProps) {
       <DailyQuoteCard onOpenVault={onOpenVault} />
 
       {/* Curriculum Roadmap */}
-      <section aria-labelledby="curriculum-roadmap-heading" className="space-y-3.5">
-        <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+      <section aria-labelledby="curriculum-roadmap-heading" className="space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-0.5">
           <h2
             id="curriculum-roadmap-heading"
-            className="text-base font-semibold tracking-tight text-terminal-text"
+            className="text-sm font-semibold tracking-tight text-terminal-text sm:text-base"
           >
-            Curriculum
+            {t('Study Roadmap', 'Mga Aralin')}
           </h2>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             <Link
               to="/academy"
-              className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-600 transition-colors hover:bg-emerald-500/20 dark:text-emerald-400"
+              className="inline-flex items-center gap-1 rounded-full border border-brand/35 bg-brand-soft px-3 py-1 text-[11px] font-semibold text-brand transition-colors hover:bg-brand hover:text-brand-fg"
             >
-              View Full {CURRICULUM_LESSONS.length}-Lesson Roadmap →
+              {t(
+                `All ${CURRICULUM_LESSONS.length} Lessons →`,
+                `Lahat (${CURRICULUM_LESSONS.length} Aralin) →`,
+              )}
             </Link>
             <Link
               to="/practice"
-              className="inline-flex items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-surface px-3 py-1.5 text-xs font-medium text-terminal-text transition-colors hover:border-sky-500/45 hover:text-sky-600 dark:hover:text-sky-400"
+              className="inline-flex items-center gap-1 rounded-full border border-terminal-border bg-terminal-surface px-3 py-1 text-[11px] font-medium text-terminal-text transition-colors hover:border-sky-500/45 hover:text-sky-600 dark:hover:text-sky-400"
             >
-              <GraduationCap className="h-3.5 w-3.5 text-sky-500 dark:text-sky-400" aria-hidden="true" />
-              Practice
-              <ArrowRight className="h-3 w-3" aria-hidden="true" />
+              <GraduationCap className="h-3 w-3 text-sky-500 dark:text-sky-400" aria-hidden="true" />
+              {t('Quizzes', 'Quiz')}
             </Link>
           </div>
         </div>
@@ -397,24 +430,20 @@ export function DashboardPage({ onOpenVault }: DashboardPageProps) {
         <div
           role="group"
           aria-label="Filter curriculum by market"
-          className="no-scrollbar flex flex-nowrap items-center gap-2 overflow-x-auto px-0.5 pb-1"
+          className="no-scrollbar flex flex-nowrap items-center gap-1.5 overflow-x-auto px-0.5 pb-1"
         >
           <button
             type="button"
             onClick={() => setMarketFilter('all')}
             aria-pressed={marketFilter === 'all'}
-            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs transition-all ${
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-all ${
               marketFilter === 'all'
                 ? MARKET_ACTIVE_PILL_STYLES.all
-                : 'border-terminal-border bg-terminal-surface text-terminal-muted hover:border-emerald-500/40 hover:text-terminal-text'
+                : 'border-terminal-border bg-terminal-surface text-terminal-muted hover:border-brand/40 hover:text-terminal-text'
             }`}
           >
-            <span>All</span>
-            <span
-              className={`font-mono text-[10px] tabular-nums ${
-                marketFilter === 'all' ? 'text-slate-900/80' : 'opacity-70'
-              }`}
-            >
+            <span>{t('All', 'Lahat')}</span>
+            <span className="font-mono text-[10px] opacity-80 tabular-nums">
               {marketCounts.all}
             </span>
           </button>
@@ -427,18 +456,14 @@ export function DashboardPage({ onOpenVault }: DashboardPageProps) {
                 type="button"
                 onClick={() => setMarketFilter(category.id)}
                 aria-pressed={isActive}
-                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs transition-all ${
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-all ${
                   isActive
                     ? MARKET_ACTIVE_PILL_STYLES[category.id]
-                    : 'border-terminal-border bg-terminal-surface text-terminal-muted hover:border-emerald-500/40 hover:text-terminal-text'
+                    : 'border-terminal-border bg-terminal-surface text-terminal-muted hover:border-brand/40 hover:text-terminal-text'
                 }`}
               >
                 <span>{category.label}</span>
-                <span
-                  className={`font-mono text-[10px] tabular-nums ${
-                    isActive ? 'text-slate-900/80' : 'opacity-70'
-                  }`}
-                >
+                <span className="font-mono text-[10px] opacity-80 tabular-nums">
                   {marketCounts[category.id]}
                 </span>
               </button>
@@ -446,44 +471,57 @@ export function DashboardPage({ onOpenVault }: DashboardPageProps) {
           })}
         </div>
 
-        {/* Compact 1-Line Lesson Cards */}
-        <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
+        {/* Compact Lesson Cards with Expanded Acronyms & 1-line Summary */}
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
           {filteredLessons.map((lesson) => {
             const isDone = completedSlugs.has(lesson.slug);
+            const displayTitle = expandAcronyms(lesson.title);
+            const shortSummary = isTaglish
+              ? (LESSON_TAGLISH_SUMMARIES[lesson.slug]?.plainSummary ??
+                expandAcronyms(lesson.plainEnglishSummary ?? ''))
+              : expandAcronyms(lesson.plainEnglishSummary ?? '');
+
             return (
               <Link
                 key={lesson.id}
                 to={`/academy/${lesson.slug}`}
-                className="group flex items-center justify-between gap-3 rounded-2xl border border-terminal-border/90 bg-terminal-surface px-4 py-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/45"
+                className="group flex items-center justify-between gap-3 rounded-xl border border-terminal-border/90 bg-terminal-surface px-3.5 py-2.5 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:border-brand/45"
               >
-                <div className="flex min-w-0 items-center gap-3">
+                <div className="flex min-w-0 items-start gap-2.5">
                   {isDone ? (
                     <CheckCircle2
-                      className="h-4 w-4 shrink-0 text-emerald-500 dark:text-emerald-400"
+                      className="mt-0.5 h-4 w-4 shrink-0 text-bull"
                       aria-label="Completed"
                     />
                   ) : (
-                    <span className="shrink-0 font-mono text-xs font-semibold text-terminal-muted tabular-nums">
+                    <span className="mt-0.5 shrink-0 font-mono text-[11px] font-semibold text-terminal-muted tabular-nums">
                       {formatModuleOrder(lesson.moduleOrder)}
                     </span>
                   )}
-                  <h3 className="truncate text-sm font-semibold text-terminal-text transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
-                    {lesson.title}
-                  </h3>
+                  <div className="min-w-0">
+                    <h3 className="truncate text-xs font-semibold text-terminal-text transition-colors group-hover:text-brand sm:text-[13px]">
+                      {displayTitle}
+                    </h3>
+                    {shortSummary && (
+                      <p className="mt-0.5 line-clamp-1 text-[11px] text-terminal-muted">
+                        {shortSummary}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
-                <div className="flex shrink-0 items-center gap-2">
+                <div className="flex shrink-0 items-center gap-1.5">
                   <span
                     className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${MARKET_BADGE_STYLES[lesson.marketCategory]}`}
                   >
                     {marketLabelMap[lesson.marketCategory] ?? lesson.marketCategory}
                   </span>
-                  <span className="hidden items-center gap-1 font-mono text-[11px] text-terminal-muted tabular-nums sm:inline-flex">
+                  <span className="hidden items-center gap-1 font-mono text-[10px] text-terminal-muted tabular-nums sm:inline-flex">
                     <Clock className="h-3 w-3 text-sky-500 dark:text-sky-400" aria-hidden="true" />
                     {lesson.estimatedMinutes}m
                   </span>
                   <ArrowRight
-                    className="h-3.5 w-3.5 text-terminal-muted transition-transform group-hover:translate-x-0.5 group-hover:text-emerald-500 dark:group-hover:text-emerald-400"
+                    className="h-3.5 w-3.5 text-terminal-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand"
                     aria-hidden="true"
                   />
                 </div>

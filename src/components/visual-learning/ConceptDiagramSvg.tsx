@@ -1,19 +1,35 @@
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RotateCcw, Sparkles } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
+import { TRADING_ACRONYMS, expandAcronyms } from '../../lib/acronymHelper';
 import type { DiagramConfig, DiagramKind } from '../../types/academy';
 
 export interface ConceptDiagramSvgProps {
   config: DiagramConfig;
 }
 
-const FONT_MONO = 'JetBrains Mono, ui-monospace, SFMono-Regular, monospace';
-const FONT_SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const FONT_MONO = 'IBM Plex Mono, ui-monospace, SFMono-Regular, monospace';
+const FONT_SANS = 'Plus Jakarta Sans, system-ui, -apple-system, sans-serif';
+
+function getTitleAcronymHint(title: string): string | null {
+  const expanded = expandAcronyms(title);
+  if (expanded === title) {
+    return null;
+  }
+  const pairs: string[] = [];
+  for (const [code, meaning] of Object.entries(TRADING_ACRONYMS)) {
+    if (expanded.includes(`${code} (${meaning})`)) {
+      pairs.push(`${code} (${meaning})`);
+    }
+  }
+  return pairs.length > 0 ? pairs.join(' · ') : null;
+}
 
 interface DiagramSubProps {
   activeStep: number;
 }
 
-function DiagramTopBanner({ text, accent = '#38bdf8' }: { text: string; accent?: string }) {
+function DiagramTopBanner({ text, accent = '#dd7d3e' }: { text: string; accent?: string }) {
   return (
     <g>
       <rect
@@ -22,8 +38,8 @@ function DiagramTopBanner({ text, accent = '#38bdf8' }: { text: string; accent?:
         width="644"
         height="22"
         rx="4"
-        fill="#0f172a"
-        stroke="#1e293b"
+        fill="#1b1917"
+        stroke="#332e29"
         strokeWidth="1"
       />
       <text
@@ -51,15 +67,15 @@ function DiagramBottomNote({ text }: { text: string }) {
         width="644"
         height="28"
         rx="6"
-        fill="#0f172a"
-        stroke="#1e293b"
+        fill="#1b1917"
+        stroke="#25221f"
         strokeWidth="1"
       />
       <text
         x="340"
         y="288"
         textAnchor="middle"
-        fill="#cbd5e1"
+        fill="#dcd4ca"
         fontSize="10"
         fontFamily={FONT_SANS}
         fontWeight="500"
@@ -83,7 +99,7 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="10"
         x2="340"
         y2="256"
-        stroke="#334155"
+        stroke="#332e29"
         strokeWidth="1"
         strokeDasharray="4 4"
       />
@@ -95,16 +111,16 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         width="310"
         height="24"
         rx="5"
-        fill="#10b981"
+        fill="#2e9e75"
         fillOpacity="0.14"
-        stroke="#10b981"
+        stroke="#2e9e75"
         strokeOpacity="0.55"
       />
       <text
         x="171"
         y="23.5"
         textAnchor="middle"
-        fill="#34d399"
+        fill="#4dc296"
         fontSize="10.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -119,16 +135,16 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         width="310"
         height="24"
         rx="5"
-        fill="#ef4444"
+        fill="#d85a52"
         fillOpacity="0.14"
-        stroke="#ef4444"
+        stroke="#d85a52"
         strokeOpacity="0.55"
       />
       <text
         x="509"
         y="23.5"
         textAnchor="middle"
-        fill="#f87171"
+        fill="#e57c75"
         fontSize="10.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -143,7 +159,7 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="48"
         x2="76"
         y2="98"
-        stroke={isWickStep ? '#fbbf24' : '#10b981'}
+        stroke={isWickStep ? '#e3b154' : '#2e9e75'}
         strokeWidth={isWickStep ? 4.5 : 3.5}
         strokeLinecap="round"
       />
@@ -153,7 +169,7 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="194"
         x2="76"
         y2="244"
-        stroke={isWickStep ? '#fbbf24' : '#10b981'}
+        stroke={isWickStep ? '#e3b154' : '#2e9e75'}
         strokeWidth={isWickStep ? 4.5 : 3.5}
         strokeLinecap="round"
       />
@@ -166,7 +182,7 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
           height="106"
           rx="6"
           fill="none"
-          stroke="#6ee7b7"
+          stroke="#88d9b8"
           strokeWidth="2"
           strokeDasharray="4 3"
         />
@@ -178,8 +194,8 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         width="46"
         height="96"
         rx="3"
-        fill="#10b981"
-        stroke="#34d399"
+        fill="#2e9e75"
+        stroke="#4dc296"
         strokeWidth="1.5"
       />
       {/* Direction cue inside green body */}
@@ -187,7 +203,7 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         x="76"
         y="141"
         textAnchor="middle"
-        fill="#022c22"
+        fill="#0f241c"
         fontSize="12"
         fontFamily={FONT_MONO}
         fontWeight="800"
@@ -198,7 +214,7 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         x="76"
         y="156"
         textAnchor="middle"
-        fill="#022c22"
+        fill="#0f241c"
         fontSize="10"
         fontFamily={FONT_MONO}
         fontWeight="800"
@@ -207,21 +223,21 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
       </text>
 
       {/* Left Callout 1: HIGH */}
-      <circle cx="76" cy="48" r={isWickStep ? 4.5 : 3.5} fill={isWickStep ? '#fbbf24' : '#34d399'} />
+      <circle cx="76" cy="48" r={isWickStep ? 4.5 : 3.5} fill={isWickStep ? '#e3b154' : '#4dc296'} />
       <line
         x1="82"
         y1="48"
         x2="112"
         y2="48"
-        stroke={isWickStep ? '#fbbf24' : '#475569'}
+        stroke={isWickStep ? '#e3b154' : '#524a42'}
         strokeWidth="1.25"
         strokeDasharray="3 3"
       />
       <text x="116" y="51" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#34d399" fontFamily={FONT_MONO} fontWeight="700">
+        <tspan fill="#4dc296" fontFamily={FONT_MONO} fontWeight="700">
           HIGH
         </tspan>
-        <tspan fill="#cbd5e1"> (Highest price reached)</tspan>
+        <tspan fill="#dcd4ca"> (Highest price reached)</tspan>
       </text>
 
       {/* Left Callout 2: UPPER WICK */}
@@ -230,14 +246,14 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="72"
         x2="112"
         y2="72"
-        stroke={isWickStep ? '#fbbf24' : '#475569'}
+        stroke={isWickStep ? '#e3b154' : '#524a42'}
         strokeWidth={isWickStep ? 1.75 : 1.25}
         strokeDasharray="3 3"
       />
-      <text x="116" y="70" fill="#fbbf24" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
+      <text x="116" y="70" fill="#e3b154" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
         UPPER WICK
       </text>
-      <text x="116" y="81" fill="#94a3b8" fontSize="8.5" fontFamily={FONT_SANS}>
+      <text x="116" y="81" fill="#a89f94" fontSize="8.5" fontFamily={FONT_SANS}>
         Buyers pushed up, sellers pushed back
       </text>
 
@@ -247,18 +263,18 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="98"
         x2="112"
         y2="98"
-        stroke={isBodyStep ? '#6ee7b7' : '#34d399'}
+        stroke={isBodyStep ? '#88d9b8' : '#4dc296'}
         strokeWidth={isBodyStep ? 2 : 1.3}
         strokeDasharray="3 3"
       />
-      <circle cx="99" cy="98" r={isBodyStep ? 4.5 : 3.5} fill="#34d399" />
+      <circle cx="99" cy="98" r={isBodyStep ? 4.5 : 3.5} fill="#4dc296" />
       <text x="116" y="101" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#34d399" fontFamily={FONT_MONO} fontWeight="700">
+        <tspan fill="#4dc296" fontFamily={FONT_MONO} fontWeight="700">
           CLOSE
         </tspan>
-        <tspan fill="#6ee7b7"> (Top of green box)</tspan>
+        <tspan fill="#88d9b8"> (Top of green box)</tspan>
       </text>
-      <text x="116" y="112" fill="#cbd5e1" fontSize="8.5" fontFamily={FONT_SANS}>
+      <text x="116" y="112" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
         Timer ended HIGHER → turns GREEN
       </text>
 
@@ -268,13 +284,13 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="146"
         x2="112"
         y2="146"
-        stroke={isBodyStep ? '#f8fafc' : '#64748b'}
+        stroke={isBodyStep ? '#f3efe9' : '#786e63'}
         strokeWidth="1.5"
       />
-      <text x="116" y="144" fill="#f8fafc" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
+      <text x="116" y="144" fill="#f3efe9" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
         BODY
       </text>
-      <text x="116" y="155" fill="#cbd5e1" fontSize="8.5" fontFamily={FONT_SANS}>
+      <text x="116" y="155" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
         Distance from Open to Close
       </text>
 
@@ -284,18 +300,18 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="194"
         x2="112"
         y2="194"
-        stroke={isOpenStep ? '#38bdf8' : '#0ea5e9'}
+        stroke={isOpenStep ? '#e6955c' : '#dd7d3e'}
         strokeWidth={isOpenStep ? 2.2 : 1.3}
         strokeDasharray="3 3"
       />
-      <circle cx="99" cy="194" r={isOpenStep ? 5 : 3.5} fill="#38bdf8" />
+      <circle cx="99" cy="194" r={isOpenStep ? 5 : 3.5} fill="#e6955c" />
       <text x="116" y="191" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#38bdf8" fontFamily={FONT_MONO} fontWeight="700">
+        <tspan fill="#e6955c" fontFamily={FONT_MONO} fontWeight="700">
           OPEN
         </tspan>
-        <tspan fill="#7dd3fc"> (Bottom of green box)</tspan>
+        <tspan fill="#f0b68a"> (Bottom of green box)</tspan>
       </text>
-      <text x="116" y="202" fill="#cbd5e1" fontSize="8.5" fontFamily={FONT_SANS}>
+      <text x="116" y="202" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
         Where the timer started
       </text>
 
@@ -305,33 +321,33 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="219"
         x2="112"
         y2="219"
-        stroke={isWickStep ? '#fbbf24' : '#475569'}
+        stroke={isWickStep ? '#e3b154' : '#524a42'}
         strokeWidth={isWickStep ? 1.75 : 1.25}
         strokeDasharray="3 3"
       />
-      <text x="116" y="218" fill="#fbbf24" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
+      <text x="116" y="218" fill="#e3b154" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
         LOWER WICK
       </text>
-      <text x="116" y="229" fill="#94a3b8" fontSize="8.5" fontFamily={FONT_SANS}>
+      <text x="116" y="229" fill="#a89f94" fontSize="8.5" fontFamily={FONT_SANS}>
         Price dipped, buyers pushed back up
       </text>
 
       {/* Left Callout 7: LOW */}
-      <circle cx="76" cy="244" r={isWickStep ? 4.5 : 3.5} fill={isWickStep ? '#fbbf24' : '#34d399'} />
+      <circle cx="76" cy="244" r={isWickStep ? 4.5 : 3.5} fill={isWickStep ? '#e3b154' : '#4dc296'} />
       <line
         x1="82"
         y1="244"
         x2="112"
         y2="244"
-        stroke={isWickStep ? '#fbbf24' : '#475569'}
+        stroke={isWickStep ? '#e3b154' : '#524a42'}
         strokeWidth="1.25"
         strokeDasharray="3 3"
       />
       <text x="116" y="247" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#34d399" fontFamily={FONT_MONO} fontWeight="700">
+        <tspan fill="#4dc296" fontFamily={FONT_MONO} fontWeight="700">
           LOW
         </tspan>
-        <tspan fill="#cbd5e1"> (Lowest price reached)</tspan>
+        <tspan fill="#dcd4ca"> (Lowest price reached)</tspan>
       </text>
 
       {/* ================= RIGHT: RED CANDLE ================= */}
@@ -341,7 +357,7 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="48"
         x2="404"
         y2="98"
-        stroke={isWickStep ? '#fbbf24' : '#ef4444'}
+        stroke={isWickStep ? '#e3b154' : '#d85a52'}
         strokeWidth={isWickStep ? 4.5 : 3.5}
         strokeLinecap="round"
       />
@@ -351,7 +367,7 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="194"
         x2="404"
         y2="244"
-        stroke={isWickStep ? '#fbbf24' : '#ef4444'}
+        stroke={isWickStep ? '#e3b154' : '#d85a52'}
         strokeWidth={isWickStep ? 4.5 : 3.5}
         strokeLinecap="round"
       />
@@ -364,7 +380,7 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
           height="106"
           rx="6"
           fill="none"
-          stroke="#fca5a5"
+          stroke="#f0a39e"
           strokeWidth="2"
           strokeDasharray="4 3"
         />
@@ -376,8 +392,8 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         width="46"
         height="96"
         rx="3"
-        fill="#ef4444"
-        stroke="#f87171"
+        fill="#d85a52"
+        stroke="#e57c75"
         strokeWidth="1.5"
       />
       {/* Direction cue inside red body */}
@@ -385,7 +401,7 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         x="404"
         y="141"
         textAnchor="middle"
-        fill="#450a0a"
+        fill="#2c1210"
         fontSize="12"
         fontFamily={FONT_MONO}
         fontWeight="800"
@@ -396,7 +412,7 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         x="404"
         y="156"
         textAnchor="middle"
-        fill="#450a0a"
+        fill="#2c1210"
         fontSize="10"
         fontFamily={FONT_MONO}
         fontWeight="800"
@@ -405,21 +421,21 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
       </text>
 
       {/* Right Callout 1: HIGH */}
-      <circle cx="404" cy="48" r={isWickStep ? 4.5 : 3.5} fill={isWickStep ? '#fbbf24' : '#f87171'} />
+      <circle cx="404" cy="48" r={isWickStep ? 4.5 : 3.5} fill={isWickStep ? '#e3b154' : '#e57c75'} />
       <line
         x1="410"
         y1="48"
         x2="440"
         y2="48"
-        stroke={isWickStep ? '#fbbf24' : '#475569'}
+        stroke={isWickStep ? '#e3b154' : '#524a42'}
         strokeWidth="1.25"
         strokeDasharray="3 3"
       />
       <text x="444" y="51" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#f87171" fontFamily={FONT_MONO} fontWeight="700">
+        <tspan fill="#e57c75" fontFamily={FONT_MONO} fontWeight="700">
           HIGH
         </tspan>
-        <tspan fill="#cbd5e1"> (Highest price reached)</tspan>
+        <tspan fill="#dcd4ca"> (Highest price reached)</tspan>
       </text>
 
       {/* Right Callout 2: UPPER WICK */}
@@ -428,14 +444,14 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="72"
         x2="440"
         y2="72"
-        stroke={isWickStep ? '#fbbf24' : '#475569'}
+        stroke={isWickStep ? '#e3b154' : '#524a42'}
         strokeWidth={isWickStep ? 1.75 : 1.25}
         strokeDasharray="3 3"
       />
-      <text x="444" y="70" fill="#fbbf24" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
+      <text x="444" y="70" fill="#e3b154" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
         UPPER WICK
       </text>
-      <text x="444" y="81" fill="#94a3b8" fontSize="8.5" fontFamily={FONT_SANS}>
+      <text x="444" y="81" fill="#a89f94" fontSize="8.5" fontFamily={FONT_SANS}>
         Brief rally rejected by sellers
       </text>
 
@@ -445,18 +461,18 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="98"
         x2="440"
         y2="98"
-        stroke={isOpenStep ? '#38bdf8' : '#0ea5e9'}
+        stroke={isOpenStep ? '#e6955c' : '#dd7d3e'}
         strokeWidth={isOpenStep ? 2.2 : 1.3}
         strokeDasharray="3 3"
       />
-      <circle cx="427" cy="98" r={isOpenStep ? 5 : 3.5} fill="#38bdf8" />
+      <circle cx="427" cy="98" r={isOpenStep ? 5 : 3.5} fill="#e6955c" />
       <text x="444" y="101" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#38bdf8" fontFamily={FONT_MONO} fontWeight="700">
+        <tspan fill="#e6955c" fontFamily={FONT_MONO} fontWeight="700">
           OPEN
         </tspan>
-        <tspan fill="#7dd3fc"> (Started HIGHER — TOP!)</tspan>
+        <tspan fill="#f0b68a"> (Started HIGHER — TOP!)</tspan>
       </text>
-      <text x="444" y="112" fill="#cbd5e1" fontSize="8.5" fontFamily={FONT_SANS}>
+      <text x="444" y="112" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
         Mirror of green: Open sits at TOP
       </text>
 
@@ -466,13 +482,13 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="146"
         x2="440"
         y2="146"
-        stroke={isBodyStep ? '#f8fafc' : '#64748b'}
+        stroke={isBodyStep ? '#f3efe9' : '#786e63'}
         strokeWidth="1.5"
       />
-      <text x="444" y="144" fill="#f8fafc" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
+      <text x="444" y="144" fill="#f3efe9" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
         BODY
       </text>
-      <text x="444" y="155" fill="#cbd5e1" fontSize="8.5" fontFamily={FONT_SANS}>
+      <text x="444" y="155" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
         Price dropped from Open to Close
       </text>
 
@@ -482,18 +498,18 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="194"
         x2="440"
         y2="194"
-        stroke={isBodyStep ? '#fca5a5' : '#ef4444'}
+        stroke={isBodyStep ? '#f0a39e' : '#d85a52'}
         strokeWidth={isBodyStep ? 2 : 1.3}
         strokeDasharray="3 3"
       />
-      <circle cx="427" cy="194" r={isBodyStep ? 4.5 : 3.5} fill="#f87171" />
+      <circle cx="427" cy="194" r={isBodyStep ? 4.5 : 3.5} fill="#e57c75" />
       <text x="444" y="191" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#f87171" fontFamily={FONT_MONO} fontWeight="700">
+        <tspan fill="#e57c75" fontFamily={FONT_MONO} fontWeight="700">
           CLOSE
         </tspan>
-        <tspan fill="#fca5a5"> (Ended LOWER → RED)</tspan>
+        <tspan fill="#f0a39e"> (Ended LOWER → RED)</tspan>
       </text>
-      <text x="444" y="202" fill="#cbd5e1" fontSize="8.5" fontFamily={FONT_SANS}>
+      <text x="444" y="202" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_SANS}>
         Closed below Open → locks RED
       </text>
 
@@ -503,33 +519,33 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         y1="219"
         x2="440"
         y2="219"
-        stroke={isWickStep ? '#fbbf24' : '#475569'}
+        stroke={isWickStep ? '#e3b154' : '#524a42'}
         strokeWidth={isWickStep ? 1.75 : 1.25}
         strokeDasharray="3 3"
       />
-      <text x="444" y="218" fill="#fbbf24" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
+      <text x="444" y="218" fill="#e3b154" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
         LOWER WICK
       </text>
-      <text x="444" y="229" fill="#94a3b8" fontSize="8.5" fontFamily={FONT_SANS}>
+      <text x="444" y="229" fill="#a89f94" fontSize="8.5" fontFamily={FONT_SANS}>
         Dipped lower, then bounced back
       </text>
 
       {/* Right Callout 7: LOW */}
-      <circle cx="404" cy="244" r={isWickStep ? 4.5 : 3.5} fill={isWickStep ? '#fbbf24' : '#f87171'} />
+      <circle cx="404" cy="244" r={isWickStep ? 4.5 : 3.5} fill={isWickStep ? '#e3b154' : '#e57c75'} />
       <line
         x1="410"
         y1="244"
         x2="440"
         y2="244"
-        stroke={isWickStep ? '#fbbf24' : '#475569'}
+        stroke={isWickStep ? '#e3b154' : '#524a42'}
         strokeWidth="1.25"
         strokeDasharray="3 3"
       />
       <text x="444" y="247" fontSize="9.5" fontFamily={FONT_SANS}>
-        <tspan fill="#f87171" fontFamily={FONT_MONO} fontWeight="700">
+        <tspan fill="#e57c75" fontFamily={FONT_MONO} fontWeight="700">
           LOW
         </tspan>
-        <tspan fill="#cbd5e1"> (Lowest price reached)</tspan>
+        <tspan fill="#dcd4ca"> (Lowest price reached)</tspan>
       </text>
 
       {/* ================= BOTTOM TIMELINE BAR ================= */}
@@ -539,8 +555,8 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         width="648"
         height="40"
         rx="7"
-        fill="#0f172a"
-        stroke="#1e293b"
+        fill="#1b1917"
+        stroke="#25221f"
         strokeWidth="1"
       />
       {/* Step Pill 1: Timer Starts (Open) */}
@@ -550,16 +566,16 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         width="188"
         height="26"
         rx="5"
-        fill={isOpenStep ? '#0ea5e9' : '#1e293b'}
+        fill={isOpenStep ? '#dd7d3e' : '#25221f'}
         fillOpacity={isOpenStep ? 0.25 : 0.7}
-        stroke={isOpenStep ? '#38bdf8' : '#334155'}
+        stroke={isOpenStep ? '#e6955c' : '#332e29'}
         strokeWidth={isOpenStep ? 1.5 : 1}
       />
       <text
         x="118"
         y="285.5"
         textAnchor="middle"
-        fill={isOpenStep ? '#7dd3fc' : '#cbd5e1'}
+        fill={isOpenStep ? '#f0b68a' : '#dcd4ca'}
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -567,7 +583,7 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         1. Timer Starts (Open)
       </text>
 
-      <text x="225" y="286" textAnchor="middle" fill="#64748b" fontSize="13" fontWeight="700">
+      <text x="225" y="286" textAnchor="middle" fill="#786e63" fontSize="13" fontWeight="700">
         →
       </text>
 
@@ -578,16 +594,16 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         width="202"
         height="26"
         rx="5"
-        fill={isWickStep ? '#f59e0b' : '#1e293b'}
+        fill={isWickStep ? '#d69b38' : '#25221f'}
         fillOpacity={isWickStep ? 0.25 : 0.7}
-        stroke={isWickStep ? '#fbbf24' : '#334155'}
+        stroke={isWickStep ? '#e3b154' : '#332e29'}
         strokeWidth={isWickStep ? 1.5 : 1}
       />
       <text
         x="339"
         y="285.5"
         textAnchor="middle"
-        fill={isWickStep ? '#fcd34d' : '#cbd5e1'}
+        fill={isWickStep ? '#edc677' : '#dcd4ca'}
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -595,7 +611,7 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         2. Price Moves (Wicks)
       </text>
 
-      <text x="453" y="286" textAnchor="middle" fill="#64748b" fontSize="13" fontWeight="700">
+      <text x="453" y="286" textAnchor="middle" fill="#786e63" fontSize="13" fontWeight="700">
         →
       </text>
 
@@ -606,16 +622,16 @@ function CandlestickAnatomySvg({ activeStep }: DiagramSubProps) {
         width="190"
         height="26"
         rx="5"
-        fill={isBodyStep ? '#10b981' : '#1e293b'}
+        fill={isBodyStep ? '#2e9e75' : '#25221f'}
         fillOpacity={isBodyStep ? 0.25 : 0.7}
-        stroke={isBodyStep ? '#34d399' : '#334155'}
+        stroke={isBodyStep ? '#4dc296' : '#332e29'}
         strokeWidth={isBodyStep ? 1.5 : 1}
       />
       <text
         x="561"
         y="285.5"
         textAnchor="middle"
-        fill={isBodyStep ? '#6ee7b7' : '#cbd5e1'}
+        fill={isBodyStep ? '#88d9b8' : '#dcd4ca'}
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -631,7 +647,7 @@ function SupportDemandSvg({ activeStep }: DiagramSubProps) {
     <g>
       <DiagramTopBanner
         text="FLOOR (SUPPORT / DEMAND) VS. CEILING (RESISTANCE / SUPPLY)"
-        accent="#34d399"
+        accent="#4dc296"
       />
 
       {/* Ceiling / Resistance / Supply Zone */}
@@ -641,9 +657,9 @@ function SupportDemandSvg({ activeStep }: DiagramSubProps) {
         width="612"
         height="46"
         rx="6"
-        fill="#ef4444"
+        fill="#d85a52"
         fillOpacity={activeStep === 1 ? 0.28 : 0.14}
-        stroke="#ef4444"
+        stroke="#d85a52"
         strokeWidth={activeStep === 1 ? 2 : 1.25}
         strokeDasharray="6 4"
       />
@@ -651,7 +667,7 @@ function SupportDemandSvg({ activeStep }: DiagramSubProps) {
         x="340"
         y="61"
         textAnchor="middle"
-        fill="#fca5a5"
+        fill="#f0a39e"
         fontSize="11"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -662,7 +678,7 @@ function SupportDemandSvg({ activeStep }: DiagramSubProps) {
         x="340"
         y="77"
         textAnchor="middle"
-        fill="#e2e8f0"
+        fill="#f3efe9"
         fontSize="9.5"
         fontFamily={FONT_SANS}
       >
@@ -676,9 +692,9 @@ function SupportDemandSvg({ activeStep }: DiagramSubProps) {
         width="612"
         height="46"
         rx="6"
-        fill="#10b981"
+        fill="#2e9e75"
         fillOpacity={activeStep === 0 ? 0.28 : 0.14}
-        stroke="#10b981"
+        stroke="#2e9e75"
         strokeWidth={activeStep === 0 ? 2 : 1.25}
         strokeDasharray="6 4"
       />
@@ -686,7 +702,7 @@ function SupportDemandSvg({ activeStep }: DiagramSubProps) {
         x="340"
         y="231"
         textAnchor="middle"
-        fill="#6ee7b7"
+        fill="#88d9b8"
         fontSize="11"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -697,7 +713,7 @@ function SupportDemandSvg({ activeStep }: DiagramSubProps) {
         x="340"
         y="247"
         textAnchor="middle"
-        fill="#e2e8f0"
+        fill="#f3efe9"
         fontSize="9.5"
         fontFamily={FONT_SANS}
       >
@@ -708,7 +724,7 @@ function SupportDemandSvg({ activeStep }: DiagramSubProps) {
       <polyline
         points="54,158 136,212 240,88 344,212 448,88 538,212 626,118"
         fill="none"
-        stroke="#e2e8f0"
+        stroke="#f3efe9"
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -725,15 +741,15 @@ function SupportDemandSvg({ activeStep }: DiagramSubProps) {
             cx={pt.x}
             cy={212}
             r={activeStep === 0 ? 7.5 : 5.5}
-            fill="#10b981"
-            stroke="#020617"
+            fill="#2e9e75"
+            stroke="#131110"
             strokeWidth="2"
           />
           <text
             x={pt.x}
             y={199}
             textAnchor="middle"
-            fill="#34d399"
+            fill="#4dc296"
             fontSize="9.5"
             fontFamily={FONT_MONO}
             fontWeight="700"
@@ -753,15 +769,15 @@ function SupportDemandSvg({ activeStep }: DiagramSubProps) {
             cx={pt.x}
             cy={88}
             r={activeStep === 1 ? 7.5 : 5.5}
-            fill="#ef4444"
-            stroke="#020617"
+            fill="#d85a52"
+            stroke="#131110"
             strokeWidth="2"
           />
           <text
             x={pt.x}
             y={107}
             textAnchor="middle"
-            fill="#f87171"
+            fill="#e57c75"
             fontSize="9.5"
             fontFamily={FONT_MONO}
             fontWeight="700"
@@ -780,15 +796,15 @@ function SupportDemandSvg({ activeStep }: DiagramSubProps) {
             width="92"
             height="22"
             rx="4"
-            fill="#0ea5e9"
+            fill="#dd7d3e"
             fillOpacity="0.22"
-            stroke="#38bdf8"
+            stroke="#e6955c"
           />
           <text
             x="600"
             y="114.5"
             textAnchor="middle"
-            fill="#7dd3fc"
+            fill="#f0b68a"
             fontSize="9"
             fontFamily={FONT_MONO}
             fontWeight="700"
@@ -808,7 +824,7 @@ function OrderBlockChochSvg({ activeStep }: DiagramSubProps) {
     <g>
       <DiagramTopBanner
         text="DOWNTREND → U-TURN BREAK (CHoCH) → ORDER BLOCK PULLBACK → RALLY UP"
-        accent="#fbbf24"
+        accent="#e3b154"
       />
 
       {/* Last Lower High horizontal line for CHoCH */}
@@ -817,7 +833,7 @@ function OrderBlockChochSvg({ activeStep }: DiagramSubProps) {
         y1="126"
         x2="380"
         y2="126"
-        stroke="#38bdf8"
+        stroke="#e6955c"
         strokeWidth={activeStep === 1 ? 2.25 : 1.5}
         strokeDasharray="6 4"
       />
@@ -827,15 +843,15 @@ function OrderBlockChochSvg({ activeStep }: DiagramSubProps) {
         width="136"
         height="20"
         rx="4"
-        fill="#0ea5e9"
+        fill="#dd7d3e"
         fillOpacity={activeStep === 1 ? 0.3 : 0.16}
-        stroke="#38bdf8"
+        stroke="#e6955c"
       />
       <text
         x="334"
         y="115.5"
         textAnchor="middle"
-        fill="#7dd3fc"
+        fill="#f0b68a"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -850,9 +866,9 @@ function OrderBlockChochSvg({ activeStep }: DiagramSubProps) {
         width="302"
         height="42"
         rx="5"
-        fill="#f59e0b"
+        fill="#d69b38"
         fillOpacity={activeStep === 2 ? 0.28 : 0.14}
-        stroke="#f59e0b"
+        stroke="#d69b38"
         strokeWidth={activeStep === 2 ? 2 : 1.25}
         strokeDasharray="5 3"
       />
@@ -860,7 +876,7 @@ function OrderBlockChochSvg({ activeStep }: DiagramSubProps) {
         x="356"
         y="246"
         textAnchor="middle"
-        fill="#fbbf24"
+        fill="#e3b154"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -872,7 +888,7 @@ function OrderBlockChochSvg({ activeStep }: DiagramSubProps) {
       <polyline
         points="42,66 106,144 150,126 226,222"
         fill="none"
-        stroke="#ef4444"
+        stroke="#d85a52"
         strokeWidth={activeStep === 0 ? 3.5 : 2.5}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -881,19 +897,19 @@ function OrderBlockChochSvg({ activeStep }: DiagramSubProps) {
         x="86"
         y="58"
         textAnchor="middle"
-        fill="#f87171"
+        fill="#e57c75"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
         1. Downtrend
       </text>
-      <circle cx="150" cy="126" r="4.5" fill="#f87171" />
+      <circle cx="150" cy="126" r="4.5" fill="#e57c75" />
       <text
         x="150"
         y="116"
         textAnchor="middle"
-        fill="#94a3b8"
+        fill="#a89f94"
         fontSize="8.5"
         fontFamily={FONT_MONO}
       >
@@ -901,15 +917,15 @@ function OrderBlockChochSvg({ activeStep }: DiagramSubProps) {
       </text>
 
       {/* Last Red Candle (Order Block visual) */}
-      <line x1="226" y1="180" x2="226" y2="236" stroke="#ef4444" strokeWidth="2" />
+      <line x1="226" y1="180" x2="226" y2="236" stroke="#d85a52" strokeWidth="2" />
       <rect
         x="215"
         y="190"
         width="22"
         height="36"
         rx="2"
-        fill="#ef4444"
-        stroke="#fbbf24"
+        fill="#d85a52"
+        stroke="#e3b154"
         strokeWidth="1.5"
       />
 
@@ -917,18 +933,18 @@ function OrderBlockChochSvg({ activeStep }: DiagramSubProps) {
       <polyline
         points="238,208 292,126 356,74"
         fill="none"
-        stroke="#10b981"
+        stroke="#2e9e75"
         strokeWidth="3.25"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="292" cy="126" r={activeStep === 1 ? 6.5 : 4.5} fill="#38bdf8" />
+      <circle cx="292" cy="126" r={activeStep === 1 ? 6.5 : 4.5} fill="#e6955c" />
 
       {/* Stage 3: Calm Pullback to Order Block */}
       <polyline
         points="356,74 422,148 468,206"
         fill="none"
-        stroke="#94a3b8"
+        stroke="#a89f94"
         strokeWidth="2.25"
         strokeDasharray="5 4"
         strokeLinecap="round"
@@ -938,15 +954,15 @@ function OrderBlockChochSvg({ activeStep }: DiagramSubProps) {
         cx="468"
         cy="206"
         r={activeStep === 2 ? 7.5 : 5.5}
-        fill="#f59e0b"
-        stroke="#020617"
+        fill="#d69b38"
+        stroke="#131110"
         strokeWidth="2"
       />
       <text
         x="468"
         y="181"
         textAnchor="middle"
-        fill="#fcd34d"
+        fill="#edc677"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -958,7 +974,7 @@ function OrderBlockChochSvg({ activeStep }: DiagramSubProps) {
       <polyline
         points="468,206 544,120 624,54"
         fill="none"
-        stroke="#10b981"
+        stroke="#2e9e75"
         strokeWidth={activeStep >= 3 ? 4 : 3}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -967,15 +983,15 @@ function OrderBlockChochSvg({ activeStep }: DiagramSubProps) {
         cx="624"
         cy="54"
         r={activeStep >= 3 ? 7 : 5}
-        fill="#10b981"
-        stroke="#020617"
+        fill="#2e9e75"
+        stroke="#131110"
         strokeWidth="2"
       />
       <text
         x="592"
         y="48"
         textAnchor="middle"
-        fill="#34d399"
+        fill="#4dc296"
         fontSize="10"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -998,16 +1014,16 @@ function MultiTimeframeSvg({ activeStep }: DiagramSubProps) {
         width="234"
         height="24"
         rx="5"
-        fill="#10b981"
+        fill="#2e9e75"
         fillOpacity="0.15"
-        stroke="#10b981"
+        stroke="#2e9e75"
         strokeOpacity="0.5"
       />
       <text
         x="135"
         y="25.5"
         textAnchor="middle"
-        fill="#34d399"
+        fill="#4dc296"
         fontSize="10"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -1021,16 +1037,16 @@ function MultiTimeframeSvg({ activeStep }: DiagramSubProps) {
         width="350"
         height="24"
         rx="5"
-        fill="#0ea5e9"
+        fill="#dd7d3e"
         fillOpacity="0.15"
-        stroke="#0ea5e9"
+        stroke="#dd7d3e"
         strokeOpacity="0.5"
       />
       <text
         x="487"
         y="25.5"
         textAnchor="middle"
-        fill="#38bdf8"
+        fill="#e6955c"
         fontSize="10"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -1045,9 +1061,9 @@ function MultiTimeframeSvg({ activeStep }: DiagramSubProps) {
         width="234"
         height="218"
         rx="7"
-        fill="#0f172a"
+        fill="#1b1917"
         fillOpacity={activeStep === 0 ? 0.9 : 0.55}
-        stroke={activeStep === 0 ? '#10b981' : '#1e293b'}
+        stroke={activeStep === 0 ? '#2e9e75' : '#25221f'}
         strokeWidth={activeStep === 0 ? 1.75 : 1}
       />
 
@@ -1058,18 +1074,18 @@ function MultiTimeframeSvg({ activeStep }: DiagramSubProps) {
         width="350"
         height="218"
         rx="7"
-        fill="#0f172a"
+        fill="#1b1917"
         fillOpacity={activeStep >= 2 ? 0.9 : 0.55}
-        stroke={activeStep >= 2 ? '#38bdf8' : '#1e293b'}
+        stroke={activeStep >= 2 ? '#e6955c' : '#25221f'}
         strokeWidth={activeStep >= 2 ? 1.75 : 1}
       />
 
       {/* Horizontal OHLC alignment guides across both panels */}
       {[
-        { y: 64, label: 'HIGH', color: '#34d399' },
-        { y: 94, label: 'CLOSE', color: '#34d399' },
-        { y: 196, label: 'OPEN', color: '#38bdf8' },
-        { y: 230, label: 'LOW', color: '#fbbf24' },
+        { y: 64, label: 'HIGH', color: '#4dc296' },
+        { y: 94, label: 'CLOSE', color: '#4dc296' },
+        { y: 196, label: 'OPEN', color: '#e6955c' },
+        { y: 230, label: 'LOW', color: '#e3b154' },
       ].map((lvl) => (
         <g key={lvl.label}>
           <line
@@ -1096,22 +1112,22 @@ function MultiTimeframeSvg({ activeStep }: DiagramSubProps) {
       ))}
 
       {/* LEFT: 1 Big 1-Hour Green Candle */}
-      <line x1="142" y1="64" x2="142" y2="230" stroke="#10b981" strokeWidth="4" strokeLinecap="round" />
+      <line x1="142" y1="64" x2="142" y2="230" stroke="#2e9e75" strokeWidth="4" strokeLinecap="round" />
       <rect
         x="114"
         y="94"
         width="56"
         height="102"
         rx="4"
-        fill="#10b981"
-        stroke="#34d399"
+        fill="#2e9e75"
+        stroke="#4dc296"
         strokeWidth="1.5"
       />
       <text
         x="142"
         y="150"
         textAnchor="middle"
-        fill="#022c22"
+        fill="#0f241c"
         fontSize="12"
         fontFamily={FONT_MONO}
         fontWeight="800"
@@ -1122,7 +1138,7 @@ function MultiTimeframeSvg({ activeStep }: DiagramSubProps) {
         x="135"
         y="251"
         textAnchor="middle"
-        fill="#94a3b8"
+        fill="#a89f94"
         fontSize="9"
         fontFamily={FONT_MONO}
       >
@@ -1133,16 +1149,16 @@ function MultiTimeframeSvg({ activeStep }: DiagramSubProps) {
       <path
         d="M 262 64 L 274 64 L 274 230 L 262 230"
         fill="none"
-        stroke="#fbbf24"
+        stroke="#e3b154"
         strokeWidth="2"
       />
-      <line x1="274" y1="147" x2="306" y2="147" stroke="#fbbf24" strokeWidth="2" />
-      <rect x="256" y="132" width="52" height="30" rx="5" fill="#020617" stroke="#fbbf24" />
+      <line x1="274" y1="147" x2="306" y2="147" stroke="#e3b154" strokeWidth="2" />
+      <rect x="256" y="132" width="52" height="30" rx="5" fill="#131110" stroke="#e3b154" />
       <text
         x="282"
         y="145"
         textAnchor="middle"
-        fill="#fbbf24"
+        fill="#e3b154"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="800"
@@ -1153,7 +1169,7 @@ function MultiTimeframeSvg({ activeStep }: DiagramSubProps) {
         x="282"
         y="157"
         textAnchor="middle"
-        fill="#fde68a"
+        fill="#f4dca4"
         fontSize="8"
         fontFamily={FONT_MONO}
       >
@@ -1162,39 +1178,39 @@ function MultiTimeframeSvg({ activeStep }: DiagramSubProps) {
 
       {/* RIGHT: 4 exact 15-minute candles building the 1H candle */}
       {/* Candle 1 (0-15m): Red Dip creating 1H Open & 1H Low */}
-      <line x1="362" y1="190" x2="362" y2="230" stroke="#ef4444" strokeWidth="2.5" />
-      <rect x="348" y="196" width="28" height="22" rx="2" fill="#ef4444" />
-      <text x="362" y="250" textAnchor="middle" fill="#cbd5e1" fontSize="8.5" fontFamily={FONT_MONO}>
+      <line x1="362" y1="190" x2="362" y2="230" stroke="#d85a52" strokeWidth="2.5" />
+      <rect x="348" y="196" width="28" height="22" rx="2" fill="#d85a52" />
+      <text x="362" y="250" textAnchor="middle" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_MONO}>
         0–15m
       </text>
 
       {/* Candle 2 (15-30m): Green Turnaround */}
-      <line x1="444" y1="142" x2="444" y2="224" stroke="#10b981" strokeWidth="2.5" />
+      <line x1="444" y1="142" x2="444" y2="224" stroke="#2e9e75" strokeWidth="2.5" />
       <rect
         x="430"
         y="152"
         width="28"
         height="66"
         rx="2"
-        fill="#10b981"
-        stroke={activeStep >= 2 ? '#fbbf24' : 'none'}
+        fill="#2e9e75"
+        stroke={activeStep >= 2 ? '#e3b154' : 'none'}
         strokeWidth="2"
       />
-      <text x="444" y="250" textAnchor="middle" fill="#34d399" fontSize="8.5" fontFamily={FONT_MONO}>
+      <text x="444" y="250" textAnchor="middle" fill="#4dc296" fontSize="8.5" fontFamily={FONT_MONO}>
         15–30m
       </text>
 
       {/* Candle 3 (30-45m): Big Green Surge creating 1H High */}
-      <line x1="526" y1="64" x2="526" y2="160" stroke="#10b981" strokeWidth="2.5" />
-      <rect x="512" y="80" width="28" height="72" rx="2" fill="#10b981" />
-      <text x="526" y="250" textAnchor="middle" fill="#34d399" fontSize="8.5" fontFamily={FONT_MONO}>
+      <line x1="526" y1="64" x2="526" y2="160" stroke="#2e9e75" strokeWidth="2.5" />
+      <rect x="512" y="80" width="28" height="72" rx="2" fill="#2e9e75" />
+      <text x="526" y="250" textAnchor="middle" fill="#4dc296" fontSize="8.5" fontFamily={FONT_MONO}>
         30–45m
       </text>
 
       {/* Candle 4 (45-60m): Small Red Pullback landing at 1H Close */}
-      <line x1="608" y1="74" x2="608" y2="108" stroke="#ef4444" strokeWidth="2.5" />
-      <rect x="594" y="80" width="28" height="14" rx="2" fill="#ef4444" />
-      <text x="608" y="250" textAnchor="middle" fill="#cbd5e1" fontSize="8.5" fontFamily={FONT_MONO}>
+      <line x1="608" y1="74" x2="608" y2="108" stroke="#d85a52" strokeWidth="2.5" />
+      <rect x="594" y="80" width="28" height="14" rx="2" fill="#d85a52" />
+      <text x="608" y="250" textAnchor="middle" fill="#dcd4ca" fontSize="8.5" fontFamily={FONT_MONO}>
         45–60m
       </text>
 
@@ -1203,7 +1219,7 @@ function MultiTimeframeSvg({ activeStep }: DiagramSubProps) {
         x="444"
         y="128"
         textAnchor="middle"
-        fill="#fbbf24"
+        fill="#e3b154"
         fontSize="8.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -1226,8 +1242,8 @@ function MarketSessionsSvg({ activeStep }: DiagramSubProps) {
       time: '7:00 PM – 2:00 AM NY',
       badge: 'Quiet Range',
       note: 'Sideways, builds highs/lows',
-      color: '#f59e0b',
-      textLight: '#fcd34d',
+      color: '#d69b38',
+      textLight: '#edc677',
       active: activeStep === 0,
     },
     {
@@ -1238,8 +1254,8 @@ function MarketSessionsSvg({ activeStep }: DiagramSubProps) {
       time: '2:00 AM – 8:00 AM NY',
       badge: 'Big Move',
       note: 'Sweeps Asia & launches trend',
-      color: '#0ea5e9',
-      textLight: '#7dd3fc',
+      color: '#dd7d3e',
+      textLight: '#f0b68a',
       active: activeStep === 1,
     },
     {
@@ -1250,8 +1266,8 @@ function MarketSessionsSvg({ activeStep }: DiagramSubProps) {
       time: '8:00 AM – 12:00 PM NY',
       badge: 'Peak Volume',
       note: 'Fastest, cleanest moves',
-      color: '#10b981',
-      textLight: '#6ee7b7',
+      color: '#2e9e75',
+      textLight: '#88d9b8',
       active: activeStep >= 2,
     },
     {
@@ -1262,8 +1278,8 @@ function MarketSessionsSvg({ activeStep }: DiagramSubProps) {
       time: '12:00 PM – 5:00 PM',
       badge: 'Slowdown',
       note: 'Lower volume / chop',
-      color: '#64748b',
-      textLight: '#cbd5e1',
+      color: '#786e63',
+      textLight: '#dcd4ca',
       active: false,
     },
   ];
@@ -1272,32 +1288,32 @@ function MarketSessionsSvg({ activeStep }: DiagramSubProps) {
     <g>
       <DiagramTopBanner
         text="24-HOUR MARKET SESSIONS (ALL TIMES IN NEW YORK / EST)"
-        accent="#38bdf8"
+        accent="#e6955c"
       />
 
       {/* Volume / Activity Curve Area */}
-      <text x="28" y="54" fill="#94a3b8" fontSize="9" fontFamily={FONT_MONO} fontWeight="600">
+      <text x="28" y="54" fill="#a89f94" fontSize="9" fontFamily={FONT_MONO} fontWeight="600">
         TRADING VOLUME &amp; SPEED
       </text>
       <path
         d="M 24 148 L 24 134 Q 70 128, 114 136 Q 160 142, 204 132 L 244 92 Q 285 72, 356 88 Q 405 46, 445 50 Q 490 54, 524 100 Q 580 132, 656 140 L 656 148 Z"
-        fill="#10b981"
+        fill="#2e9e75"
         fillOpacity="0.14"
       />
       <path
         d="M 24 134 Q 70 128, 114 136 Q 160 142, 204 132 L 244 92 Q 285 72, 356 88 Q 405 46, 445 50 Q 490 54, 524 100 Q 580 132, 656 140"
         fill="none"
-        stroke="#34d399"
+        stroke="#4dc296"
         strokeWidth="2.75"
         strokeLinecap="round"
       />
       {/* Peak callout dot */}
-      <circle cx="442" cy="50" r="5.5" fill="#10b981" stroke="#020617" strokeWidth="2" />
+      <circle cx="442" cy="50" r="5.5" fill="#2e9e75" stroke="#131110" strokeWidth="2" />
       <text
         x="442"
         y="43"
         textAnchor="middle"
-        fill="#6ee7b7"
+        fill="#88d9b8"
         fontSize="9"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -1306,7 +1322,7 @@ function MarketSessionsSvg({ activeStep }: DiagramSubProps) {
       </text>
 
       {/* Baseline */}
-      <line x1="24" y1="148" x2="656" y2="148" stroke="#334155" strokeWidth="1" />
+      <line x1="24" y1="148" x2="656" y2="148" stroke="#332e29" strokeWidth="1" />
 
       {/* 4 Horizontal Session Blocks */}
       {sessions.map((s) => (
@@ -1337,7 +1353,7 @@ function MarketSessionsSvg({ activeStep }: DiagramSubProps) {
             x={s.x + s.w / 2}
             y="194"
             textAnchor="middle"
-            fill="#e2e8f0"
+            fill="#f3efe9"
             fontSize="8.5"
             fontFamily={FONT_MONO}
           >
@@ -1367,7 +1383,7 @@ function MarketSessionsSvg({ activeStep }: DiagramSubProps) {
             x={s.x + s.w / 2}
             y="235"
             textAnchor="middle"
-            fill="#94a3b8"
+            fill="#a89f94"
             fontSize="8.2"
             fontFamily={FONT_SANS}
           >
@@ -1377,19 +1393,19 @@ function MarketSessionsSvg({ activeStep }: DiagramSubProps) {
       ))}
 
       {/* Time axis ticks */}
-      <text x="24" y="259" fill="#64748b" fontSize="8.5" fontFamily={FONT_MONO}>
+      <text x="24" y="259" fill="#786e63" fontSize="8.5" fontFamily={FONT_MONO}>
         7 PM
       </text>
-      <text x="210" y="259" fill="#38bdf8" fontSize="8.5" fontFamily={FONT_MONO} fontWeight="700">
+      <text x="210" y="259" fill="#e6955c" fontSize="8.5" fontFamily={FONT_MONO} fontWeight="700">
         2 AM (London)
       </text>
-      <text x="362" y="259" fill="#34d399" fontSize="8.5" fontFamily={FONT_MONO} fontWeight="700">
+      <text x="362" y="259" fill="#4dc296" fontSize="8.5" fontFamily={FONT_MONO} fontWeight="700">
         8 AM (NY Open)
       </text>
-      <text x="530" y="259" fill="#94a3b8" fontSize="8.5" fontFamily={FONT_MONO}>
+      <text x="530" y="259" fill="#a89f94" fontSize="8.5" fontFamily={FONT_MONO}>
         12 PM
       </text>
-      <text x="656" y="259" textAnchor="end" fill="#64748b" fontSize="8.5" fontFamily={FONT_MONO}>
+      <text x="656" y="259" textAnchor="end" fill="#786e63" fontSize="8.5" fontFamily={FONT_MONO}>
         5 PM NY
       </text>
 
@@ -1403,7 +1419,7 @@ function CryptoFundingDominanceSvg({ activeStep }: DiagramSubProps) {
     <g>
       <DiagramTopBanner
         text="CRYPTO 3-STAGE CYCLE: BTC LEADS → CROWDED LEVERAGE → LIQUIDATION FLUSH"
-        accent="#fbbf24"
+        accent="#e3b154"
       />
 
       {/* STAGE 1 CARD */}
@@ -1413,54 +1429,54 @@ function CryptoFundingDominanceSvg({ activeStep }: DiagramSubProps) {
         width="196"
         height="212"
         rx="8"
-        fill="#10b981"
+        fill="#2e9e75"
         fillOpacity={activeStep === 0 ? 0.16 : 0.07}
-        stroke="#10b981"
+        stroke="#2e9e75"
         strokeWidth={activeStep === 0 ? 2 : 1.1}
       />
       <text
         x="118"
         y="66"
         textAnchor="middle"
-        fill="#34d399"
+        fill="#4dc296"
         fontSize="10.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
         STAGE 1: BTC LEADS
       </text>
-      <text x="118" y="82" textAnchor="middle" fill="#e2e8f0" fontSize="9.5" fontFamily={FONT_SANS}>
+      <text x="118" y="82" textAnchor="middle" fill="#f3efe9" fontSize="9.5" fontFamily={FONT_SANS}>
         Money enters Bitcoin first
       </text>
       {/* Mini BTC dominance visual */}
-      <rect x="34" y="96" width="168" height="82" rx="5" fill="#020617" stroke="#1e293b" />
-      <text x="44" y="113" fill="#34d399" fontSize="9" fontFamily={FONT_MONO} fontWeight="700">
+      <rect x="34" y="96" width="168" height="82" rx="5" fill="#131110" stroke="#25221f" />
+      <text x="44" y="113" fill="#4dc296" fontSize="9" fontFamily={FONT_MONO} fontWeight="700">
         BTC Dominance ▲
       </text>
       <polyline
         points="44,164 78,150 110,154 146,128 188,112"
         fill="none"
-        stroke="#10b981"
+        stroke="#2e9e75"
         strokeWidth="2.75"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="188" cy="112" r="4" fill="#34d399" />
-      <text x="44" y="172" fill="#64748b" fontSize="8" fontFamily={FONT_MONO}>
+      <circle cx="188" cy="112" r="4" fill="#4dc296" />
+      <text x="44" y="172" fill="#786e63" fontSize="8" fontFamily={FONT_MONO}>
         Funding: 0.01% (Healthy)
       </text>
-      <text x="118" y="200" textAnchor="middle" fill="#cbd5e1" fontSize="9" fontFamily={FONT_SANS}>
+      <text x="118" y="200" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
         • Big spot buyers load BTC
       </text>
-      <text x="118" y="217" textAnchor="middle" fill="#cbd5e1" fontSize="9" fontFamily={FONT_SANS}>
+      <text x="118" y="217" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
         • Low leverage, steady rise
       </text>
-      <text x="118" y="234" textAnchor="middle" fill="#6ee7b7" fontSize="9" fontFamily={FONT_SANS}>
+      <text x="118" y="234" textAnchor="middle" fill="#88d9b8" fontSize="9" fontFamily={FONT_SANS}>
         • Altcoins wait their turn
       </text>
 
       {/* Arrow 1 -> 2 */}
-      <text x="229" y="154" textAnchor="middle" fill="#fbbf24" fontSize="16" fontWeight="700">
+      <text x="229" y="154" textAnchor="middle" fill="#e3b154" fontSize="16" fontWeight="700">
         →
       </text>
 
@@ -1471,52 +1487,52 @@ function CryptoFundingDominanceSvg({ activeStep }: DiagramSubProps) {
         width="196"
         height="212"
         rx="8"
-        fill="#f59e0b"
+        fill="#d69b38"
         fillOpacity={activeStep === 1 ? 0.18 : 0.07}
-        stroke="#f59e0b"
+        stroke="#d69b38"
         strokeWidth={activeStep === 1 ? 2 : 1.1}
       />
       <text
         x="340"
         y="66"
         textAnchor="middle"
-        fill="#fbbf24"
+        fill="#e3b154"
         fontSize="10.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
         STAGE 2: OVERCROWDED
       </text>
-      <text x="340" y="82" textAnchor="middle" fill="#e2e8f0" fontSize="9.5" fontFamily={FONT_SANS}>
+      <text x="340" y="82" textAnchor="middle" fill="#f3efe9" fontSize="9.5" fontFamily={FONT_SANS}>
         Crowded Leveraged Longs
       </text>
       {/* Mini Funding Gauge visual */}
-      <rect x="256" y="96" width="168" height="82" rx="5" fill="#020617" stroke="#1e293b" />
-      <text x="266" y="113" fill="#fbbf24" fontSize="9" fontFamily={FONT_MONO} fontWeight="700">
+      <rect x="256" y="96" width="168" height="82" rx="5" fill="#131110" stroke="#25221f" />
+      <text x="266" y="113" fill="#e3b154" fontSize="9" fontFamily={FONT_MONO} fontWeight="700">
         HIGH FUNDING: +0.08%
       </text>
       {/* Meter track */}
-      <rect x="266" y="124" width="148" height="14" rx="4" fill="#1e293b" />
-      <rect x="266" y="124" width="130" height="14" rx="4" fill="#f59e0b" />
-      <rect x="366" y="124" width="30" height="14" rx="4" fill="#ef4444" />
-      <text x="266" y="156" fill="#fca5a5" fontSize="8.5" fontFamily={FONT_MONO} fontWeight="700">
+      <rect x="266" y="124" width="148" height="14" rx="4" fill="#25221f" />
+      <rect x="266" y="124" width="130" height="14" rx="4" fill="#d69b38" />
+      <rect x="366" y="124" width="30" height="14" rx="4" fill="#d85a52" />
+      <text x="266" y="156" fill="#f0a39e" fontSize="8.5" fontFamily={FONT_MONO} fontWeight="700">
         20x / 50x LONGS PACKED
       </text>
-      <text x="266" y="170" fill="#94a3b8" fontSize="8" fontFamily={FONT_SANS}>
+      <text x="266" y="170" fill="#a89f94" fontSize="8" fontFamily={FONT_SANS}>
         Late buyers borrow heavily
       </text>
-      <text x="340" y="200" textAnchor="middle" fill="#cbd5e1" fontSize="9" fontFamily={FONT_SANS}>
+      <text x="340" y="200" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
         • Everyone bets UP on margin
       </text>
-      <text x="340" y="217" textAnchor="middle" fill="#cbd5e1" fontSize="9" fontFamily={FONT_SANS}>
+      <text x="340" y="217" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
         • Longs pay steep funding fees
       </text>
-      <text x="340" y="234" textAnchor="middle" fill="#fcd34d" fontSize="9" fontFamily={FONT_SANS}>
+      <text x="340" y="234" textAnchor="middle" fill="#edc677" fontSize="9" fontFamily={FONT_SANS}>
         • Fragile — ripe for a flush!
       </text>
 
       {/* Arrow 2 -> 3 */}
-      <text x="451" y="154" textAnchor="middle" fill="#ef4444" fontSize="16" fontWeight="700">
+      <text x="451" y="154" textAnchor="middle" fill="#d85a52" fontSize="16" fontWeight="700">
         →
       </text>
 
@@ -1527,31 +1543,31 @@ function CryptoFundingDominanceSvg({ activeStep }: DiagramSubProps) {
         width="196"
         height="212"
         rx="8"
-        fill="#ef4444"
+        fill="#d85a52"
         fillOpacity={activeStep >= 2 ? 0.18 : 0.07}
-        stroke="#ef4444"
+        stroke="#d85a52"
         strokeWidth={activeStep >= 2 ? 2 : 1.1}
       />
       <text
         x="562"
         y="66"
         textAnchor="middle"
-        fill="#f87171"
+        fill="#e57c75"
         fontSize="10.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
         STAGE 3: FLUSH &amp; RESET
       </text>
-      <text x="562" y="82" textAnchor="middle" fill="#e2e8f0" fontSize="9.5" fontFamily={FONT_SANS}>
+      <text x="562" y="82" textAnchor="middle" fill="#f3efe9" fontSize="9.5" fontFamily={FONT_SANS}>
         Liquidation Sweep &amp; Reset
       </text>
       {/* Mini Liquidation Wick visual */}
-      <rect x="478" y="96" width="168" height="82" rx="5" fill="#020617" stroke="#1e293b" />
+      <rect x="478" y="96" width="168" height="82" rx="5" fill="#131110" stroke="#25221f" />
       <polyline
         points="488,118 524,114 548,166 574,126 634,106"
         fill="none"
-        stroke="#ef4444"
+        stroke="#d85a52"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -1559,25 +1575,25 @@ function CryptoFundingDominanceSvg({ activeStep }: DiagramSubProps) {
       <polyline
         points="548,166 574,126 634,106"
         fill="none"
-        stroke="#10b981"
+        stroke="#2e9e75"
         strokeWidth="2.75"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="548" cy="166" r="4.5" fill="#ef4444" />
-      <text x="588" y="168" textAnchor="middle" fill="#fca5a5" fontSize="8" fontFamily={FONT_MONO}>
+      <circle cx="548" cy="166" r="4.5" fill="#d85a52" />
+      <text x="588" y="168" textAnchor="middle" fill="#f0a39e" fontSize="8" fontFamily={FONT_MONO}>
         Liq. Wipeout
       </text>
-      <text x="598" y="109" textAnchor="middle" fill="#6ee7b7" fontSize="8" fontFamily={FONT_MONO}>
+      <text x="598" y="109" textAnchor="middle" fill="#88d9b8" fontSize="8" fontFamily={FONT_MONO}>
         Clean Reset ✓
       </text>
-      <text x="562" y="200" textAnchor="middle" fill="#cbd5e1" fontSize="9" fontFamily={FONT_SANS}>
+      <text x="562" y="200" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
         • Sharp wick wipes 50x longs
       </text>
-      <text x="562" y="217" textAnchor="middle" fill="#cbd5e1" fontSize="9" fontFamily={FONT_SANS}>
+      <text x="562" y="217" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
         • Funding drops back to ~0%
       </text>
-      <text x="562" y="234" textAnchor="middle" fill="#6ee7b7" fontSize="9" fontFamily={FONT_SANS}>
+      <text x="562" y="234" textAnchor="middle" fill="#88d9b8" fontSize="9" fontFamily={FONT_SANS}>
         • Real uptrend can resume
       </text>
 
@@ -1591,7 +1607,7 @@ function StocksOrbGapSvg({ activeStep }: DiagramSubProps) {
     <g>
       <DiagramTopBanner
         text="STOCKS PLAYBOOK: OVERNIGHT GAP UP → 5-MIN OPENING RANGE BOX → VOLUME BREAKOUT"
-        accent="#34d399"
+        accent="#4dc296"
       />
 
       {/* Vertical 9:30 AM Market Open divider */}
@@ -1600,7 +1616,7 @@ function StocksOrbGapSvg({ activeStep }: DiagramSubProps) {
         y1="42"
         x2="252"
         y2="256"
-        stroke="#38bdf8"
+        stroke="#e6955c"
         strokeWidth="1.5"
         strokeDasharray="5 4"
       />
@@ -1608,7 +1624,7 @@ function StocksOrbGapSvg({ activeStep }: DiagramSubProps) {
         x="252"
         y="54"
         textAnchor="middle"
-        fill="#38bdf8"
+        fill="#e6955c"
         fontSize="9"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -1617,17 +1633,17 @@ function StocksOrbGapSvg({ activeStep }: DiagramSubProps) {
       </text>
 
       {/* 1. Yesterday Close section */}
-      <line x1="26" y1="186" x2="246" y2="186" stroke="#64748b" strokeWidth="1.5" strokeDasharray="4 4" />
-      <text x="86" y="202" textAnchor="middle" fill="#94a3b8" fontSize="9" fontFamily={FONT_MONO}>
+      <line x1="26" y1="186" x2="246" y2="186" stroke="#786e63" strokeWidth="1.5" strokeDasharray="4 4" />
+      <text x="86" y="202" textAnchor="middle" fill="#a89f94" fontSize="9" fontFamily={FONT_MONO}>
         Yesterday Close ($100)
       </text>
       {/* Calm yesterday candles */}
-      <line x1="56" y1="168" x2="56" y2="196" stroke="#94a3b8" strokeWidth="1.5" />
-      <rect x="49" y="176" width="14" height="14" rx="1.5" fill="#64748b" />
-      <line x1="88" y1="170" x2="88" y2="194" stroke="#10b981" strokeWidth="1.5" />
-      <rect x="81" y="176" width="14" height="12" rx="1.5" fill="#10b981" />
-      <line x1="120" y1="174" x2="120" y2="194" stroke="#10b981" strokeWidth="1.5" />
-      <rect x="113" y="178" width="14" height="10" rx="1.5" fill="#10b981" />
+      <line x1="56" y1="168" x2="56" y2="196" stroke="#a89f94" strokeWidth="1.5" />
+      <rect x="49" y="176" width="14" height="14" rx="1.5" fill="#786e63" />
+      <line x1="88" y1="170" x2="88" y2="194" stroke="#2e9e75" strokeWidth="1.5" />
+      <rect x="81" y="176" width="14" height="12" rx="1.5" fill="#2e9e75" />
+      <line x1="120" y1="174" x2="120" y2="194" stroke="#2e9e75" strokeWidth="1.5" />
+      <rect x="113" y="178" width="14" height="10" rx="1.5" fill="#2e9e75" />
 
       {/* 2. Overnight Gap Up band */}
       <rect
@@ -1636,9 +1652,9 @@ function StocksOrbGapSvg({ activeStep }: DiagramSubProps) {
         width="98"
         height="60"
         rx="5"
-        fill="#0ea5e9"
+        fill="#dd7d3e"
         fillOpacity={activeStep === 0 ? 0.25 : 0.12}
-        stroke="#38bdf8"
+        stroke="#e6955c"
         strokeDasharray="4 3"
       />
       <line
@@ -1646,23 +1662,23 @@ function StocksOrbGapSvg({ activeStep }: DiagramSubProps) {
         y1="182"
         x2="195"
         y2="132"
-        stroke="#38bdf8"
+        stroke="#e6955c"
         strokeWidth="2.25"
         strokeDasharray="4 2"
       />
-      <polygon points="195,128 189,138 201,138" fill="#38bdf8" />
+      <polygon points="195,128 189,138 201,138" fill="#e6955c" />
       <text
         x="195"
         y="108"
         textAnchor="middle"
-        fill="#7dd3fc"
+        fill="#f0b68a"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
         OVERNIGHT GAP UP
       </text>
-      <text x="195" y="120" textAnchor="middle" fill="#94a3b8" fontSize="8.5" fontFamily={FONT_SANS}>
+      <text x="195" y="120" textAnchor="middle" fill="#a89f94" fontSize="8.5" fontFamily={FONT_SANS}>
         (+4% on Earnings/News)
       </text>
 
@@ -1673,62 +1689,62 @@ function StocksOrbGapSvg({ activeStep }: DiagramSubProps) {
         width="126"
         height="56"
         rx="4"
-        fill="#f59e0b"
+        fill="#d69b38"
         fillOpacity={activeStep === 1 ? 0.28 : 0.14}
-        stroke="#f59e0b"
+        stroke="#d69b38"
         strokeWidth={activeStep === 1 ? 2 : 1.3}
       />
-      <line x1="260" y1="100" x2="646" y2="100" stroke="#f59e0b" strokeWidth="1.25" strokeDasharray="5 4" />
+      <line x1="260" y1="100" x2="646" y2="100" stroke="#d69b38" strokeWidth="1.25" strokeDasharray="5 4" />
       <text
         x="323"
         y="80"
         textAnchor="middle"
-        fill="#fbbf24"
+        fill="#e3b154"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
         5-MIN OPENING RANGE
       </text>
-      <text x="323" y="93" textAnchor="middle" fill="#fcd34d" fontSize="8.5" fontFamily={FONT_MONO}>
+      <text x="323" y="93" textAnchor="middle" fill="#edc677" fontSize="8.5" fontFamily={FONT_MONO}>
         ORB HIGH ($105.20)
       </text>
-      <text x="323" y="170" textAnchor="middle" fill="#94a3b8" fontSize="8.5" fontFamily={FONT_MONO}>
+      <text x="323" y="170" textAnchor="middle" fill="#a89f94" fontSize="8.5" fontFamily={FONT_MONO}>
         ORB LOW ($103.80)
       </text>
       {/* First 5m candle inside ORB */}
-      <line x1="296" y1="102" x2="296" y2="154" stroke="#10b981" strokeWidth="2" />
-      <rect x="287" y="114" width="18" height="28" rx="2" fill="#10b981" />
-      <line x1="346" y1="106" x2="346" y2="150" stroke="#ef4444" strokeWidth="2" />
-      <rect x="337" y="118" width="18" height="20" rx="2" fill="#ef4444" />
+      <line x1="296" y1="102" x2="296" y2="154" stroke="#2e9e75" strokeWidth="2" />
+      <rect x="287" y="114" width="18" height="28" rx="2" fill="#2e9e75" />
+      <line x1="346" y1="106" x2="346" y2="150" stroke="#d85a52" strokeWidth="2" />
+      <rect x="337" y="118" width="18" height="20" rx="2" fill="#d85a52" />
 
       {/* 4. High-Volume Breakout Candles */}
       {/* Breakout candle */}
-      <line x1="422" y1="68" x2="422" y2="128" stroke="#10b981" strokeWidth="2.5" />
+      <line x1="422" y1="68" x2="422" y2="128" stroke="#2e9e75" strokeWidth="2.5" />
       <rect
         x="411"
         y="76"
         width="22"
         height="46"
         rx="2"
-        fill="#10b981"
-        stroke={activeStep >= 2 ? '#6ee7b7' : 'none'}
+        fill="#2e9e75"
+        stroke={activeStep >= 2 ? '#88d9b8' : 'none'}
         strokeWidth="2"
       />
       {/* Retest */}
-      <line x1="478" y1="74" x2="478" y2="104" stroke="#ef4444" strokeWidth="2" />
-      <rect x="469" y="80" width="18" height="16" rx="2" fill="#ef4444" />
+      <line x1="478" y1="74" x2="478" y2="104" stroke="#d85a52" strokeWidth="2" />
+      <rect x="469" y="80" width="18" height="16" rx="2" fill="#d85a52" />
       {/* Continuation rally */}
-      <line x1="534" y1="54" x2="534" y2="96" stroke="#10b981" strokeWidth="2.25" />
-      <rect x="524" y="60" width="20" height="32" rx="2" fill="#10b981" />
-      <line x1="590" y1="44" x2="590" y2="76" stroke="#10b981" strokeWidth="2.25" />
-      <rect x="580" y="48" width="20" height="24" rx="2" fill="#10b981" />
+      <line x1="534" y1="54" x2="534" y2="96" stroke="#2e9e75" strokeWidth="2.25" />
+      <rect x="524" y="60" width="20" height="32" rx="2" fill="#2e9e75" />
+      <line x1="590" y1="44" x2="590" y2="76" stroke="#2e9e75" strokeWidth="2.25" />
+      <rect x="580" y="48" width="20" height="24" rx="2" fill="#2e9e75" />
 
       <text
         x="512"
         y="52"
         textAnchor="middle"
-        fill="#34d399"
+        fill="#4dc296"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -1737,19 +1753,19 @@ function StocksOrbGapSvg({ activeStep }: DiagramSubProps) {
       </text>
 
       {/* Bottom Volume Bars Strip */}
-      <line x1="26" y1="256" x2="652" y2="256" stroke="#334155" strokeWidth="1" />
-      <text x="30" y="248" fill="#64748b" fontSize="8.5" fontFamily={FONT_MONO}>
+      <line x1="26" y1="256" x2="652" y2="256" stroke="#332e29" strokeWidth="1" />
+      <text x="30" y="248" fill="#786e63" fontSize="8.5" fontFamily={FONT_MONO}>
         VOLUME:
       </text>
       {[
-        { x: 82, h: 14, color: '#475569' },
-        { x: 114, h: 12, color: '#475569' },
-        { x: 288, h: 28, color: '#f59e0b' },
-        { x: 338, h: 22, color: '#f59e0b' },
-        { x: 412, h: 52, color: '#10b981' },
-        { x: 470, h: 20, color: '#64748b' },
-        { x: 525, h: 38, color: '#10b981' },
-        { x: 581, h: 32, color: '#10b981' },
+        { x: 82, h: 14, color: '#524a42' },
+        { x: 114, h: 12, color: '#524a42' },
+        { x: 288, h: 28, color: '#d69b38' },
+        { x: 338, h: 22, color: '#d69b38' },
+        { x: 412, h: 52, color: '#2e9e75' },
+        { x: 470, h: 20, color: '#786e63' },
+        { x: 525, h: 38, color: '#2e9e75' },
+        { x: 581, h: 32, color: '#2e9e75' },
       ].map((bar) => (
         <rect
           key={bar.x}
@@ -1766,7 +1782,7 @@ function StocksOrbGapSvg({ activeStep }: DiagramSubProps) {
         x="422"
         y="198"
         textAnchor="middle"
-        fill="#34d399"
+        fill="#4dc296"
         fontSize="8.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -1784,17 +1800,17 @@ function TradeManagementJournalSvg({ activeStep }: DiagramSubProps) {
     <g>
       <DiagramTopBanner
         text="TRADE MANAGEMENT: SAFETY NET → PARTIAL AT 1:1 → MOVE STOP TO ZERO RISK → 1:3 TARGET"
-        accent="#38bdf8"
+        accent="#e6955c"
       />
 
       {/* Final Target 1:3 Line */}
-      <line x1="40" y1="58" x2="640" y2="58" stroke="#10b981" strokeWidth="1.75" strokeDasharray="6 4" />
-      <rect x="466" y="42" width="174" height="20" rx="4" fill="#10b981" fillOpacity="0.2" stroke="#10b981" />
+      <line x1="40" y1="58" x2="640" y2="58" stroke="#2e9e75" strokeWidth="1.75" strokeDasharray="6 4" />
+      <rect x="466" y="42" width="174" height="20" rx="4" fill="#2e9e75" fillOpacity="0.2" stroke="#2e9e75" />
       <text
         x="553"
         y="55.5"
         textAnchor="middle"
-        fill="#6ee7b7"
+        fill="#88d9b8"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -1803,22 +1819,22 @@ function TradeManagementJournalSvg({ activeStep }: DiagramSubProps) {
       </text>
 
       {/* Partial Profit 1:1 Line */}
-      <line x1="40" y1="138" x2="640" y2="138" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="5 4" />
+      <line x1="40" y1="138" x2="640" y2="138" stroke="#d69b38" strokeWidth="1.5" strokeDasharray="5 4" />
       <rect
         x="210"
         y="112"
         width="182"
         height="20"
         rx="4"
-        fill="#f59e0b"
+        fill="#d69b38"
         fillOpacity={activeStep === 1 ? 0.3 : 0.16}
-        stroke="#f59e0b"
+        stroke="#d69b38"
       />
       <text
         x="301"
         y="125.5"
         textAnchor="middle"
-        fill="#fcd34d"
+        fill="#edc677"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -1833,16 +1849,16 @@ function TradeManagementJournalSvg({ activeStep }: DiagramSubProps) {
         width="198"
         height="46"
         rx="4"
-        fill="#ef4444"
+        fill="#d85a52"
         fillOpacity={activeStep === 0 ? 0.28 : 0.14}
-        stroke="#ef4444"
+        stroke="#d85a52"
         strokeWidth="1.25"
       />
       <text
         x="185"
         y="246"
         textAnchor="middle"
-        fill="#f87171"
+        fill="#e57c75"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -1851,37 +1867,37 @@ function TradeManagementJournalSvg({ activeStep }: DiagramSubProps) {
       </text>
 
       {/* Entry / Breakeven Line */}
-      <line x1="40" y1="184" x2="292" y2="184" stroke="#0ea5e9" strokeWidth="2" />
+      <line x1="40" y1="184" x2="292" y2="184" stroke="#dd7d3e" strokeWidth="2" />
       {/* Zero-Risk Line after Stop moved to Entry */}
       <line
         x1="292"
         y1="184"
         x2="640"
         y2="184"
-        stroke="#10b981"
+        stroke="#2e9e75"
         strokeWidth={activeStep === 1 ? 2.75 : 2}
         strokeDasharray="6 3"
       />
 
       {/* Curved/Vertical Arrow showing Stop Loss moved up to Entry */}
-      <line x1="302" y1="228" x2="302" y2="192" stroke="#38bdf8" strokeWidth="2.5" />
-      <polygon points="302,185 296,195 308,195" fill="#38bdf8" />
+      <line x1="302" y1="228" x2="302" y2="192" stroke="#e6955c" strokeWidth="2.5" />
+      <polygon points="302,185 296,195 308,195" fill="#e6955c" />
       <rect
         x="320"
         y="196"
         width="254"
         height="34"
         rx="5"
-        fill="#0ea5e9"
+        fill="#dd7d3e"
         fillOpacity={activeStep === 1 ? 0.28 : 0.14}
-        stroke="#38bdf8"
+        stroke="#e6955c"
         strokeWidth={activeStep === 1 ? 1.75 : 1}
       />
       <text
         x="447"
         y="211"
         textAnchor="middle"
-        fill="#7dd3fc"
+        fill="#f0b68a"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -1892,7 +1908,7 @@ function TradeManagementJournalSvg({ activeStep }: DiagramSubProps) {
         x="447"
         y="224"
         textAnchor="middle"
-        fill="#cbd5e1"
+        fill="#dcd4ca"
         fontSize="8.5"
         fontFamily={FONT_SANS}
       >
@@ -1903,7 +1919,7 @@ function TradeManagementJournalSvg({ activeStep }: DiagramSubProps) {
       <polyline
         points="42,216 106,184 166,204 294,138 368,158 468,100 562,58"
         fill="none"
-        stroke="#f8fafc"
+        stroke="#f3efe9"
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -1914,15 +1930,15 @@ function TradeManagementJournalSvg({ activeStep }: DiagramSubProps) {
         cx="106"
         cy="184"
         r={activeStep === 0 ? 7 : 5.5}
-        fill="#0ea5e9"
-        stroke="#020617"
+        fill="#dd7d3e"
+        stroke="#131110"
         strokeWidth="2"
       />
       <text
         x="96"
         y="172"
         textAnchor="middle"
-        fill="#38bdf8"
+        fill="#e6955c"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -1935,8 +1951,8 @@ function TradeManagementJournalSvg({ activeStep }: DiagramSubProps) {
         cx="294"
         cy="138"
         r={activeStep === 1 ? 7 : 5.5}
-        fill="#f59e0b"
-        stroke="#020617"
+        fill="#d69b38"
+        stroke="#131110"
         strokeWidth="2"
       />
 
@@ -1945,8 +1961,8 @@ function TradeManagementJournalSvg({ activeStep }: DiagramSubProps) {
         cx="562"
         cy="58"
         r={activeStep >= 2 ? 7.5 : 5.5}
-        fill="#10b981"
-        stroke="#020617"
+        fill="#2e9e75"
+        stroke="#131110"
         strokeWidth="2"
       />
 
@@ -1962,14 +1978,14 @@ function MarketStructureSvg({ activeStep }: DiagramSubProps) {
     <g>
       <DiagramTopBanner
         text="UPTREND STAIRCASE: HIGHER HIGHS (HH), HIGHER LOWS (HL) & BREAK OF STRUCTURE (BOS)"
-        accent="#34d399"
+        accent="#4dc296"
       />
 
       {/* Bullish trend swing path */}
       <polyline
         points="48,236 132,162 194,202 296,120 368,160 490,74 568,110 634,56"
         fill="none"
-        stroke="#10b981"
+        stroke="#2e9e75"
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -1981,7 +1997,7 @@ function MarketStructureSvg({ activeStep }: DiagramSubProps) {
         y1="162"
         x2="282"
         y2="162"
-        stroke="#0ea5e9"
+        stroke="#dd7d3e"
         strokeWidth="1.75"
         strokeDasharray="6 4"
         opacity={activeStep === 1 ? 1 : 0.65}
@@ -1991,7 +2007,7 @@ function MarketStructureSvg({ activeStep }: DiagramSubProps) {
         y1="120"
         x2="466"
         y2="120"
-        stroke="#0ea5e9"
+        stroke="#dd7d3e"
         strokeWidth="1.75"
         strokeDasharray="6 4"
         opacity={activeStep === 2 ? 1 : 0.65}
@@ -2003,7 +2019,7 @@ function MarketStructureSvg({ activeStep }: DiagramSubProps) {
         y1="202"
         x2="404"
         y2="202"
-        stroke="#f59e0b"
+        stroke="#d69b38"
         strokeWidth="1.75"
         strokeDasharray="4 4"
         opacity={activeStep === 3 ? 1 : 0.6}
@@ -2011,11 +2027,11 @@ function MarketStructureSvg({ activeStep }: DiagramSubProps) {
 
       {/* Swing nodes */}
       {[
-        { x: 132, y: 162, label: 'HH 1 (Peak)', color: '#10b981', dy: -14 },
-        { x: 194, y: 202, label: 'HL 1 (Protected Floor)', color: '#f59e0b', dy: 22 },
-        { x: 296, y: 120, label: 'HH 2 (Higher Peak)', color: '#10b981', dy: -14 },
-        { x: 368, y: 160, label: 'HL 2 (Higher Floor)', color: '#10b981', dy: 22 },
-        { x: 490, y: 74, label: 'HH 3', color: '#10b981', dy: -14 },
+        { x: 132, y: 162, label: 'HH 1 (Peak)', color: '#2e9e75', dy: -14 },
+        { x: 194, y: 202, label: 'HL 1 (Protected Floor)', color: '#d69b38', dy: 22 },
+        { x: 296, y: 120, label: 'HH 2 (Higher Peak)', color: '#2e9e75', dy: -14 },
+        { x: 368, y: 160, label: 'HL 2 (Higher Floor)', color: '#2e9e75', dy: 22 },
+        { x: 490, y: 74, label: 'HH 3', color: '#2e9e75', dy: -14 },
       ].map((node, index) => (
         <g key={node.label}>
           <circle
@@ -2023,7 +2039,7 @@ function MarketStructureSvg({ activeStep }: DiagramSubProps) {
             cy={node.y}
             r={activeStep === index ? 7 : 5}
             fill={node.color}
-            stroke="#080c11"
+            stroke="#131110"
             strokeWidth="2"
           />
           <text
@@ -2040,12 +2056,12 @@ function MarketStructureSvg({ activeStep }: DiagramSubProps) {
         </g>
       ))}
 
-      <rect x="200" y="138" width="96" height="19" rx="4" fill="#0ea5e9" fillOpacity="0.2" />
+      <rect x="200" y="138" width="96" height="19" rx="4" fill="#dd7d3e" fillOpacity="0.2" />
       <text
         x="248"
         y="151"
         textAnchor="middle"
-        fill="#38bdf8"
+        fill="#e6955c"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -2053,12 +2069,12 @@ function MarketStructureSvg({ activeStep }: DiagramSubProps) {
         BOS (Break Up)
       </text>
 
-      <rect x="374" y="96" width="96" height="19" rx="4" fill="#0ea5e9" fillOpacity="0.2" />
+      <rect x="374" y="96" width="96" height="19" rx="4" fill="#dd7d3e" fillOpacity="0.2" />
       <text
         x="422"
         y="109"
         textAnchor="middle"
-        fill="#38bdf8"
+        fill="#e6955c"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -2076,7 +2092,7 @@ function LiquidityPoolsSvg({ activeStep }: DiagramSubProps) {
     <g>
       <DiagramTopBanner
         text="LIQUIDITY POOLS: WHERE STOP-LOSSES CLUSTER ABOVE HIGHS (BSL) & BELOW LOWS (SSL)"
-        accent="#fbbf24"
+        accent="#e3b154"
       />
 
       {/* Buy-side liquidity band */}
@@ -2086,23 +2102,23 @@ function LiquidityPoolsSvg({ activeStep }: DiagramSubProps) {
         width="604"
         height="38"
         rx="6"
-        fill="#f59e0b"
+        fill="#d69b38"
         fillOpacity={activeStep === 0 ? 0.25 : 0.13}
-        stroke="#f59e0b"
+        stroke="#d69b38"
         strokeDasharray="5 4"
       />
       <text
         x="340"
         y="67"
         textAnchor="middle"
-        fill="#fbbf24"
+        fill="#e3b154"
         fontSize="10.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
         BSL = BUY-SIDE LIQUIDITY (Stop-Losses Stacked Above Highs)
       </text>
-      <text x="340" y="81" textAnchor="middle" fill="#e2e8f0" fontSize="9" fontFamily={FONT_SANS}>
+      <text x="340" y="81" textAnchor="middle" fill="#f3efe9" fontSize="9" fontFamily={FONT_SANS}>
         Sellers&apos; stop-losses &amp; breakout buy orders sit waiting here
       </text>
 
@@ -2110,7 +2126,7 @@ function LiquidityPoolsSvg({ activeStep }: DiagramSubProps) {
       <polyline
         points="54,154 126,96 202,208 278,98 354,206 432,100 498,200 568,74 622,170"
         fill="none"
-        stroke="#94a3b8"
+        stroke="#a89f94"
         strokeWidth="2.75"
         strokeLinejoin="round"
       />
@@ -2120,15 +2136,15 @@ function LiquidityPoolsSvg({ activeStep }: DiagramSubProps) {
         cx="568"
         cy="74"
         r={activeStep >= 2 ? 7.5 : 5.5}
-        fill="#ef4444"
-        stroke="#080c11"
+        fill="#d85a52"
+        stroke="#131110"
         strokeWidth="2"
       />
       <text
         x="568"
         y="46"
         textAnchor="middle"
-        fill="#f87171"
+        fill="#e57c75"
         fontSize="9.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -2143,23 +2159,23 @@ function LiquidityPoolsSvg({ activeStep }: DiagramSubProps) {
         width="604"
         height="38"
         rx="6"
-        fill="#0ea5e9"
+        fill="#dd7d3e"
         fillOpacity={activeStep === 1 ? 0.25 : 0.13}
-        stroke="#0ea5e9"
+        stroke="#dd7d3e"
         strokeDasharray="5 4"
       />
       <text
         x="340"
         y="231"
         textAnchor="middle"
-        fill="#38bdf8"
+        fill="#e6955c"
         fontSize="10.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
         SSL = SELL-SIDE LIQUIDITY (Stop-Losses Stacked Below Lows)
       </text>
-      <text x="340" y="245" textAnchor="middle" fill="#e2e8f0" fontSize="9" fontFamily={FONT_SANS}>
+      <text x="340" y="245" textAnchor="middle" fill="#f3efe9" fontSize="9" fontFamily={FONT_SANS}>
         Buyers&apos; stop-losses &amp; breakdown sell orders sit waiting here
       </text>
 
@@ -2173,7 +2189,7 @@ function EqualHighsLowsSvg({ activeStep }: DiagramSubProps) {
     <g>
       <DiagramTopBanner
         text="EQUAL HIGHS (EQH): WHY 'DOUBLE TOPS' ATTRACT STOP RAIDS BEFORE DROPPING"
-        accent="#fbbf24"
+        accent="#e3b154"
       />
 
       {/* Equal Highs line */}
@@ -2182,7 +2198,7 @@ function EqualHighsLowsSvg({ activeStep }: DiagramSubProps) {
         y1="88"
         x2="616"
         y2="88"
-        stroke="#f59e0b"
+        stroke="#d69b38"
         strokeWidth="2"
         strokeDasharray="6 4"
       />
@@ -2190,7 +2206,7 @@ function EqualHighsLowsSvg({ activeStep }: DiagramSubProps) {
         x="236"
         y="74"
         textAnchor="middle"
-        fill="#fbbf24"
+        fill="#e3b154"
         fontSize="10.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -2202,7 +2218,7 @@ function EqualHighsLowsSvg({ activeStep }: DiagramSubProps) {
       <polyline
         points="54,204 138,90 218,178 310,90 398,170 468,58 518,136 610,236"
         fill="none"
-        stroke="#10b981"
+        stroke="#2e9e75"
         strokeWidth="2.75"
         strokeLinejoin="round"
       />
@@ -2210,26 +2226,26 @@ function EqualHighsLowsSvg({ activeStep }: DiagramSubProps) {
       <polyline
         points="468,58 518,136 610,236"
         fill="none"
-        stroke="#ef4444"
+        stroke="#d85a52"
         strokeWidth="3.25"
         strokeLinejoin="round"
       />
 
-      <circle cx="138" cy="90" r="5" fill="#f59e0b" />
-      <circle cx="310" cy="90" r="5" fill="#f59e0b" />
+      <circle cx="138" cy="90" r="5" fill="#d69b38" />
+      <circle cx="310" cy="90" r="5" fill="#d69b38" />
       <circle
         cx="468"
         cy="58"
         r={activeStep >= 1 ? 8 : 6}
-        fill="#ef4444"
-        stroke="#080c11"
+        fill="#d85a52"
+        stroke="#131110"
         strokeWidth="2"
       />
       <text
         x="484"
         y="48"
         textAnchor="middle"
-        fill="#f87171"
+        fill="#e57c75"
         fontSize="10"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -2240,7 +2256,7 @@ function EqualHighsLowsSvg({ activeStep }: DiagramSubProps) {
         x="568"
         y="252"
         textAnchor="middle"
-        fill="#f87171"
+        fill="#e57c75"
         fontSize="10"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -2258,44 +2274,44 @@ function LiquiditySweepVsBreakoutSvg({ activeStep }: DiagramSubProps) {
     <g>
       <DiagramTopBanner
         text="FAKEOUT TRAP (SWEEP) VS. REAL BREAKOUT — WATCH WHERE THE CANDLE BODY CLOSES!"
-        accent="#38bdf8"
+        accent="#e6955c"
       />
 
       {/* Divider */}
-      <line x1="340" y1="38" x2="340" y2="260" stroke="#334155" strokeDasharray="4 4" />
+      <line x1="340" y1="38" x2="340" y2="260" stroke="#332e29" strokeDasharray="4 4" />
 
       {/* Left side: Liquidity Sweep */}
       <text
         x="170"
         y="56"
         textAnchor="middle"
-        fill="#fbbf24"
+        fill="#e3b154"
         fontSize="11.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
         LIQUIDITY SWEEP (FAKEOUT TRAP)
       </text>
-      <line x1="38" y1="120" x2="306" y2="120" stroke="#f59e0b" strokeDasharray="5 4" strokeWidth="1.75" />
-      <line x1="96" y1="146" x2="96" y2="196" stroke="#10b981" strokeWidth="2" />
-      <rect x="87" y="156" width="18" height="32" fill="#10b981" rx="2" />
-      <line x1="164" y1="74" x2="164" y2="166" stroke="#ef4444" strokeWidth="2.5" />
+      <line x1="38" y1="120" x2="306" y2="120" stroke="#d69b38" strokeDasharray="5 4" strokeWidth="1.75" />
+      <line x1="96" y1="146" x2="96" y2="196" stroke="#2e9e75" strokeWidth="2" />
+      <rect x="87" y="156" width="18" height="32" fill="#2e9e75" rx="2" />
+      <line x1="164" y1="74" x2="164" y2="166" stroke="#d85a52" strokeWidth="2.5" />
       <rect
         x="154"
         y="128"
         width="20"
         height="28"
-        fill="#ef4444"
+        fill="#d85a52"
         rx="2"
-        stroke={activeStep === 0 ? '#fbbf24' : 'none'}
+        stroke={activeStep === 0 ? '#e3b154' : 'none'}
         strokeWidth="2"
       />
-      <text x="164" y="68" textAnchor="middle" fill="#fbbf24" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
+      <text x="164" y="68" textAnchor="middle" fill="#e3b154" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
         Wick Only Above Line!
       </text>
-      <line x1="232" y1="142" x2="232" y2="230" stroke="#ef4444" strokeWidth="2" />
-      <rect x="222" y="150" width="20" height="68" fill="#ef4444" rx="2" />
-      <text x="170" y="252" textAnchor="middle" fill="#cbd5e1" fontSize="9.5" fontFamily={FONT_SANS}>
+      <line x1="232" y1="142" x2="232" y2="230" stroke="#d85a52" strokeWidth="2" />
+      <rect x="222" y="150" width="20" height="68" fill="#d85a52" rx="2" />
+      <text x="170" y="252" textAnchor="middle" fill="#dcd4ca" fontSize="9.5" fontFamily={FONT_SANS}>
         Body closes back BELOW line → Reversal
       </text>
 
@@ -2304,33 +2320,33 @@ function LiquiditySweepVsBreakoutSvg({ activeStep }: DiagramSubProps) {
         x="510"
         y="56"
         textAnchor="middle"
-        fill="#34d399"
+        fill="#4dc296"
         fontSize="11.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
         TRUE BREAKOUT (REAL STRENGTH)
       </text>
-      <line x1="374" y1="160" x2="642" y2="160" stroke="#0ea5e9" strokeDasharray="5 4" strokeWidth="1.75" />
-      <line x1="432" y1="166" x2="432" y2="216" stroke="#10b981" strokeWidth="2" />
-      <rect x="423" y="172" width="18" height="34" fill="#10b981" rx="2" />
-      <line x1="498" y1="94" x2="498" y2="172" stroke="#10b981" strokeWidth="2.5" />
+      <line x1="374" y1="160" x2="642" y2="160" stroke="#dd7d3e" strokeDasharray="5 4" strokeWidth="1.75" />
+      <line x1="432" y1="166" x2="432" y2="216" stroke="#2e9e75" strokeWidth="2" />
+      <rect x="423" y="172" width="18" height="34" fill="#2e9e75" rx="2" />
+      <line x1="498" y1="94" x2="498" y2="172" stroke="#2e9e75" strokeWidth="2.5" />
       <rect
         x="488"
         y="104"
         width="20"
         height="58"
-        fill="#10b981"
+        fill="#2e9e75"
         rx="2"
-        stroke={activeStep >= 1 ? '#38bdf8' : 'none'}
+        stroke={activeStep >= 1 ? '#e6955c' : 'none'}
         strokeWidth="2"
       />
-      <text x="498" y="86" textAnchor="middle" fill="#34d399" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
+      <text x="498" y="86" textAnchor="middle" fill="#4dc296" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
         Full Body Closes Above
       </text>
-      <line x1="564" y1="82" x2="564" y2="158" stroke="#10b981" strokeWidth="2" />
-      <rect x="555" y="92" width="18" height="44" fill="#10b981" rx="2" />
-      <text x="510" y="252" textAnchor="middle" fill="#cbd5e1" fontSize="9.5" fontFamily={FONT_SANS}>
+      <line x1="564" y1="82" x2="564" y2="158" stroke="#2e9e75" strokeWidth="2" />
+      <rect x="555" y="92" width="18" height="44" fill="#2e9e75" rx="2" />
+      <text x="510" y="252" textAnchor="middle" fill="#dcd4ca" fontSize="9.5" fontFamily={FONT_SANS}>
         Holds above broken level → Continuation
       </text>
 
@@ -2344,7 +2360,7 @@ function FairValueGapSvg({ activeStep }: DiagramSubProps) {
     <g>
       <DiagramTopBanner
         text="FAIR VALUE GAP (FVG): A 3-CANDLE PRICE GAP THAT ACTS LIKE A PULLBACK MAGNET"
-        accent="#38bdf8"
+        accent="#e6955c"
       />
 
       {/* FVG Shaded Imbalance Zone between Candle 1 High (172) and Candle 3 Low (122) */}
@@ -2354,44 +2370,44 @@ function FairValueGapSvg({ activeStep }: DiagramSubProps) {
         width="454"
         height="50"
         rx="4"
-        fill="#0ea5e9"
+        fill="#dd7d3e"
         fillOpacity={activeStep === 1 ? 0.28 : 0.16}
-        stroke="#0ea5e9"
+        stroke="#dd7d3e"
         strokeDasharray="5 3"
       />
       <text
         x="492"
         y="144"
         textAnchor="middle"
-        fill="#38bdf8"
+        fill="#e6955c"
         fontSize="10.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
         FAIR VALUE GAP (FVG)
       </text>
-      <text x="492" y="159" textAnchor="middle" fill="#cbd5e1" fontSize="9" fontFamily={FONT_SANS}>
+      <text x="492" y="159" textAnchor="middle" fill="#dcd4ca" fontSize="9" fontFamily={FONT_SANS}>
         Empty gap between C1 High &amp; C3 Low
       </text>
 
       {/* Candle 1 */}
-      <line x1="146" y1="172" x2="146" y2="240" stroke="#10b981" strokeWidth="2" />
-      <rect x="132" y="186" width="28" height="44" fill="#10b981" rx="3" />
-      <text x="146" y="256" textAnchor="middle" fill="#94a3b8" fontSize="9.5" fontFamily={FONT_MONO}>
+      <line x1="146" y1="172" x2="146" y2="240" stroke="#2e9e75" strokeWidth="2" />
+      <rect x="132" y="186" width="28" height="44" fill="#2e9e75" rx="3" />
+      <text x="146" y="256" textAnchor="middle" fill="#a89f94" fontSize="9.5" fontFamily={FONT_MONO}>
         Candle 1
       </text>
 
       {/* Candle 2 (Displacement) */}
-      <line x1="224" y1="78" x2="224" y2="204" stroke="#10b981" strokeWidth="2.5" />
-      <rect x="208" y="92" width="32" height="96" fill="#10b981" rx="3" />
-      <text x="224" y="256" textAnchor="middle" fill="#34d399" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
+      <line x1="224" y1="78" x2="224" y2="204" stroke="#2e9e75" strokeWidth="2.5" />
+      <rect x="208" y="92" width="32" height="96" fill="#2e9e75" rx="3" />
+      <text x="224" y="256" textAnchor="middle" fill="#4dc296" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
         Candle 2 (Fast Jump)
       </text>
 
       {/* Candle 3 */}
-      <line x1="302" y1="62" x2="302" y2="122" stroke="#10b981" strokeWidth="2" />
-      <rect x="288" y="72" width="28" height="36" fill="#10b981" rx="3" />
-      <text x="302" y="256" textAnchor="middle" fill="#94a3b8" fontSize="9.5" fontFamily={FONT_MONO}>
+      <line x1="302" y1="62" x2="302" y2="122" stroke="#2e9e75" strokeWidth="2" />
+      <rect x="288" y="72" width="28" height="36" fill="#2e9e75" rx="3" />
+      <text x="302" y="256" textAnchor="middle" fill="#a89f94" fontSize="9.5" fontFamily={FONT_MONO}>
         Candle 3
       </text>
 
@@ -2399,12 +2415,12 @@ function FairValueGapSvg({ activeStep }: DiagramSubProps) {
       <polyline
         points="338,88 410,144 524,70"
         fill="none"
-        stroke="#f59e0b"
+        stroke="#d69b38"
         strokeWidth="2.5"
         strokeDasharray="6 3"
       />
-      <circle cx="410" cy="144" r="6" fill="#f59e0b" />
-      <text x="410" y="112" textAnchor="middle" fill="#fbbf24" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
+      <circle cx="410" cy="144" r="6" fill="#d69b38" />
+      <text x="410" y="112" textAnchor="middle" fill="#e3b154" fontSize="9.5" fontFamily={FONT_MONO} fontWeight="700">
         Pullback Entry (Fills Gap)
       </text>
 
@@ -2418,7 +2434,7 @@ function RiskRewardModelSvg({ activeStep }: DiagramSubProps) {
     <g>
       <DiagramTopBanner
         text="1:3 RISK-TO-REWARD: RISK $1 TO MAKE $3 (WIN JUST 40% AND STILL GROW)"
-        accent="#34d399"
+        accent="#4dc296"
       />
 
       {/* Reward Box (+3R) */}
@@ -2428,33 +2444,33 @@ function RiskRewardModelSvg({ activeStep }: DiagramSubProps) {
         width="380"
         height="122"
         rx="6"
-        fill="#10b981"
+        fill="#2e9e75"
         fillOpacity={activeStep >= 2 ? 0.24 : 0.14}
-        stroke="#10b981"
+        stroke="#2e9e75"
         strokeWidth="1.5"
       />
       <text
         x="410"
         y="104"
         textAnchor="middle"
-        fill="#34d399"
+        fill="#4dc296"
         fontSize="13.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
       >
         REWARD TARGET (+3R)
       </text>
-      <text x="410" y="122" textAnchor="middle" fill="#cbd5e1" fontSize="9.5" fontFamily={FONT_SANS}>
+      <text x="410" y="122" textAnchor="middle" fill="#dcd4ca" fontSize="9.5" fontFamily={FONT_SANS}>
         Make $3 for every $1 risked (3× larger than Stop box)
       </text>
 
       {/* Entry Line */}
-      <line x1="70" y1="168" x2="600" y2="168" stroke="#0ea5e9" strokeWidth="2" />
+      <line x1="70" y1="168" x2="600" y2="168" stroke="#dd7d3e" strokeWidth="2" />
       <text
         x="140"
         y="161"
         textAnchor="middle"
-        fill="#38bdf8"
+        fill="#e6955c"
         fontSize="10.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -2469,16 +2485,16 @@ function RiskRewardModelSvg({ activeStep }: DiagramSubProps) {
         width="380"
         height="44"
         rx="6"
-        fill="#ef4444"
+        fill="#d85a52"
         fillOpacity={activeStep === 0 ? 0.28 : 0.16}
-        stroke="#ef4444"
+        stroke="#d85a52"
         strokeWidth="1.5"
       />
       <text
         x="410"
         y="194"
         textAnchor="middle"
-        fill="#fca5a5"
+        fill="#f0a39e"
         fontSize="11.5"
         fontFamily={FONT_MONO}
         fontWeight="700"
@@ -2490,18 +2506,18 @@ function RiskRewardModelSvg({ activeStep }: DiagramSubProps) {
       <polyline
         points="68,204 160,144 226,168 286,188 378,128 474,94 568,54"
         fill="none"
-        stroke="#f8fafc"
+        stroke="#f3efe9"
         strokeWidth="2.75"
         strokeLinejoin="round"
       />
-      <circle cx="226" cy="168" r="5" fill="#0ea5e9" />
-      <circle cx="568" cy="54" r="6" fill="#10b981" />
+      <circle cx="226" cy="168" r="5" fill="#dd7d3e" />
+      <circle cx="568" cy="54" r="6" fill="#2e9e75" />
 
       <text
         x="340"
         y="246"
         textAnchor="middle"
-        fill="#94a3b8"
+        fill="#a89f94"
         fontSize="10"
         fontFamily={FONT_MONO}
       >
@@ -2547,6 +2563,7 @@ function renderDiagramGraphics(kind: DiagramKind, activeStep: number) {
 }
 
 export function ConceptDiagramSvg({ config }: ConceptDiagramSvgProps) {
+  const { t } = useLanguage();
   const [activeStep, setActiveStep] = useState<number>(0);
   const totalSteps = Math.max(config.walkthroughSteps.length, 1);
 
@@ -2555,6 +2572,7 @@ export function ConceptDiagramSvg({ config }: ConceptDiagramSvgProps) {
   }, [config.kind, config.title]);
 
   const safeStep = activeStep >= totalSteps ? 0 : activeStep;
+  const titleAcronymHint = getTitleAcronymHint(config.title);
 
   const handlePrev = () => {
     setActiveStep((prev) => (prev - 1 + totalSteps) % totalSteps);
@@ -2564,140 +2582,166 @@ export function ConceptDiagramSvg({ config }: ConceptDiagramSvgProps) {
     setActiveStep((prev) => (prev + 1) % totalSteps);
   };
 
+  const handleReset = () => {
+    setActiveStep(0);
+  };
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="overflow-hidden rounded-xl border border-terminal-border bg-terminal-surface">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-terminal-border bg-terminal-elevated/60 px-4 py-3">
-          <div>
-            <h4 className="text-sm font-semibold text-terminal-text">{config.title}</h4>
-            <p className="text-xs text-terminal-muted">{config.subtitle}</p>
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-terminal-border bg-terminal-elevated/60 px-3.5 py-2.5">
+          <div className="min-w-0">
+            <h4 className="text-xs font-semibold text-terminal-text sm:text-sm">{config.title}</h4>
+            {titleAcronymHint && (
+              <p className="mt-0.5 font-mono text-[10px] text-brand">{titleAcronymHint}</p>
+            )}
+            <p className="text-[11px] text-terminal-muted">{expandAcronyms(config.subtitle)}</p>
           </div>
-          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] font-medium text-emerald-500 dark:text-emerald-400">
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-brand/35 bg-brand-soft px-2.5 py-0.5 font-mono text-[10px] font-semibold text-brand">
             <Sparkles className="h-3 w-3" aria-hidden="true" />
-            Interactive Blueprint
+            {t('Interactive Blueprint', 'Interactive Diagram')}
           </span>
         </div>
 
-        <div className="bg-slate-950 p-3 sm:p-4">
-          <svg
-            viewBox="0 0 680 310"
-            className="h-auto w-full max-h-[420px] select-none"
-            role="img"
-            aria-label={config.title}
-          >
-            {/* Subtle institutional grid */}
-            <defs>
-              <pattern
-                id={`grid-${config.kind}`}
-                width="44"
-                height="44"
-                patternUnits="userSpaceOnUse"
-              >
-                <path
-                  d="M 44 0 L 0 0 0 44"
-                  fill="none"
-                  stroke="#1e293b"
-                  strokeWidth="0.75"
-                  opacity="0.55"
-                />
-              </pattern>
-            </defs>
-            <rect width="680" height="310" fill={`url(#grid-${config.kind})`} rx="8" />
-            {renderDiagramGraphics(config.kind, safeStep)}
-          </svg>
+        <div className="bg-[#131110] p-2.5 sm:p-3.5">
+          <div className="mx-auto max-w-2xl">
+            <svg
+              viewBox="0 0 680 310"
+              className="h-auto w-full max-h-[340px] select-none"
+              role="img"
+              aria-label={expandAcronyms(config.title)}
+            >
+              {/* Subtle warm obsidian grid */}
+              <defs>
+                <pattern
+                  id={`grid-${config.kind}`}
+                  width="44"
+                  height="44"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M 44 0 L 0 0 0 44"
+                    fill="none"
+                    stroke="#332e29"
+                    strokeWidth="0.75"
+                    opacity="0.55"
+                  />
+                </pattern>
+              </defs>
+              <rect width="680" height="310" fill={`url(#grid-${config.kind})`} rx="8" />
+              {renderDiagramGraphics(config.kind, safeStep)}
+            </svg>
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-terminal-border bg-terminal-elevated/40 px-4 py-2.5">
-          <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-terminal-border bg-terminal-elevated/40 px-3.5 py-2">
+          <div className="flex flex-wrap items-center gap-2.5">
             {config.legend.map((entry) => (
               <span
                 key={entry.label}
-                className="inline-flex items-center gap-1.5 text-xs text-terminal-muted"
+                className="inline-flex items-center gap-1.5 text-[11px] text-terminal-muted"
               >
                 <span
-                  className="h-2.5 w-2.5 rounded-sm"
+                  className="h-2 w-2 rounded-sm"
                   style={{ backgroundColor: entry.colorToken }}
                   aria-hidden="true"
                 />
-                {entry.label}
+                {expandAcronyms(entry.label)}
               </span>
             ))}
           </div>
-          <p className="text-[11px] text-terminal-muted">{config.caption}</p>
+          <p className="text-[11px] text-terminal-muted">{expandAcronyms(config.caption)}</p>
         </div>
       </div>
 
-      {/* Interactive step walkthrough */}
+      {/* Compact Interactive Step Walkthrough */}
       {config.walkthroughSteps.length > 0 && (
-        <div className="rounded-xl border border-terminal-border bg-terminal-surface p-4">
-          <div className="flex items-center justify-between gap-2">
-            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-sky-600 dark:text-sky-400 tabular-nums">
-              Step {safeStep + 1} of {totalSteps}
+        <div className="rounded-xl border border-terminal-border bg-terminal-surface p-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-brand tabular-nums">
+              {t(`Step ${safeStep + 1} of ${totalSteps}`, `Hakbang ${safeStep + 1} sa ${totalSteps}`)}
             </span>
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={handlePrev}
                 aria-label="Previous diagram step"
-                className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-terminal-border bg-terminal-elevated text-terminal-text transition-colors hover:border-emerald-500/50 hover:text-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                className="inline-flex h-7 items-center gap-1 rounded-lg border border-terminal-border bg-terminal-elevated px-2 text-[11px] font-medium text-terminal-text transition-colors hover:border-brand/50 hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
-                <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
+                <span className="hidden sm:inline">{t('Prev', 'Balik')}</span>
               </button>
               <button
                 type="button"
                 onClick={handleNext}
                 aria-label="Next diagram step"
-                className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-terminal-border bg-terminal-elevated text-terminal-text transition-colors hover:border-emerald-500/50 hover:text-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                className="inline-flex h-7 items-center gap-1 rounded-lg bg-brand px-2.5 text-[11px] font-semibold text-brand-fg transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
-                <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                <span>{t('Next', 'Susunod')}</span>
+                <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
               </button>
+              {safeStep > 0 && (
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  aria-label="Reset diagram step"
+                  className="inline-flex h-7 items-center gap-1 rounded-lg border border-terminal-border bg-terminal-bg px-2 text-[11px] font-medium text-terminal-muted transition-colors hover:border-brand/40 hover:text-terminal-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                >
+                  <RotateCcw className="h-3 w-3" aria-hidden="true" />
+                  <span className="hidden sm:inline">{t('Reset', 'Ulitin')}</span>
+                </button>
+              )}
             </div>
           </div>
 
-          <p className="mt-2 text-sm leading-relaxed text-terminal-text">
-            {config.walkthroughSteps[safeStep]}
+          <p className="mt-2 text-xs leading-relaxed text-terminal-text sm:text-[13px]">
+            {expandAcronyms(config.walkthroughSteps[safeStep])}
           </p>
 
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          <div className="mt-2.5 flex flex-wrap gap-1">
             {config.walkthroughSteps.map((step, index) => (
               <button
                 key={step}
                 type="button"
                 onClick={() => setActiveStep(index)}
                 aria-pressed={index === safeStep}
-                className={`rounded-md px-2.5 py-1 font-mono text-xs transition-colors tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                className={`rounded-md px-2 py-0.5 font-mono text-[11px] transition-colors tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
                   index === safeStep
-                    ? 'bg-emerald-500 font-semibold text-slate-950'
+                    ? 'bg-brand font-semibold text-brand-fg'
                     : 'bg-terminal-elevated text-terminal-muted hover:text-terminal-text'
                 }`}
               >
-                Step {index + 1}
+                {t(`Step ${index + 1}`, `Hakbang ${index + 1}`)}
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* Annotations grid */}
+      {/* Compact Annotations Grid */}
       {config.annotations.length > 0 && (
-        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {config.annotations.map((annotation) => {
             const toneStyles =
               annotation.tone === 'bullish'
-                ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400'
+                ? 'border-bull/35 bg-bull/10 text-bull'
                 : annotation.tone === 'bearish'
-                  ? 'border-rose-500/30 bg-rose-500/5 text-rose-600 dark:text-rose-400'
+                  ? 'border-bear/35 bg-bear/10 text-bear'
                   : annotation.tone === 'liquidity'
-                    ? 'border-amber-500/30 bg-amber-500/5 text-amber-600 dark:text-amber-400'
-                    : 'border-sky-500/30 bg-sky-500/5 text-sky-600 dark:text-sky-400';
+                    ? 'border-amber-500/35 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                    : 'border-brand/35 bg-brand-soft/60 text-brand';
 
             return (
               <div
                 key={annotation.id}
-                className={`rounded-lg border px-3 py-2.5 ${toneStyles}`}
+                className={`rounded-lg border px-3 py-2 ${toneStyles}`}
               >
-                <p className="font-mono text-xs font-semibold">{annotation.label}</p>
-                <p className="mt-0.5 text-xs text-terminal-muted">{annotation.sublabel}</p>
+                <p className="font-mono text-[11px] font-semibold">
+                  {expandAcronyms(annotation.label)}
+                </p>
+                <p className="mt-0.5 text-[11px] leading-snug text-terminal-muted">
+                  {expandAcronyms(annotation.sublabel)}
+                </p>
               </div>
             );
           })}

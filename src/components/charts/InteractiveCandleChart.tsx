@@ -141,10 +141,14 @@ export function InteractiveCandleChart({
     let resizeObserver: ResizeObserver | null = null;
 
     try {
-      const bg = isDark ? '#0b1018' : '#ffffff';
-      const textColor = isDark ? '#94a3b8' : '#475569';
-      const gridColor = isDark ? 'rgba(35, 48, 68, 0.55)' : 'rgba(226, 232, 240, 0.85)';
-      const borderColor = isDark ? '#233044' : '#cbd5e1';
+      const bg = isDark ? '#1b1917' : '#fcfbf8';
+      const textColor = isDark ? '#a89f94' : '#6a6156';
+      const gridColor = isDark ? 'rgba(168, 159, 148, 0.08)' : 'rgba(106, 97, 86, 0.08)';
+      const borderColor = isDark ? '#332e29' : '#dfd8cc';
+      const bullCandle = isDark ? '#2e9e75' : '#1d7c59';
+      const bearCandle = isDark ? '#d85a52' : '#bf3f37';
+      const crosshairColor = isDark ? '#6e6459' : '#8c8175';
+      const crosshairLabelBg = isDark ? '#25221f' : '#1f1b17';
 
       chart = createChart(container, {
         width: Math.max(container.clientWidth || 640, 280),
@@ -152,7 +156,7 @@ export function InteractiveCandleChart({
         layout: {
           background: { type: ColorType.Solid, color: bg },
           textColor,
-          fontFamily: '"JetBrains Mono", ui-monospace, SFMono-Regular, monospace',
+          fontFamily: '"IBM Plex Mono", ui-monospace, SFMono-Regular, monospace',
           fontSize: 11,
         },
         grid: {
@@ -162,16 +166,16 @@ export function InteractiveCandleChart({
         crosshair: {
           mode: CrosshairMode.Normal,
           vertLine: {
-            color: isDark ? '#475569' : '#64748b',
+            color: crosshairColor,
             width: 1,
             style: LineStyle.Dashed,
-            labelBackgroundColor: isDark ? '#1e293b' : '#0f172a',
+            labelBackgroundColor: crosshairLabelBg,
           },
           horzLine: {
-            color: isDark ? '#475569' : '#64748b',
+            color: crosshairColor,
             width: 1,
             style: LineStyle.Dashed,
-            labelBackgroundColor: isDark ? '#1e293b' : '#0f172a',
+            labelBackgroundColor: crosshairLabelBg,
           },
         },
         rightPriceScale: {
@@ -187,12 +191,12 @@ export function InteractiveCandleChart({
       });
 
       const candleSeries = chart.addCandlestickSeries({
-        upColor: '#10b981',
-        downColor: '#ef4444',
-        borderUpColor: '#10b981',
-        borderDownColor: '#ef4444',
-        wickUpColor: '#10b981',
-        wickDownColor: '#ef4444',
+        upColor: bullCandle,
+        downColor: bearCandle,
+        borderUpColor: bullCandle,
+        borderDownColor: bearCandle,
+        wickUpColor: bullCandle,
+        wickDownColor: bearCandle,
       });
 
       candleSeries.setData(
@@ -262,7 +266,7 @@ export function InteractiveCandleChart({
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-terminal-border bg-terminal-elevated/60 px-3.5 py-2">
         <div className="flex items-center gap-2.5">
           <span className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold tracking-wide text-terminal-text">
-            <BarChart3 className="h-3.5 w-3.5 text-emerald-400" aria-hidden="true" />
+            <BarChart3 className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
             {symbol}
           </span>
           <span className="rounded bg-terminal-bg px-1.5 py-0.5 font-mono text-[11px] font-medium text-terminal-muted border border-terminal-border">
@@ -279,14 +283,20 @@ export function InteractiveCandleChart({
               O <strong className="text-terminal-text">{latestCandle.open}</strong>
             </span>
             <span className="text-terminal-muted">
-              H <strong className="text-emerald-400">{latestCandle.high}</strong>
+              H <strong className="text-[#1d7c59] dark:text-[#2e9e75]">{latestCandle.high}</strong>
             </span>
             <span className="text-terminal-muted">
-              L <strong className="text-rose-400">{latestCandle.low}</strong>
+              L <strong className="text-[#bf3f37] dark:text-[#d85a52]">{latestCandle.low}</strong>
             </span>
             <span className="text-terminal-muted">
               C{' '}
-              <strong className={isPositive ? 'text-emerald-400' : 'text-rose-400'}>
+              <strong
+                className={
+                  isPositive
+                    ? 'text-[#1d7c59] dark:text-[#2e9e75]'
+                    : 'text-[#bf3f37] dark:text-[#d85a52]'
+                }
+              >
                 {latestCandle.close}
               </strong>
             </span>
@@ -303,7 +313,7 @@ export function InteractiveCandleChart({
         >
           <div className="flex items-center justify-between text-xs text-terminal-muted">
             <span className="inline-flex items-center gap-1.5 font-medium text-terminal-text">
-              <Layers className="h-3.5 w-3.5 text-sky-400" aria-hidden="true" />
+              <Layers className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
               Structured OHLC Data Preview ({symbol} · {timeframe})
             </span>
             <span className="font-mono tabular-nums">{visibleCandles.length} candles</span>
@@ -317,7 +327,7 @@ export function InteractiveCandleChart({
               return (
                 <div key={bar.time} className="flex h-full flex-col items-center justify-end gap-1">
                   <div
-                    className={`w-2.5 rounded-sm ${bullish ? 'bg-emerald-500' : 'bg-rose-500'}`}
+                    className={`w-2.5 rounded-sm ${bullish ? 'bg-[#1d7c59] dark:bg-[#2e9e75]' : 'bg-[#bf3f37] dark:bg-[#d85a52]'}`}
                     style={{ height: `${Math.round(bodyRatio * 100)}%` }}
                     title={`O:${bar.open} H:${bar.high} L:${bar.low} C:${bar.close}`}
                   />

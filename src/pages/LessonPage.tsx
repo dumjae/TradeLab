@@ -17,12 +17,15 @@ import { AIMentorPanel } from '../components/mentor/AIMentorPanel';
 import { ExplainDifferentlyPanel } from '../components/visual-learning/ExplainDifferentlyPanel';
 import { VisualExplanationsSection } from '../components/visual-learning/VisualExplanationsSection';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   CURRICULUM_LESSONS,
   LESSON_MARKET_CATEGORIES,
   LESSON_STAGES,
   getLessonBySlug,
 } from '../data/curriculum';
+import { LESSON_TAGLISH_SUMMARIES, UI_COPY } from '../data/taglishTranslations';
+import { expandAcronyms } from '../lib/acronymHelper';
 import {
   listLessonProgress,
   toggleLessonCompleted,
@@ -35,7 +38,7 @@ type MobileWorkspaceTab = 'study' | 'explain' | 'mentor';
 type DesktopSideTab = 'mentor' | 'explain';
 
 const MARKET_BADGE_STYLES: Record<LessonMarketCategory, string> = {
-  general: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+  general: 'border-brand/30 bg-brand-soft text-brand',
   forex: 'border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400',
   indices: 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400',
   crypto: 'border-teal-500/30 bg-teal-500/10 text-teal-600 dark:text-teal-400',
@@ -57,6 +60,7 @@ export function LessonPage() {
   const { slug } = useParams<{ slug: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
+  const { isTaglish, t } = useLanguage();
 
   const lesson = useMemo(
     () => (slug ? getLessonBySlug(slug) : undefined) ?? CURRICULUM_LESSONS[0],
@@ -154,62 +158,79 @@ export function LessonPage() {
     jumpToVideoResource(citation.resourceId, citation.startSeconds);
   };
 
+  const expandedTitle = expandAcronyms(lesson.title);
+  const compactSubtitle = isTaglish
+    ? (LESSON_TAGLISH_SUMMARIES[lesson.slug]?.quickTakeaway ??
+      LESSON_TAGLISH_SUMMARIES[lesson.slug]?.plainSummary ??
+      expandAcronyms(lesson.plainEnglishSummary ?? ''))
+    : expandAcronyms(lesson.plainEnglishSummary ?? '');
+
   return (
-    <div className="mx-auto max-w-7xl space-y-4">
-      {/* Ultra-Clean Single-Row App Header */}
-      <header className="rounded-2xl border border-terminal-border bg-terminal-surface px-4 py-3.5 sm:px-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <Link
-              to="/academy"
-              aria-label="Back to Trading Academy catalog"
-              className="inline-flex h-7 shrink-0 items-center gap-1 rounded-lg border border-terminal-border bg-terminal-bg px-2 text-[11px] font-medium text-terminal-muted transition-colors hover:border-emerald-500/40 hover:text-terminal-text"
-            >
-              <ArrowLeft className="h-3 w-3" aria-hidden="true" />
-              <span className="hidden sm:inline">Academy</span>
-            </Link>
+    <div className="mx-auto max-w-7xl space-y-3.5">
+      {/* Clean Compact Lesson Header */}
+      <header className="rounded-2xl border border-terminal-border bg-terminal-surface px-3.5 py-3 sm:px-4">
+        <div className="flex flex-wrap items-start justify-between gap-2.5">
+          <div className="min-w-0 flex-1 space-y-1">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <Link
+                to="/academy"
+                aria-label="Back to Trading Academy catalog"
+                className="inline-flex h-6 shrink-0 items-center gap-1 rounded-lg border border-terminal-border bg-terminal-bg px-2 text-[11px] font-medium text-terminal-muted transition-colors hover:border-brand/45 hover:text-terminal-text"
+              >
+                <ArrowLeft className="h-3 w-3" aria-hidden="true" />
+                <span className="hidden sm:inline">
+                  {t(UI_COPY.lesson.backToAcademy.en, UI_COPY.lesson.backToAcademy.taglish)}
+                </span>
+              </Link>
 
-            <span className="shrink-0 rounded-lg border border-emerald-500/35 bg-emerald-500/10 px-2 py-0.5 font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">
-              {formatModuleOrder(lesson.moduleOrder)}
-            </span>
+              <span className="shrink-0 rounded-lg border border-brand/35 bg-brand-soft px-2 py-0.5 font-mono text-[11px] font-semibold text-brand tabular-nums">
+                {formatModuleOrder(lesson.moduleOrder)}
+              </span>
 
-            <h1 className="truncate text-base font-bold tracking-tight text-terminal-text sm:text-lg">
-              {lesson.title}
+              <span
+                className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${MARKET_BADGE_STYLES[lesson.marketCategory]}`}
+              >
+                {marketMeta.label}
+              </span>
+
+              {stageMeta && (
+                <span className="hidden shrink-0 items-center rounded-full border border-terminal-border bg-terminal-bg px-2 py-0.5 text-[10px] font-medium text-terminal-muted md:inline-flex">
+                  Stage {stageMeta.step}
+                </span>
+              )}
+
+              <span className="inline-flex items-center gap-1 rounded-full border border-terminal-border bg-terminal-bg px-2 py-0.5 font-mono text-[10px] text-terminal-muted tabular-nums">
+                <Clock className="h-2.5 w-2.5 text-sky-400" aria-hidden="true" />
+                {lesson.estimatedMinutes}m
+              </span>
+            </div>
+
+            <h1 className="text-sm font-bold leading-snug tracking-tight text-terminal-text sm:text-base">
+              {expandedTitle}
             </h1>
 
-            <span
-              className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${MARKET_BADGE_STYLES[lesson.marketCategory]}`}
-            >
-              {marketMeta.label}
-            </span>
-
-            {stageMeta && (
-              <span className="hidden shrink-0 items-center rounded-full border border-terminal-border bg-terminal-bg px-2.5 py-0.5 text-[11px] font-medium text-terminal-muted md:inline-flex">
-                Stage {stageMeta.step} · {stageMeta.label}
-              </span>
+            {compactSubtitle && (
+              <p className="line-clamp-1 text-xs text-terminal-muted">
+                {compactSubtitle}
+              </p>
             )}
-
-            <span className="hidden items-center gap-1 rounded-full border border-terminal-border bg-terminal-bg px-2 py-0.5 font-mono text-[11px] text-terminal-muted tabular-nums sm:inline-flex">
-              <Clock className="h-3 w-3 text-sky-400" aria-hidden="true" />
-              {lesson.estimatedMinutes}m
-            </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex shrink-0 flex-wrap items-center gap-1.5">
             {lesson.learningObjectives.length > 0 && (
               <button
                 type="button"
                 onClick={() => setObjectivesOpen((prev) => !prev)}
                 aria-expanded={objectivesOpen}
-                className={`inline-flex items-center gap-1 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
+                className={`inline-flex items-center gap-1 rounded-xl border px-2.5 py-1.5 text-xs font-medium transition-colors ${
                   objectivesOpen
-                    ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                    ? 'border-brand/40 bg-brand-soft text-brand'
                     : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
                 }`}
               >
-                <span>Objectives</span>
+                <span>{t('Goals', 'Layunin')}</span>
                 <ChevronDown
-                  className={`h-3.5 w-3.5 transition-transform ${objectivesOpen ? 'rotate-180' : ''}`}
+                  className={`h-3 w-3 transition-transform ${objectivesOpen ? 'rotate-180' : ''}`}
                   aria-hidden="true"
                 />
               </button>
@@ -219,15 +240,19 @@ export function LessonPage() {
               type="button"
               onClick={() => setTutorialMode((prev) => !prev)}
               aria-pressed={tutorialMode}
-              title="Step-by-step guided study bar"
-              className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
+              title={t('Step-by-step guided study bar', 'Step-by-step na gabay sa pag-aaral')}
+              className={`inline-flex items-center gap-1 rounded-xl border px-2.5 py-1.5 text-xs font-medium transition-colors ${
                 tutorialMode
-                  ? 'border-sky-500 bg-sky-500 text-slate-950 font-semibold'
+                  ? 'border-sky-500 bg-sky-500 font-semibold text-slate-950'
                   : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-sky-500/40 hover:text-sky-500 dark:hover:text-sky-400'
               }`}
             >
               <Compass className="h-3.5 w-3.5" aria-hidden="true" />
-              <span className="hidden sm:inline">{tutorialMode ? 'Guide: ON' : 'Guide'}</span>
+              <span className="hidden sm:inline">
+                {tutorialMode
+                  ? t('Guided: ON', 'Gabay: ON')
+                  : t('Guided Steps', 'Gabay')}
+              </span>
             </button>
 
             <button
@@ -235,45 +260,47 @@ export function LessonPage() {
               onClick={() => void handleToggleComplete()}
               disabled={togglingComplete}
               aria-pressed={isCompleted}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60 ${
+              className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60 ${
                 isCompleted
-                  ? 'border-emerald-500/45 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                  : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-emerald-500/45 hover:text-emerald-600 dark:hover:text-emerald-400'
+                  ? 'border-bull/45 bg-bull/15 text-bull'
+                  : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:border-bull/45 hover:text-bull'
               }`}
             >
               {isCompleted ? (
                 <>
                   <Check className="h-3.5 w-3.5" aria-hidden="true" />
-                  <span>Completed ✓</span>
+                  <span>{t('Completed ✓', 'Tapos Na ✓')}</span>
                 </>
               ) : (
                 <>
                   <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                  <span>Mark Complete</span>
+                  <span>
+                    {t(UI_COPY.lesson.markComplete.en, UI_COPY.lesson.markComplete.taglish)}
+                  </span>
                 </>
               )}
             </button>
 
             <Link
               to={`/practice/${lesson.slug}`}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 py-1.5 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-3 py-1.5 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95"
             >
               <GraduationCap className="h-3.5 w-3.5" aria-hidden="true" />
-              Practice
+              {t('Practice', 'Mag-Quiz')}
             </Link>
           </div>
         </div>
 
         {/* Collapsible Objectives Drawer (collapsed by default) */}
         {objectivesOpen && lesson.learningObjectives.length > 0 && (
-          <div className="mt-3 grid grid-cols-1 gap-1.5 border-t border-terminal-border pt-3 sm:grid-cols-2">
+          <div className="mt-2.5 grid grid-cols-1 gap-1.5 border-t border-terminal-border pt-2.5 sm:grid-cols-2">
             {lesson.learningObjectives.map((objective) => (
               <div key={objective} className="flex items-start gap-2 text-xs text-terminal-text">
                 <CheckCircle2
-                  className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400"
+                  className="mt-0.5 h-3.5 w-3.5 shrink-0 text-bull"
                   aria-hidden="true"
                 />
-                <span>{objective}</span>
+                <span>{expandAcronyms(objective)}</span>
               </div>
             ))}
           </div>
@@ -291,47 +318,47 @@ export function LessonPage() {
           role="tab"
           aria-selected={mobileTab === 'study'}
           onClick={() => setMobileTab('study')}
-          className={`inline-flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition-colors ${
+          className={`inline-flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-colors ${
             mobileTab === 'study'
-              ? 'bg-emerald-500 text-slate-950'
+              ? 'bg-brand text-brand-fg'
               : 'text-terminal-muted hover:text-terminal-text'
           }`}
         >
           <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
-          Study
+          {t('Study', 'Mag-Aral')}
         </button>
         <button
           type="button"
           role="tab"
           aria-selected={mobileTab === 'explain'}
           onClick={() => setMobileTab('explain')}
-          className={`inline-flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition-colors ${
+          className={`inline-flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-colors ${
             mobileTab === 'explain'
-              ? 'bg-emerald-500 text-slate-950'
+              ? 'bg-brand text-brand-fg'
               : 'text-terminal-muted hover:text-terminal-text'
           }`}
         >
           <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
-          Explain
+          {t('Explain', 'Paliwanag')}
         </button>
         <button
           type="button"
           role="tab"
           aria-selected={mobileTab === 'mentor'}
           onClick={() => setMobileTab('mentor')}
-          className={`inline-flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition-colors ${
+          className={`inline-flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-colors ${
             mobileTab === 'mentor'
-              ? 'bg-emerald-500 text-slate-950'
+              ? 'bg-brand text-brand-fg'
               : 'text-terminal-muted hover:text-terminal-text'
           }`}
         >
           <Bot className="h-3.5 w-3.5" aria-hidden="true" />
-          AI Mentor
+          {t('AI Mentor', 'AI Mentor')}
         </button>
       </div>
 
       {/* Main 2-Column App Layout */}
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
         <div
           className={`${mobileTab === 'study' ? 'block' : 'hidden'} xl:col-span-8 xl:block`}
         >
@@ -347,7 +374,7 @@ export function LessonPage() {
         </div>
 
         <aside className="xl:col-span-4">
-          <div className="space-y-3 xl:sticky xl:top-20">
+          <div className="space-y-3 xl:sticky xl:top-16">
             {/* Desktop Right-Pane Tab Switcher (AI Mentor | Explain) */}
             <div
               role="tablist"
@@ -361,12 +388,12 @@ export function LessonPage() {
                 onClick={() => setDesktopSideTab('mentor')}
                 className={`inline-flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-colors ${
                   desktopSideTab === 'mentor'
-                    ? 'bg-sky-500 text-slate-950'
+                    ? 'bg-brand text-brand-fg'
                     : 'text-terminal-muted hover:text-terminal-text'
                 }`}
               >
                 <Bot className="h-3.5 w-3.5" aria-hidden="true" />
-                AI Mentor
+                {t('AI Mentor', 'AI Mentor')}
               </button>
               <button
                 type="button"
@@ -380,7 +407,7 @@ export function LessonPage() {
                 }`}
               >
                 <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                Explain
+                {t('Explain Simpler', 'Iba Pang Paliwanag')}
               </button>
             </div>
 
@@ -414,44 +441,46 @@ export function LessonPage() {
       {/* Compact Prev / Next Module Navigation */}
       <nav
         aria-label="Lesson module pagination"
-        className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-terminal-border bg-terminal-surface px-4 py-3"
+        className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-terminal-border bg-terminal-surface px-3.5 py-2.5"
       >
         {prevLesson ? (
           <Link
             to={`/academy/${prevLesson.slug}`}
-            className="inline-flex items-center gap-2 rounded-xl border border-terminal-border bg-terminal-bg px-3.5 py-2 text-xs font-semibold text-terminal-text transition-colors hover:border-emerald-500/50 hover:text-emerald-500 dark:hover:text-emerald-400"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-terminal-border bg-terminal-bg px-3 py-1.5 text-xs font-semibold text-terminal-text transition-colors hover:border-brand/50 hover:text-brand"
           >
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
             <span>
-              {formatModuleOrder(prevLesson.moduleOrder)}. {prevLesson.title.split('(')[0].trim()}
+              {t('Prev:', 'Bago:')} {formatModuleOrder(prevLesson.moduleOrder)}.{' '}
+              {expandAcronyms(prevLesson.title.split('(')[0].trim())}
             </span>
           </Link>
         ) : (
           <Link
             to="/academy"
-            className="inline-flex items-center gap-2 rounded-xl border border-terminal-border bg-terminal-bg px-3.5 py-2 text-xs font-semibold text-terminal-muted transition-colors hover:border-emerald-500/50 hover:text-terminal-text"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-terminal-border bg-terminal-bg px-3 py-1.5 text-xs font-semibold text-terminal-muted transition-colors hover:border-brand/50 hover:text-terminal-text"
           >
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-            <span>All Lessons</span>
+            <span>{t('All Lessons', 'Lahat ng Aralin')}</span>
           </Link>
         )}
 
         {nextLesson ? (
           <Link
             to={`/academy/${nextLesson.slug}`}
-            className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95"
           >
             <span>
-              {formatModuleOrder(nextLesson.moduleOrder)}. {nextLesson.title.split('(')[0].trim()}
+              {t('Next:', 'Sunod:')} {formatModuleOrder(nextLesson.moduleOrder)}.{' '}
+              {expandAcronyms(nextLesson.title.split('(')[0].trim())}
             </span>
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         ) : (
           <Link
             to="/practice"
-            className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-fg transition-opacity hover:opacity-95"
           >
-            Practice Drills
+            {t('Practice Drills', 'Mag-Practice')}
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         )}
