@@ -146,7 +146,7 @@ export function PersonalVisualLibrary() {
                 onClick={() => setLevelFilter(item.id)}
                 className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
                   levelFilter === item.id
-                    ? 'bg-emerald-500 text-slate-950 font-semibold'
+                    ? 'bg-brand text-brand-fg font-semibold'
                     : 'border border-terminal-border bg-terminal-surface text-terminal-muted hover:text-terminal-text'
                 }`}
               >
@@ -167,7 +167,7 @@ export function PersonalVisualLibrary() {
             </p>
             <Link
               to="/academy/market-structure"
-              className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3.5 py-2 text-xs font-semibold text-slate-950 hover:bg-emerald-400"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-brand px-3.5 py-2 text-xs font-semibold text-brand-fg hover:brightness-110"
             >
               Browse Trading Academy
             </Link>
@@ -235,7 +235,7 @@ export function PersonalVisualLibrary() {
                           <button
                             type="button"
                             onClick={() => void handleSaveNotes(saved.id)}
-                            className="inline-flex items-center gap-1 rounded-md bg-emerald-500 px-2.5 py-1 text-xs font-semibold text-slate-950"
+                            className="inline-flex items-center gap-1 rounded-md bg-brand px-2.5 py-1 text-xs font-semibold text-brand-fg"
                           >
                             <Save className="h-3 w-3" aria-hidden="true" />
                             Save Notes
@@ -256,7 +256,7 @@ export function PersonalVisualLibrary() {
                   <div className="flex flex-wrap items-center justify-between gap-2 border-t border-terminal-border pt-3">
                     <Link
                       to={jumpUrl}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/35 px-3 py-1.5 text-xs font-semibold text-emerald-400 transition-colors hover:bg-emerald-500 hover:text-slate-950"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-brand/15 border border-brand/35 px-3 py-1.5 text-xs font-semibold text-brand transition-colors hover:bg-brand hover:text-brand-fg"
                     >
                       <Play className="h-3 w-3 fill-current" aria-hidden="true" />
                       {saved.savedTimestampSeconds !== null

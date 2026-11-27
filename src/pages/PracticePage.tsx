@@ -39,8 +39,8 @@ const MARKET_BADGE_STYLES: Record<LessonMarketCategory, string> = {
 };
 
 const MARKET_ACTIVE_PILL_STYLES: Record<MarketFilter, string> = {
-  all: 'border-emerald-500 bg-emerald-500 text-slate-950 font-semibold',
-  general: 'border-emerald-500 bg-emerald-500 text-slate-950 font-semibold',
+  all: 'border-brand bg-brand text-brand-fg font-semibold',
+  general: 'border-brand bg-brand text-brand-fg font-semibold',
   forex: 'border-sky-500 bg-sky-500 text-slate-950 font-semibold',
   indices: 'border-amber-500 bg-amber-500 text-slate-950 font-semibold',
   crypto: 'border-teal-500 bg-teal-500 text-slate-950 font-semibold',
@@ -310,7 +310,7 @@ export function PracticePage() {
           <button
             type="button"
             onClick={() => void handleConfirmMastery()}
-            className="rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 hover:bg-emerald-400"
+            className="rounded-xl bg-brand px-4 py-2 text-xs font-semibold text-brand-fg hover:brightness-110"
           >
             Mark Concept Mastered
           </button>
@@ -434,7 +434,7 @@ export function PracticePage() {
                   type="button"
                   disabled={!selectedOptionId}
                   onClick={() => void handleSubmit()}
-                  className="rounded-xl bg-emerald-500 px-5 py-2.5 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-50"
+                  className="rounded-xl bg-brand px-5 py-2.5 text-xs font-semibold text-brand-fg transition-colors hover:brightness-110 disabled:opacity-50"
                 >
                   Submit Answer
                 </button>

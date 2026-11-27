@@ -14,6 +14,7 @@ import {
   SlidersHorizontal,
   Wallet,
 } from 'lucide-react';
+import { MarketHoursPhCard } from '../components/dashboard/MarketHoursPhCard';
 import { OnboardingModal } from '../components/learning/OnboardingModal';
 import { DifficultConceptsPanel } from '../components/library/DifficultConceptsPanel';
 import { DailyQuoteCard } from '../components/quotes/DailyQuoteCard';
@@ -315,6 +316,9 @@ export function DashboardPage({ onOpenVault, onOpenTour }: DashboardPageProps) {
           </div>
         </section>
       )}
+
+      {/* Live Market Hours in Philippine Time (Auto US DST) */}
+      <MarketHoursPhCard />
 
       {/* Compact 4-Tile Quick Launchers (Featuring Paper Trading Demo Wallets) */}
       <section aria-label="Quick workspace launchers" className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">

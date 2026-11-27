@@ -4,6 +4,7 @@ import {
   BookOpen,
   Bookmark,
   CandlestickChart,
+  Clock,
   Flame,
   GraduationCap,
   HelpCircle,
@@ -26,6 +27,7 @@ import {
 } from '../../data/curriculum';
 import { UI_COPY } from '../../data/taglishTranslations';
 import { expandAcronyms } from '../../lib/acronymHelper';
+import { PH_TIME_ZONE } from '../../lib/marketTime';
 import { getStorageMode } from '../../lib/supabase';
 import type { LessonMarketCategory } from '../../types/academy';
 import { UserAccountMenu } from '../auth/UserAccountMenu';
@@ -45,6 +47,17 @@ export interface AppShellProps {
 type SidebarMarketFilter = 'all' | LessonMarketCategory;
 
 const THEME_STORAGE_KEY = 'tradelab_theme_v1';
+
+const PH_TOPBAR_CLOCK_FORMATTER = new Intl.DateTimeFormat('en-PH', {
+  timeZone: PH_TIME_ZONE,
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true,
+});
+
+function formatPhTopBarClock(date: Date): string {
+  return `${PH_TOPBAR_CLOCK_FORMATTER.format(date).toUpperCase()} PH`;
+}
 
 interface NavItemConfig {
   to: string;
@@ -176,6 +189,19 @@ export function AppShell({
     const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
     return stored === 'light' ? 'light' : 'dark';
   });
+  const [phClockLabel, setPhClockLabel] = useState<string>(() =>
+    formatPhTopBarClock(new Date()),
+  );
+
+  useEffect(() => {
+    const timerId = window.setInterval(() => {
+      setPhClockLabel(formatPhTopBarClock(new Date()));
+    }, 60_000);
+
+    return () => {
+      window.clearInterval(timerId);
+    };
+  }, []);
 
   const resolvedTourOpen = tourOpen ?? internalTourOpen;
   const handleOpenTour = () => {
@@ -311,6 +337,15 @@ export function AppShell({
                 Return to Admin Portal
               </Link>
             )}
+
+            {/* Quiet live PH clock badge on tablet+ screens */}
+            <span
+              className="hidden items-center gap-1.5 rounded-full border border-terminal-border bg-terminal-bg/80 px-2.5 py-1 font-mono text-[10px] font-medium tabular-nums text-terminal-muted md:inline-flex"
+              title="Philippine Time (Asia/Manila)"
+            >
+              <Clock className="h-3 w-3 text-brand" aria-hidden="true" />
+              {phClockLabel}
+            </span>
 
             {/* Quiet persistence indicator on wide screens */}
             <span

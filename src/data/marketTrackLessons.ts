@@ -1389,10 +1389,10 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
         style: 'real_chart_example',
         headline: '8:30 AM NY CPI Double-Sweep Pattern on EUR/USD',
         summary:
-          'At 8:30 AM, EUR/USD spikes 30 pips up in 8 seconds (stopping early shorts), then slams 75 pips down cleanly after hot US inflation data.',
+          'At 8:30 AM ET, EUR/USD spikes 30 pips up in 8 seconds (stopping early shorts), then slams 75 pips down cleanly after hot US inflation data.',
         steps: [
-          'Gamblers who shorted at 8:29 AM got stopped out by the initial 30-pip upward whipsaw.',
-          'Patient traders waited until 8:45 AM, saw clean bearish displacement, and shorted the pullback smoothly.',
+          'Gamblers who shorted at 8:29 AM ET got stopped out by the initial 30-pip upward whipsaw.',
+          'Patient traders waited until 8:45 AM ET, saw clean bearish displacement, and shorted the pullback smoothly.',
         ],
         keyTakeaway:
           'Waiting 15 minutes protects you from the two-way news whip while still catching the real move.',
@@ -1406,7 +1406,7 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
           'Pilots do not land in the middle of a lightning burst — they circle calmly for 15 minutes and land smoothly once the runway clears.',
         steps: [
           'Economic Calendar = your weather radar.',
-          'The 8:30 AM spike = the lightning burst.',
+          'The 8:30 AM ET spike = the lightning burst.',
           'Post-news pullback = the clear runway.',
         ],
         keyTakeaway:
@@ -1427,7 +1427,7 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
         keyTakeaway:
           'Predictable risk beats adrenaline every single time.',
         practiceSafeHint:
-          'Compare spread width at 8:30:02 AM vs. 8:45:00 AM.',
+          'Compare spread width right at 8:30 AM ET vs. 8:45 AM ET.',
       },
       common_mistakes: {
         style: 'common_mistakes',
@@ -1502,12 +1502,12 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
     subtitle:
       'Learn how US Stock exchanges work: Pre-Market vs. Regular Hours (9:30 AM–4:00 PM ET), Market/Limit/Stop orders, Share Sizing math, and Liquidity checks.',
     plainEnglishSummary:
-      'Unlike 24/7 Crypto, US Stocks (like AAPL, NVDA, MSFT, TSLA) trade their deepest volume during Regular Market Hours: 9:30 AM to 4:00 PM New York time (ET). Knowing which order type to click — Market, Limit, or Stop-Limit — and calculating exact Share Count from your SL (Stop Loss) keeps you safe from bad fills and wide pre-market spreads.',
+      'Unlike 24/7 Crypto, US Stocks (like AAPL, NVDA, MSFT, TSLA) trade their deepest volume during Regular Market Hours: 9:30 AM to 4:00 PM ET. Knowing which order type to click — Market, Limit, or Stop-Limit — and calculating exact Share Count from your SL (Stop Loss) keeps you safe from bad fills and wide pre-market spreads.',
     beginnerFaq: [
       {
         question: 'When are US Stock Market hours, and should beginners trade Pre-Market?',
         answer:
-          'Regular hours run 9:30 AM–4:00 PM ET (Monday–Friday). Pre-Market (4:00 AM–9:30 AM ET) and After-Hours (4:00 PM–8:00 PM ET) have much thinner volume and wider spreads — beginners should use Pre-Market only to map levels and wait for 9:30 AM Regular Hours to trade.',
+          'Regular hours run 9:30 AM–4:00 PM ET (Monday–Friday). Pre-Market (4:00 AM–9:30 AM ET) and After-Hours (4:00 PM–8:00 PM ET) have much thinner volume and wider spreads — beginners should use Pre-Market only to map levels and wait for 9:30 AM ET Regular Hours to trade.',
       },
       {
         question: 'When should I use a Limit Order vs. a Market Order on Stocks?',
@@ -1539,11 +1539,11 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
     terminology: [
       {
         term: 'Regular Trading Hours vs. Extended Hours',
-        shortCode: 'RTH (9:30–4:00 ET)',
+        shortCode: 'RTH (9:30 AM–4:00 PM ET)',
         definition:
           'Regular Trading Hours (9:30 AM–4:00 PM ET) hold peak institutional volume and tightest spreads. Pre-Market and After-Hours have thinner order books and wider spreads.',
         example:
-          'Map overnight Pre-Market High/Low at 9:15 AM ET, then execute during active RTH volume after 9:30 AM.',
+          'Map overnight Pre-Market High/Low at 9:15 AM ET, then execute during active RTH volume after 9:30 AM ET.',
       },
       {
         term: 'Market Order vs. Limit Order',
@@ -1613,11 +1613,11 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
     diagramConfig: {
       kind: 'stocks_orb_gap',
       title: 'US Stock Trading Day & Order Execution Blueprint',
-      subtitle: 'Map Pre-Market levels, execute during 9:30 AM RTH volume, and size exact shares',
+      subtitle: 'Map Pre-Market levels, execute during 9:30 AM ET RTH volume, and size exact shares',
       caption:
         'Peak equity volume clusters at the 9:30 AM ET open and 3:00 PM ET close, giving Limit and Stop orders tight spreads and reliable fills.',
       legend: [
-        { label: '9:30 AM RTH Volume Drive', colorToken: 'emerald' },
+        { label: '9:30 AM ET RTH Volume Drive', colorToken: 'emerald' },
         { label: 'Pre-Market / Midday Thinness', colorToken: 'amber' },
         { label: 'Hard SL & Share Math', colorToken: 'rose' },
       ],
@@ -1663,7 +1663,7 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
         keyTakeaway:
           'Liquid stocks + Limit entries + exact share sizing make Stock trading calm and predictable.',
         practiceSafeHint:
-          'Check the volume bars at 9:30 AM compared to 1:00 PM midday.',
+          'Check the volume bars at 9:30 AM ET compared to 1:00 PM ET midday.',
       },
       step_by_step_visual: {
         style: 'step_by_step_visual',
@@ -1684,7 +1684,7 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
         style: 'real_chart_example',
         headline: 'AAPL Opening Drive Share Math',
         summary:
-          'AAPL breaks above its 9:35 AM opening range at $212.00 with structural invalidation at $210.50 ($1.50 stop).',
+          'AAPL breaks above its 9:35 AM ET opening range at $212.00 with structural invalidation at $210.50 ($1.50 stop).',
         steps: [
           'With $150 max risk (1% of $15,000): $150 ÷ $1.50 = 100 shares.',
           'Target at +$4.50 ($216.50) yields +$450 (+3R) cleanly before midday lull.',
@@ -1731,7 +1731,7 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
         steps: [
           'Mistake 1: Clicking Market Buy on a thin Pre-Market stock and getting filled $0.80 worse than expected.',
           'Mistake 2: Always buying "100 shares" regardless of whether the stop is $0.50 or $5.00 wide.',
-          'Mistake 3: Overtrading dead 12:30 PM midday chop after a great morning.',
+          'Mistake 3: Overtrading dead 12:30 PM ET midday chop after a great morning.',
         ],
         keyTakeaway:
           'Trade the active windows, size by stop distance, and respect spreads.',
@@ -1845,7 +1845,7 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
         definition:
           'A stock holding higher lows or breaking higher while the broad S&P 500 (SPY) pulls back — proving real institutional demand.',
         example:
-          'SPY dips -0.4% at 10:15 AM while MSFT barely pulls back and breaks its morning high.',
+          'SPY dips -0.4% at 10:15 AM ET while MSFT barely pulls back and breaks its morning high.',
       },
       {
         term: 'Relative Weakness (vs. SPY)',
@@ -1979,7 +1979,7 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
         summary:
           'At 10:10 AM ET, SPY drops 0.35% below its opening range, while post-earnings NVDA holds flat above VWAP with tiny red volume.',
         steps: [
-          'At 10:20 AM, SPY simply stabilizes — NVDA immediately erupts +2.5% to new highs of the day.',
+          'At 10:20 AM ET, SPY simply stabilizes — NVDA immediately erupts +2.5% to new highs of the day.',
           'Traders who spotted RS got a clean low-risk entry right before the expansion.',
         ],
         keyTakeaway:
@@ -2025,7 +2025,7 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
         steps: [
           'Mistake 1: Forgetting a company reports Earnings after the bell and waking up to a -18% gap.',
           'Mistake 2: Buying a weak stock "because it looks cheap" while its sector leader breaks out.',
-          'Mistake 3: Chasing the very first 9:30 AM candle spike instead of waiting for a structured pullback.',
+          'Mistake 3: Chasing the very first 9:30 AM ET candle spike instead of waiting for a structured pullback.',
         ],
         keyTakeaway:
           'Patience for structure + RS alignment keeps equity trading sharp and repeatable.',
@@ -2151,7 +2151,7 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
       },
       {
         term: 'Cash Equity Open (9:30 AM ET)',
-        shortCode: '9:30 AM Open',
+        shortCode: '9:30 AM ET Open',
         definition:
           'The exact minute all 500 underlying US stocks open simultaneously on NYSE/Nasdaq, unleashing the biggest volume wave of the day.',
         example:
@@ -2307,7 +2307,7 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
         keyTakeaway:
           'Master one index cleanly instead of flipping back and forth between all three.',
         practiceSafeHint:
-          'Pick SPX500 or NAS100 and study its 9:30 AM behavior for 30 sessions straight.',
+          'Pick SPX500 or NAS100 and study its 9:30 AM ET behavior for 30 sessions straight.',
       },
       common_mistakes: {
         style: 'common_mistakes',
@@ -2317,7 +2317,7 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
         steps: [
           'Mistake 1: Assuming "1 lot" on a NAS100 CFD has the same dollar value across different brokers.',
           'Mistake 2: Using a tiny 5-point stop on NAS100 where one single 1-minute candle moves 15 points.',
-          'Mistake 3: Trading NAS100 during dead 2:00 AM Asian chop and getting chewed up by spreads.',
+          'Mistake 3: Trading NAS100 during dead 2:00 AM ET Asian chop and getting chewed up by spreads.',
         ],
         keyTakeaway:
           'Verify $/point, respect structural width, and trade the NY liquidity window.',
@@ -2454,7 +2454,7 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
       {
         id: 'irc-vix-regimes',
         heading: '1. Reading VIX Regimes to Adapt Your Volatility Playbook',
-        body: 'Checking VIX for 5 seconds every morning tells you what kind of weather awaits at the 9:30 AM open.',
+        body: 'Checking VIX for 5 seconds every morning tells you what kind of weather awaits at the 9:30 AM ET open.',
         bulletPoints: [
           'Calm Regime (VIX < 16): Smaller daily ranges, slower trends — take cleaner modest targets and avoid expecting 400-point NAS100 days.',
           'Active Sweet Spot (VIX 16–22): Crisp directional swings and smooth liquidity sweeps.',
@@ -2554,18 +2554,18 @@ export const MARKET_TRACK_LESSONS: Lesson[] = [
           '3. SPX500 vs. NAS100 Split: Mark matching London/Overnight highs and lows to watch for SMT.',
         ],
         keyTakeaway:
-          'Preparation before 9:30 AM keeps you calm when the opening bell explodes.',
+          'Preparation before 9:30 AM ET keeps you calm when the opening bell explodes.',
         practiceSafeHint:
           'Look for one index sweeping a prior low while the sister index holds firm.',
       },
       real_chart_example: {
         style: 'real_chart_example',
-        headline: '9:45 AM Bullish SMT Between SPX500 & NAS100',
+        headline: '9:45 AM ET Bullish SMT Between SPX500 & NAS100',
         summary:
           'SPX500 pokes 4 points below its London low while NAS100 holds 15 points ABOVE its London low, right as DXY stalls at 1H resistance.',
         steps: [
           'Within 5 minutes, NAS100 prints a decisive bullish 5m BOS (Break of Structure).',
-          'Both indices rally cleanly into the 11:00 AM window, rewarding patient Longs with +3R.',
+          'Both indices rally cleanly into the 11:00 AM ET window, rewarding patient Longs with +3R.',
         ],
         keyTakeaway:
           'When SMT, DXY resistance, and 5m BOS line up together, conviction is crystal clear.',

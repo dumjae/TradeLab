@@ -171,7 +171,7 @@ export function BookmarkNotesDialog({
             <button
               type="submit"
               disabled={saving}
-              className="rounded-lg bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-60"
+              className="rounded-lg bg-brand px-4 py-2 text-xs font-semibold text-brand-fg transition-colors hover:brightness-110 disabled:opacity-60"
             >
               {saving ? 'Saving...' : 'Save Bookmark'}
             </button>

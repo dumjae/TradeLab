@@ -199,7 +199,7 @@ export function SegmentVerificationEditor({
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-brand-fg transition-colors hover:brightness-110 disabled:opacity-60"
         >
           <Plus className="h-3.5 w-3.5" aria-hidden="true" />
           {submitting ? 'Adding...' : 'Add Verified Timestamp'}

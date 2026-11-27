@@ -410,7 +410,7 @@ export function AdminResourceManager() {
               type="button"
               onClick={() => void handleLookupMetadata()}
               disabled={lookupLoading || !rawUrl.trim()}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-2 text-xs font-semibold text-emerald-600 transition-colors hover:bg-emerald-500 hover:text-slate-950 dark:text-emerald-400 disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-brand/40 bg-brand/15 px-4 py-2 text-xs font-semibold text-brand transition-colors hover:bg-brand hover:text-brand-fg disabled:opacity-50"
             >
               {lookupLoading ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
@@ -617,7 +617,7 @@ export function AdminResourceManager() {
             <button
               type="submit"
               disabled={savingResource}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-4 py-2 text-xs font-semibold text-brand-fg transition-colors hover:brightness-110 disabled:opacity-60"
             >
               <Plus className="h-4 w-4" aria-hidden="true" />
               {savingResource ? 'Saving…' : 'Save & Attach Link'}
@@ -708,7 +708,7 @@ export function AdminResourceManager() {
                   <button
                     type="button"
                     onClick={() => handleImportCandidate(candidate)}
-                    className="shrink-0 rounded-lg border border-emerald-500/35 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-500 hover:bg-emerald-500 hover:text-slate-950 dark:text-emerald-400"
+                    className="shrink-0 rounded-lg border border-brand/35 bg-brand/10 px-2.5 py-1 text-[11px] font-semibold text-brand hover:bg-brand hover:text-brand-fg"
                   >
                     Use Link
                   </button>
@@ -735,7 +735,7 @@ export function AdminResourceManager() {
                 onClick={() => setStatusFilter(option.id)}
                 className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                   statusFilter === option.id
-                    ? 'bg-emerald-500 font-semibold text-slate-950'
+                    ? 'bg-brand font-semibold text-brand-fg'
                     : 'border border-terminal-border bg-terminal-surface text-terminal-muted hover:text-terminal-text'
                 }`}
               >
@@ -817,7 +817,7 @@ export function AdminResourceManager() {
                           onClick={() => void handleStatusChange(item.resource.id, btn.status)}
                           className={`rounded-md border px-2 py-0.5 text-[11px] font-medium transition-colors ${
                             active
-                              ? 'border-emerald-500 bg-emerald-500 font-semibold text-slate-950'
+                              ? 'border-brand bg-brand font-semibold text-brand-fg'
                               : btn.tone
                           }`}
                         >

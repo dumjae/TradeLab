@@ -54,7 +54,7 @@ function EquityCurve({ metrics }: { metrics: BacktestMetrics }) {
       aria-label="Equity curve"
       preserveAspectRatio="none"
     >
-      <path d={path} fill="none" stroke={positive ? '#10b981' : '#ef4444'} strokeWidth={2} />
+      <path d={path} fill="none" stroke={positive ? '#3ecf9a' : '#f2677a'} strokeWidth={2} />
     </svg>
   );
 }
@@ -175,7 +175,7 @@ export function BacktestMetricsPanel({
             type="button"
             onClick={() => onSave(notes)}
             disabled={saving}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3.5 py-2 text-xs font-semibold text-slate-950 hover:bg-emerald-400 disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-3.5 py-2 text-xs font-semibold text-brand-fg hover:brightness-110 disabled:opacity-60"
           >
             <Save className="h-3.5 w-3.5" aria-hidden="true" />
             {saving ? 'Saving…' : 'Save Session'}

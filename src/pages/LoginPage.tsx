@@ -402,7 +402,7 @@ export function LoginPage() {
                     <button
                       type="submit"
                       disabled={!isConfigured || submitting}
-                      className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-slate-950 transition-all hover:bg-emerald-400 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-brand-fg transition-all hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {submitting ? (
                         <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -436,7 +436,7 @@ export function LoginPage() {
                 <button
                   type="button"
                   onClick={() => handlePreviewEnter('learner')}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-4 py-3 text-xs font-semibold text-slate-950 transition-all hover:bg-emerald-400 active:scale-[0.99]"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-xs font-semibold text-brand-fg transition-all hover:brightness-110 active:scale-[0.99]"
                 >
                   <UserCheck className="h-4 w-4" aria-hidden="true" />
                   Enter as Learner (Normal View)

@@ -100,7 +100,7 @@ export function TimestampNavigator({
                 <span
                   className={`inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[11px] font-semibold tabular-nums ${
                     isActive
-                      ? 'border-emerald-500 bg-emerald-500 text-slate-950'
+                      ? 'border-brand bg-brand text-brand-fg'
                       : 'border-emerald-500/35 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                   }`}
                 >

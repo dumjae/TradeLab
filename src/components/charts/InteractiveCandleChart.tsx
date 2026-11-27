@@ -141,14 +141,14 @@ export function InteractiveCandleChart({
     let resizeObserver: ResizeObserver | null = null;
 
     try {
-      const bg = isDark ? '#1b1917' : '#fcfbf8';
-      const textColor = isDark ? '#a89f94' : '#6a6156';
-      const gridColor = isDark ? 'rgba(168, 159, 148, 0.08)' : 'rgba(106, 97, 86, 0.08)';
-      const borderColor = isDark ? '#332e29' : '#dfd8cc';
-      const bullCandle = isDark ? '#2e9e75' : '#1d7c59';
-      const bearCandle = isDark ? '#d85a52' : '#bf3f37';
-      const crosshairColor = isDark ? '#6e6459' : '#8c8175';
-      const crosshairLabelBg = isDark ? '#25221f' : '#1f1b17';
+      const bg = isDark ? '#132426' : '#fbf7ef';
+      const textColor = isDark ? '#8fa7a3' : '#4f6465';
+      const gridColor = isDark ? 'rgba(143, 167, 163, 0.09)' : 'rgba(79, 100, 101, 0.1)';
+      const borderColor = isDark ? '#26413f' : '#d9cdb8';
+      const bullCandle = isDark ? '#3ecf9a' : '#14805e';
+      const bearCandle = isDark ? '#f2677a' : '#c23a55';
+      const crosshairColor = isDark ? '#4a6664' : '#6f8785';
+      const crosshairLabelBg = isDark ? '#1b3033' : '#14282a';
 
       chart = createChart(container, {
         width: Math.max(container.clientWidth || 640, 280),
@@ -283,18 +283,18 @@ export function InteractiveCandleChart({
               O <strong className="text-terminal-text">{latestCandle.open}</strong>
             </span>
             <span className="text-terminal-muted">
-              H <strong className="text-[#1d7c59] dark:text-[#2e9e75]">{latestCandle.high}</strong>
+              H <strong className="text-[#14805e] dark:text-bull">{latestCandle.high}</strong>
             </span>
             <span className="text-terminal-muted">
-              L <strong className="text-[#bf3f37] dark:text-[#d85a52]">{latestCandle.low}</strong>
+              L <strong className="text-[#c23a55] dark:text-bear">{latestCandle.low}</strong>
             </span>
             <span className="text-terminal-muted">
               C{' '}
               <strong
                 className={
                   isPositive
-                    ? 'text-[#1d7c59] dark:text-[#2e9e75]'
-                    : 'text-[#bf3f37] dark:text-[#d85a52]'
+                    ? 'text-[#14805e] dark:text-bull'
+                    : 'text-[#c23a55] dark:text-bear'
                 }
               >
                 {latestCandle.close}
@@ -327,7 +327,7 @@ export function InteractiveCandleChart({
               return (
                 <div key={bar.time} className="flex h-full flex-col items-center justify-end gap-1">
                   <div
-                    className={`w-2.5 rounded-sm ${bullish ? 'bg-[#1d7c59] dark:bg-[#2e9e75]' : 'bg-[#bf3f37] dark:bg-[#d85a52]'}`}
+                    className={`w-2.5 rounded-sm ${bullish ? 'bg-[#14805e] dark:bg-bull' : 'bg-[#c23a55] dark:bg-bear'}`}
                     style={{ height: `${Math.round(bodyRatio * 100)}%` }}
                     title={`O:${bar.open} H:${bar.high} L:${bar.low} C:${bar.close}`}
                   />

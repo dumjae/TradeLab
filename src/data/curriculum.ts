@@ -6,6 +6,7 @@ import type {
   LessonStage,
 } from '../types/academy';
 import type { LessonResourceWithDetails } from '../types/visual-learning';
+import { deepLocalizeMarketTimes } from '../lib/marketTime';
 import { EXPANDED_LESSONS } from './expandedLessons';
 import { MARKET_TRACK_LESSONS } from './marketTrackLessons';
 import { VERIFIED_YOUTUBE_RESOURCES } from './verifiedVideos';
@@ -235,9 +236,9 @@ const CORE_LESSONS: Lesson[] = [
       caption:
         'Each Higher Low launches an impulsive leg that closes above the prior Swing High (BOS), advancing the bullish trend.',
       legend: [
-        { label: 'Impulsive Expansion Leg', colorToken: '#10b981' },
+        { label: 'Impulsive Expansion Leg', colorToken: '#3ecf9a' },
         { label: 'Controlled Retracement', colorToken: '#64748b' },
-        { label: 'Confirmed BOS Level', colorToken: '#38bdf8' },
+        { label: 'Confirmed BOS Level', colorToken: '#6cc4d6' },
       ],
       annotations: [
         { id: 'a1', label: 'SH1', sublabel: 'Initial Swing High', tone: 'neutral' },
@@ -561,9 +562,9 @@ const CORE_LESSONS: Lesson[] = [
       caption:
         'Institutional supply pairs with Buy-Side Liquidity above the range ceiling before driving price toward Sell-Side Liquidity below the floor.',
       legend: [
-        { label: 'Buy-Side Liquidity (BSL)', colorToken: '#f59e0b' },
-        { label: 'Sell-Side Liquidity (SSL)', colorToken: '#38bdf8' },
-        { label: 'Order-Flow Rotation', colorToken: '#ef4444' },
+        { label: 'Buy-Side Liquidity (BSL)', colorToken: '#e5b567' },
+        { label: 'Sell-Side Liquidity (SSL)', colorToken: '#6cc4d6' },
+        { label: 'Order-Flow Rotation', colorToken: '#f2677a' },
       ],
       annotations: [
         { id: 'l1', label: 'BSL Pool', sublabel: 'Short Stops + Breakout Buys', tone: 'liquidity' },
@@ -877,9 +878,9 @@ const CORE_LESSONS: Lesson[] = [
       caption:
         'Three closely aligned peaks build stacked stop-losses above EQH; a sharp sweep wick absorbs them before bearish displacement breaks structure.',
       legend: [
-        { label: 'Equal Highs (EQH) Zone', colorToken: '#f59e0b' },
-        { label: 'Sweep Wick Above EQH', colorToken: '#ef4444' },
-        { label: 'Bearish Displacement', colorToken: '#ef4444' },
+        { label: 'Equal Highs (EQH) Zone', colorToken: '#e5b567' },
+        { label: 'Sweep Wick Above EQH', colorToken: '#f2677a' },
+        { label: 'Bearish Displacement', colorToken: '#f2677a' },
       ],
       annotations: [
         { id: 'e1', label: 'EQH 1 & 2', sublabel: 'Retail Resistance Perception', tone: 'liquidity' },
@@ -1216,9 +1217,9 @@ const CORE_LESSONS: Lesson[] = [
       caption:
         'Left: Price wicks above Equal Highs, closes back below, and displaces downward (Sweep). Right: Price closes full-bodied above resistance, holds retest, and expands higher (True Breakout).',
       legend: [
-        { label: 'Liquidity / Resistance Line', colorToken: '#f59e0b' },
-        { label: 'Sweep Rejection & Bearish Shift', colorToken: '#ef4444' },
-        { label: 'Breakout Body Close & Retest Hold', colorToken: '#10b981' },
+        { label: 'Liquidity / Resistance Line', colorToken: '#e5b567' },
+        { label: 'Sweep Rejection & Bearish Shift', colorToken: '#f2677a' },
+        { label: 'Breakout Body Close & Retest Hold', colorToken: '#3ecf9a' },
       ],
       annotations: [
         { id: 'ls1', label: 'Sweep Wick', sublabel: 'Grabs Stops & Closes Back Inside', tone: 'bearish' },
@@ -1566,9 +1567,9 @@ const CORE_LESSONS: Lesson[] = [
       caption:
         'Strong bullish displacement leaves an unmitigated gap between Candle 1 High and Candle 3 Low; price revisits the 50% midpoint before expanding higher.',
       legend: [
-        { label: 'FVG Imbalance Zone', colorToken: '#10b981' },
-        { label: '50% Equilibrium Midpoint', colorToken: '#f59e0b' },
-        { label: 'Mitigation & Expansion', colorToken: '#38bdf8' },
+        { label: 'FVG Imbalance Zone', colorToken: '#3ecf9a' },
+        { label: '50% Equilibrium Midpoint', colorToken: '#e5b567' },
+        { label: 'Mitigation & Expansion', colorToken: '#6cc4d6' },
       ],
       annotations: [
         { id: 'f1', label: 'Candle 1 High', sublabel: 'Lower Boundary of Bullish FVG', tone: 'neutral' },
@@ -1892,9 +1893,9 @@ const CORE_LESSONS: Lesson[] = [
       caption:
         'Position size (Shares, Coins, Contracts, or Lots) scales directly to your structural SL (Stop Loss = 1R) so normal noise stays harmless while opposing liquidity delivers +3R.',
       legend: [
-        { label: 'TP (Take Profit Zone, +3R)', colorToken: '#10b981' },
-        { label: 'Planned Entry Level', colorToken: '#38bdf8' },
-        { label: 'Structural SL (Stop Loss, -1R)', colorToken: '#ef4444' },
+        { label: 'TP (Take Profit Zone, +3R)', colorToken: '#3ecf9a' },
+        { label: 'Planned Entry Level', colorToken: '#6cc4d6' },
+        { label: 'Structural SL (Stop Loss, -1R)', colorToken: '#f2677a' },
       ],
       annotations: [
         { id: 'r1', label: 'TP (Take Profit, +3R)', sublabel: 'Opposing Liquidity Target (3× Stop Width)', tone: 'bullish' },
@@ -2092,11 +2093,12 @@ const CORE_LESSONS: Lesson[] = [
   },
 ];
 
-export const CURRICULUM_LESSONS: Lesson[] = [
-  ...CORE_LESSONS,
-  ...EXPANDED_LESSONS,
-  ...MARKET_TRACK_LESSONS,
-].sort((a, b) => a.moduleOrder - b.moduleOrder);
+/** Single choke point: every NY-tagged time in lesson text is converted to PH time once, here. */
+export const CURRICULUM_LESSONS: Lesson[] = deepLocalizeMarketTimes(
+  [...CORE_LESSONS, ...EXPANDED_LESSONS, ...MARKET_TRACK_LESSONS].sort(
+    (a, b) => a.moduleOrder - b.moduleOrder,
+  ),
+);
 
 /**
  * Starter curated visual resources combining live-verified YouTube educational videos

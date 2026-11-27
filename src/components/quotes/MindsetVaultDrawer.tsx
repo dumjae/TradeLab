@@ -218,7 +218,7 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                   onClick={() => setCategory(item.id)}
                   className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition-colors ${
                     category === item.id
-                      ? 'bg-emerald-500 text-slate-950 font-semibold'
+                      ? 'bg-brand text-brand-fg font-semibold'
                       : 'border border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
                   }`}
                 >
@@ -328,7 +328,7 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-lg bg-emerald-500 px-3.5 py-1.5 text-xs font-semibold text-slate-950 hover:bg-emerald-400 disabled:opacity-60"
+                  className="rounded-lg bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-fg hover:brightness-110 disabled:opacity-60"
                 >
                   {submitting ? 'Saving...' : 'Save Personal Rule'}
                 </button>
@@ -469,7 +469,7 @@ export function MindsetVaultDrawer({ isOpen, onClose }: MindsetVaultDrawerProps)
                           <button
                             type="button"
                             onClick={() => void handleSaveReflection(quote.id)}
-                            className="rounded-md bg-emerald-500 px-2.5 py-1 text-[11px] font-semibold text-slate-950"
+                            className="rounded-md bg-brand px-2.5 py-1 text-[11px] font-semibold text-brand-fg"
                           >
                             Save Reflection
                           </button>

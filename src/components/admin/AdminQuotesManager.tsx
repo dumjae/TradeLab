@@ -244,7 +244,7 @@ export function AdminQuotesManager() {
         <button
           type="submit"
           disabled={saving}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 hover:bg-emerald-400 disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-4 py-2 text-xs font-semibold text-brand-fg hover:brightness-110 disabled:opacity-60"
         >
           <Plus className="h-4 w-4" aria-hidden="true" />
           {saving ? 'Publishing…' : 'Publish Quote'}

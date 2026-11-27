@@ -81,7 +81,7 @@ export function LibraryPage({ onOpenVault }: LibraryPageProps) {
           onClick={() => setActiveTab('saved')}
           className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-colors ${
             activeTab === 'saved'
-              ? 'bg-emerald-500 text-slate-950'
+              ? 'bg-brand text-brand-fg'
               : 'border border-terminal-border bg-terminal-surface text-terminal-muted hover:text-terminal-text'
           }`}
         >

@@ -15,14 +15,15 @@ const config: Config = {
           muted: 'var(--tl-muted)',
         },
         brand: {
-          DEFAULT: 'var(--tl-brand)',
+          DEFAULT: 'rgb(var(--tl-brand-rgb) / <alpha-value>)',
           soft: 'var(--tl-brand-soft)',
           fg: 'var(--tl-brand-fg)',
         },
-        bull: '#2E9E75',
-        bear: '#D85A52',
+        bull: '#3ecf9a',
+        bear: '#f2677a',
+        info: '#6cc4d6',
         amber: {
-          wisdom: '#D69B38',
+          wisdom: '#e5b567',
         },
       },
       fontFamily: {

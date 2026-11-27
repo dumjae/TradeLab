@@ -187,10 +187,10 @@ export function OnboardingModal({
 
         {/* Step Indicator */}
         <div className="mt-4 grid grid-cols-2 gap-2" aria-hidden="true">
-          <div className="h-1.5 rounded-full bg-emerald-500" />
+          <div className="h-1.5 rounded-full bg-brand" />
           <div
             className={`h-1.5 rounded-full transition-colors ${
-              step === 2 ? 'bg-emerald-500' : 'bg-terminal-elevated'
+              step === 2 ? 'bg-brand' : 'bg-terminal-elevated'
             }`}
           />
         </div>
@@ -226,7 +226,7 @@ export function OnboardingModal({
                       aria-hidden="true"
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
                         selected
-                          ? 'border-emerald-500 bg-emerald-500 text-slate-950'
+                          ? 'border-brand bg-brand text-brand-fg'
                           : 'border-terminal-border text-transparent'
                       }`}
                     >
@@ -297,7 +297,7 @@ export function OnboardingModal({
             <button
               type="button"
               onClick={() => setStep(2)}
-              className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400"
+              className="inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-semibold text-brand-fg transition-colors hover:brightness-110"
             >
               Next
               <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -307,7 +307,7 @@ export function OnboardingModal({
               type="button"
               onClick={() => void handleSave()}
               disabled={saving}
-              className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-semibold text-brand-fg transition-colors hover:brightness-110 disabled:opacity-60"
             >
               <Check className="h-3.5 w-3.5" aria-hidden="true" />
               {saving ? 'Saving...' : 'Save Track'}

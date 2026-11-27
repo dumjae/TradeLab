@@ -135,7 +135,7 @@ export function AuthCallbackPage() {
             </p>
             <Link
               to="/login"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-4 py-3 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-xs font-semibold text-brand-fg transition-colors hover:brightness-110"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
               Go to Sign In

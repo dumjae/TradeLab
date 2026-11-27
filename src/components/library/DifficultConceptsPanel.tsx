@@ -172,7 +172,7 @@ export function DifficultConceptsPanel({
                     <button
                       type="button"
                       onClick={() => void handleMarkMastered(concept.id)}
-                      className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1.5 text-xs font-semibold text-emerald-400 transition-colors hover:bg-emerald-500 hover:text-slate-950"
+                      className="inline-flex items-center gap-1 rounded-lg border border-brand/40 bg-brand/10 px-2.5 py-1.5 text-xs font-semibold text-brand transition-colors hover:bg-brand hover:text-brand-fg"
                     >
                       <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
                       Mark as Mastered

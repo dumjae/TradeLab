@@ -47,7 +47,7 @@ export function ReplayControlsBar({
             onClick={onTogglePlay}
             disabled={atEnd}
             aria-label={playing ? 'Pause replay' : 'Play replay'}
-            className={`${buttonBase} border-emerald-500/40 bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500 hover:text-slate-950`}
+            className={`${buttonBase} border-brand/40 bg-brand/15 text-brand hover:bg-brand hover:text-brand-fg`}
           >
             {playing ? (
               <Pause className="h-3.5 w-3.5" aria-hidden="true" />

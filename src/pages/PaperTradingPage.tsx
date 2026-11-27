@@ -494,7 +494,7 @@ export function PaperTradingPage() {
         id: `${pos.id}-entry`,
         price: pos.entryPrice,
         title: `${prefix}Entry (${pos.direction === 'long' ? 'Long' : 'Short'})`,
-        color: '#0ea5e9',
+        color: '#6cc4d6',
         lineStyle: pos.status === 'pending' ? 'dotted' : 'solid',
         role: 'entry',
       });
@@ -502,7 +502,7 @@ export function PaperTradingPage() {
         id: `${pos.id}-sl`,
         price: pos.stopLoss,
         title: pos.movedToBreakeven ? 'BE (Breakeven)' : 'SL (Stop Loss)',
-        color: '#D85A52',
+        color: '#f2677a',
         lineStyle: 'dashed',
         role: 'stop_loss',
       });
@@ -511,7 +511,7 @@ export function PaperTradingPage() {
           id: `${pos.id}-tp`,
           price: pos.takeProfit,
           title: 'TP (Take Profit)',
-          color: '#2E9E75',
+          color: '#3ecf9a',
           lineStyle: 'dashed',
           role: 'take_profit',
         });

@@ -1,3 +1,5 @@
+import { deepLocalizeMarketTimes } from '../lib/marketTime';
+
 export interface BilingualCopy {
   en: string;
   taglish: string;
@@ -12,7 +14,7 @@ export interface LessonTaglishSummary {
   }>;
 }
 
-export const LESSON_TAGLISH_SUMMARIES: Record<string, LessonTaglishSummary> = {
+const RAW_LESSON_TAGLISH_SUMMARIES: Record<string, LessonTaglishSummary> = {
   'candlestick-anatomy': {
     plainSummary:
       'Ang bawat candlestick ay parang mini-kwento ng laban ng buyers at sellers sa isang time period. Ipinapakita nito ang OHLC (Open, High, Low, Close) — ang makapal na body ang totoong panalo, habang ang manipis na wick ang rejection.',
@@ -441,7 +443,7 @@ export const LESSON_TAGLISH_SUMMARIES: Record<string, LessonTaglishSummary> = {
   },
 };
 
-export const UI_COPY = {
+const RAW_UI_COPY = {
   nav: {
     dashboard: { en: 'Dashboard', taglish: 'Dashboard' },
     academy: { en: 'Academy', taglish: 'Academy (Aralin)' },
@@ -651,3 +653,8 @@ export const UI_COPY = {
     indicesTrack: { en: 'Indices Track', taglish: 'Indices Track' },
   },
 } as const satisfies Record<string, Record<string, BilingualCopy>>;
+
+export const LESSON_TAGLISH_SUMMARIES: Record<string, LessonTaglishSummary> =
+  deepLocalizeMarketTimes(RAW_LESSON_TAGLISH_SUMMARIES);
+
+export const UI_COPY = deepLocalizeMarketTimes(RAW_UI_COPY);

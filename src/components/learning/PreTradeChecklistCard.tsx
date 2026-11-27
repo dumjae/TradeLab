@@ -146,7 +146,7 @@ export function PreTradeChecklistCard() {
                 aria-hidden="true"
                 className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors ${
                   isChecked
-                    ? 'border-emerald-500 bg-emerald-500 text-slate-950'
+                    ? 'border-brand bg-brand text-brand-fg'
                     : 'border-terminal-border bg-terminal-surface text-transparent'
                 }`}
               >

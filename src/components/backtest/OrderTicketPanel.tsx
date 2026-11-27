@@ -159,7 +159,7 @@ export function OrderTicketPanel({
                 onClick={() => onRiskPercentChange(preset)}
                 className={`rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-medium transition-colors ${
                   riskPercent === preset
-                    ? 'border-emerald-500 bg-emerald-500 text-slate-950'
+                    ? 'border-brand bg-brand text-brand-fg'
                     : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
                 }`}
               >
@@ -308,7 +308,7 @@ export function OrderTicketPanel({
 
         <button
           type="submit"
-          className="w-full rounded-2xl bg-emerald-500 px-4 py-2.5 text-xs font-semibold text-slate-950 shadow-sm transition-all hover:bg-emerald-400 active:scale-[0.99]"
+          className="w-full rounded-2xl bg-brand px-4 py-2.5 text-xs font-semibold text-brand-fg shadow-sm transition-all hover:brightness-110 active:scale-[0.99]"
         >
           Execute Market Order
         </button>

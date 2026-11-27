@@ -139,7 +139,7 @@ export function AssetSelectorBar({
               onClick={() => onAssetClassChange(tab.id)}
               className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${
                 assetClass === tab.id
-                  ? 'bg-emerald-500 text-slate-950 shadow-sm'
+                  ? 'bg-brand text-brand-fg shadow-sm'
                   : 'border border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
               }`}
             >

@@ -221,7 +221,7 @@ export function JournalPage() {
             className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold shadow-sm transition-all ${
               formOpen
                 ? 'border border-terminal-border bg-terminal-bg text-terminal-text hover:border-rose-500/40'
-                : 'bg-emerald-500 text-slate-950 hover:bg-emerald-400 active:scale-[0.98]'
+                : 'bg-brand text-brand-fg hover:brightness-110 active:scale-[0.98]'
             }`}
           >
             {formOpen ? (
@@ -386,7 +386,7 @@ export function JournalPage() {
                     onClick={() => setDirection('long')}
                     className={`rounded-xl py-1.5 text-xs font-semibold transition-colors ${
                       direction === 'long'
-                        ? 'bg-emerald-500 text-slate-950'
+                        ? 'bg-brand text-brand-fg'
                         : 'text-terminal-muted hover:text-terminal-text'
                     }`}
                   >
@@ -513,7 +513,7 @@ export function JournalPage() {
                       className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
                         selected
                           ? item.isDisciplined
-                            ? 'border-emerald-500 bg-emerald-500 font-semibold text-slate-950'
+                            ? 'border-brand bg-brand font-semibold text-brand-fg'
                             : 'border-amber-500 bg-amber-500 font-semibold text-slate-950'
                           : 'border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text'
                       }`}
@@ -588,7 +588,7 @@ export function JournalPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-5 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400 disabled:opacity-60"
+                className="inline-flex items-center gap-1.5 rounded-full bg-brand px-5 py-2 text-xs font-semibold text-brand-fg transition-colors hover:brightness-110 disabled:opacity-60"
               >
                 <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
                 {submitting ? 'Saving...' : 'Save Trade'}
@@ -611,7 +611,7 @@ export function JournalPage() {
           onClick={() => setActiveTab('entries')}
           className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
             activeTab === 'entries'
-              ? 'bg-emerald-500 text-slate-950'
+              ? 'bg-brand text-brand-fg'
               : 'text-terminal-muted hover:text-terminal-text'
           }`}
         >
@@ -625,7 +625,7 @@ export function JournalPage() {
           onClick={() => setActiveTab('insights')}
           className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
             activeTab === 'insights'
-              ? 'bg-emerald-500 text-slate-950'
+              ? 'bg-brand text-brand-fg'
               : 'text-terminal-muted hover:text-terminal-text'
           }`}
         >
@@ -639,7 +639,7 @@ export function JournalPage() {
           onClick={() => setActiveTab('checklist')}
           className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
             activeTab === 'checklist'
-              ? 'bg-emerald-500 text-slate-950'
+              ? 'bg-brand text-brand-fg'
               : 'text-terminal-muted hover:text-terminal-text'
           }`}
         >
@@ -664,7 +664,7 @@ export function JournalPage() {
               <button
                 type="button"
                 onClick={() => setFormOpen(true)}
-                className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-400"
+                className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-semibold text-brand-fg transition-colors hover:brightness-110"
               >
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                 Log First Trade
@@ -865,7 +865,7 @@ export function JournalPage() {
                   <div className="flex items-center gap-2">
                     <div className="h-1.5 w-20 overflow-hidden rounded-full bg-terminal-elevated">
                       <div
-                        className="h-full rounded-full bg-emerald-500"
+                        className="h-full rounded-full bg-brand"
                         style={{ width: `${Math.min(100, Math.max(0, stat.winRate))}%` }}
                       />
                     </div>

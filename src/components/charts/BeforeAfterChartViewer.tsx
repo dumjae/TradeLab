@@ -92,7 +92,7 @@ export function BeforeAfterChartViewer({
                   onClick={() => setStage(item.id)}
                   className={`rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
                     active
-                      ? 'bg-emerald-500 text-slate-950 font-semibold'
+                      ? 'bg-brand text-brand-fg font-semibold'
                       : 'text-terminal-muted hover:text-terminal-text'
                   }`}
                 >

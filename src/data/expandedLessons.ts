@@ -133,8 +133,8 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Green candle: opens at the bottom of the body and closes at the top. Red candle: opens at the top of the body and closes at the bottom. Thin wicks mark the highest and lowest prices reached before the timer ended.',
       legend: [
-        { label: 'Green Body (Buyers Won: Close > Open)', colorToken: '#10b981' },
-        { label: 'Red Body (Sellers Won: Close < Open)', colorToken: '#ef4444' },
+        { label: 'Green Body (Buyers Won: Close > Open)', colorToken: '#3ecf9a' },
+        { label: 'Red Body (Sellers Won: Close < Open)', colorToken: '#f2677a' },
         { label: 'Upper & Lower Wicks (Highest / Lowest Touched)', colorToken: '#94a3b8' },
       ],
       annotations: [
@@ -437,9 +437,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Strong green candles launching out of a compact base create a fresh Demand Zone; breaking cleanly above Resistance flips that former ceiling into a new Support floor.',
       legend: [
-        { label: 'Supply / Resistance Ceiling (Sellers)', colorToken: '#ef4444' },
-        { label: 'Demand / Support Floor (Buyers)', colorToken: '#10b981' },
-        { label: 'Role Reversal (Broken Ceiling → New Floor)', colorToken: '#38bdf8' },
+        { label: 'Supply / Resistance Ceiling (Sellers)', colorToken: '#f2677a' },
+        { label: 'Demand / Support Floor (Buyers)', colorToken: '#3ecf9a' },
+        { label: 'Role Reversal (Broken Ceiling → New Floor)', colorToken: '#6cc4d6' },
       ],
       annotations: [
         { id: 'sr1', label: 'Demand Base', sublabel: 'Small Pause Before Fast Rally', tone: 'bullish' },
@@ -743,9 +743,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'After a final down candle sweeps lows (Order Block), fast green candles close above the last Lower High (Change of Character). Waiting for the gentle pullback into the Order Block gives a low-risk entry.',
       legend: [
-        { label: 'Bullish Order Block (Last Red Launchpad Candle)', colorToken: '#10b981' },
-        { label: 'Change of Character (First U-Turn Close)', colorToken: '#38bdf8' },
-        { label: 'Stop-Grab Sweep Before Launch', colorToken: '#f59e0b' },
+        { label: 'Bullish Order Block (Last Red Launchpad Candle)', colorToken: '#3ecf9a' },
+        { label: 'Change of Character (First U-Turn Close)', colorToken: '#6cc4d6' },
+        { label: 'Stop-Grab Sweep Before Launch', colorToken: '#e5b567' },
       ],
       annotations: [
         { id: 'ob1', label: 'Order Block', sublabel: 'Last Red Candle Sweeping Low', tone: 'bullish' },
@@ -1047,9 +1047,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Left panel: 4-Hour uptrend pulls back below the 50% halfway line into a fresh Demand floor. Right panel: Zooming into the 5-Minute chart inside that floor reveals the exact U-turn (Change of Character) for a tight-stop entry.',
       legend: [
-        { label: '4-Hour Big-Picture Uptrend', colorToken: '#10b981' },
+        { label: '4-Hour Big-Picture Uptrend', colorToken: '#3ecf9a' },
         { label: '5-Minute Pullback Into Discount Zone', colorToken: '#94a3b8' },
-        { label: '5-Minute U-Turn Entry Trigger', colorToken: '#38bdf8' },
+        { label: '5-Minute U-Turn Entry Trigger', colorToken: '#6cc4d6' },
       ],
       annotations: [
         { id: 'mtf1', label: '4H Trend', sublabel: 'Overall Direction = UP', tone: 'bullish' },
@@ -1262,7 +1262,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
     conceptKey: 'forex-sessions-killzones',
     estimatedMinutes: 18,
     learningObjectives: [
-      'Map the three daily Forex sessions in New York time: Asian Quiet Box, London Rush Hour, and New York Rush Hour.',
+      'Map the three daily Forex sessions across the trading day: Asian Quiet Box, London Rush Hour, and New York Rush Hour.',
       'Spot the 3-step Power of 3 cycle (Quiet Box → Fake Move → Real Move) on major pairs like EUR/USD and GBP/USD.',
       'Check the US Dollar Index (DXY) and avoid accidentally doubling your risk across twin USD pairs.',
       'Stay safely out of sudden news spikes during major economic reports like Consumer Price Index (inflation) and Non-Farm Payrolls (jobs).',
@@ -1340,7 +1340,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
           'Wait 10–15 Minutes After News: Right at 8:30 AM New York time on major news days, broker spreads can widen wildly and slip right past tight stops. Watch hands-off and trade calmly once spreads settle.',
         ],
         keyTakeaway:
-          'Focus on 1 or 2 liquid pairs, never double up on twin USD trades, and never gamble right into an 8:30 AM major news spike.',
+          'Focus on 1 or 2 liquid pairs, never double up on twin USD trades, and never gamble right into an 8:30 AM ET major news spike.',
       },
     ],
     diagramConfig: {
@@ -1351,8 +1351,8 @@ export const EXPANDED_LESSONS: Lesson[] = [
         'Asian session builds a tight overnight box; London or New York Killzone sweeps stops just outside one edge (Manipulation) before delivering a smooth directional move to the opposite edge.',
       legend: [
         { label: 'Asian Quiet Box (Accumulation)', colorToken: '#94a3b8' },
-        { label: 'London / NY Fake Sweep (Manipulation)', colorToken: '#f59e0b' },
-        { label: 'Real Rush-Hour Trend (Distribution)', colorToken: '#10b981' },
+        { label: 'London / NY Fake Sweep (Manipulation)', colorToken: '#e5b567' },
+        { label: 'Real Rush-Hour Trend (Distribution)', colorToken: '#3ecf9a' },
       ],
       annotations: [
         { id: 'fx1', label: 'Asian Box', sublabel: '8 PM–12 AM NY Quiet Range', tone: 'neutral' },
@@ -1449,7 +1449,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
           'Protect your account from day one by cutting these three habits.',
         steps: [
           'Mistake 1: Risking 1% ($100) long on EUR/USD AND 1% ($100) long on GBP/USD at the same time — secretly doubling your Dollar risk to $200.',
-          'Mistake 2: Holding a tight stop straight through an 8:30 AM inflation (CPI) or jobs (NFP) announcement where spreads jump wildly.',
+          'Mistake 2: Holding a tight stop straight through an 8:30 AM ET inflation (CPI) or jobs (NFP) announcement where spreads jump wildly.',
           'Mistake 3: Forcing random trades late in the afternoon because you missed the morning Killzone.',
         ],
         keyTakeaway:
@@ -1546,12 +1546,12 @@ export const EXPANDED_LESSONS: Lesson[] = [
       {
         question: 'Why does price go crazy at exactly 9:30 AM New York time?',
         answer:
-          'At 9:30 AM sharp, the New York Stock Exchange and NASDAQ open for live trading. Millions of overnight buy and sell orders all execute in the exact same first 60 seconds, causing wild up-and-down spikes that knock out impatient traders on BOTH sides.',
+          'At 9:30 AM ET sharp, the New York Stock Exchange and NASDAQ open for live trading. Millions of overnight buy and sell orders all execute in the exact same first 60 seconds, causing wild up-and-down spikes that knock out impatient traders on BOTH sides.',
       },
       {
         question: 'What is "SMT Divergence" in simple English?',
         answer:
-          'SMT stands for Smart Money Technique. Because NAS100 and SPX500/US30 are siblings tracking the same US economy, they usually hit new highs together. If NAS100 spikes to a brand-new high at 9:35 AM while SPX500 FAILS to break its high, that crack between siblings warns that big buyers are quietly stepping out!',
+          'SMT stands for Smart Money Technique. Because NAS100 and SPX500/US30 are siblings tracking the same US economy, they usually hit new highs together. If NAS100 spikes to a brand-new high at 9:35 AM ET while SPX500 FAILS to break its high, that crack between siblings warns that big buyers are quietly stepping out!',
       },
       {
         question: 'Why do beginners blow accounts so fast on NAS100?',
@@ -1567,7 +1567,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
     estimatedMinutes: 19,
     learningObjectives: [
       'Stay hands-off during the wild 9:30–9:35 AM New York opening bell stampede and wait for a clean 5-minute candle close.',
-      'Mark Pre-Market High and Pre-Market Low (4:00 AM–9:30 AM extremes) as primary morning liquidity targets.',
+      'Mark Pre-Market High and Pre-Market Low (4:00 AM–9:30 AM ET extremes) as primary morning liquidity targets.',
       'Spot Smart Money Technique (SMT) Divergence when sibling US indices stop moving in lockstep at a major high or low.',
       'Shrink contract/lot size mathematically for wider index stops so your $10,000 account STILL risks strictly 1% ($100).',
     ],
@@ -1582,15 +1582,15 @@ export const EXPANDED_LESSONS: Lesson[] = [
         definition:
           'The exact minute US stock exchanges open for the day, releasing massive institutional volume that creates rapid stop-grabs and morning trends.',
         example:
-          'NAS100 jumping 35 points above its morning high at 9:31 AM, then reversing 100 points downward by 10:00 AM.',
+          'NAS100 jumping 35 points above its morning high at 9:31 AM ET, then reversing 100 points downward by 10:00 AM ET.',
       },
       {
         term: 'Pre-Market High & Low',
         shortCode: 'PMH / PML',
         definition:
-          'The highest and lowest prices printed between 4:00 AM and 9:30 AM New York time before the cash bell rings — prime magnets right after 9:30 AM.',
+          'The highest and lowest prices printed between 4:00 AM ET and 9:30 AM ET before the cash bell rings — prime magnets right after 9:30 AM ET.',
         example:
-          'Drawing two clean lines on NAS100’s Pre-Market High and Pre-Market Low at 9:15 AM before the bell.',
+          'Drawing two clean lines on NAS100’s Pre-Market High and Pre-Market Low at 9:15 AM ET before the bell.',
       },
       {
         term: 'Smart Money Technique (SMT) Divergence',
@@ -1598,7 +1598,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
         definition:
           'A warning clue when two sibling US indices disagree at a turning point — for example, NAS100 pokes to a new high while SPX500 or US30 makes a lower peak.',
         example:
-          'At 9:35 AM, NAS100 pokes above its Pre-Market High while US30 fails to reach its own Pre-Market High — warning of a reversal down.',
+          'At 9:35 AM ET, NAS100 pokes above its Pre-Market High while US30 fails to reach its own Pre-Market High — warning of a reversal down.',
       },
       {
         term: 'Average True Range (Candle Speed)',
@@ -1612,12 +1612,12 @@ export const EXPANDED_LESSONS: Lesson[] = [
     sections: [
       {
         id: 'idx-sec-1',
-        heading: 'Surviving the 9:30 AM Opening Bell (Sit on Your Hands for 5 Minutes!)',
-        body: 'Imagine Black Friday doors flying open at 9:30 AM sharp — everyone pushes blindly in the doorway for three minutes. Clicking buy or sell at 9:30:05 AM on NAS100 or US30 is pure coin-flip gambling. Pros wait calmly for the doorway stampede to clear.',
+        heading: 'Surviving the 9:30 AM ET Opening Bell (Sit on Your Hands for 5 Minutes!)',
+        body: 'Imagine Black Friday doors flying open at 9:30 AM ET sharp — everyone pushes blindly in the doorway for three minutes. Clicking buy or sell five seconds into the 9:30 AM ET open on NAS100 or US30 is pure coin-flip gambling. Pros wait calmly for the doorway stampede to clear.',
         bulletPoints: [
-          '9:15 AM Prep: Mark Pre-Market High (PMH), Pre-Market Low (PML), and Yesterday’s High/Low so you know exactly where resting stops sit.',
-          '9:30–9:35 AM Hands Off: Watch price spike toward Pre-Market High or Low WITHOUT clicking any button. Let the opening stop-run finish!',
-          '9:35–10:30 AM Execution Window: Enter ONLY after a 5-minute candle closes cleanly — confirming either a sweep reversal back inside OR a solid full-body breakout holding strong.',
+          '9:15 AM ET Prep: Mark Pre-Market High (PMH), Pre-Market Low (PML), and Yesterday’s High/Low so you know exactly where resting stops sit.',
+          '9:30–9:35 AM ET Hands Off: Watch price spike toward Pre-Market High or Low WITHOUT clicking any button. Let the opening stop-run finish!',
+          '9:35–10:30 AM ET Execution Window: Enter ONLY after a 5-minute candle closes cleanly — confirming either a sweep reversal back inside OR a solid full-body breakout holding strong.',
         ],
         keyTakeaway:
           'Waiting just 5 to 15 minutes after 9:30 AM New York time saves you from 80% of painful index whipsaws.',
@@ -1625,7 +1625,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
       {
         id: 'idx-sec-2',
         heading: 'Smart Money Technique (SMT) Divergence: Catching Cracks Between Sibling Indices',
-        body: 'Keep NAS100 and SPX500 (or US30) side by side on your screen at 9:30 AM. Because they are closely related baskets of US stocks, watching when they STOP agreeing gives you a huge edge:',
+        body: 'Keep NAS100 and SPX500 (or US30) side by side on your screen at 9:30 AM ET. Because they are closely related baskets of US stocks, watching when they STOP agreeing gives you a huge edge:',
         bulletPoints: [
           'Bearish Crack (Reversal Down Warning): NAS100 spikes to a fresh Higher High above Pre-Market High, while SPX500 or US30 stays weaker and prints a Lower High.',
           'Bullish Crack (Reversal Up Warning): US30 dips to a Lower Low under Pre-Market Low, while NAS100 refuses to drop as far and holds a Higher Low.',
@@ -1639,34 +1639,34 @@ export const EXPANDED_LESSONS: Lesson[] = [
         heading: 'Respecting Index Speed, Sizing Down & Skipping Lunch Chop',
         body: 'Beginners love NAS100 because it moves fast — until that exact same speed blows up their account. Here is how to keep risk tiny and boring:',
         bulletPoints: [
-          'Real Dollar Math ($10,000 Account, 1% = $100 Max Risk): Suppose on a quiet day your stop is 10 points wide, so you trade $10 per point (10 × $10 = $100 risk). If today’s 9:30 AM candles are wild and your safe stop needs to be 40 points wide, simply cut your size to $2.50 per point (40 × $2.50 = STILL exactly $100 risk!).',
+          'Real Dollar Math ($10,000 Account, 1% = $100 Max Risk): Suppose on a quiet day your stop is 10 points wide, so you trade $10 per point (10 × $10 = $100 risk). If today’s 9:30 AM ET candles are wild and your safe stop needs to be 40 points wide, simply cut your size to $2.50 per point (40 × $2.50 = STILL exactly $100 risk!).',
           'Never Shrink a Safe Stop to Trade Bigger: Putting an arbitrary 8-point stop inside 25-point candles is donating money to normal market noise.',
-          'Close Charts Before Lunch (11:30 AM New York time): Between 12:00 PM and 1:30 PM New York time (lunch hour), volume drops and NAS100 turns into choppy sideways noise that eats morning profits.',
+          'Close Charts Before Lunch (11:30 AM New York time): Between 12:00 PM ET and 1:30 PM ET (NY lunch hour), volume drops and NAS100 turns into choppy sideways noise that eats morning profits.',
         ],
         keyTakeaway:
-          'Wider index swings require SMALLER position sizes — never tighter stops — and a strict 11:30 AM morning cutoff.',
+          'Wider index swings require SMALLER position sizes — never tighter stops — and a strict 11:30 AM ET cutoff.',
       },
     ],
     diagramConfig: {
       kind: 'market_sessions',
-      title: 'US Indices Morning Timeline: Pre-Market → 9:30 AM Stampede → 10:00 AM Move',
-      subtitle: 'Visualizing Pre-Market High/Low sweeps, 9:30 AM volatility, and the 12:00 PM lunch chop zone',
+      title: 'US Indices Morning Timeline: Pre-Market → 9:30 AM ET Stampede → 10:00 AM ET Move',
+      subtitle: 'Visualizing Pre-Market High/Low sweeps, 9:30 AM ET volatility, and the 12:00 PM ET lunch chop zone',
       caption:
-        'Mark Pre-Market High/Low before 9:30 AM, stay hands-off during the opening 5-minute spike, trade the confirmed 9:35–11:00 AM trend or reversal, and step away during NY lunch chop.',
+        'Mark Pre-Market High/Low before 9:30 AM ET, stay hands-off during the opening 5-minute spike, trade the confirmed 9:35–11:00 AM ET trend or reversal, and step away during NY lunch chop.',
       legend: [
         { label: 'Pre-Market Range (4:00–9:30 AM NY)', colorToken: '#94a3b8' },
-        { label: '9:30 AM Opening Sweep Spike', colorToken: '#f59e0b' },
-        { label: '9:35–11:00 AM Real Morning Move', colorToken: '#10b981' },
+        { label: '9:30 AM ET Opening Sweep Spike', colorToken: '#e5b567' },
+        { label: '9:35–11:00 AM ET Real Morning Move', colorToken: '#3ecf9a' },
       ],
       annotations: [
         { id: 'idx1', label: 'PMH / PML', sublabel: 'Pre-Market Stop Targets', tone: 'liquidity' },
-        { id: 'idx2', label: '9:30 Bell', sublabel: 'Hands-Off Opening Stampede', tone: 'bearish' },
-        { id: 'idx3', label: '9:40–10:30', sublabel: 'Prime Execution + SMT Check', tone: 'bullish' },
-        { id: 'idx4', label: '12 PM Lunch', sublabel: 'Low-Volume Chop — Stop', tone: 'neutral' },
+        { id: 'idx2', label: '9:30 AM ET Bell', sublabel: 'Hands-Off Opening Stampede', tone: 'bearish' },
+        { id: 'idx3', label: '9:40–10:30 AM ET', sublabel: 'Prime Execution + SMT Check', tone: 'bullish' },
+        { id: 'idx4', label: '12 PM ET Lunch', sublabel: 'Low-Volume Chop — Stop', tone: 'neutral' },
       ],
       walkthroughSteps: [
         'Draw Pre-Market High, Pre-Market Low, and Yesterday’s High/Low by 9:15 AM New York time.',
-        'Keep hands off the mouse from 9:30–9:35 AM while opening orders sweep obvious stops.',
+        'Keep hands off the mouse from 9:30–9:35 AM ET while opening orders sweep obvious stops.',
         'Check sibling indices (NAS100 vs. SPX500/US30) for SMT Divergence or unified breakout strength, then size down to keep risk strictly at 1%.',
       ],
     },
@@ -1674,16 +1674,16 @@ export const EXPANDED_LESSONS: Lesson[] = [
     fallbackExplanations: {
       beginner_friendly: {
         style: 'beginner_friendly',
-        headline: 'Let the 9:30 AM Opening Bell Stampede Clear First',
+        headline: 'Let the 9:30 AM ET Opening Bell Stampede Clear First',
         summary:
-          'When the New York stock market bell rings at 9:30 AM, NAS100 and US30 bounce violently in both directions for a few minutes. Simply waiting 5 to 15 minutes lets the fake spike finish so you can step calmly onto the real morning wave.',
+          'When the New York stock market bell rings at 9:30 AM ET, NAS100 and US30 bounce violently in both directions for a few minutes. Simply waiting 5 to 15 minutes lets the fake spike finish so you can step calmly onto the real morning wave.',
         steps: [
-          'Mark Pre-Market High and Pre-Market Low before 9:30 AM.',
+          'Mark Pre-Market High and Pre-Market Low before 9:30 AM ET.',
           'Do NOT click buy or sell during the chaotic first 3–5 minutes.',
           'Cut your trade size down so a wider, safe stop-loss still risks only 1% ($100 on a $10,000 account).',
         ],
         keyTakeaway:
-          'Ten minutes of patience at 9:30 AM protects you from 80% of painful index whipsaws.',
+          'Ten minutes of patience at 9:30 AM ET protects you from 80% of painful index whipsaws.',
         practiceSafeHint:
           'Check whether the 5-minute candle closed back inside the pre-market level or broke cleanly outside.',
       },
@@ -1693,28 +1693,28 @@ export const EXPANDED_LESSONS: Lesson[] = [
         summary:
           'Follow this calm four-step morning clock for NAS100 and US30.',
         steps: [
-          '9:15 AM: Mark Pre-Market High/Low and Yesterday’s High/Low on both NAS100 and SPX500/US30.',
-          '9:30–9:35 AM: Hands off — watch which boundary gets swept first and check if sibling indices disagree (SMT).',
-          '9:40–10:45 AM: Enter after a clean 5-minute close confirms a sweep reversal or accepted trend breakout.',
-          '11:30 AM: Wrap up before sleepy New York lunch chop arrives at noon.',
+          '9:15 AM ET: Mark Pre-Market High/Low and Yesterday’s High/Low on both NAS100 and SPX500/US30.',
+          '9:30–9:35 AM ET: Hands off — watch which boundary gets swept first and check if sibling indices disagree (SMT).',
+          '9:40–10:45 AM ET: Enter after a clean 5-minute close confirms a sweep reversal or accepted trend breakout.',
+          '11:30 AM ET: Wrap up before sleepy New York lunch chop arrives at 12:00 PM ET.',
         ],
         keyTakeaway:
-          'One clean 9:45 AM setup earns more than ten frantic 9:31 AM guesses.',
+          'One clean 9:45 AM ET setup earns more than ten frantic 9:31 AM ET guesses.',
         practiceSafeHint:
           'Observe both candle-close confirmation and sibling index alignment.',
       },
       real_chart_example: {
         style: 'real_chart_example',
-        headline: 'NAS100 9:35 AM Pre-Market High Sweep & Reversal',
+        headline: 'NAS100 9:35 AM ET Pre-Market High Sweep & Reversal',
         summary:
-          'Picture NAS100 clustering right under its 18,520 Pre-Market High. At 9:31 AM, a fast spike blasts to 18,546 — while US30 fails to break its own Pre-Market High (Bearish SMT crack) — and the 5-minute candle snaps closed back down at 18,511.',
+          'Picture NAS100 clustering right under its 18,520 Pre-Market High. At 9:31 AM ET, a fast spike blasts to 18,546 — while US30 fails to break its own Pre-Market High (Bearish SMT crack) — and the 5-minute candle snaps closed back down at 18,511.',
         steps: [
-          'Waiting until 9:35 AM saved you from getting trapped buying the 18,546 fake spike.',
+          'Waiting until 9:35 AM ET saved you from getting trapped buying the 18,546 fake spike.',
           'Bearish SMT Divergence + closing back below 18,520 confirms sellers absorbed the opening rush.',
           'A clean short entry with a 35-point structural stop sized to exactly $100 risk rides smoothly down 100+ points (+3R = $300)!',
         ],
         keyTakeaway:
-          'Waiting for the first 5-minute close after 9:30 AM turns opening chaos into clean clarity.',
+          'Waiting for the first 5-minute close after 9:30 AM ET turns opening chaos into clean clarity.',
         practiceSafeHint:
           'Compare the temporary opening spike wick against the finished 5-minute closing price.',
       },
@@ -1724,11 +1724,11 @@ export const EXPANDED_LESSONS: Lesson[] = [
         summary:
           'At 9:30 AM New York time, store doors burst open and people shove wildly in the entrance for three minutes. Calm shoppers take two steps back, watch the doorway clear, and walk straight to the aisle they actually want.',
         steps: [
-          'The doorway shoving match is the 9:30–9:35 AM stop-grab spike.',
+          'The doorway shoving match is the 9:30–9:35 AM ET stop-grab spike.',
           'Once the doorway clears, real institutional direction stands out clearly.',
         ],
         keyTakeaway:
-          'Never jump into the middle of the 9:30 AM doorway before a candle actually closes.',
+          'Never jump into the middle of the 9:30 AM ET doorway before a candle actually closes.',
         practiceSafeHint:
           'Let the first volatility burst settle into confirmed structure.',
       },
@@ -1753,11 +1753,11 @@ export const EXPANDED_LESSONS: Lesson[] = [
           'Fast-moving indices punish sloppy risk habits immediately.',
         steps: [
           'Mistake 1: Using a giant lot size meant for slow markets on fast NAS100 candles.',
-          'Mistake 2: Clicking market buy/sell at 9:30:10 AM before a single candle closes.',
-          'Mistake 3: Continuing to trade during choppy New York lunch (12:00–1:30 PM) and giving back morning gains.',
+          'Mistake 2: Clicking market buy/sell ten seconds into the 9:30 AM ET open before a single candle closes.',
+          'Mistake 3: Continuing to trade during choppy New York lunch (12:00 PM–1:30 PM ET) and giving back morning gains.',
         ],
         keyTakeaway:
-          'Use smaller size for wider stops, wait past 9:35 AM, and stop before lunch chop.',
+          'Use smaller size for wider stops, wait past 9:35 AM ET, and stop before lunch chop.',
         practiceSafeHint:
           'Match position size to actual candle width so your dollar risk never balloons.',
       },
@@ -1811,7 +1811,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
         lessonSlug: 'indices-ny-open-playbook',
         conceptKey: 'indices-ny-open-playbook',
         prompt:
-          'Why do disciplined US index traders usually stop trading between 12:00 PM and 1:30 PM New York time?',
+          'Why do disciplined US index traders usually stop trading between 12:00 PM ET and 1:30 PM ET?',
         options: [
           { id: 'a', label: 'Because US stock exchanges shut down for lunch' },
           { id: 'b', label: 'Because institutional volume drops during New York lunch, creating choppy fake moves that give back morning profits' },
@@ -1823,7 +1823,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
           'Think about how active big Wall Street desks are during New York midday lunch.',
         ],
         postSubmissionRationale:
-          'During New York lunch hours, institutional volume thins out and price often chops back and forth aimlessly — making it the easiest time to hand back profits earned between 9:35 and 11:30 AM.',
+          'During New York lunch hours, institutional volume thins out and price often chops back and forth aimlessly — making it the easiest time to hand back profits earned between 9:35 AM ET and 11:30 AM ET.',
         commonTrapNote:
           'Knowing when to close your platform is just as profitable as knowing when to enter.',
       },
@@ -1958,9 +1958,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Left: High positive funding at resistance signals overcrowded leveraged buyers vulnerable to a sharp liquidation flush wick. Right: Calm neutral funding with clean Bitcoin leadership fuels sustainable spot breakouts.',
       legend: [
-        { label: 'Crowded Leverage / High Funding Zone', colorToken: '#f59e0b' },
-        { label: 'Liquidation Flush Wick', colorToken: '#ef4444' },
-        { label: 'Healthy Spot-Led Breakout & Hold', colorToken: '#10b981' },
+        { label: 'Crowded Leverage / High Funding Zone', colorToken: '#e5b567' },
+        { label: 'Liquidation Flush Wick', colorToken: '#f2677a' },
+        { label: 'Healthy Spot-Led Breakout & Hold', colorToken: '#3ecf9a' },
       ],
       annotations: [
         { id: 'cry1', label: 'BTC + BTC.D', sublabel: 'Check Bitcoin Tide First', tone: 'neutral' },
@@ -2152,9 +2152,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
           'Relative Volume simply compares how busy a stock is right now against how busy it is on an ordinary day at the same time. RVOL of 1.0 = normal sleepy day. RVOL of 3.0 = three times busier than normal — proving big Wall Street funds are actively trading it today!',
       },
       {
-        question: 'What is a "Pre-Market Gap" and does a big green gap mean I should buy right at 9:30 AM?',
+        question: 'What is a "Pre-Market Gap" and does a big green gap mean I should buy right at 9:30 AM ET?',
         answer:
-          'A Pre-Market Gap happens when news drops after yesterday’s 4:00 PM closing bell (say a $100 stock reports great earnings and jumps to $105 before 9:30 AM). NEVER blindly buy at 9:30:01 AM — many overnight holders immediately sell to lock in profit! Wait for the Opening Range and VWAP to confirm whether buyers or sellers actually take control.',
+          'A Pre-Market Gap happens when news drops after yesterday’s 4:00 PM ET closing bell (say a $100 stock reports great earnings and jumps to $105 before 9:30 AM ET). NEVER blindly buy in the very first second of 9:30 AM ET — many overnight holders immediately sell to lock in profit! Wait for the Opening Range and VWAP to confirm whether buyers or sellers actually take control.',
       },
       {
         question: 'What is "VWAP" (Volume Weighted Average Price) without complicated math?',
@@ -2196,7 +2196,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
         term: 'Pre-Market Gap (Overnight Jump)',
         shortCode: 'Gap',
         definition:
-          'The price jump between yesterday’s 4:00 PM closing price and this morning’s pre-market trading after overnight news or earnings.',
+          'The price jump between yesterday’s 4:00 PM ET closing price and this morning’s pre-market trading after overnight news or earnings.',
         example:
           'A stock closing at $100 yesterday afternoon and opening at $105 this morning (+5% gap up) on big news.',
       },
@@ -2206,7 +2206,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
         definition:
           'Drawing a box around the highest and lowest price of the first 2 or 5 minutes after 9:30 AM New York time, then trading a confirmed volume breakout outside that box.',
         example:
-          'Stock trades between $104.20 and $105.40 from 9:30–9:35 AM; a solid green candle closes above $105.40 on heavy volume and holds the retest.',
+          'Stock trades between $104.20 and $105.40 from 9:30–9:35 AM ET; a solid green candle closes above $105.40 on heavy volume and holds the retest.',
       },
       {
         term: 'VWAP (Volume Weighted Average Price)',
@@ -2233,9 +2233,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       {
         id: 'stk-sec-2',
         heading: 'The 5-Minute Opening Range Breakout (ORB) & VWAP Filter',
-        body: 'Before 9:30 AM New York time, mark Pre-Market High, Pre-Market Low, and Yesterday’s Closing Price. When the bell rings at 9:30 AM, stay calm for the first 5 minutes and draw a box around that opening battle:',
+        body: 'Before 9:30 AM New York time, mark Pre-Market High, Pre-Market Low, and Yesterday’s Closing Price. When the bell rings at 9:30 AM ET, stay calm for the first 5 minutes and draw a box around that opening battle:',
         bulletPoints: [
-          'Box the Opening Range (9:30–9:35 AM): Mark the exact High and Low of that first 5-minute candle.',
+          'Box the Opening Range (9:30–9:35 AM ET): Mark the exact High and Low of that first 5-minute candle.',
           'Gap-and-Go (Healthy Buy Setup): Stock holds ABOVE VWAP (today’s average price), prints a strong solid green close above the Opening Range High on heavy volume, and holds a calm pullback.',
           'Gap-and-Crap (Failed Gap Warning): Stock gaps up +5% pre-market, spikes for 60 seconds, then slams BELOW VWAP and below the Opening Range Low on heavy red volume — NEVER buy falling knives below VWAP!',
         ],
@@ -2258,17 +2258,17 @@ export const EXPANDED_LESSONS: Lesson[] = [
     diagramConfig: {
       kind: 'stocks_orb_gap',
       title: 'Stock Pre-Market Gap, 5-Minute Opening Range & VWAP Hold',
-      subtitle: 'Mapping Overnight Gap → 9:30–9:35 AM Opening Range Box → Volume Breakout & Retest',
+      subtitle: 'Mapping Overnight Gap → 9:30–9:35 AM ET Opening Range Box → Volume Breakout & Retest',
       caption:
         'A high-RVOL stock gaps up overnight, forms a crisp 5-minute Opening Range above rising VWAP, breaks out with expanded volume, and holds the Opening Range High as new support.',
       legend: [
-        { label: 'Pre-Market Gap & Opening Range Box', colorToken: '#f59e0b' },
-        { label: 'Rising VWAP (Buyer Control Line)', colorToken: '#38bdf8' },
-        { label: 'Confirmed Volume Breakout & Retest', colorToken: '#10b981' },
+        { label: 'Pre-Market Gap & Opening Range Box', colorToken: '#e5b567' },
+        { label: 'Rising VWAP (Buyer Control Line)', colorToken: '#6cc4d6' },
+        { label: 'Confirmed Volume Breakout & Retest', colorToken: '#3ecf9a' },
       ],
       annotations: [
         { id: 'stk1', label: 'Overnight Gap', sublabel: 'Fresh News + RVOL ≥ 2.0', tone: 'neutral' },
-        { id: 'stk2', label: '5m ORB Box', sublabel: '9:30–9:35 AM High & Low', tone: 'liquidity' },
+        { id: 'stk2', label: '5m ORB Box', sublabel: '9:30–9:35 AM ET High & Low', tone: 'liquidity' },
         { id: 'stk3', label: 'VWAP Hold', sublabel: 'Price Stays Above Average', tone: 'bullish' },
         { id: 'stk4', label: 'ORB Retest', sublabel: 'Former High Flips to Floor', tone: 'bullish' },
       ],
@@ -2284,10 +2284,10 @@ export const EXPANDED_LESSONS: Lesson[] = [
         style: 'beginner_friendly',
         headline: 'Only Trade the 2 or 3 Stocks Everyone Is Watching Today',
         summary:
-          'Skip the thousands of sleepy stocks doing nothing. Pick 2–3 stocks with big breaking news and heavy morning volume (RVOL 2x+), box the first 5 minutes after 9:30 AM, stay above VWAP for buys, and calculate your exact share count.',
+          'Skip the thousands of sleepy stocks doing nothing. Pick 2–3 stocks with big breaking news and heavy morning volume (RVOL 2x+), box the first 5 minutes after 9:30 AM ET, stay above VWAP for buys, and calculate your exact share count.',
         steps: [
           'Check pre-market gainers/losers for fresh news (like earnings) and at least double normal volume.',
-          'Wait until 9:35 AM to box the first 5-minute Opening Range High and Low.',
+          'Wait until 9:35 AM ET to box the first 5-minute Opening Range High and Low.',
           'Look for solid green closes above both VWAP and the Opening Range High — never buy stocks dropping below VWAP.',
         ],
         keyTakeaway:
@@ -2297,14 +2297,14 @@ export const EXPANDED_LESSONS: Lesson[] = [
       },
       step_by_step_visual: {
         style: 'step_by_step_visual',
-        headline: '8:45–10:15 AM Beginner Stock Trader Checklist',
+        headline: '8:45–10:15 AM ET Beginner Stock Trader Checklist',
         summary:
           'Follow this calm four-step morning routine every weekday.',
         steps: [
-          '8:45 AM: Pick 2–3 liquid stocks gapping ≥ 2% on real news with Relative Volume ≥ 2.0.',
-          '9:15 AM: Mark Pre-Market High, Pre-Market Low, and Yesterday’s Close.',
-          '9:30–9:35 AM: Box the 5-minute Opening Range and check VWAP + overall market (SPY/QQQ).',
-          '9:35–10:15 AM: Enter confirmed Opening Range Breakout or VWAP pullback using Shares = Dollar Risk ÷ Stop Distance.',
+          '8:45 AM ET: Pick 2–3 liquid stocks gapping ≥ 2% on real news with Relative Volume ≥ 2.0.',
+          '9:15 AM ET: Mark Pre-Market High, Pre-Market Low, and Yesterday’s Close.',
+          '9:30–9:35 AM ET: Box the 5-minute Opening Range and check VWAP + overall market (SPY/QQQ).',
+          '9:35–10:15 AM ET: Enter confirmed Opening Range Breakout or VWAP pullback using Shares = Dollar Risk ÷ Stop Distance.',
         ],
         keyTakeaway:
           'A calm morning shortlist stops you from frantically chasing random alerts after the bell.',
@@ -2315,9 +2315,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
         style: 'real_chart_example',
         headline: 'AAPL +4% Earnings Gap → 5-Minute Opening Range Breakout',
         summary:
-          'Suppose AAPL closes yesterday at $180, reports strong earnings, and opens at $187 with 3x normal volume (RVOL 3.0). From 9:30–9:35 AM it trades between $186.20 and $187.80 while holding above VWAP ($186.80).',
+          'Suppose AAPL closes yesterday at $180, reports strong earnings, and opens at $187 with 3x normal volume (RVOL 3.0). From 9:30–9:35 AM ET it trades between $186.20 and $187.80 while holding above VWAP ($186.80).',
         steps: [
-          'At 9:40 AM, a solid green candle closes above $187.80 on surging volume, then pulls back gently to retest $187.80 as new support.',
+          'At 9:40 AM ET, a solid green candle closes above $187.80 on surging volume, then pulls back gently to retest $187.80 as new support.',
           'Entry at $188.00 with a structural stop below VWAP at $186.75 ($1.25 risk per share).',
           'Risking $100 (1% on a $10,000 account): $100 ÷ $1.25 = exactly 80 shares — riding cleanly to $191.75 (+3R = $300 profit)!',
         ],
@@ -2345,7 +2345,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
         style: 'comparison',
         headline: 'Gap-and-Go (Holds Above VWAP) vs. Gap-and-Crap (Falls Below VWAP)',
         summary:
-          'A bright green pre-market gap does NOT automatically mean "click buy at 9:30 AM."',
+          'A bright green pre-market gap does NOT automatically mean "click buy at 9:30 AM ET."',
         steps: [
           'Gap-and-Go: Absorbs early profit-taking, stays above VWAP, and breaks above the 5-minute Opening Range High on big green volume.',
           'Gap-and-Crap: Pops for 60 seconds, then plunges below VWAP and below the Opening Range Low on heavy red selling — trapping eager opening buyers.',
@@ -2361,7 +2361,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
         summary:
           'Dodge these three habits right from week one.',
         steps: [
-          'Mistake 1: Buying a huge pre-market gap at 9:30:01 AM right as overnight owners take profits.',
+          'Mistake 1: Buying a huge pre-market gap in the opening seconds of 9:30 AM ET right as overnight owners take profits.',
           'Mistake 2: Buying a fixed "100 shares" on every stock regardless of whether your stop is $0.20 wide or $3.00 wide.',
           'Mistake 3: Trading tiny, wide-spread penny stocks that slip far past your stop-loss.',
         ],
@@ -2377,7 +2377,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
         lessonSlug: 'stocks-gaps-rvol-playbook',
         conceptKey: 'stocks-gaps-rvol-playbook',
         prompt:
-          'Why do stock day traders look for Relative Volume (RVOL) of 2.0 or higher before the 9:30 AM bell?',
+          'Why do stock day traders look for Relative Volume (RVOL) of 2.0 or higher before the 9:30 AM ET bell?',
         options: [
           { id: 'a', label: 'Because RVOL ≥ 2.0 proves the stock is at least twice as busy as normal, showing active institutional money and cleaner moves' },
           { id: 'b', label: 'Because brokers legally block orders on stocks with RVOL below 2.0' },
@@ -2420,7 +2420,7 @@ export const EXPANDED_LESSONS: Lesson[] = [
         lessonSlug: 'stocks-gaps-rvol-playbook',
         conceptKey: 'stocks-gaps-rvol-playbook',
         prompt:
-          'A stock jumps +6% pre-market, pops briefly at 9:30 AM, then drops below VWAP and closes below its 5-minute Opening Range Low on heavy red volume. How should you read this?',
+          'A stock jumps +6% pre-market, pops briefly at 9:30 AM ET, then drops below VWAP and closes below its 5-minute Opening Range Low on heavy red volume. How should you read this?',
         options: [
           { id: 'a', label: 'Huge bargain — keep buying more shares all the way down' },
           { id: 'b', label: 'A failing gap ("Gap-and-Crap") showing big sellers taking over; do NOT force buys below VWAP' },
@@ -2569,9 +2569,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Only click buy or sell when all five checklist layers agree — Left shows the confirmed Stop-Sweep + U-Turn A+ reversal; Right shows the confirmed Full-Body Breakout + Retest A+ continuation.',
       legend: [
-        { label: 'Key Level & Big-Picture Direction', colorToken: '#f59e0b' },
-        { label: 'A+ Sweep + U-Turn Reversal Model', colorToken: '#ef4444' },
-        { label: 'A+ Breakout + Retest Continuation Model', colorToken: '#10b981' },
+        { label: 'Key Level & Big-Picture Direction', colorToken: '#e5b567' },
+        { label: 'A+ Sweep + U-Turn Reversal Model', colorToken: '#f2677a' },
+        { label: 'A+ Breakout + Retest Continuation Model', colorToken: '#3ecf9a' },
       ],
       annotations: [
         { id: 'ap1', label: '1. Big Map', sublabel: 'Clear 4H/1H Trend + Target', tone: 'liquidity' },
@@ -2874,9 +2874,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Stage 1 stays hands-off through normal pullbacks; Stage 2 banks 50% profit at +2R (+1.0R locked) and shifts stop to Breakeven; Stage 3 trails the remaining 50% behind Higher Lows to +4R (+3.0R total).',
       legend: [
-        { label: 'Stage 1: Hands-Off Breathing Room (-1R Stop)', colorToken: '#ef4444' },
-        { label: 'Stage 2: +2R Partial (50% Banked) + Breakeven', colorToken: '#38bdf8' },
-        { label: 'Stage 3: Trailing Runner to +4R Target', colorToken: '#10b981' },
+        { label: 'Stage 1: Hands-Off Breathing Room (-1R Stop)', colorToken: '#f2677a' },
+        { label: 'Stage 2: +2R Partial (50% Banked) + Breakeven', colorToken: '#6cc4d6' },
+        { label: 'Stage 3: Trailing Runner to +4R Target', colorToken: '#3ecf9a' },
       ],
       annotations: [
         { id: 'tm1', label: 'Hands Off', sublabel: 'Let Normal Retest Breathe', tone: 'neutral' },
@@ -3180,9 +3180,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Logging Planned R vs. Actual R, Rule Adherence, and Mistake Tags reveals how removing just your worst C-grade habits lifts Expectancy into steady positive territory.',
       legend: [
-        { label: 'Clean A+ Rule-Following Curve (+Expectancy)', colorToken: '#10b981' },
-        { label: 'Planned vs. MFE Target Benchmark', colorToken: '#38bdf8' },
-        { label: 'Mistake-Tagged Leak Trades (Cut These!)', colorToken: '#ef4444' },
+        { label: 'Clean A+ Rule-Following Curve (+Expectancy)', colorToken: '#3ecf9a' },
+        { label: 'Planned vs. MFE Target Benchmark', colorToken: '#6cc4d6' },
+        { label: 'Mistake-Tagged Leak Trades (Cut These!)', colorToken: '#f2677a' },
       ],
       annotations: [
         { id: 'tj1', label: 'Win % + Payoff', sublabel: '42% × 2.6R = +0.51R EV', tone: 'bullish' },
@@ -3486,9 +3486,9 @@ export const EXPANDED_LESSONS: Lesson[] = [
       caption:
         'Left/Top curve: Cutting risk in half at -4% drawdown flattens the dip so just two clean +3R winners recover equity calmly. Bottom dashed curve: Doubling risk on Tilt triggers deep unrecoverable holes.',
       legend: [
-        { label: 'Disciplined Curve (0.5x Throttle + Steady Scaling)', colorToken: '#10b981' },
-        { label: 'Half-Risk Protection Zone (-4% Trigger)', colorToken: '#38bdf8' },
-        { label: 'Revenge-Tilt Spiral (Doubling Risk)', colorToken: '#ef4444' },
+        { label: 'Disciplined Curve (0.5x Throttle + Steady Scaling)', colorToken: '#3ecf9a' },
+        { label: 'Half-Risk Protection Zone (-4% Trigger)', colorToken: '#6cc4d6' },
+        { label: 'Revenge-Tilt Spiral (Doubling Risk)', colorToken: '#f2677a' },
       ],
       annotations: [
         { id: 'dd1', label: '-2R / -4R Caps', sublabel: 'Stop Spiral Days Cold', tone: 'bearish' },

@@ -24,6 +24,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { getChartScenariosForLesson } from '../../data/chartScenarios';
 import { LESSON_TAGLISH_SUMMARIES, UI_COPY } from '../../data/taglishTranslations';
 import { expandAcronyms } from '../../lib/acronymHelper';
+import { localizeMarketTimes } from '../../lib/marketTime';
 import {
   buildYouTubeThumbnailUrl,
   buildYouTubeWatchUrl,
@@ -241,12 +242,12 @@ const DIAGRAM_CHEAT_CARDS: Record<DiagramKind, CheatCardDirectionCopy> = {
     bearishRuleTaglish: 'Huwag labanan ang bearish HTF trend dahil lang sa maikling green bounce sa 5m.',
   },
   market_sessions: {
-    bullishSignEn: 'Asia builds range → London sweeps Asia Low → NY Overlap launches clean Bullish trend.',
-    bullishSignTaglish: 'Range sa Asia → sweep ng Asia Low sa London → malinis na Bullish rally sa NY Overlap.',
-    bullishRuleEn: 'Trade during London Open (2–5 AM NY) or NY Overlap (8–11 AM NY) when spreads are tightest.',
-    bullishRuleTaglish: 'Mag-trade sa London Open o NY Overlap kung kailan malakas ang volume at manipis ang spread.',
-    bearishSignEn: 'Asia builds range → London sweeps Asia High → NY Overlap drives clean Bearish selloff.',
-    bearishSignTaglish: 'Range sa Asia → sweep ng Asia High sa London → malinis na Bearish drop sa NY Overlap.',
+    bullishSignEn: 'Asia builds range → London sweeps Asia Low → New York Overlap launches clean Bullish trend.',
+    bullishSignTaglish: 'Range sa Asia → sweep ng Asia Low sa London → malinis na Bullish rally sa New York Overlap.',
+    bullishRuleEn: 'Trade during London Open (2:00 AM–5:00 AM NY) or New York Overlap (8:00 AM–11:00 AM NY) when spreads are tightest.',
+    bullishRuleTaglish: 'Mag-trade sa London Open (2:00 AM–5:00 AM NY) o New York Overlap (8:00 AM–11:00 AM NY) kung kailan malakas ang volume at manipis ang spread.',
+    bearishSignEn: 'Asia builds range → London sweeps Asia High → New York Overlap drives clean Bearish selloff.',
+    bearishSignTaglish: 'Range sa Asia → sweep ng Asia High sa London → malinis na Bearish drop sa New York Overlap.',
     bearishRuleEn: 'Skip slow off-hours chop and avoid chasing the very first minute of news spikes.',
     bearishRuleTaglish: 'Iwasan ang mabagal na chop hours at huwag habulin ang unang minuto ng news spike.',
   },
@@ -562,6 +563,11 @@ export function VisualExplanationsSection({
       ? base.bullishRuleTaglish
       : expandAcronyms(base.bullishRuleEn);
 
+    const phTimeNote =
+      lesson.diagramConfig.kind === 'market_sessions'
+        ? ` (${isTaglish ? 'Lahat ng oras ay PH time' : 'All times in PH time'})`
+        : '';
+
     const bearishCue = isTaglish
       ? base.bearishSignTaglish
       : bearishAnnotation
@@ -573,10 +579,10 @@ export function VisualExplanationsSection({
       : expandAcronyms(base.bearishRuleEn);
 
     return {
-      bullishCue,
-      bullishTakeaway,
-      bearishCue,
-      bearishCaution,
+      bullishCue: localizeMarketTimes(bullishCue),
+      bullishTakeaway: localizeMarketTimes(bullishTakeaway) + phTimeNote,
+      bearishCue: localizeMarketTimes(bearishCue),
+      bearishCaution: localizeMarketTimes(bearishCaution),
     };
   }, [isTaglish, lesson.diagramConfig.annotations, lesson.diagramConfig.kind]);
 
@@ -1071,7 +1077,7 @@ export function VisualExplanationsSection({
                             className="group flex min-w-0 flex-1 items-center gap-2.5 rounded-lg text-left transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                           >
                             <div
-                              className={`relative aspect-video w-20 shrink-0 overflow-hidden rounded-lg border bg-[#131110] ${
+                              className={`relative aspect-video w-20 shrink-0 overflow-hidden rounded-lg border bg-[#0d1a1c] ${
                                 isSelected
                                   ? 'border-brand/70'
                                   : 'border-terminal-border group-hover:border-brand/40'
